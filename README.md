@@ -105,7 +105,7 @@ ___
         </executions>
     </plugin>
 ___ 
->It is recommended to use ***Cucumber JVM Parallel plugin*** which allows you to execute tests simultaneously on parallel.
+>It is recommended to use ***Cucumber JVM Parallel Plugin*** which allows you to execute tests simultaneously on parallel.
 > If you would like to do that, add plugin:
 
             <plugin>
