@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
 
   <name>Page Object Model Automation Framework (Cucumber)</name>
-  <url>https://github.com/Umutayb/Gaugelib</url>
+  <url>https://github.com/Umutayb/Pickleib</url>
 
   <properties>
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
