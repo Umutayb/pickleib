@@ -1,7 +1,6 @@
 package resources.api;
 
-import com.thoughtworks.gauge.Table;
-import com.thoughtworks.gauge.TableRow;
+import io.cucumber.datatable.DataTable;
 import io.restassured.response.Response;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
@@ -11,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import static resources.Colors.*;
 
 public class APILibrary {
@@ -57,7 +58,7 @@ public class APILibrary {
         else Assert.fail(GRAY+"The server response was unexpectedly "+RED+response.getStatusCode()+RESET);
     }
 
-    public void updatePetInfo(Table table){
+    public void updatePetInfo(DataTable table){
         String id = null;
         String categoryID = null;
         String categoryName = null;
@@ -67,15 +68,17 @@ public class APILibrary {
         String tagName = null;
         String status = null;
 
-        for (TableRow form : table.getTableRows()) {
-            id = form.getCell("ID");
-            categoryID = form.getCell("Category ID");
-            categoryName = form.getCell("Category Name");
-            name = form.getCell("Name");
-            photoUrl = form.getCell("Photo Url");
-            tagID = form.getCell("Tag ID");
-            tagName = form.getCell("Tag Name");
-            status = form.getCell("Status");
+        List<Map<String, String>> signForms = table.asMaps();
+
+        for (Map<String, String> form : signForms) {
+            id = form.get("ID");
+            categoryID = form.get("Category ID");
+            categoryName = form.get("Category Name");
+            name = form.get("Name");
+            photoUrl = form.get("Photo Url");
+            tagID = form.get("Tag ID");
+            tagName = form.get("Tag Name");
+            status = form.get("Status");
         }
 
         JSONObject body = new JSONObject();
@@ -146,7 +149,7 @@ public class APILibrary {
         System.out.println(GRAY+database.contextJSON.get(requestName)+ RESET);
     }
 
-    public void addPet(Table table){
+    public void addPet(DataTable table){
 
         String id = null;
         String categoryID = null;
@@ -157,15 +160,17 @@ public class APILibrary {
         String tagName = null;
         String status = null;
 
-        for (TableRow form : table.getTableRows()) {
-            id = form.getCell("ID");
-            categoryID = form.getCell("Category ID");
-            categoryName = form.getCell("Category Name");
-            name = form.getCell("Name");
-            photoUrl = form.getCell("Photo Url");
-            tagID = form.getCell("Tag ID");
-            tagName = form.getCell("Tag Name");
-            status = form.getCell("Status");
+        List<Map<String, String>> signForms = table.asMaps();
+
+        for (Map<String, String> form : signForms) {
+            id = form.get("ID");
+            categoryID = form.get("Category ID");
+            categoryName = form.get("Category Name");
+            name = form.get("Name");
+            photoUrl = form.get("Photo Url");
+            tagID = form.get("Tag ID");
+            tagName = form.get("Tag Name");
+            status = form.get("Status");
         }
 
         JSONObject body = new JSONObject();

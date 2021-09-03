@@ -9,27 +9,57 @@
   <version>0.0.2</version>
   <packaging>jar</packaging>
 
-  <name>Page Object Model Automation Framework (Gauge)</name>
+  <name>Page Object Model Automation Framework (Cucumber)</name>
   <url>https://github.com/Umutayb/Gaugelib</url>
 
   <properties>
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <serenity.maven.version>1.9.12</serenity.maven.version>
+    <maven.surefire.version>2.22.1</maven.surefire.version>
+    <maven.compiler.version>3.8.0</maven.compiler.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.version>3.8.0</maven.compiler.version>
-    <maven.surefire.version>2.22.1</maven.surefire.version>
     <serenity.version>1.9.12</serenity.version>
-    <serenity.maven.version>1.9.12</serenity.maven.version>
+    <cucumber.version>4.8.0</cucumber.version>
   </properties>
 
   <dependencies>
 
-    <!-- Gauge -->
+    <!-- Cucumber -->
     <dependency>
-      <groupId>com.thoughtworks.gauge</groupId>
-      <artifactId>gauge-java</artifactId>
-      <version>0.7.15</version>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <version>${cucumber.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>datatable-dependencies</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-junit</artifactId>
+      <version>${cucumber.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-testng</artifactId>
+      <version>${cucumber.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>gherkin</artifactId>
+      <version>5.1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>datatable</artifactId>
+      <version>1.1.14</version>
       <scope>compile</scope>
     </dependency>
 
@@ -148,6 +178,12 @@
       <artifactId>assertj-core</artifactId>
       <version>3.17.2</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-core</artifactId>
+      <version>4.8.0</version>
+      <scope>compile</scope>
     </dependency>
 
   </dependencies>
