@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Annotation profile for Page Object Model Automation Framework" enabled="true">
+        <sourceOutputDir name="out/artifacts/POM-Framework_jar/generated-sources/annotations" />
+        <sourceTestOutputDir name="out/artifacts/POM-Framework_jar/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="POM-Framework" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
