@@ -38,7 +38,30 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 
 ####Step 2: Create a steps package
 >Create page step classes, instantiate page classes, create step definitions & access page methods within these step 
-> definitions.
+> definitions as:
+> ````
+> public class HomePageSteps {
+> 
+>    HomePage homePage = new HomePage();
+>
+>    @Given("Click category card named {}")
+>    public void clickCategoryCard(String cardName) {
+>        homePage.clickCategoryCardNamed(cardName);
+>    }
+> }
+> ````
+>Set cucumber @Before & @After steps as:
+> ````
+>    Initialize driverManager = new Initialize();
+>
+>    @Before
+>    public void start(){driverManager.init();}
+>
+>    @After
+>    public void kill(Scenario scenario){driverManager.kill(scenario);}
+>````
+> This will initialize the driver before each run, and kill it after each scenario is done. It will also
+> capture a ss if the scenario fails, indicating scenario name and failed step info.
 
 ####Step 3: Create a features package
 >Create _**.feature**_ files, create your scenarios using the steps you have implemented in ***Step 2***.
