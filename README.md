@@ -35,6 +35,9 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 ####Step 1: Create a pages package
 >Create page classes, add elements (use @FindBy annotation) & page methods. _**Remember** extending **Utilities** class, 
 > initializing all elements within the page class._
+>````
+> public class HomePage extends Utilities {...}
+>```` 
 
 ####Step 2: Create a steps package
 >Create page step classes, instantiate page classes, create step definitions & access page methods within these step 
