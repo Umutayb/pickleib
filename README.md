@@ -70,6 +70,11 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 >Create _**.feature**_ files, create your scenarios using the steps you have implemented in ***Step 2***.
 
 ####Step 4: Execute your tests
+>######Selenium Grid needs to be running first, turn on Docker, then in project directory start Selenium Grid & Nodes by using the following command:
+>````
+>docker-compose up -d
+>````
+>######
 >The library allows the browser type to be designated on runtime, just pass:
 > ````
 > -Dbrowser=browserName
