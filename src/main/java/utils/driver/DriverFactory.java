@@ -1,10 +1,15 @@
 package utils.driver;
 
 import org.junit.Assert;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.FileReader;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Properties;
 import static resources.Colors.*;
 import java.util.concurrent.TimeUnit;
@@ -16,36 +21,60 @@ public class DriverFactory {
     public static RemoteWebDriver driverSetup(String driverName, RemoteWebDriver driver){
         try {
 
-            properties.load(new FileReader("src/test/java/resources/test.properties"));
+            properties.load(new FileReader("src/test/resources/test.properties"));
 
             DesiredCapabilities capabilities = null;
 
-            switch (driverName.toLowerCase()){
-                case "chrome":
-                    capabilities = DesiredCapabilities.chrome();
-                    break;
+            if (Boolean.parseBoolean(properties.getProperty("selenium.grid"))){
 
-                case "firefox":
-                    capabilities = DesiredCapabilities.firefox();
-                    break;
+                switch (driverName.toLowerCase()){
+                    case "chrome":
+                        capabilities = DesiredCapabilities.chrome();
+                        break;
 
-                case "safari":
-                    capabilities = DesiredCapabilities.safari();
-                    break;
+                    case "firefox":
+                        capabilities = DesiredCapabilities.firefox();
+                        break;
 
-                case "edge":
-                    capabilities = DesiredCapabilities.edge();
-                    break;
+                    case "safari":
+                        capabilities = DesiredCapabilities.safari();
+                        break;
 
-                case "opera":
-                    capabilities = DesiredCapabilities.operaBlink();
-                    break;
+                    case "edge":
+                        capabilities = DesiredCapabilities.edge();
+                        break;
 
-                default:
-                    Assert.fail(YELLOW+"The driver type \""+driverName+"\" was undefined."+RESET);
+                    case "opera":
+                        capabilities = DesiredCapabilities.operaBlink();
+                        break;
+
+                    default:
+                        Assert.fail(YELLOW+"The driver type \""+driverName+"\" was undefined."+RESET);
+                }
+                driver = new RemoteWebDriver(new URL(properties.getProperty("hub.url")), capabilities);
             }
-            driver = new RemoteWebDriver(new URL(properties.getProperty("hub.url")), capabilities);
-            driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+            else {
+                switch (properties.getProperty("browser").toLowerCase()){
+                    case "chrome":
+                        ChromeOptions chromeOptions = new ChromeOptions();
+                        chromeOptions.addArguments("disable-notifications");
+                        System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriver");
+                        driver = new ChromeDriver(chromeOptions);
+                        break;
+
+                    case "firefox":
+                        FirefoxOptions firefoxOptions = new FirefoxOptions();
+                        firefoxOptions.addArguments("disable-notifications");
+                        System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
+                        driver = new FirefoxDriver(firefoxOptions);
+                        break;
+
+                    default:
+                        Assert.fail("No such driver was defined.");
+                        return null ;
+                }
+            }
+            driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
             driver.manage().window().maximize();
             System.out.println(PURPLE+driverName+GRAY+" was selected"+RESET);
             return driver;

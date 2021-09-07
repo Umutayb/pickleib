@@ -16,7 +16,7 @@ public class ApiUtilities {
     Properties properties = new Properties();
     Database database = new Database();
 
-    public Response performApiCall(String requestType, String url, String uri, Object input, Boolean fatal){
+    public Response performApiCall(String requestType, String url, String uri, Object input, Boolean inputRequired){
 
         Response response = null;
 
@@ -33,7 +33,7 @@ public class ApiUtilities {
 
                     if (input!=null && input!="")
                         request.body(input);
-                    else if(fatal)
+                    else if(inputRequired)
                         Assert.fail(YELLOW+"The input cannot be null"+RESET);
 
                     response = request.post(requestUrl);
@@ -62,7 +62,7 @@ public class ApiUtilities {
 
                     if (input!=null && input!="")
                         request.body(input);
-                    else if(fatal)
+                    else if(inputRequired)
                         Assert.fail(YELLOW+"The input cannot be null"+RESET);
 
                     response = request.put(requestUrl);
@@ -122,46 +122,6 @@ public class ApiUtilities {
 
         return response;
 
-    }
-
-    public Response performSampleRequest(String requestType, Object input) {
-
-        Response response = null;
-
-        try{
-            properties.load(new FileReader("src/test/java/resources/test.properties"));
-            String url = properties.getProperty("request.url");
-
-            switch (requestType.toLowerCase()){
-                case "get":
-                    response = RestAssured.get(url);
-                    if(response.getStatusCode()==200)
-                        jsonUtilities.saveJson(jsonUtilities.str2json(response.asString()), "ApiResponse");
-                    else {
-                        System.out.println("Server responded: "+response.getStatusCode());
-                    }
-                    break;
-
-                case "post":
-                    RequestSpecification request = RestAssured.given();
-
-                    request.body(input);
-
-                    response = request.post(url);
-
-                    break;
-
-                default:
-                    System.out.println("Undefined request type: "+requestType);
-                    Assert.fail();
-                    break;
-
-            }
-
-        }catch (Exception gamma){
-            Assert.fail("Could not perform requests for the reason: "+gamma.fillInStackTrace());
-        }
-        return response;
     }
 
     public static int printStatusCode(Response response){

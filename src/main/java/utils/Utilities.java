@@ -19,6 +19,9 @@ public abstract class Utilities extends Driver {
     public Utilities(){PageFactory.initElements(driver, this);}
 
     StringUtilities strUtils = new StringUtilities();
+    NumericUtilities numeric = new NumericUtilities();
+
+    public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 
     public String navigate(String url){
         try {
@@ -127,7 +130,7 @@ public abstract class Utilities extends Driver {
                         (element, xOffset, yOffset)
                 .build()
                 .perform();
-        waitFor(2);
+        waitFor(0.5);
     }
 
     //This method refreshes the current page
@@ -147,11 +150,11 @@ public abstract class Utilities extends Driver {
     }
 
     //This method makes the thread wait for a certain while
-    public void waitFor(int duration){
-        if (duration!=1)
-            System.out.println(GRAY+"Waiting for "+BLUE+duration+GRAY+" seconds"+RESET);
+    public void waitFor(double seconds){
+        if (seconds > 1)
+            System.out.println(GRAY+"Waiting for "+BLUE+seconds+GRAY+" seconds"+RESET);
         try {
-            Thread.sleep(duration* 1000L);
+            Thread.sleep((long) (seconds* 1000L));
         }
         catch (InterruptedException exception){
             Assert.fail(exception.getLocalizedMessage());
@@ -167,7 +170,7 @@ public abstract class Utilities extends Driver {
 
         ((JavascriptExecutor) driver).executeScript(scrollScript, element);
 
-        waitFor(1);
+        waitFor(0.5);
 
         return element;
     }
@@ -185,8 +188,8 @@ public abstract class Utilities extends Driver {
     //This method returns all the attributes of an element as an object
     public Object getElementObject(WebElement element){
         return ((JavascriptExecutor) driver).executeScript("var items = {}; for (index = 0;" +
-                " index < arguments[0].attributes.length; ++index) " +
-                "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;",
+                        " index < arguments[0].attributes.length; ++index) " +
+                        "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;",
                 element);
     }
 
@@ -340,7 +343,7 @@ public abstract class Utilities extends Driver {
         try {
             System.out.println(GRAY+"Capturing page"+RESET);
 
-            String name = specName+"#"+strUtils.randomNumber(1,10000)+".jpg";
+            String name = specName+"#"+numeric.randomNumber(1,10000)+".jpg";
             File sourceFile = new File("Screenshots");
             File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(fileDestination, new File(sourceFile, name));

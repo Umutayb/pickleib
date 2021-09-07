@@ -55,13 +55,7 @@ public class StringUtilities {   //Utility methods
 
     //Generates random string according to the input rules
     public String generateRandomString(String keyword, int length, boolean useLetters, boolean useNumbers) {
-
         return keyword + RandomStringUtils.random(length, useLetters, useNumbers);
-    }
-
-    public int randomNumber(int min, int max){ //Generates random number in the given margins
-        int range = max - min + 1;
-        return (int)(Math.random() * range) + min;
     }
 
     public int measureDistanceBetween(String input, String firstKeyword, String lastKeyword){

@@ -14,6 +14,7 @@ public class Driver {
 	public void setup(String browserName){
 		log.print("Initializing driver", "info");
 		driver = DriverFactory.driverSetup(browserName, driver);
+		assert driver != null;
 		wait = new WebDriverWait(driver, 10);
 	}
 
