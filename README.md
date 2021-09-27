@@ -3,7 +3,8 @@
 ___
 ###How To Get Started:
 
-First, the library should be exported into an empty automation project by using:
+First, the library should be exported into an empty automation project. There are two ways of doing this.
+###First Way:
 ```
 mvn clean package -DbuildDirectory=directory/to/project/lib
 ```
@@ -13,7 +14,7 @@ mvn clean package -DbuildDirectory=/Users/Umut/Github/Web-Automation-Sample-Cucu
 ```
 There, the imported jar file should be added as a dependency in pom.xml file of that project:
 ```
-<!-- Framework -->
+    <!-- Framework -->
         <dependency>
             <groupId>bora</groupId>
             <artifactId>POM-Framework-0.0.2.jar</artifactId>
@@ -23,7 +24,27 @@ There, the imported jar file should be added as a dependency in pom.xml file of 
             <type>jar</type>
         </dependency>
 ```
-After updating your project, the quickstart library is ready to use. 
+###Second Way:
+Is by adding Jitpack repository into the pom.xml, as well as the dependency for the library as:
+```
+<dependencies>
+    <!-- Framework -->
+        <dependency>
+            <groupId>com.github.Umutayb</groupId>
+            <artifactId>Pickleib</artifactId>
+            <version>0.0.4</version>
+        </dependency>   
+</dependencies>
+        
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+
+After updating your project, the quickstart library is ready to use.
 ___
 ###How To Use:
 
