@@ -6,7 +6,7 @@
 
   <groupId>bora</groupId>
   <artifactId>POM-Framework</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.5</version>
   <packaging>jar</packaging>
 
   <name>Page Object Model Automation Framework (Cucumber)</name>
