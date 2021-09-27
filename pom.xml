@@ -25,7 +25,6 @@
   </properties>
 
   <dependencies>
-
     <!-- Cucumber -->
     <dependency>
       <groupId>io.cucumber</groupId>
