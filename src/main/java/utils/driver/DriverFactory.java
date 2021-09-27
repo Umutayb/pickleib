@@ -9,7 +9,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.FileReader;
 import java.net.URL;
-import java.util.Locale;
 import java.util.Properties;
 import static resources.Colors.*;
 import java.util.concurrent.TimeUnit;
