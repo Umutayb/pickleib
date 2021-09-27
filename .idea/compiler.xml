@@ -7,8 +7,10 @@
         <sourceTestOutputDir name="out/artifacts/POM-Framework_jar/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="POM-Framework" />
-        <module name="Pickleib" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Pickleib" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
