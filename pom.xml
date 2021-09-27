@@ -14,7 +14,6 @@
 
   <properties>
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
-    <driver.directory>src/test/resources/drivers</driver.directory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <serenity.maven.version>1.9.12</serenity.maven.version>
     <maven.surefire.version>2.22.1</maven.surefire.version>
