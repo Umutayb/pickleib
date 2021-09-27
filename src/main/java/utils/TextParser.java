@@ -4,10 +4,17 @@ import java.util.Scanner;
 
 public class TextParser {
 
-    public static void main(String[] args) {
-        //Sample execution
+    public static void main(String[] args) {        //Sample execution
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the input");
+        String input = scanner.nextLine(); // "ajsKAagq5J3w._CoolButton-sg-j3yaG3 a3TGb"
+        System.out.println("Enter the first keyword"); //._
+        String initialKeyword = scanner.nextLine();
+        System.out.println("Enter the final keyword"); // -
+        String finalKeyword = scanner.nextLine();
+        scanner.close();
         TextParser textParser = new TextParser();
-        System.out.println(textParser.parser("._","-","ajsKAagq5J3w._CoolButton-sg-j3yaG3 a3TGb"));
+        System.out.println(textParser.parser(initialKeyword,finalKeyword,input));
     }
 
     public String parser(String initialKeyword, String finalKeyword, String input){
