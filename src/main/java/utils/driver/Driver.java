@@ -14,7 +14,7 @@ public class Driver extends WebComponent {
 
 	public void setup(String browserName){
 		log.new info("Initializing driver");
-		driver = DriverFactory.driverSetup(browserName, driver);
+		driver = DriverFactory.getDriver(browserName, driver);
 		assert driver != null;
 		wait = new WebDriverWait(driver, 15);
 	}

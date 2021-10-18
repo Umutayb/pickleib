@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>bora</groupId>
-  <artifactId>POM-Framework</artifactId>
-  <version>0.3.2</version>
+  <groupId>com.github.Umutayb</groupId>
+  <artifactId>Pickleib</artifactId>
+  <version>0.4.0</version>
   <packaging>jar</packaging>
 
-  <name>Page Object Model Automation Framework (Cucumber)</name>
+  <name>Pickleib</name>
   <url>http://github.com/Umutayb/Pickleib</url>
 
   <properties>

@@ -18,18 +18,16 @@ import java.util.concurrent.TimeUnit;
 
 public class DriverFactory {
 
-    private static final Printer log = new Printer(Driver.class);
+    private static final Printer log = new Printer(DriverFactory.class);
 
-    public static RemoteWebDriver driverSetup(String driverName, RemoteWebDriver driver){
+    public static RemoteWebDriver getDriver(String driverName, RemoteWebDriver driver){
         Properties properties = new Properties();
         StringUtilities strUtils = new StringUtilities();
         try {
-
             properties.load(new FileReader("src/test/resources/test.properties"));
 
-            DesiredCapabilities capabilities = null;
-
             if (Boolean.parseBoolean(properties.getProperty("selenium.grid"))){
+                DesiredCapabilities capabilities;
 
                 switch (driverName.toLowerCase()){
                     case "chrome":
@@ -53,6 +51,7 @@ public class DriverFactory {
                         break;
 
                     default:
+                        capabilities = null;
                         Assert.fail(YELLOW+"The driver type \""+driverName+"\" was undefined."+RESET);
                 }
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub.url")), capabilities);
@@ -86,7 +85,7 @@ public class DriverFactory {
 
         }catch (Exception gamma) {
             if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){
-                System.out.println(GRAY+"Please make sure the "+PURPLE+"Selenium Grid "+GRAY+"is on & verify the port that its running on at 'resources/test.properties'."+RESET);
+                log.new info("Please make sure the "+PURPLE+"Selenium Grid "+GRAY+"is on & verify the port that its running on at 'resources/test.properties'."+RESET);
                 Assert.fail(YELLOW+gamma+RESET);
             }
             else {

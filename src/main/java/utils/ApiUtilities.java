@@ -6,15 +6,11 @@ import io.restassured.specification.RequestSpecification;
 import org.junit.Assert;
 import resources.Database;
 import java.io.File;
-import java.io.FileReader;
-import java.util.Properties;
 import static resources.Colors.*;
 
 public class ApiUtilities {
 
     JsonUtilities jsonUtilities = new JsonUtilities();
-    Properties properties = new Properties();
-    Database database = new Database();
 
     public Response performApiCall(String requestType, String url, String uri, Object input, Boolean inputRequired){
 
@@ -40,7 +36,7 @@ public class ApiUtilities {
 
                     printStatusCode(response);
 
-                    database.serverResponse = jsonUtilities.str2json(response.asString());
+                    Database.serverResponse = jsonUtilities.str2json(response.asString());
 
                     return response;
 
@@ -50,8 +46,8 @@ public class ApiUtilities {
                     printStatusCode(response);
 
                     if(response.getStatusCode()==200){
-                        database.contextJSON = jsonUtilities.str2json(response.asString());
-                        database.serverResponse = jsonUtilities.str2json(response.asString());
+                        Database.contextJSON = jsonUtilities.str2json(response.asString());
+                        Database.serverResponse = jsonUtilities.str2json(response.asString());
 
                     }
 
@@ -69,7 +65,7 @@ public class ApiUtilities {
 
                     printStatusCode(response);
 
-                    database.serverResponse = jsonUtilities.str2json(response.asString());
+                    Database.serverResponse = jsonUtilities.str2json(response.asString());
 
                     return response;
 
@@ -80,7 +76,7 @@ public class ApiUtilities {
 
                     printStatusCode(response);
 
-                    database.serverResponse = jsonUtilities.str2json(response.asString());
+                    Database.serverResponse = jsonUtilities.str2json(response.asString());
 
                     return response;
 
@@ -118,13 +114,13 @@ public class ApiUtilities {
 
         printStatusCode(response);
 
-        database.serverResponse = jsonUtilities.str2json(response.asString());
+        Database.serverResponse = jsonUtilities.str2json(response.asString());
 
         return response;
 
     }
 
-    public static int printStatusCode(Response response){
+    public static void printStatusCode(Response response){
         if (response.getStatusCode()==200)
             System.out.println(GRAY+"Server response: "+GREEN+response.getStatusCode()+RESET);
         else if (response.getStatusCode()==500)
@@ -134,7 +130,7 @@ public class ApiUtilities {
         else
             System.out.println(GRAY+"Server response: "+BLUE_BACKGROUND+response.getStatusCode()+RESET);
 
-        return response.getStatusCode();
+        response.getStatusCode();
     }
 
 }

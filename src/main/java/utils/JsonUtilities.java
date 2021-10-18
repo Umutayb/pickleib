@@ -17,7 +17,6 @@ import java.io.IOException;
 public class JsonUtilities {
 
     public JSONObject urlsJson = new JSONObject();
-
     public JSONObject notificationJson = new JSONObject();
 
     FileUtilities fileUtil = new FileUtilities();
