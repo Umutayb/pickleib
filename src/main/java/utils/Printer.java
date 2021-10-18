@@ -1,8 +1,12 @@
 package utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import resources.Colors;
 
 public class Printer extends Colors {
+
+    Log log = LogFactory.getLog(Printer.class);
 
     public void print(Object text, String type){
         switch (type.toLowerCase()){
@@ -27,5 +31,5 @@ public class Printer extends Colors {
         }
     }
 
-    public void report(Object text){System.out.println(text);}
+    public void report(Object text){log.info(text);}
 }
