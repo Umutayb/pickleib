@@ -10,17 +10,17 @@ public class Driver extends WebComponent {
 	public static RemoteWebDriver driver;
 	public static WebDriverWait wait;
 
-	Printer log = new Printer();
+	Printer log = new Printer(Driver.class);
 
 	public void setup(String browserName){
-		log.print("Initializing driver", "info");
+		log.new info("Initializing driver");
 		driver = DriverFactory.driverSetup(browserName, driver);
 		assert driver != null;
 		wait = new WebDriverWait(driver, 15);
 	}
 
 	public void teardown(){
-		log.print("Finalizing driver...", "info");
+		log.new info("Finalizing driver...");
 		driver.quit();
 	}
 }

@@ -7,6 +7,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import utils.Printer;
 import utils.StringUtilities;
 
 import java.io.FileReader;
@@ -16,6 +17,8 @@ import static resources.Colors.*;
 import java.util.concurrent.TimeUnit;
 
 public class DriverFactory {
+
+    private static final Printer log = new Printer(Driver.class);
 
     public static RemoteWebDriver driverSetup(String driverName, RemoteWebDriver driver){
         Properties properties = new Properties();
@@ -78,7 +81,7 @@ public class DriverFactory {
             }
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             driver.manage().window().maximize();
-            System.out.println(PURPLE+driverName+GRAY+" was selected"+RESET);
+            log.new important(driverName+GRAY+" was selected");
             return driver;
 
         }catch (Exception gamma) {

@@ -44,7 +44,7 @@ Is by adding Jitpack repository into the pom.xml, as well as the dependency for 
 </repositories>
 ```
 
-After updating your project, the quickstart library is ready to use.
+After updating your project, the quickstart library is ready to use. 
 ___
 ###How To Use:
 
@@ -200,3 +200,4 @@ ___
 >"-Dversion=1.0.0-SNAPSHOT"                 \
 >"-DinteractiveMode=false"
 >````
+[![](https://jitpack.io/v/Umutayb/Pickleib.svg)](https://jitpack.io/#Umutayb/Pickleib)

@@ -4,32 +4,46 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import resources.Colors;
 
+import javax.annotation.Nullable;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Properties;
+
 public class Printer extends Colors {
 
-    Log log = LogFactory.getLog(Printer.class);
+    private final Log log;
 
-    public void print(Object text, String type){
-        switch (type.toLowerCase()){
-            case "warning":
-                report(YELLOW+text+RESET);
-                return;
+    public <T> Printer(Class<T> className){log = LogFactory.getLog(className);}
 
-            case "success":
-                report(GREEN+text+RESET);
-                return;
-
-            case "error":
-                report(RED +text+RESET);
-                return;
-
-            case "info":
-                report(GRAY+text+RESET);
-                return;
-
-            default:
-                report(text);
-        }
+    public class important {
+        public important(Object text){report(PURPLE + text + RESET);}
     }
 
-    public void report(Object text){log.info(text);}
+    public class info {
+        public info(Object text) {report(GRAY + text + RESET);}
+    }
+
+    public class success {
+        public success(Object text){report(GREEN + text + RESET);}
+    }
+
+    public class warning {
+        public warning(Object text){report(YELLOW + text + RESET);}
+    }
+
+    public class error {
+        public error(Object text){report(RED + text + RESET);}
+    }
+
+    public void report(Object text){
+        Properties properties = new Properties();
+        try {properties.load(new FileReader("src/test/resources/test.properties"));}
+        catch (IOException e) {e.printStackTrace();}
+        if (Boolean.parseBoolean(properties.getProperty("enableLogging")))
+            log.info(text);
+        else
+            System.out.println(text);
+    }
 }
