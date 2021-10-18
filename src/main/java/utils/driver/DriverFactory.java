@@ -22,10 +22,11 @@ public class DriverFactory {
     public static RemoteWebDriver getDriver(String driverName, RemoteWebDriver driver){
         Properties properties = new Properties();
         StringUtilities strUtils = new StringUtilities();
-        if (driverName == null)
-            driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
         try {
             properties.load(new FileReader("src/test/resources/test.properties"));
+
+            if (driverName == null)
+                driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
 
             if (Boolean.parseBoolean(properties.getProperty("selenium.grid"))){
                 DesiredCapabilities capabilities;
