@@ -9,7 +9,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import utils.Printer;
 import utils.StringUtilities;
-
 import java.io.FileReader;
 import java.net.URL;
 import java.util.Properties;
@@ -23,6 +22,8 @@ public class DriverFactory {
     public static RemoteWebDriver getDriver(String driverName, RemoteWebDriver driver){
         Properties properties = new Properties();
         StringUtilities strUtils = new StringUtilities();
+        if (driverName == null)
+            driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
         try {
             properties.load(new FileReader("src/test/resources/test.properties"));
 
@@ -57,7 +58,6 @@ public class DriverFactory {
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub.url")), capabilities);
             }
             else {
-                driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
                 switch (driverName.toLowerCase()){
                     case "chrome":
                         ChromeOptions chromeOptions = new ChromeOptions();
