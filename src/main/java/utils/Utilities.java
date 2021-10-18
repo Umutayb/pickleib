@@ -62,7 +62,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
                     break;
 
                 default:
-                    Assert.fail("No such direction was defined in -navigateBrowser- method.");
+                    Assert.fail(GRAY+"No such direction was defined in -navigateBrowser- method."+RESET);
             }
 
         }catch (Exception gamma){
@@ -80,7 +80,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             centerElement(waitUntilElementIsClickable(element, System.currentTimeMillis())).click();
 
         }catch (ElementNotFoundException e){
-            Assert.fail(e.getMessage());
+            Assert.fail(GRAY+e.getMessage()+RESET);
         }
     }
 
@@ -94,7 +94,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
                 Assert.assertEquals(inputElement.getAttribute("value"), inputText);
 
         }catch (ElementNotFoundException e){
-            Assert.fail(e.getMessage());
+            Assert.fail(GRAY+e.getMessage()+RESET);
         }
 
     }
@@ -111,6 +111,16 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
         catch (StaleElementReferenceException stale){
             hoverOver(element, startTime);
         }
+    }
+
+    public void loopAndClick(List<WebElement> list,String buttonName){
+        for (WebElement item:list) {
+            if (item.getText().contains(buttonName)){
+                click(item);
+                return;
+            }
+        }
+        Assert.fail(GRAY+"No button called "+buttonName+" was found."+RESET);
     }
 
     public String switchWindowHandle(String handle){
@@ -144,7 +154,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             return driver.findElement(By.xpath("//*[text()='" +elementText+ "']"));
 
         }catch (ElementNotFoundException e){
-            Assert.fail(e.getMessage());
+            Assert.fail(GRAY+e.getMessage()+RESET);
             return null;
         }
     }
@@ -188,7 +198,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             Thread.sleep((long) (seconds* 1000L));
         }
         catch (InterruptedException exception){
-            Assert.fail(exception.getLocalizedMessage());
+            Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);
         }
     }
 
@@ -318,12 +328,12 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
                 break;
 
             default:
-                Assert.fail("No such locator type was defined in Helper.java @verifyAbsenceOfElementLocatedBy.");
+                Assert.fail(GRAY+"No such locator type was defined in Helper.java @verifyAbsenceOfElementLocatedBy."+RESET);
                 return null;
         }
 
         if ((System.currentTimeMillis() - startTime) > 15000){
-            Assert.fail("An element was located unexpectedly");
+            Assert.fail(GRAY+"An element was located unexpectedly"+RESET);
             return elements;
         }
 
@@ -341,7 +351,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             List<WebElement> elementPresence = driver.findElements(By.xpath(generateXPath(element,"")));
             while (elementPresence.size()>0){
                 if ((System.currentTimeMillis() - startTime) > 15000)
-                    Assert.fail("Loading animation was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds.");
+                    Assert.fail(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
                 elementPresence = subDriver.findElements(By.xpath(generateXPath(element,"")));
             }
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
@@ -350,7 +360,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             if (System.currentTimeMillis()-startTime<=15000)
                 waitUntilElementIsNoLongerPresent(element, startTime);
             else
-                Assert.fail("Loading animation was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds.");
+                Assert.fail(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
         }
         catch (NoSuchElementException | IllegalArgumentException ignored){
             log.new success("The element is no longer present!");
