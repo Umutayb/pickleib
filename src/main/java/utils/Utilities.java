@@ -1,6 +1,7 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.interactions.Actions;
@@ -10,11 +11,13 @@ import org.json.simple.JSONObject;
 import static resources.Colors.*;
 import org.openqa.selenium.*;
 import org.junit.Assert;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.driver.Driver;
 import java.util.List;
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
-public abstract class Utilities extends Driver {
+public abstract class Utilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
 
     public Utilities(){PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);}
 
@@ -92,6 +95,32 @@ public abstract class Utilities extends Driver {
             Assert.fail(e.getMessage());
         }
 
+    }
+
+    public void hoverOver(WebElement element, long startTime){
+        if (System.currentTimeMillis()-startTime > 10000)
+            return;
+        Actions actions = new Actions(driver);
+        try {
+            actions.moveToElement(element)
+                    .build()
+                    .perform();
+        }
+        catch (StaleElementReferenceException stale){
+            hoverOver(element, startTime);
+        }
+    }
+
+    public String switchWindowHandle(String handle){
+        String parentWindowHandle = driver.getWindowHandle();
+        if (handle == null)
+            for (String windowHandle:driver.getWindowHandles()) {
+                if (!windowHandle.equalsIgnoreCase(parentWindowHandle))
+                    driver = (RemoteWebDriver) driver.switchTo().window((windowHandle));
+            }
+        else
+            driver = (RemoteWebDriver) driver.switchTo().window(handle);
+        return parentWindowHandle;
     }
 
     //This method clicks a button with a certain text on it
@@ -256,13 +285,19 @@ public abstract class Utilities extends Driver {
     }
 
     public WebElement waitUntilElementIsVisible(WebElement element, long startTime) {
-        if ((System.currentTimeMillis() - startTime) > 10000)
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        wait = new WebDriverWait(driver, 1);
+        if ((System.currentTimeMillis() - startTime) > 10000){
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            wait = new WebDriverWait(driver, 15);
             return null;
+        }
         try {
             wait.until(ExpectedConditions.visibilityOf(element));
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            wait = new WebDriverWait(driver, 15);
             return element;
-        } catch (StaleElementReferenceException e) {
-            System.out.println(e);
+        } catch (StaleElementReferenceException | TimeoutException e) {
             return waitUntilElementIsVisible(element, startTime);
         }
     }
@@ -297,6 +332,30 @@ public abstract class Utilities extends Driver {
             return null;
     }
 
+    public void waitUntilElementIsNoLongerPresent(WebElement element, long startTime){
+        try {
+            WebDriver subDriver = driver;
+            subDriver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+            List<WebElement> elementPresence = driver.findElements(By.xpath(generateXPath(element,"")));
+            while (elementPresence.size()>0){
+                if ((System.currentTimeMillis() - startTime) > 15000)
+                    Assert.fail("Loading animation was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds.");
+                elementPresence = subDriver.findElements(By.xpath(generateXPath(element,"")));
+            }
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        }
+        catch (StaleElementReferenceException exception) {
+            if (System.currentTimeMillis()-startTime<=15000)
+                waitUntilElementIsNoLongerPresent(element, startTime);
+            else
+                Assert.fail("Loading animation was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds.");
+        }
+        catch (NoSuchElementException | IllegalArgumentException ignored){
+            System.out.println(GRAY+"INFO: The element is no longer present!"+RESET);
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        }
+    }
+
     public WebElement waitUntilElementIsInvisible(WebElement element, long startTime) {
         if ((System.currentTimeMillis() - startTime) > 15000)
             return element;
@@ -309,13 +368,20 @@ public abstract class Utilities extends Driver {
     }
 
     public WebElement waitUntilElementIsClickable(WebElement element, long startTime) {
-        if ((System.currentTimeMillis() - startTime) > 10000)
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        wait = new WebDriverWait(driver, 1);
+        if ((System.currentTimeMillis() - startTime) > 15000){
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            wait = new WebDriverWait(driver, 15);
             return null;
+        }
         try {
             wait.until(ExpectedConditions.elementToBeClickable(element));
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            wait = new WebDriverWait(driver, 15);
             return element;
-        } catch (StaleElementReferenceException | ElementClickInterceptedException e) {
-            System.out.println(e);
+        } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
+            System.out.println(e.getMessage());
             return waitUntilElementIsClickable(element, startTime);
         }
     }

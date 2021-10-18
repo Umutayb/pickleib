@@ -2,24 +2,25 @@ package utils;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import java.text.Normalizer;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import static resources.Colors.*;
 
 public class StringUtilities {   //Utility methods
 
+    public String reverse(String input){
+        StringBuilder reversed = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {reversed.append(input.charAt(input.length() - i - 1));}
+        return reversed.toString();
+    }
+
     public String firstLetterCapped(String inputString){ //Capitalizes the first letter of the input string
 
-        String outputString;
         String firstLetter = inputString.substring(0, 1);
         String remainingLetters = inputString.substring(1);
         firstLetter = firstLetter.toUpperCase();
-        outputString = firstLetter + remainingLetters;
 
-        return outputString;
-
+        return firstLetter + remainingLetters;
     }
 
     public String cleanText(String inputString){ //Cleans the input string of spaces, numbers etc.

@@ -16,7 +16,7 @@ public class Driver extends WebComponent {
 		log.print("Initializing driver", "info");
 		driver = DriverFactory.driverSetup(browserName, driver);
 		assert driver != null;
-		wait = new WebDriverWait(driver, 10);
+		wait = new WebDriverWait(driver, 15);
 	}
 
 	public void teardown(){

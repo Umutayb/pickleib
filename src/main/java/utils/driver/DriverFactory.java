@@ -73,7 +73,7 @@ public class DriverFactory {
                         return null ;
                 }
             }
-            driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             driver.manage().window().maximize();
             System.out.println(PURPLE+driverName+GRAY+" was selected"+RESET);
             return driver;
