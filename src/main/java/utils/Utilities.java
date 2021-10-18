@@ -296,22 +296,20 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
     }
 
-    public WebElement waitUntilElementIsVisible(WebElement element, long startTime) {
+    public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
-        wait = new WebDriverWait(driver, 1);
-        if ((System.currentTimeMillis() - startTime) > 10000){
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            wait = new WebDriverWait(driver, 15);
+        if (System.currentTimeMillis()-initialTime>15000){
+            driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
             return null;
         }
         try {
-            wait.until(ExpectedConditions.visibilityOf(element));
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            wait = new WebDriverWait(driver, 15);
-            return element;
-        } catch (StaleElementReferenceException | TimeoutException e) {
-            return waitUntilElementIsVisible(element, startTime);
+            if (!element.isDisplayed()){waitUntilElementIsVisible(element, initialTime);}
         }
+        catch (StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
+            waitUntilElementIsVisible(element, initialTime);
+        }
+        driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+        return element;
     }
 
     public List<WebElement> verifyAbsenceOfElementLocatedBy(String locatorType, String locator, long startTime){
@@ -379,23 +377,20 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
         }
     }
 
-    public WebElement waitUntilElementIsClickable(WebElement element, long startTime) {
+    public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
-        wait = new WebDriverWait(driver, 1);
-        if ((System.currentTimeMillis() - startTime) > 15000){
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            wait = new WebDriverWait(driver, 15);
+        if (System.currentTimeMillis()-initialTime>15000){
+            driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
             return null;
         }
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(element));
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            wait = new WebDriverWait(driver, 15);
-            return element;
-        } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
-            log.new info(e.getMessage());
-            return waitUntilElementIsClickable(element, startTime);
+            if (!element.isEnabled()){waitUntilElementIsClickable(element, initialTime);}
         }
+        catch (StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
+            waitUntilElementIsClickable(element, initialTime);
+        }
+        driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+        return element;
     }
 
     public void clickWithJS(WebElement webElement) {
