@@ -16,11 +16,15 @@ public class StringUtilities {   //Utility methods
 
     public String firstLetterCapped(String inputString){ //Capitalizes the first letter of the input string
 
-        String firstLetter = inputString.substring(0, 1);
-        String remainingLetters = inputString.substring(1);
-        firstLetter = firstLetter.toUpperCase();
+        if (inputString!=null){
+            String firstLetter = inputString.substring(0, 1);
+            String remainingLetters = inputString.substring(1);
+            firstLetter = firstLetter.toUpperCase();
 
-        return firstLetter + remainingLetters;
+            return firstLetter + remainingLetters;
+        }
+        else
+            return null;
     }
 
     public String cleanText(String inputString){ //Cleans the input string of spaces, numbers etc.
