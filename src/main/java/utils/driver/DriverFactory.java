@@ -7,6 +7,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import utils.StringUtilities;
+
 import java.io.FileReader;
 import java.net.URL;
 import java.util.Properties;
@@ -15,9 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 public class DriverFactory {
 
-    public static Properties properties = new Properties();
-
     public static RemoteWebDriver driverSetup(String driverName, RemoteWebDriver driver){
+        Properties properties = new Properties();
+        StringUtilities strUtils = new StringUtilities();
         try {
 
             properties.load(new FileReader("src/test/resources/test.properties"));
@@ -53,7 +55,8 @@ public class DriverFactory {
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub.url")), capabilities);
             }
             else {
-                switch (properties.getProperty("browser").toLowerCase()){
+                driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
+                switch (driverName.toLowerCase()){
                     case "chrome":
                         ChromeOptions chromeOptions = new ChromeOptions();
                         chromeOptions.addArguments("disable-notifications");

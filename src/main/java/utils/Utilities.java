@@ -1,6 +1,8 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -21,6 +23,8 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
     public Utilities(){PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);}
 
+    Log log = LogFactory.getLog(Utilities.class);
+
     StringUtilities strUtils = new StringUtilities();
     NumericUtilities numeric = new NumericUtilities();
 
@@ -29,7 +33,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     public String navigate(String url){
         try {
 
-            System.out.println(GRAY+"Navigating to "+RESET+BLUE+url+RESET);
+            log.info(GRAY+"Navigating to "+RESET+BLUE+url+RESET);
 
             if (!url.contains("http"))
                 url = "https://"+url;
@@ -48,7 +52,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     public void navigateBrowser(String direction){
         try {
 
-            System.out.println(GRAY+"Navigating "+direction+RESET);
+            log.info(GRAY+"Navigating "+direction+RESET);
 
             switch (direction.toLowerCase()){
                 case "forward":
@@ -181,7 +185,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     //This method makes the thread wait for a certain while
     public void waitFor(double seconds){
         if (seconds > 1)
-            System.out.println(GRAY+"Waiting for "+BLUE+seconds+GRAY+" seconds"+RESET);
+            log.info(GRAY+"Waiting for "+BLUE+seconds+GRAY+" seconds"+RESET);
         try {
             Thread.sleep((long) (seconds* 1000L));
         }
@@ -226,7 +230,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     public void printElementAttributes(WebElement element){
         JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
         for (Object attribute : attributeJSON.keySet()) {
-            System.out.println(attribute +" : "+ attributeJSON.get(attribute));
+            log.info(attribute +" : "+ attributeJSON.get(attribute));
         }
     }
 
@@ -351,7 +355,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
                 Assert.fail("Loading animation was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds.");
         }
         catch (NoSuchElementException | IllegalArgumentException ignored){
-            System.out.println(GRAY+"INFO: The element is no longer present!"+RESET);
+            log.info(GRAY+"INFO: The element is no longer present!"+RESET);
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         }
     }
@@ -381,7 +385,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             wait = new WebDriverWait(driver, 15);
             return element;
         } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
-            System.out.println(e.getMessage());
+            log.info(e.getMessage());
             return waitUntilElementIsClickable(element, startTime);
         }
     }
@@ -400,21 +404,21 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
         try {
             return element.isDisplayed();
         } catch (Exception e) {
-            System.out.println(e);
+            log.info(e);
             return elementIsDisplayed(element, startTime);
         }
     }
 
     public void captureScreen(String specName) {
         try {
-            System.out.println(GRAY+"Capturing page"+RESET);
+            log.info(GRAY+"Capturing page"+RESET);
 
             String name = specName+"#"+numeric.randomNumber(1,10000)+".jpg";
             File sourceFile = new File("Screenshots");
             File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(fileDestination, new File(sourceFile, name));
 
-            System.out.println(GRAY+"Screenshot saved as; "+name+" at the \"Screenshots\" file."+RESET);
+            log.info(GRAY+"Screenshot saved as; "+name+" at the \"Screenshots\" file."+RESET);
 
         }catch (Exception gamma){
             Assert.fail(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET);
