@@ -164,11 +164,11 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
         centerElement(element);
 
-        Actions builder = new Actions(driver);
-        builder.moveToElement(element)
-                .clickAndHold(element)
-                .dragAndDropBy
-                        (element, xOffset, yOffset)
+        Actions action = new Actions(driver);
+        action.moveToElement(element,0,0)
+                .clickAndHold()
+                .moveToElement(element)
+                .release()
                 .build()
                 .perform();
         waitFor(0.5);
