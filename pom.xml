@@ -6,7 +6,7 @@
 
   <groupId>com.github.Umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>0.4.6</version>
+  <version>0.4.7</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>

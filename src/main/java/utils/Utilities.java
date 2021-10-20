@@ -160,14 +160,43 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     }
 
     //This method performs click, hold, drag and drop action on a certain element
+    public void dragDropToAction(WebElement element, WebElement destinationElement){
+
+        centerElement(element);
+
+        Actions action = new Actions(driver);
+        action.moveToElement(element)
+                .clickAndHold(element)
+                .moveToElement(destinationElement)
+                .release()
+                .build()
+                .perform();
+        waitFor(0.5);
+    }
+
+    //This method performs click, hold, dragAndDropBy action on at a certain offset
+    public void dragDropByAction(WebElement element, int xOffset, int yOffset){
+
+        centerElement(element);
+
+        Actions action = new Actions(driver);
+        action.moveToElement(element)
+                .clickAndHold(element)
+                .dragAndDropBy(element, xOffset, yOffset)
+                .build()
+                .perform();
+        waitFor(0.5);
+    }
+
+    //This method performs click, hold, drag and drop action on at a certain offset
     public void dragDropAction(WebElement element, int xOffset, int yOffset){
 
         centerElement(element);
 
         Actions action = new Actions(driver);
-        action.moveToElement(element,0,0)
-                .clickAndHold()
-                .moveToElement(element)
+        action.moveToElement(element)
+                .clickAndHold(element)
+                .moveToElement(element,xOffset,yOffset)
                 .release()
                 .build()
                 .perform();

@@ -4,20 +4,21 @@ import java.util.Scanner;
 
 public class TextParser {
 
-    public static void main(String[] args) {        //Sample execution
+    public static void main(String[] args) {//Sample execution
+        Printer log = new Printer(TextParser.class);
+        TextParser textParser = new TextParser();
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter the input");
+        log.new important("Enter the input");
         String input = scanner.nextLine(); // "ajsKAagq5J3w._CoolButton-sg-j3yaG3 a3TGb"
-        System.out.println("Enter the first keyword"); //._
+        log.new important("Enter the first keyword"); //._
         String initialKeyword = scanner.nextLine();
-        System.out.println("Enter the final keyword"); // -
+        log.new important("Enter the final keyword"); // -
         String finalKeyword = scanner.nextLine();
         scanner.close();
-        TextParser textParser = new TextParser();
-        System.out.println(textParser.parser(initialKeyword,finalKeyword,input));
+        log.new important(textParser.parse(initialKeyword,finalKeyword,input));
     }
 
-    public String parser(String initialKeyword, String finalKeyword, String input){
+    public String parse(String initialKeyword, String finalKeyword, String input){
         int firstIndex = 0;
 
         Scanner scanner = new Scanner(input);

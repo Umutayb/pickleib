@@ -11,6 +11,7 @@ import static resources.Colors.*;
 public class ApiUtilities {
 
     JsonUtilities jsonUtilities = new JsonUtilities();
+    Printer log = new Printer(StringUtilities.class);
 
     public Response performApiCall(String requestType, String url, String uri, Object input, Boolean inputRequired){
 
@@ -20,7 +21,7 @@ public class ApiUtilities {
 
         String requestUrl = "https://"+url+uri;
 
-        System.out.println(GRAY+"Performing "+BLUE+requestType+GRAY+" request at: \""+BLUE+requestUrl+GRAY+"\""+RESET);
+        log.new info("Performing "+BLUE+requestType+GRAY+" request at: \""+BLUE+requestUrl+GRAY+"\""+RESET);
 
         try{
             switch (requestType.toLowerCase()){
@@ -81,8 +82,7 @@ public class ApiUtilities {
                     return response;
 
                 default:
-                    System.out.println("Undefined request type: "+requestType);
-                    Assert.fail();
+                    Assert.fail("Undefined request type: "+requestType);
                     return null;
 
             }
@@ -101,7 +101,7 @@ public class ApiUtilities {
 
         String requestUrl = "https://"+url+uri;
 
-        System.out.println(GRAY+"Performing "+BLUE+"post"+GRAY+" request at: \""+BLUE+requestUrl+GRAY+"\""+RESET);
+        log.new info("Performing "+BLUE+"post"+GRAY+" request at: \""+BLUE+requestUrl+GRAY+"\""+RESET);
 
         request = RestAssured.given().multiPart("file", new File(fileUrl), "image/jpeg");
 
@@ -120,17 +120,15 @@ public class ApiUtilities {
 
     }
 
-    public static void printStatusCode(Response response){
+    public void printStatusCode(Response response){
         if (response.getStatusCode()==200)
-            System.out.println(GRAY+"Server response: "+GREEN+response.getStatusCode()+RESET);
+            log.new info("Server response: "+GREEN+response.getStatusCode()+RESET);
         else if (response.getStatusCode()==500)
-            System.out.println(GRAY+"Server response: "+RED+response.getStatusCode()+RESET);
+            log.new info("Server response: "+RED+response.getStatusCode()+RESET);
         else if (response.getStatusCode()==404)
-            System.out.println(GRAY+"Server response: "+YELLOW+response.getStatusCode()+RESET);
+            log.new info("Server response: "+YELLOW+response.getStatusCode()+RESET);
         else
-            System.out.println(GRAY+"Server response: "+BLUE_BACKGROUND+response.getStatusCode()+RESET);
-
-        response.getStatusCode();
+            log.new info("Server response: "+BLUE_BACKGROUND+response.getStatusCode()+RESET);
     }
 
 }

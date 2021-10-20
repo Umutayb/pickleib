@@ -8,6 +8,8 @@ import static resources.Colors.*;
 
 public class StringUtilities {   //Utility methods
 
+    Printer log = new Printer(StringUtilities.class);
+
     public String reverse(String input){
         StringBuilder reversed = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {reversed.append(input.charAt(input.length() - i - 1));}
@@ -103,7 +105,7 @@ public class StringUtilities {   //Utility methods
                 else throw new Exception( "Second value of this pair was found to be null");
 
             }catch (Exception gamma){
-                System.out.println(GRAY+gamma+RESET);
+                log.new error(GRAY+gamma+RESET);
 
             }
 

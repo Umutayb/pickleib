@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class TerminalUtils {
+public class TerminalUtilities {
+
+    Printer log = new Printer(TerminalUtilities.class);
+
     public void runTerminalCommand(String command, String logText){
         try {
             String path = System.getProperty("user.dir");
@@ -18,7 +21,7 @@ public class TerminalUtils {
                 line = reader.readLine();
                 if (line.contains(logText)){
                     Thread.sleep(5000);
-                    System.out.println(line);
+                    log.new success(line);
                     break;
                 }
             }
