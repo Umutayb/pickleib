@@ -5,6 +5,7 @@ ___
 
 First, the library should be exported into an empty automation project. There are two ways of doing this.
 ###First Way: 
+
 [![](https://jitpack.io/v/Umutayb/Pickleib.svg)](https://jitpack.io/#Umutayb/Pickleib)
 
 The dependency can be acquired by adding Jitpack repository into the pom.xml, as well as the dependency for the library as:
