@@ -4,7 +4,28 @@ ___
 ###How To Get Started:
 
 First, the library should be exported into an empty automation project. There are two ways of doing this.
-###First Way:
+###First Way: 
+[![](https://jitpack.io/v/Umutayb/Pickleib.svg)](https://jitpack.io/#Umutayb/Pickleib)
+
+The dependency can be acquired by adding Jitpack repository into the pom.xml, as well as the dependency for the library as:
+```
+<dependencies>
+    <!-- Framework -->
+        <dependency>
+            <groupId>com.github.Umutayb</groupId>
+            <artifactId>Pickleib</artifactId>
+            <version>0.5.1</version>
+        </dependency>   
+</dependencies>
+        
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
+###Second Way:
 ```
 mvn clean package -DbuildDirectory=directory/to/project/lib
 ```
@@ -23,25 +44,6 @@ There, the imported jar file should be added as a dependency in pom.xml file of 
             <scope>system</scope>
             <type>jar</type>
         </dependency>
-```
-###Second Way:
-Is by adding Jitpack repository into the pom.xml, as well as the dependency for the library as:
-```
-<dependencies>
-    <!-- Framework -->
-        <dependency>
-            <groupId>com.github.Umutayb</groupId>
-            <artifactId>Pickleib</artifactId>
-            <version>0.0.4</version>
-        </dependency>   
-</dependencies>
-        
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
 ```
 
 After updating your project, the quickstart library is ready to use. 
@@ -200,4 +202,3 @@ ___
 >"-Dversion=1.0.0-SNAPSHOT"                 \
 >"-DinteractiveMode=false"
 >````
-[![](https://jitpack.io/v/Umutayb/Pickleib.svg)](https://jitpack.io/#Umutayb/Pickleib)
