@@ -1,21 +1,18 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
-import org.apache.commons.io.FileUtils;
+import java.util.concurrent.TimeUnit;
 import org.json.simple.JSONObject;
 import static resources.Colors.*;
 import org.openqa.selenium.*;
-import org.junit.Assert;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.driver.Driver;
+import org.junit.Assert;
 import java.util.List;
-import java.io.File;
-import java.util.concurrent.TimeUnit;
 
 public abstract class Utilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
 
@@ -438,23 +435,6 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
         } catch (Exception e) {
             log.new info(e);
             return elementIsDisplayed(element, startTime);
-        }
-    }
-
-    public void captureScreen(String specName) {
-        try {
-            log.new info("Capturing page");
-
-            String name = specName+"#"+numeric.randomNumber(1,10000)+".jpg";
-            File sourceFile = new File("Screenshots");
-            File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-            FileUtils.copyFile(fileDestination, new File(sourceFile, name));
-
-            log.new info("Screenshot saved as; "+name+" at the \"Screenshots\" file.");
-
-        }catch (Exception gamma){
-            Assert.fail(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET);
-            driver.quit();
         }
     }
 }

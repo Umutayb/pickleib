@@ -1,24 +1,21 @@
 package utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.parser.ParseException;
+import org.json.simple.parser.JSONParser;
+import java.io.FileNotFoundException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.junit.Assert;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import org.junit.Assert;
+import java.io.*;
 
 public class JsonUtilities {
 
     public JSONObject urlsJson = new JSONObject();
     public JSONObject notificationJson = new JSONObject();
-
     FileUtilities fileUtil = new FileUtilities();
 
     public void saveJson(JSONObject inputJson, String jsonName){
@@ -33,82 +30,6 @@ public class JsonUtilities {
             ObjectMapper mapper = new ObjectMapper();
 
             String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(inputJson);
-
-            if(file.toString().isEmpty())
-                file.write(String.valueOf(json));
-            else
-                file.append(String.valueOf(json));
-
-            file.close();
-
-        }catch (Exception gamma){
-            Assert.fail(String.valueOf(gamma));
-        }
-
-    }
-
-    public void saveProjectJson(JSONObject inputJson,
-                                       String jsonName, String pageName,
-                                       String  elementsUrl, String pageTitle){
-        try {
-            JSONObject attributeJson = new JSONObject();
-
-            ObjectMapper mapper = new ObjectMapper();
-
-            JSONObject settingsJson = new JSONObject();
-
-            settingsJson.put("send", "true");
-
-            JSONObject senderJson = new JSONObject();
-
-            senderJson.put("password", "Notifier1234");
-
-            senderJson.put("address", "umutayb.notification@gmail.com");
-
-            senderJson.put("id", "umutayb.notification@gmail.com");
-
-            JSONObject recipientJson = new JSONObject();
-
-            recipientJson.put("address","umutaybora@gmail.com");
-
-            notificationJson.put("settings", settingsJson);
-
-            notificationJson.put("sender", senderJson);
-
-            notificationJson.put("recipient", recipientJson);
-
-            JSONObject urlJson = new JSONObject();
-
-            urlJson.put("title", pageTitle);
-
-            urlJson.put("url", elementsUrl);
-
-            urlsJson.put("landing", urlJson);
-
-            attributeJson.put("Notification", notificationJson);
-
-            attributeJson.put("Elements", inputJson);
-
-            attributeJson.put("Urls", urlsJson);
-
-            JSONObject projectJson = new JSONObject();
-
-            if (fileUtil.verifyFilePresence("src/test/java/resources/database/"+jsonName+".JSON")){
-
-                projectJson = parseJSONFile(jsonName);
-
-                projectJson.put(pageName, attributeJson);
-
-            }
-            else {
-
-                projectJson.put(pageName, attributeJson);
-
-            }
-
-            FileWriter file = new FileWriter("src/test/java/resources/database/"+jsonName+".JSON");
-
-            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(projectJson);
 
             if(file.toString().isEmpty())
                 file.write(String.valueOf(json));

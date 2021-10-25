@@ -1,19 +1,23 @@
 package utils;
 
-import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import resources.Colors;
-
-import javax.annotation.Nullable;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Arrays;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.TakesScreenshot;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.apache.commons.logging.Log;
 import java.util.Properties;
+import java.io.IOException;
+import java.io.FileReader;
+import resources.Colors;
+import org.junit.Assert;
+import java.io.File;
 
 public class Printer extends Colors {
 
     private final Log log;
+
+    NumericUtilities numeric = new NumericUtilities();
 
     public <T> Printer(Class<T> className){log = LogFactory.getLog(className);}
 
@@ -45,5 +49,22 @@ public class Printer extends Colors {
             log.info(text);
         else
             System.out.println(text);
+    }
+
+    public void captureScreen(String specName, RemoteWebDriver driver) {
+        try {
+             new info("Capturing page");
+
+            String name = specName+"#"+numeric.randomNumber(1,10000)+".jpg";
+            File sourceFile = new File("Screenshots");
+            File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(fileDestination, new File(sourceFile, name));
+
+            new info("Screenshot saved as; "+name+" at the \"Screenshots\" file.");
+
+        }catch (Exception gamma){
+            Assert.fail(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET);
+            driver.quit();
+        }
     }
 }

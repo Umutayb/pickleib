@@ -1,17 +1,17 @@
 package utils;
 
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.junit.Assert;
-import resources.Database;
-import java.io.File;
+import io.restassured.response.Response;
+import io.restassured.RestAssured;
 import static resources.Colors.*;
+import resources.Database;
+import org.junit.Assert;
+import java.io.File;
 
 public class ApiUtilities {
 
     JsonUtilities jsonUtilities = new JsonUtilities();
-    Printer log = new Printer(StringUtilities.class);
+    Printer log = new Printer(ApiUtilities.class);
 
     public Response performApiCall(String requestType, String url, String uri, Object input, Boolean inputRequired){
 

@@ -7,6 +7,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariDriver;
+import org.openqa.selenium.safari.SafariOptions;
 import utils.Printer;
 import utils.StringUtilities;
 import java.io.FileReader;
@@ -40,14 +42,6 @@ public class DriverFactory {
                         capabilities = DesiredCapabilities.firefox();
                         break;
 
-                    case "safari":
-                        capabilities = DesiredCapabilities.safari();
-                        break;
-
-                    case "edge":
-                        capabilities = DesiredCapabilities.edge();
-                        break;
-
                     case "opera":
                         capabilities = DesiredCapabilities.operaBlink();
                         break;
@@ -73,6 +67,11 @@ public class DriverFactory {
                         System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
                         driver = new FirefoxDriver(firefoxOptions);
                         break;
+
+                    case "safari":
+                        SafariOptions safariOptions = new SafariOptions();
+                        System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
+                        driver = new SafariDriver(safariOptions);
 
                     default:
                         Assert.fail("No such driver was defined.");
