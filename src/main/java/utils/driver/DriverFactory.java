@@ -72,6 +72,7 @@ public class DriverFactory {
                         SafariOptions safariOptions = new SafariOptions();
                         System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
                         driver = new SafariDriver(safariOptions);
+                        break;
 
                     default:
                         Assert.fail("No such driver was defined.");
