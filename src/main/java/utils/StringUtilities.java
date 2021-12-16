@@ -1,6 +1,8 @@
 package utils;
 
 import org.apache.commons.lang3.RandomStringUtils;
+
+import java.io.IOException;
 import java.text.Normalizer;
 import java.util.*;
 
@@ -22,6 +24,19 @@ public class StringUtilities {   //Utility methods
             String firstLetter = inputString.substring(0, 1);
             String remainingLetters = inputString.substring(1);
             firstLetter = firstLetter.toUpperCase();
+
+            return firstLetter + remainingLetters;
+        }
+        else
+            return null;
+    }
+
+    public String firstLetterDeCapped(String inputString){ //Capitalizes the first letter of the input string
+
+        if (inputString!=null){
+            String firstLetter = inputString.substring(0, 1);
+            String remainingLetters = inputString.substring(1);
+            firstLetter = firstLetter.toLowerCase();
 
             return firstLetter + remainingLetters;
         }

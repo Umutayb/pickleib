@@ -1,5 +1,7 @@
 package utils.driver;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.WebDriver;
 import org.junit.Assert;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -56,21 +58,24 @@ public class DriverFactory {
                 switch (driverName.toLowerCase()){
                     case "chrome":
                         ChromeOptions chromeOptions = new ChromeOptions();
+                        WebDriverManager.chromedriver().setup();
                         chromeOptions.addArguments("disable-notifications");
-                        System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriver");
+//                        System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriver");
                         driver = new ChromeDriver(chromeOptions);
                         break;
 
                     case "firefox":
                         FirefoxOptions firefoxOptions = new FirefoxOptions();
+                        WebDriverManager.firefoxdriver().setup();
                         firefoxOptions.addArguments("disable-notifications");
-                        System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
+//                        System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
                         driver = new FirefoxDriver(firefoxOptions);
                         break;
 
                     case "safari":
                         SafariOptions safariOptions = new SafariOptions();
-                        System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
+                        WebDriverManager.safaridriver().setup();
+//                        System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
                         driver = new SafariDriver(safariOptions);
                         break;
 
@@ -84,14 +89,13 @@ public class DriverFactory {
             log.new important(driverName+GRAY+" was selected");
             return driver;
 
-        }catch (Exception gamma) {
+        }
+        catch (Exception gamma) {
             if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){
                 log.new info("Please make sure the "+PURPLE+"Selenium Grid "+GRAY+"is on & verify the port that its running on at 'resources/test.properties'."+RESET);
                 Assert.fail(YELLOW+gamma+RESET);
             }
-            else {
-                Assert.fail(YELLOW+"Something went wrong while selecting a driver "+"\n\t"+RED+gamma+RESET);
-            }
+            else {Assert.fail(YELLOW+"Something went wrong while selecting a driver "+"\n\t"+RED+gamma+RESET);}
             driver.quit();
             return null;
         }

@@ -27,26 +27,22 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
     public String navigate(String url){
         try {
-
             log.new info("Navigating to "+RESET+BLUE+url);
 
             if (!url.contains("http"))
                 url = "https://"+url;
 
             driver.get(url);
-
-        }catch (Exception gamma){
-
+        }
+        catch (Exception gamma){
             Assert.fail(YELLOW+"Unable to navigate to the \""+url+"\""+RESET);
             driver.quit();
-
         }
         return url;
     }
 
     public void navigateBrowser(String direction){
         try {
-
             log.new info("Navigating "+direction);
 
             switch (direction.toLowerCase()){
@@ -61,24 +57,17 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
                 default:
                     Assert.fail(GRAY+"No such direction was defined in -navigateBrowser- method."+RESET);
             }
-
-        }catch (Exception gamma){
-
+        }
+        catch (Exception ignored){
             Assert.fail(YELLOW+"Unable to navigate \""+direction+"\""+RESET);
             driver.quit();
-
         }
     }
 
     //This method clicks an element after waiting it and scrolling it to the center of the view
     public void clickElement(WebElement element){
-        try {
-
-            centerElement(waitUntilElementIsClickable(element, System.currentTimeMillis())).click();
-
-        }catch (ElementNotFoundException e){
-            Assert.fail(GRAY+e.getMessage()+RESET);
-        }
+        try {centerElement(waitUntilElementIsClickable(element, System.currentTimeMillis())).click();}
+        catch (ElementNotFoundException e){Assert.fail(GRAY+e.getMessage()+RESET);}
     }
 
     //This method is for filling an input field, it waits for the element, scrolls to it, clears it and then fills it
@@ -90,34 +79,30 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             if (verify)
                 Assert.assertEquals(inputElement.getAttribute("value"), inputText);
 
-        }catch (ElementNotFoundException e){
-            Assert.fail(GRAY+e.getMessage()+RESET);
         }
-
+        catch (ElementNotFoundException e){Assert.fail(GRAY+e.getMessage()+RESET);}
     }
 
-    public void hoverOver(WebElement element, long startTime){
-        if (System.currentTimeMillis()-startTime > 10000)
-            return;
+    public WebElement hoverOver(WebElement element, Long initialTime){
+        if (System.currentTimeMillis()-initialTime > 10000)
+            return null;
+        centerElement(element);
         Actions actions = new Actions(driver);
-        try {
-            actions.moveToElement(element)
-                    .build()
-                    .perform();
-        }
-        catch (StaleElementReferenceException stale){
-            hoverOver(element, startTime);
-        }
+        try{actions.moveToElement(element).build().perform();}
+        catch (StaleElementReferenceException ignored) {hoverOver(element,initialTime);}
+        return element;
     }
 
-    public void loopAndClick(List<WebElement> list,String buttonName){
-        for (WebElement item:list) {
-            if (item.getText().contains(buttonName)){
-                click(item);
-                return;
-            }
+    public void loopAndClick(List<WebElement> list,String buttonName){clickElement(loopNMatch(list,buttonName));}
+
+    public WebElement loopNMatch(List<WebElement> elementList, String itemText){
+        for (WebElement item:elementList) {
+            System.out.println(item.getText());
+            if (item.getText().equalsIgnoreCase(itemText) || item.getText().contains(itemText))
+                return item;
         }
-        Assert.fail(GRAY+"No button called "+buttonName+" was found."+RESET);
+        Assert.fail(GRAY+"Item could not be located!"+RESET);
+        return null;
     }
 
     public String switchWindowHandle(String handle){
@@ -147,10 +132,9 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     //This method returns an element with a certain text on it
     public WebElement getElementWithText(String elementText){
         try {
-
             return driver.findElement(By.xpath("//*[text()='" +elementText+ "']"));
-
-        }catch (ElementNotFoundException e){
+        }
+        catch (ElementNotFoundException e){
             Assert.fail(GRAY+e.getMessage()+RESET);
             return null;
         }
@@ -216,6 +200,12 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
     }
 
+    public Alert getAlert(){return driver.switchTo().alert();}
+
+    public void uploadFile(WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
+
+    public String combineKeys(Keys key1, Keys key2){return Keys.chord(key1,key2);}
+
     //This method makes the thread wait for a certain while
     public void waitFor(double seconds){
         if (seconds > 1)
@@ -238,7 +228,6 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
         ((JavascriptExecutor) driver).executeScript(scrollScript, element);
 
         waitFor(0.5);
-
         return element;
     }
 
@@ -270,9 +259,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
     public WebElement getParentByClass(WebElement childElement, String current, String parentSelectorClass) {
 
-        if (current == null) {
-            current = "";
-        }
+        if (current == null) {current = "";}
 
         String childTag = childElement.getTagName();
 
@@ -280,7 +267,6 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             return childElement;
 
         WebElement parentElement = childElement.findElement(By.xpath(".."));
-
         List<WebElement> childrenElements = parentElement.findElements(By.xpath("*"));
 
         int count = 0;
@@ -294,16 +280,12 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             }
 
         }
-
         return null;
-
     }
 
     public String generateXPath(WebElement childElement, String current) {
         String childTag = childElement.getTagName();
-        if (childTag.equals("html")) {
-            return "/html[1]" + current;
-        }
+        if (childTag.equals("html")) {return "/html[1]" + current;}
         WebElement parentElement = childElement.findElement(By.xpath(".."));
         List<WebElement> childrenElements = parentElement.findElements(By.xpath("*"));
         int count = 0;
@@ -315,11 +297,8 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             if (childElement.equals(childrenElement)) {
                 return generateXPath(parentElement, "/" + childTag + "[" + count + "]" + current);
             }
-
         }
-
         return null;
-
     }
 
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
@@ -360,10 +339,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             Assert.fail(GRAY+"An element was located unexpectedly"+RESET);
             return elements;
         }
-
-        if (elements.size() > 0){
-            return verifyAbsenceOfElementLocatedBy(locatorType, locator, startTime);
-        }
+        if (elements.size() > 0){return verifyAbsenceOfElementLocatedBy(locatorType, locator, startTime);}
         else
             return null;
     }
@@ -398,9 +374,8 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
         try {
             wait.until(ExpectedConditions.invisibilityOf(element));
             return null;
-        } catch (TimeoutException e) {
-            return waitUntilElementIsInvisible(element, startTime);
         }
+        catch (TimeoutException e) {return waitUntilElementIsInvisible(element, startTime);}
     }
 
     public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
