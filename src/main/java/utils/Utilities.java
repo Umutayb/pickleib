@@ -20,8 +20,15 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
     Printer log = new Printer(Utilities.class);
 
+    TextParser parser = new TextParser();
+    ApiUtilities apiUtils = new ApiUtilities();
+    EmailUtilities email = new EmailUtilities();
+    FileUtilities fileUtils = new FileUtilities();
+    JsonUtilities jsonUtils = new JsonUtilities();
+    XPathUtilities xpathUtils = new XPathUtilities();
     StringUtilities strUtils = new StringUtilities();
     NumericUtilities numeric = new NumericUtilities();
+    TerminalUtilities terminal = new TerminalUtilities();
 
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 

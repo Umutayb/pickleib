@@ -5,7 +5,7 @@ import static resources.Colors.*;
 
 //This is where the xPaths are being generated
 public class XPathUtilities {
-    public static String acquireXpath(String locatorType, String locatorID, String specificClass, String secondaryLocatorType, String secondaryLocatorID){
+    public  String acquireXpath(String locatorType, String locatorID, String specificClass, String secondaryLocatorType, String secondaryLocatorID){
 
         String xPath = pathTemplateSwitch(locatorType, locatorID, false);
 
@@ -23,7 +23,7 @@ public class XPathUtilities {
         return xPath;
     }
 
-    static String pathTemplateSwitch(String locatorType, String locatorID, Boolean strict){
+     String pathTemplateSwitch(String locatorType, String locatorID, Boolean strict){
 
         String xPath;
 
