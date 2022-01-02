@@ -61,8 +61,7 @@ public class DriverFactory {
                         WebDriverManager.chromedriver().setup();
                         chromeOptions.addArguments("disable-notifications");
 //                        System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriver");
-                        if (Boolean.parseBoolean(properties.getProperty("headless")))
-                            chromeOptions.setHeadless(true);
+                        chromeOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless")));
                         driver = new ChromeDriver(chromeOptions);
                         break;
 
@@ -71,8 +70,7 @@ public class DriverFactory {
                         WebDriverManager.firefoxdriver().setup();
                         firefoxOptions.addArguments("disable-notifications");
 //                        System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
-                        if (Boolean.parseBoolean(properties.getProperty("headless")))
-                            firefoxOptions.setHeadless(true);
+                        firefoxOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless")));
                         driver = new FirefoxDriver(firefoxOptions);
                         break;
 
