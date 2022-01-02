@@ -4,7 +4,12 @@ import java.util.List;
 
 public class ClassSnippet {
     String snippet =
-            "public class %className% extends Utilities {\n" +
+            "package utils.classes;\n" +
+                    "import org.openqa.selenium.WebElement;\n" +
+                    "import org.openqa.selenium.support.FindBy;\n" +
+                    "import utils.Printer;\n" +
+                    "import utils.Utilities;\n" +
+                    "public class %className% extends Utilities {\n" +
             "//%Objects%" +
             "//%Elements%" +
             "//%Methods%" +

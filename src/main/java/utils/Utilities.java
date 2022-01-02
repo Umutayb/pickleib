@@ -21,17 +21,18 @@ import java.util.List;
 
 public abstract class Utilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
 
-    TextParser parser = new TextParser();
-    Properties properties = new Properties();
     Printer log = new Printer(Utilities.class);
-    EmailUtilities email = new EmailUtilities();
-    FileUtilities fileUtils = new FileUtilities();
-    JsonUtilities jsonUtils = new JsonUtilities();
-    XPathUtilities xpathUtils = new XPathUtilities();
-    StringUtilities strUtils = new StringUtilities();
-    NumericUtilities numeric = new NumericUtilities();
-    TerminalUtilities terminal = new TerminalUtilities();
-    ApiUtilities apiUtils = new ApiUtilities(properties.getProperty("default.url"),properties.getProperty("default.uri"));
+
+    public TextParser parser = new TextParser();
+    public Properties properties = new Properties();
+    public EmailUtilities email = new EmailUtilities();
+    public FileUtilities fileUtils = new FileUtilities();
+    public JsonUtilities jsonUtils = new JsonUtilities();
+    public XPathUtilities xpathUtils = new XPathUtilities();
+    public StringUtilities strUtils = new StringUtilities();
+    public NumericUtilities numeric = new NumericUtilities();
+    public TerminalUtilities terminal = new TerminalUtilities();
+    public ApiUtilities apiUtils = new ApiUtilities(properties.getProperty("default.url"),properties.getProperty("default.uri"));
 
     public Utilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);

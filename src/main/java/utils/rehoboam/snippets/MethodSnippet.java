@@ -1,14 +1,12 @@
 package utils.rehoboam.snippets;
 
+import utils.rehoboam.snippets.methods.ClickMethod;
+
 public class MethodSnippet {
-    String snippet =
-            "     public void click%elementName%(){\n" +
-            "          log.new info(\"Clicking %elementName% button\");\n" +
-            "          clickElement(%elementName%Button);\n" +
-            "     }\n";
+    String snippet;
 
     public MethodSnippet(String elementName){
-        snippet = snippet.replace("%elementName%",elementName);
+        snippet = new ClickMethod(elementName).getClickSnippet();
     }
 
     public String getSnippet(){return snippet;}

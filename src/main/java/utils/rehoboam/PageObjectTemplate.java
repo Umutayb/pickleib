@@ -35,7 +35,7 @@ public class PageObjectTemplate {
             " }";
 
     public static void main(String[] args) throws IOException {
-        PageObjectTemplate strutils = new PageObjectTemplate();
+        PageObjectTemplate strUtils = new PageObjectTemplate();
         List<ElementSnippet> elementSnippet = Collections.singletonList(new ElementSnippet(
                 "css",
                 "[id='permanentAddress']",
