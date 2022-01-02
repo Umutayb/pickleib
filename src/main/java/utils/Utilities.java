@@ -6,6 +6,11 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.json.simple.JSONObject;
 import static resources.Colors.*;
@@ -16,12 +21,9 @@ import java.util.List;
 
 public abstract class Utilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
 
-    public Utilities(){PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);}
-
-    Printer log = new Printer(Utilities.class);
-
     TextParser parser = new TextParser();
-    ApiUtilities apiUtils = new ApiUtilities();
+    Properties properties = new Properties();
+    Printer log = new Printer(Utilities.class);
     EmailUtilities email = new EmailUtilities();
     FileUtilities fileUtils = new FileUtilities();
     JsonUtilities jsonUtils = new JsonUtilities();
@@ -29,6 +31,13 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     StringUtilities strUtils = new StringUtilities();
     NumericUtilities numeric = new NumericUtilities();
     TerminalUtilities terminal = new TerminalUtilities();
+    ApiUtilities apiUtils = new ApiUtilities(properties.getProperty("default.url"),properties.getProperty("default.uri"));
+
+    public Utilities(){
+        PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
+        try {properties.load(new FileReader("src/test/resources/test.properties"));}
+        catch (IOException e) {e.printStackTrace();}
+    }
 
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 

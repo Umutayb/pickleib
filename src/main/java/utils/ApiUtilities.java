@@ -13,7 +13,15 @@ public class ApiUtilities {
     JsonUtilities jsonUtilities = new JsonUtilities();
     Printer log = new Printer(ApiUtilities.class);
 
-    public Response performApiCall(String requestType, String url, String uri, Object input, Boolean inputRequired){
+    String url;
+    String uri;
+
+    public ApiUtilities(String url, String uri){
+        this.url = url;
+        this.uri = uri;
+    }
+
+    public Response performApiCall(String requestType, Object input, Boolean inputRequired){
 
         Response response = null;
 
