@@ -78,8 +78,8 @@ public class DriverFactory {
 
                     case "safari":
                         SafariOptions safariOptions = new SafariOptions();
-                        WebDriverManager.safaridriver().setup();
-//                        System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
+//                        WebDriverManager.safaridriver().setup();
+                        System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
                         driver = new SafariDriver(safariOptions);
                         break;
 
