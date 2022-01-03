@@ -55,7 +55,7 @@ public class EmailUtilities {
 
             log.new info("Sending...");
             Transport.send(message);// Send message
-            log.new success("Sent message successfully....");
+            log.new success("Sent message successfully!");
         }
         catch (MessagingException mex) {log.new error(mex.getMessage());}
     }
