@@ -1,5 +1,6 @@
 package utils;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,5 +61,10 @@ public class NumericUtilities {
         largestNumberMap.put("number", smallestNumber);
         largestNumberMap.put("index", smallestNumberIndex);
         return largestNumberMap;
+    }
+
+    public Double shortenDouble(Double number){
+        DecimalFormat formatter = new DecimalFormat("#.##");
+        return Double.parseDouble(formatter.format(number));
     }
 }

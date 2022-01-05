@@ -11,7 +11,7 @@ public class EmailUtilities {
 
     public static void main(String[] args) {}
 
-    public void sendEmail(String subject, String content, String receiver, String ID, String Password) {
+    public void sendEmail(String subject, String content, String receiver, String ID, String Password, Multipart attachment) {
 
         // Assuming you are sending email from through gmail's smtp
         String host = "smtp.gmail.com";
@@ -51,7 +51,9 @@ public class EmailUtilities {
             message.setSubject(subject);
 
             // Now set the actual message
-            message.setText(content);
+            message.setText(content+"\n");
+            if (attachment!=null)
+                message.setContent(attachment);
 
             log.new info("Sending...");
             Transport.send(message);// Send message
