@@ -14,7 +14,7 @@ public class ScreenCaptureUtility {
     Printer log = new Printer(ScreenCaptureUtility.class);
     NumericUtilities numeric = new NumericUtilities();
 
-    public void captureScreen(String specName, RemoteWebDriver driver) {
+    public File captureScreen(String specName, RemoteWebDriver driver) {
         try {
             log.new info("Capturing page");
 
@@ -24,10 +24,12 @@ public class ScreenCaptureUtility {
             FileUtils.copyFile(fileDestination, new File(sourceFile, name));
 
             log.new info("Screenshot saved as; "+name+" at the \"Screenshots\" file.");
+            return fileDestination;
         }
         catch (Exception gamma){
             Assert.fail(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET);
             driver.quit();
+            return null;
         }
     }
 }
