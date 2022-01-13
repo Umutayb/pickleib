@@ -134,8 +134,8 @@ ___
     </plugin>
 ```
 ___ 
->It is recommended to use ***Cucumber JVM Parallel Plugin*** which allows you to execute tests simultaneously on parallel.
-> If you would like to do that, add plugin:
+It is recommended to use ***Cucumber JVM Parallel Plugin*** which allows you to execute tests simultaneously on parallel.
+If you would like to do that, add:
 
 ```xml
           
