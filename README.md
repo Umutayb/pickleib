@@ -188,7 +188,8 @@ ___
                     </includes>
                 </configuration>
             </plugin>
-           ```
+
+       ```
  
 #### Example execution command:
 >In order to execute a specific feature file in a specific browser, use:
