@@ -26,12 +26,12 @@ The dependency can be acquired by adding Jitpack repository into the pom.xml, as
     </repository>
 </repositories>
 ```
-###Second Way:
+### Second Way:
 ```shell
 mvn clean package -DbuildDirectory=directory/to/project/lib
 ```
 For instance:
-```mvn
+```shell
 mvn clean package -DbuildDirectory=/Users/Umut/Github/Web-Automation-Sample-Cucumber/lib
 ```
 There, the imported jar file should be added as a dependency in pom.xml file of that project:
@@ -56,14 +56,14 @@ compatible with page object model design. The infrastructure allows easy initial
 within a constructor inside the **Utilities** class. In order to initialize elements inside a page class, all it takes is
 to extend the **Utilities** class. This also extends the **Driver** class, allowing usage of driver inside page classes.
 
-####Step 1: Create a pages package
+#### Step 1: Create a pages package
 >Create page classes, add elements (use @FindBy annotation) & page methods. _**Remember** extending **Utilities** class, 
 > initializing all elements within the page class._
->````
+>````java
 > public class HomePage extends Utilities {...}
 >```` 
 
-####Step 2: Create a steps package
+#### Step 2: Create a steps package
 >Create page step classes, instantiate page classes, create step definitions & access page methods within these step 
 > definitions as:
 > ````java
@@ -90,11 +90,11 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 > This will initialize the driver before each run, and kill it after each scenario is done. It will also
 > capture a ss if the scenario fails, indicating scenario name and failed step info.
 
-####Step 3: Create a features package
+#### Step 3: Create a features package
 >Create _**.feature**_ files, create your scenarios using the steps you have implemented in ***Step 2***.
 
-####Step 4: Execute your tests
->######Selenium Grid needs to be running first, turn on Docker, then in project directory start Selenium Grid & Nodes by using the following command:
+#### Step 4: Execute your tests
+>###### Selenium Grid needs to be running first, turn on Docker, then in project directory start Selenium Grid & Nodes by using the following command:
 >````shell
 >docker-compose up -d
 >````
@@ -111,6 +111,7 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 >In order to use this feature, please add the following plugin & property to your pom.xml:
 
 
+   ```xml
     <properties>
         <browser>Chrome</browser>
         <name>${project.name}</name>
@@ -133,10 +134,12 @@ ___
             </execution>
         </executions>
     </plugin>
+   ```
 ___ 
 >It is recommended to use ***Cucumber JVM Parallel Plugin*** which allows you to execute tests simultaneously on parallel.
 > If you would like to do that, add plugin:
 
+            ```xml
             <plugin>
                 <groupId>com.github.temyers</groupId>
                 <artifactId>cucumber-jvm-parallel-plugin</artifactId>
@@ -184,15 +187,16 @@ ___
                     </includes>
                 </configuration>
             </plugin>
-####Example execution command:
+            ```
+#### Example execution command:
 >In order to execute a specific feature file in a specific browser, use:
->```
+>```shell
 >mvn test -Dcucumber.options="src/test/java/features/Explore.feature" -Dbrowser=chrome
 >```
 ___
-####To create a cucumber project:
+#### To create a cucumber project:
 >Run the following command:
->````
+>````shell
 >mvn archetype:generate                      \
 >"-DarchetypeGroupId=io.cucumber"           \
 >"-DarchetypeArtifactId=cucumber-archetype" \
