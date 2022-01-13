@@ -194,16 +194,16 @@ ___
 >mvn test -Dcucumber.options="src/test/java/features/Explore.feature" -Dbrowser=chrome
 > ```
 
->#### To create a cucumber project:
->Run the following command:
->````shell
->mvn archetype:generate                      \
->"-DarchetypeGroupId=io.cucumber"            \
->"-DarchetypeArtifactId=cucumber-archetype"  \
->"-DarchetypeVersion=6.10.4"                 \
->"-DgroupId=hellocucumber"                   \
->"-DartifactId=hellocucumber"                \
->"-Dpackage=hellocucumber"                   \
->"-Dversion=1.0.0-SNAPSHOT"                  \
->"-DinteractiveMode=false"
->````
+#### To create a cucumber project:
+Run the following command:
+````shell
+mvn archetype:generate                      \
+"-DarchetypeGroupId=io.cucumber"            \
+"-DarchetypeArtifactId=cucumber-archetype"  \
+"-DarchetypeVersion=6.10.4"                 \
+"-DgroupId=hellocucumber"                   \
+"-DartifactId=hellocucumber"                \
+"-Dpackage=hellocucumber"                   \
+"-Dversion=1.0.0-SNAPSHOT"                  \
+"-DinteractiveMode=false"
+````
