@@ -110,8 +110,7 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 >Chrome, Firefox, Opera, Edge & Safari are supported. 
 >In order to use this feature, please add the following plugin & property to your pom.xml:
 
-
-   ```xml
+```xml
     <properties>
         <browser>Chrome</browser>
         <name>${project.name}</name>
@@ -134,12 +133,12 @@ ___
             </execution>
         </executions>
     </plugin>
-   ```
+```
 ___ 
 >It is recommended to use ***Cucumber JVM Parallel Plugin*** which allows you to execute tests simultaneously on parallel.
 > If you would like to do that, add plugin:
 
- ```xml
+```xml
           
             <plugin>
                 <groupId>com.github.temyers</groupId>
@@ -188,14 +187,13 @@ ___
                     </includes>
                 </configuration>
             </plugin>
-
-       ```
+```
  
 #### Example execution command:
 >In order to execute a specific feature file in a specific browser, use:
->```shell
+> ```shell
 >mvn test -Dcucumber.options="src/test/java/features/Explore.feature" -Dbrowser=chrome
->```
+> ```
 ___
 #### To create a cucumber project:
 >Run the following command:
