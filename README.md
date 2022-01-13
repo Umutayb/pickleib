@@ -189,10 +189,10 @@ ___
 ```
  
 #### Example execution command:
->In order to execute a specific feature file in a specific browser, use:
-> ```shell
->mvn test -Dcucumber.options="src/test/java/features/Explore.feature" -Dbrowser=chrome
-> ```
+In order to execute a specific feature file in a specific browser, use:
+ ```shell
+mvn test -Dcucumber.options="src/test/java/features/Explore.feature" -Dbrowser=chrome
+ ```
 
 #### To create a cucumber project:
 Run the following command:
