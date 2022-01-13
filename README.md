@@ -1,15 +1,15 @@
-#Quickstart Library
-###For POM & Cucumber Projects
+# Quickstart Library
+### For POM & Cucumber Projects
 ___
-###How To Get Started:
+### How To Get Started:
 
 First, the library should be exported into an empty automation project. There are two ways of doing this.
-###First Way: 
+### First Way: 
 
 [![](https://jitpack.io/v/Umutayb/Pickleib.svg)](https://jitpack.io/#Umutayb/Pickleib)
 
 The dependency can be acquired by adding Jitpack repository into the pom.xml, as well as the dependency for the library as:
-```
+```xml
 <dependencies>
     <!-- Framework -->
         <dependency>
@@ -27,15 +27,15 @@ The dependency can be acquired by adding Jitpack repository into the pom.xml, as
 </repositories>
 ```
 ###Second Way:
-```
+```shell
 mvn clean package -DbuildDirectory=directory/to/project/lib
 ```
 For instance:
-```
+```mvn
 mvn clean package -DbuildDirectory=/Users/Umut/Github/Web-Automation-Sample-Cucumber/lib
 ```
 There, the imported jar file should be added as a dependency in pom.xml file of that project:
-```
+```xml
     <!-- Framework -->
         <dependency>
             <groupId>bora</groupId>
@@ -49,7 +49,7 @@ There, the imported jar file should be added as a dependency in pom.xml file of 
 
 After updating your project, the quickstart library is ready to use. 
 ___
-###How To Use:
+### How To Use:
 
 The quickstart library consists of many utility methods and a ready to use built in selenium grid infrastructure,
 compatible with page object model design. The infrastructure allows easy initialization of elements by initializing them
@@ -66,7 +66,7 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 ####Step 2: Create a steps package
 >Create page step classes, instantiate page classes, create step definitions & access page methods within these step 
 > definitions as:
-> ````
+> ````java
 > public class HomePageSteps {
 > 
 >    HomePage homePage = new HomePage();
@@ -78,7 +78,7 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 > }
 > ````
 >Set cucumber @Before & @After steps as:
-> ````
+> ````java
 >    Initialize driverManager = new Initialize();
 >
 >    @Before
@@ -95,12 +95,12 @@ to extend the **Utilities** class. This also extends the **Driver** class, allow
 
 ####Step 4: Execute your tests
 >######Selenium Grid needs to be running first, turn on Docker, then in project directory start Selenium Grid & Nodes by using the following command:
->````
+>````shell
 >docker-compose up -d
 >````
->######
+>###### 
 >The library allows the browser type to be designated on runtime, just pass:
-> ````
+> ````shell
 > -Dbrowser=browserName
 > ````
 > For instance:
