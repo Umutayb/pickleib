@@ -139,7 +139,7 @@ ___
 >It is recommended to use ***Cucumber JVM Parallel Plugin*** which allows you to execute tests simultaneously on parallel.
 > If you would like to do that, add plugin:
 
-            ```xml
+           ```xml
             <plugin>
                 <groupId>com.github.temyers</groupId>
                 <artifactId>cucumber-jvm-parallel-plugin</artifactId>
@@ -187,7 +187,8 @@ ___
                     </includes>
                 </configuration>
             </plugin>
-            ```
+           ```
+ 
 #### Example execution command:
 >In order to execute a specific feature file in a specific browser, use:
 >```shell
