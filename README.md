@@ -194,7 +194,7 @@ ___
 >mvn test -Dcucumber.options="src/test/java/features/Explore.feature" -Dbrowser=chrome
 > ```
 
-#### To create a cucumber project:
+>#### To create a cucumber project:
 >Run the following command:
 >````shell
 >mvn archetype:generate                      \
