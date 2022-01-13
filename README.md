@@ -193,7 +193,7 @@ ___
 > ```shell
 >mvn test -Dcucumber.options="src/test/java/features/Explore.feature" -Dbrowser=chrome
 > ```
-___
+
 #### To create a cucumber project:
 >Run the following command:
 >````shell
