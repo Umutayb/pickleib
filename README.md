@@ -1,7 +1,5 @@
 # Quickstart Library
 
-### For POM & Cucumber Projects
-___
 ### How To Get Started:
 
 First, the library should be exported into an empty automation project. There are two ways of doing this.
