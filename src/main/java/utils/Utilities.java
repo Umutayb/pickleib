@@ -431,21 +431,4 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
             return elementIsDisplayed(element, startTime);
         }
     }
-
-    public void captureScreen(String specName, RemoteWebDriver driver) {
-        try {
-            log.new Info("Capturing page");
-
-            String name = specName+"#"+numeric.randomNumber(1,10000)+".jpg";
-            File sourceFile = new File("Screenshots");
-            File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-            FileUtils.copyFile(fileDestination, new File(sourceFile, name));
-
-            log.new Info("Screenshot saved as; "+name+" at the \"Screenshots\" file.");
-
-        }catch (Exception gamma){
-            Assert.fail(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET);
-            driver.quit();
-        }
-    }
 }
