@@ -1,12 +1,14 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -44,7 +46,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
     public String navigate(String url){
         try {
-            log.new info("Navigating to "+RESET+BLUE+url);
+            log.new Info("Navigating to "+RESET+BLUE+url);
 
             if (!url.contains("http"))
                 url = "https://"+url;
@@ -60,7 +62,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
 
     public void navigateBrowser(String direction){
         try {
-            log.new info("Navigating "+direction);
+            log.new Info("Navigating "+direction);
 
             switch (direction.toLowerCase()){
                 case "forward":
@@ -226,7 +228,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     //This method makes the thread wait for a certain while
     public void waitFor(double seconds){
         if (seconds > 1)
-            log.new info("Waiting for "+BLUE+seconds+GRAY+" seconds");
+            log.new Info("Waiting for "+BLUE+seconds+GRAY+" seconds");
         try {
             Thread.sleep((long) (seconds* 1000L));
         }
@@ -270,7 +272,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
     public void printElementAttributes(WebElement element){
         JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
         for (Object attribute : attributeJSON.keySet()) {
-            log.new info(attribute +" : "+ attributeJSON.get(attribute));
+            log.new Info(attribute +" : "+ attributeJSON.get(attribute));
         }
     }
 
@@ -380,7 +382,7 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
                 Assert.fail(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
         }
         catch (NoSuchElementException | IllegalArgumentException ignored){
-            log.new success("The element is no longer present!");
+            log.new Success("The element is no longer present!");
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         }
     }
@@ -425,8 +427,25 @@ public abstract class Utilities extends Driver { //TODO: Write a method which cr
         try {
             return element.isDisplayed();
         } catch (Exception e) {
-            log.new info(e);
+            log.new Info(e);
             return elementIsDisplayed(element, startTime);
+        }
+    }
+
+    public void captureScreen(String specName, RemoteWebDriver driver) {
+        try {
+            log.new Info("Capturing page");
+
+            String name = specName+"#"+numeric.randomNumber(1,10000)+".jpg";
+            File sourceFile = new File("Screenshots");
+            File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(fileDestination, new File(sourceFile, name));
+
+            log.new Info("Screenshot saved as; "+name+" at the \"Screenshots\" file.");
+
+        }catch (Exception gamma){
+            Assert.fail(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET);
+            driver.quit();
         }
     }
 }

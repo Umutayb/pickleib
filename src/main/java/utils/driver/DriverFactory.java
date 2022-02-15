@@ -1,7 +1,6 @@
 package utils.driver;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.WebDriver; // Currently replaced by bonigarcia drivers
 import org.junit.Assert;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -13,6 +12,7 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import utils.Printer;
 import utils.StringUtilities;
+
 import java.io.FileReader;
 import java.net.URL;
 import java.util.Properties;
@@ -88,13 +88,13 @@ public class DriverFactory {
             }
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             driver.manage().window().maximize();
-            log.new important(driverName+GRAY+" was selected");
+            log.new Important(driverName+GRAY+" was selected");
             return driver;
 
         }
         catch (Exception gamma) {
             if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){
-                log.new info("Please make sure the "+PURPLE+"Selenium Grid "+GRAY+"is on & verify the port that its running on at 'resources/test.properties'."+RESET);
+                log.new Info("Please make sure the "+PURPLE+"Selenium Grid "+GRAY+"is on & verify the port that its running on at 'resources/test.properties'."+RESET);
                 Assert.fail(YELLOW+gamma+RESET);
             }
             else {Assert.fail(YELLOW+"Something went wrong while selecting a driver "+"\n\t"+RED+gamma+RESET);}

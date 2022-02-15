@@ -18,14 +18,14 @@ public class Driver extends WebComponent {
 	Printer log = new Printer(Driver.class);
 
 	public void initialize(){
-		log.new info("Initializing driver");
+		log.new Info("Initializing driver");
 		driver = DriverFactory.getDriver(strUtils.firstLetterCapped(reader.getProperty("browser")), driver);
 		assert driver != null;
 		wait = new WebDriverWait(driver, 15);
 	}
 
 	public void terminate(Scenario scenario){
-		log.new info("Finalizing driver...");
+		log.new Info("Finalizing driver...");
 		if (scenario.isFailed())
 			log.captureScreen(scenario.getName()+"@"+scenario.getLine(),driver);
 		driver.quit();

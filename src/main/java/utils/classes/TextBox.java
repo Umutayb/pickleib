@@ -11,7 +11,7 @@ public class TextBox extends Utilities {
      public WebElement addressButton;
 
      public void clickAddressButton(){
-          PrinterInstance.new info("Clicking addressButton button");
+          PrinterInstance.new Info("Clicking addressButton button");
           clickElement(addressButton);
      }
 }
