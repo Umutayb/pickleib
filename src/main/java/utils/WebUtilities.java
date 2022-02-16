@@ -31,7 +31,6 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public StringUtilities strUtils = new StringUtilities();
     public NumericUtilities numeric = new NumericUtilities();
     public TerminalUtilities terminal = new TerminalUtilities();
-    public ApiUtilities apiUtils = new ApiUtilities(properties.getProperty("default.url"),properties.getProperty("default.uri"));
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
