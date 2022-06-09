@@ -6,9 +6,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
-
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.json.simple.JSONObject;
@@ -23,19 +20,12 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     Printer log = new Printer(WebUtilities.class);
 
     public TextParser parser = new TextParser();
-    public Properties properties = new Properties();
-    public EmailUtilities email = new EmailUtilities();
-    public FileUtilities fileUtils = new FileUtilities();
-    public JsonUtilities jsonUtils = new JsonUtilities();
-    public XPathUtilities xpathUtils = new XPathUtilities();
+    public Properties properties;
     public StringUtilities strUtils = new StringUtilities();
-    public NumericUtilities numeric = new NumericUtilities();
-    public TerminalUtilities terminal = new TerminalUtilities();
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
-        try {properties.load(new FileReader("src/test/resources/test.properties"));}
-        catch (IOException e) {e.printStackTrace();}
+        properties = FileUtilities.properties;
     }
 
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}

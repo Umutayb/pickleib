@@ -17,7 +17,9 @@ The dependency can be acquired by adding Jitpack repository into the pom.xml, as
             <version>0.5.1</version>
         </dependency>   
 </dependencies>
-        
+.
+.
+.
 <repositories>
     <repository>
         <id>jitpack.io</id>

@@ -6,7 +6,7 @@
 
   <groupId>com.github.Umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>0.7.5</version>
+  <version>0.7.6</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.github.umutayb</groupId>
       <artifactId>java-utilities</artifactId>
-      <version>0.0.3</version>
+      <version>0.1.7</version>
     </dependency>
 
     <!-- Api Utilities -->
