@@ -6,7 +6,7 @@
 
   <groupId>com.github.Umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>0.7.9</version>
+  <version>0.8.1</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -30,13 +30,6 @@
       <groupId>com.github.umutayb</groupId>
       <artifactId>java-utilities</artifactId>
       <version>0.1.9</version>
-    </dependency>
-
-    <!-- Api Utilities -->
-    <dependency>
-      <groupId>com.github.umutayb</groupId>
-      <artifactId>api-assured</artifactId>
-      <version>0.1.5</version>
     </dependency>
 
     <!-- Cucumber -->
@@ -99,14 +92,6 @@
       <version>3.141.59</version>
     </dependency>
 
-    <!-- Appium -->
-    <dependency>
-      <groupId>io.appium</groupId>
-      <artifactId>java-client</artifactId>
-      <version>7.3.0</version>
-      <scope>compile</scope>
-    </dependency>
-
     <!-- Commons -->
     <dependency>
       <groupId>commons-io</groupId>
@@ -136,14 +121,6 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>4.5.9</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- Wiremock -->
-    <dependency>
-      <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-jre8</artifactId>
-      <version>2.27.2</version>
       <scope>compile</scope>
     </dependency>
 
@@ -196,6 +173,65 @@
       <artifactId>spring-boot-loader</artifactId>
       <version>2.0.1.RELEASE</version>
     </dependency>
+
+    <!-- OKHttp -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp</artifactId>
+      <version>3.11.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>logging-interceptor</artifactId>
+      <version>3.11.0</version>
+    </dependency>
+
+    <!-- Retrofit -->
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>adapter-rxjava</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-gson</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>retrofit</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-jackson</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-scalars</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-simplexml</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-moshi</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-protobuf</artifactId>
+      <version>2.9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>converter-wire</artifactId>
+      <version>2.9.0</version>
+    </dependency>
   </dependencies>
 
   <repositories>
@@ -217,8 +253,8 @@
         <version>${maven.compiler.version}</version>
         <configuration>
           <encoding>UTF-8</encoding>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>8</source>
+          <target>8</target>
         </configuration>
       </plugin>
 
