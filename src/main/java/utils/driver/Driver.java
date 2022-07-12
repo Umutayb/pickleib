@@ -36,7 +36,7 @@ public class Driver extends WebComponent {
 		wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
 	}
 
-	public void initialize(String id, String password){
+	public void initialize(String id, String password){ //Only works with chrome!
 		initialize();
 		DevTools dev = ((ChromeDriver) driver).getDevTools();
 		dev.createSession();
