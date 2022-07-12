@@ -13,7 +13,6 @@ import utils.Printer;
 import utils.PropertiesReader;
 import utils.ScreenCaptureUtility;
 import utils.StringUtilities;
-
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
