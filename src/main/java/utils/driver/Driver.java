@@ -40,7 +40,7 @@ public class Driver extends WebComponent {
 		initialize();
 		DevTools dev = ((ChromeDriver) driver).getDevTools();
 		dev.createSession();
-		dev.send(Network.enable(Optional.empty(), Optional.empty(), Optional.<Integer>empty()));
+		dev.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		Map<String, Object> map = new HashMap<>();
 		map.put("Authorization", "Basic " + new String(Base64.encode((id + ":" + password).getBytes())));
 		dev.send(Network.setExtraHTTPHeaders(new Headers(map)));
