@@ -2,6 +2,7 @@ package utils.driver;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Assert;
+import org.openqa.selenium.ImmutableCapabilities;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -32,20 +33,21 @@ public class DriverFactory {
             if (driverName == null)
                 driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
 
+
             if (Boolean.parseBoolean(properties.getProperty("selenium.grid"))){
-                DesiredCapabilities capabilities;
+                ImmutableCapabilities capabilities;
 
                 switch (driverName.toLowerCase()){
                     case "chrome":
-                        capabilities = DesiredCapabilities.chrome();
+                        capabilities = new ImmutableCapabilities("browserName", "chrome");
                         break;
 
                     case "firefox":
-                        capabilities = DesiredCapabilities.firefox();
+                        capabilities = new ImmutableCapabilities("browserName", "firefox");
                         break;
 
                     case "opera":
-                        capabilities = DesiredCapabilities.operaBlink();
+                        capabilities = new ImmutableCapabilities("browserName", "opera");
                         break;
 
                     default:

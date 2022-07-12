@@ -9,6 +9,9 @@ import utils.PropertiesReader;
 import utils.ScreenCaptureUtility;
 import utils.StringUtilities;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 public class Driver extends WebComponent {
 
 	public static RemoteWebDriver driver;
@@ -23,7 +26,7 @@ public class Driver extends WebComponent {
 		log.new Info("Initializing driver");
 		driver = DriverFactory.getDriver(strUtils.firstLetterCapped(reader.getProperty("browser")), driver);
 		assert driver != null;
-		wait = new WebDriverWait(driver, 15);
+		wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
 	}
 
 	public void terminate(Scenario scenario){
