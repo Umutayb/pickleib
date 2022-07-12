@@ -34,7 +34,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public String navigate(String url){
         try {
-            log.new Info("Navigating to "+RESET+BLUE+url);
+            log.new Info("Navigating to "+RESET+BLUE+url+RESET);
 
             if (!url.contains("http"))
                 url = "https://"+url;
@@ -42,7 +42,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             driver.get(url);
         }
         catch (Exception gamma){
-            Assert.fail(YELLOW+"Unable to navigate to the \""+url+"\""+RESET);
+            log.new Error("Unable to navigate to the \""+url+"\"");
+            Assert.fail("Test failed.");
             driver.quit();
         }
         return url;
@@ -66,7 +67,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             }
         }
         catch (Exception ignored){
-            Assert.fail(YELLOW+"Unable to navigate \""+direction+"\""+RESET);
+            log.new Error("Unable to navigate browser \""+direction+"\"");
+            Assert.fail("Test failed.");
             driver.quit();
         }
     }
