@@ -24,6 +24,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public Properties properties;
     public Scenario scenario;
     public StringUtilities strUtils = new StringUtilities();
+    public ObjectUtilities objectUtils = new ObjectUtilities();
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
@@ -420,5 +421,9 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             log.new Info(e);
             return elementIsDisplayed(element, startTime);
         }
+    }
+
+    public <T> WebElement getElement(String fieldName, Class<T> inputClass){
+        return (WebElement) objectUtils.getFieldValue(fieldName, inputClass);
     }
 }
