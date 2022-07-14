@@ -161,6 +161,16 @@
       <groupId>com.github.webdriverextensions</groupId>
       <artifactId>webdriverextensions</artifactId>
       <version>3.11.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- OKHttp -->
