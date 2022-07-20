@@ -128,7 +128,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     //This method clicks a button with a certain text on it
-    public void clickButtonWithText(String buttonText){clickElement(getElementWithText(buttonText));}
+    public void clickButtonWithText(String buttonText){clickElement(getElementByText(buttonText));}
 
     //This method clears an input field /w style
     public WebElement clearInputField(WebElement element){
@@ -140,9 +140,20 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     //This method returns an element with a certain text on it
-    public WebElement getElementWithText(String elementText){
+    public WebElement getElementByText(String elementText){
         try {
             return driver.findElement(By.xpath("//*[text()='" +elementText+ "']"));
+        }
+        catch (ElementNotFoundException e){
+            Assert.fail(GRAY+e.getMessage()+RESET);
+            return null;
+        }
+    }
+
+    //This method returns an element with a certain text on it
+    public WebElement getElementContainingText(String elementText){
+        try {
+            return driver.findElement(By.xpath("//*[contains(text(), '" +elementText+ "')]"));
         }
         catch (ElementNotFoundException e){
             Assert.fail(GRAY+e.getMessage()+RESET);
