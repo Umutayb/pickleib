@@ -49,7 +49,7 @@ public class Driver extends WebComponent {
 	public void terminate(Scenario scenario){
 		log.new Info("Finalizing driver...");
 		if (scenario.isFailed())
-			capture.captureScreen(scenario.getName()+"@"+scenario.getLine(),driver);
+			capture.captureScreen(scenario.getName().replaceAll(" ","")+"@"+scenario.getLine(),driver);
 		driver.quit();
 	}
 }
