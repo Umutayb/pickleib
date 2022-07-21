@@ -45,7 +45,7 @@
     <dependency>
       <groupId>com.github.umutayb</groupId>
       <artifactId>java-utilities</artifactId>
-      <version>ced94fc2b6</version>
+      <version>93d84e00cf</version>
     </dependency>
 
     <!-- Cucumber -->
