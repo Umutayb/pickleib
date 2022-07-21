@@ -57,7 +57,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public void navigateBrowser(Navigation direction){
         try {
-            log.new Info("Navigating "+direction);
+            log.new Info("Navigating "+highlighted(Color.BLUE, direction.name()));
 
             switch (direction){
                 case FORWARDS:

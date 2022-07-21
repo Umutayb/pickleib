@@ -6,7 +6,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.File;
-
 import static resources.Colors.*;
 
 public class ScreenCaptureUtility {
@@ -22,7 +21,7 @@ public class ScreenCaptureUtility {
             File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(fileDestination, new File(sourceFile, name));
 
-            log.new Info("Screenshot saved as; "+name+" at the \"Screenshots\" file.");
+            log.new Info("Screenshot saved as; "+name+" at the \"screenshots\" file.");
             return fileDestination;
         }
         catch (Exception gamma){

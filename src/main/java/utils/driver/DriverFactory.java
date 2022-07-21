@@ -2,23 +2,22 @@ package utils.driver;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Assert;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.ImmutableCapabilities;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import utils.Printer;
 import utils.StringUtilities;
-
 import java.io.FileReader;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Properties;
 import static resources.Colors.*;
-import java.util.concurrent.TimeUnit;
 
 public class DriverFactory {
 
@@ -30,9 +29,7 @@ public class DriverFactory {
         try {
             properties.load(new FileReader("src/test/resources/test.properties"));
 
-            if (driverName == null)
-                driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
-
+            if (driverName == null) driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
 
             if (Boolean.parseBoolean(properties.getProperty("selenium.grid"))){
                 ImmutableCapabilities capabilities;
@@ -64,6 +61,7 @@ public class DriverFactory {
                         chromeOptions.addArguments("disable-notifications");
 //                        System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriver");
                         chromeOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless")));
+                        chromeOptions.addArguments("window-size=" + properties.getProperty("window-size"));
                         driver = new ChromeDriver(chromeOptions);
                         break;
 
@@ -73,6 +71,7 @@ public class DriverFactory {
                         firefoxOptions.addArguments("disable-notifications");
 //                        System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
                         firefoxOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless")));
+                        firefoxOptions.addArguments("window-size=" + properties.getProperty("window-size"));
                         driver = new FirefoxDriver(firefoxOptions);
                         break;
 
@@ -88,11 +87,11 @@ public class DriverFactory {
                         return null ;
                 }
             }
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            driver.manage().window().setSize(new Dimension(1920,1080));
             driver.manage().window().maximize();
             log.new Important(driverName+GRAY+" was selected");
             return driver;
-
         }
         catch (Exception gamma) {
             if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){
