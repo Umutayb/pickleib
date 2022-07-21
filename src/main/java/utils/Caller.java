@@ -43,9 +43,8 @@ public abstract class Caller {
             }
             return response.body();
         }
-        catch (IOException e) {
-            log.new Error(e.getLocalizedMessage());
-            log.new Error(e.getStackTrace());
+        catch (IOException exception) {
+            log.new Error(exception.getLocalizedMessage(),exception);
             Assert.fail("The call performed for " + serviceName + " failed for an unknown reason.");
         }
         return null;
@@ -74,10 +73,9 @@ public abstract class Caller {
             }
             return response;
         }
-        catch (IOException e) {
+        catch (IOException exception) {
             if (strict){
-                log.new Error(e.getLocalizedMessage());
-                log.new Error(e.getStackTrace());
+                log.new Error(exception.getLocalizedMessage(), exception);
                 Assert.fail("The call performed for " + serviceName + " failed for an unknown reason.");
             }
         }
