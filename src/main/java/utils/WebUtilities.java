@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.simple.JSONObject;
 import static resources.Colors.*;
 import org.openqa.selenium.*;
+import resources.Colors;
 import utils.driver.Driver;
 import org.junit.Assert;
 import java.util.List;
@@ -25,6 +26,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public Scenario scenario;
     public StringUtilities strUtils = new StringUtilities();
     public ObjectUtilities objectUtils = new ObjectUtilities();
+
+    public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
@@ -49,6 +52,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
         return url;
     }
+
+    public String highlighted(Color color, String text){return (getField(color.name(), Colors.class) + text + RESET);}
 
     public void navigateBrowser(String direction){
         try {
@@ -132,9 +137,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     //This method clears an input field /w style
     public WebElement clearInputField(WebElement element){
         int textLength = element.getAttribute("value").length();
-        for(int i = 0; i < textLength; i++){
-            element.sendKeys(Keys.BACK_SPACE);
-        }
+        for(int i = 0; i < textLength; i++){element.sendKeys(Keys.BACK_SPACE);}
         return element;
     }
 
@@ -435,5 +438,9 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public <T> WebElement getElement(String fieldName, Class<T> inputClass){
         return (WebElement) objectUtils.getFieldValue(fieldName, inputClass);
+    }
+
+    public <T> Object getField(String fieldName, Class<T> inputClass){
+        return objectUtils.getFieldValue(fieldName, inputClass);
     }
 }
