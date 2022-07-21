@@ -53,6 +53,10 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return url;
     }
 
+    public void setWindowSize(Integer width, Integer height) {
+        driver.manage().window().setSize(new Dimension(width,height));
+    }
+
     public String highlighted(Color color, String text){return (getField(color.name(), Colors.class) + text + RESET);}
 
     public void navigateBrowser(Navigation direction){

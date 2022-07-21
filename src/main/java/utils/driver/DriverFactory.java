@@ -29,9 +29,12 @@ public class DriverFactory {
         try {
             properties.load(new FileReader("src/test/resources/test.properties"));
 
+            int frameWidth = Integer.parseInt(properties.getProperty("frame-width"));
+            int frameHeight = Integer.parseInt(properties.getProperty("frame-height"));
+
             if (driverName == null) driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
 
-            if (Boolean.parseBoolean(properties.getProperty("selenium.grid"))){
+            if (Boolean.parseBoolean(properties.getProperty("selenium-grid"))){
                 ImmutableCapabilities capabilities;
 
                 switch (driverName.toLowerCase()){
@@ -51,7 +54,7 @@ public class DriverFactory {
                         capabilities = null;
                         Assert.fail(YELLOW+"The driver type \""+driverName+"\" was undefined."+RESET);
                 }
-                driver = new RemoteWebDriver(new URL(properties.getProperty("hub.url")), capabilities);
+                driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url")), capabilities);
             }
             else {
                 switch (driverName.toLowerCase()){
@@ -61,7 +64,7 @@ public class DriverFactory {
                         chromeOptions.addArguments("disable-notifications");
 //                        System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriver");
                         chromeOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless")));
-                        chromeOptions.addArguments("window-size=" + properties.getProperty("window-size"));
+                        chromeOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
                         driver = new ChromeDriver(chromeOptions);
                         break;
 
@@ -71,7 +74,7 @@ public class DriverFactory {
                         firefoxOptions.addArguments("disable-notifications");
 //                        System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
                         firefoxOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless")));
-                        firefoxOptions.addArguments("window-size=" + properties.getProperty("window-size"));
+                        firefoxOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
                         driver = new FirefoxDriver(firefoxOptions);
                         break;
 
@@ -87,8 +90,8 @@ public class DriverFactory {
                         return null ;
                 }
             }
+            driver.manage().window().setSize(new Dimension(frameWidth,frameHeight));
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            driver.manage().window().setSize(new Dimension(1920,1080));
             driver.manage().window().maximize();
             log.new Important(driverName+GRAY+" was selected");
             return driver;
