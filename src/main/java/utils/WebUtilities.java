@@ -1,20 +1,20 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
-import io.cucumber.core.api.Scenario;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
+import io.cucumber.core.api.Scenario;
 import org.json.simple.JSONObject;
 import static resources.Colors.*;
 import org.openqa.selenium.*;
-import resources.Colors;
+import java.util.Properties;
 import utils.driver.Driver;
+import java.time.Duration;
 import org.junit.Assert;
+import resources.Colors;
 import java.util.List;
 
 public abstract class WebUtilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
@@ -28,6 +28,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public ObjectUtilities objectUtils = new ObjectUtilities();
 
     public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
+    public enum Navigation {BACKWARDS, FORWARDS}
+    public enum Locator {XPATH, CSS}
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
@@ -40,14 +42,12 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         try {
             log.new Info("Navigating to "+RESET+BLUE+url+RESET);
 
-            if (!url.contains("http"))
-                url = "https://"+url;
+            if (!url.contains("http")) url = "https://"+url;
 
             driver.get(url);
         }
         catch (Exception gamma){
-            log.new Error("Unable to navigate to the \""+url+"\"");
-            Assert.fail("Test failed.");
+            Assert.fail("Unable to navigate to the \""+highlighted(Color.YELLOW, url)+"\"");
             driver.quit();
         }
         return url;
@@ -55,27 +55,25 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public String highlighted(Color color, String text){return (getField(color.name(), Colors.class) + text + RESET);}
 
-    public void navigateBrowser(String direction){
+    public void navigateBrowser(Navigation direction){
         try {
             log.new Info("Navigating "+direction);
 
-            switch (direction.toLowerCase()){
-                case "forward":
+            switch (direction){
+                case FORWARDS:
                     driver.navigate().forward();
                     break;
 
-                case "backwards":
+                case BACKWARDS:
                     driver.navigate().back();
                     break;
 
                 default:
-                    Assert.fail(GRAY+"No such direction was defined in -navigateBrowser- method."+RESET);
+                    throw new EnumConstantNotPresentException(Navigation.class, direction.name());
             }
         }
-        catch (Exception ignored){
-            log.new Error("Unable to navigate browser \""+direction+"\"");
-            Assert.fail("Test failed.");
-            driver.quit();
+        catch (Exception e){
+            Assert.fail("Unable to navigate browser \""+highlighted(Color.YELLOW, direction.name())+"\" due to: " + e);
         }
     }
 
@@ -91,19 +89,16 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             // This method clears the input field before filling it
             clearInputField(centerElement(waitUntilElementIsVisible(inputElement, System.currentTimeMillis()))).sendKeys(inputText);
 
-            if (verify)
-                Assert.assertEquals(inputElement.getAttribute("value"), inputText);
-
+            if (verify) Assert.assertEquals(inputElement.getAttribute("value"), inputText);
         }
         catch (ElementNotFoundException e){Assert.fail(GRAY+e.getMessage()+RESET);}
     }
 
     public WebElement hoverOver(WebElement element, Long initialTime){
-        if (System.currentTimeMillis()-initialTime > 10000)
-            return null;
+        if (System.currentTimeMillis()-initialTime > 10000) return null;
         centerElement(element);
         Actions actions = new Actions(driver);
-        try{actions.moveToElement(element).build().perform();}
+        try {actions.moveToElement(element).build().perform();}
         catch (StaleElementReferenceException ignored) {hoverOver(element,initialTime);}
         return element;
     }
@@ -116,7 +111,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             if (selection.getText().equalsIgnoreCase(selectionName) || selection.getText().contains(selectionName))
                 return selection;
         }
-        throw new NoSuchElementException("The item named '" + selectionName + "' could not be acquired!");
+        throw new NoSuchElementException("No item with text '" + selectionName + "' could be found!");
     }
 
     public String switchWindowHandle(String handle){
@@ -126,8 +121,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
                 if (!windowHandle.equalsIgnoreCase(parentWindowHandle))
                     driver = (RemoteWebDriver) driver.switchTo().window((windowHandle));
             }
-        else
-            driver = (RemoteWebDriver) driver.switchTo().window(handle);
+        else driver = (RemoteWebDriver) driver.switchTo().window(handle);
         return parentWindowHandle;
     }
 
@@ -146,9 +140,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         try {
             return driver.findElement(By.xpath("//*[text()='" +elementText+ "']"));
         }
-        catch (ElementNotFoundException e){
-            Assert.fail(GRAY+e.getMessage()+RESET);
-            return null;
+        catch (ElementNotFoundException | NoSuchElementException exception){
+            throw new NoSuchElementException(GRAY+exception.getMessage()+RESET);
         }
     }
 
@@ -157,9 +150,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         try {
             return driver.findElement(By.xpath("//*[contains(text(), '" +elementText+ "')]"));
         }
-        catch (ElementNotFoundException e){
-            Assert.fail(GRAY+e.getMessage()+RESET);
-            return null;
+        catch (ElementNotFoundException | NoSuchElementException exception){
+            throw new NoSuchElementException(GRAY+exception.getMessage()+RESET);
         }
     }
 
@@ -216,11 +208,11 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         centerElement(element);
 
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
-        builder.moveToElement(element, xOffset, yOffset)
+        builder
+                .moveToElement(element, xOffset, yOffset)
                 .click()
                 .build()
                 .perform();
-
     }
 
     public Alert getAlert(){return driver.switchTo().alert();}
@@ -231,14 +223,9 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     //This method makes the thread wait for a certain while
     public void waitFor(double seconds){
-        if (seconds > 1)
-            log.new Info("Waiting for "+BLUE+seconds+GRAY+" seconds");
-        try {
-            Thread.sleep((long) (seconds* 1000L));
-        }
-        catch (InterruptedException exception){
-            Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);
-        }
+        if (seconds > 1) log.new Info("Waiting for "+BLUE+seconds+GRAY+" seconds");
+        try {Thread.sleep((long) (seconds* 1000L));}
+        catch (InterruptedException exception){Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);}
     }
 
     //This method scrolls an element to the center of the view
@@ -269,15 +256,14 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return ((JavascriptExecutor) driver).executeScript("var items = {}; for (index = 0;" +
                         " index < arguments[0].attributes.length; ++index) " +
                         "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;",
-                element);
+                element
+        );
     }
 
     //This method prints all the attributes of a given element
     public void printElementAttributes(WebElement element){
         JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
-        for (Object attribute : attributeJSON.keySet()) {
-            log.new Info(attribute +" : "+ attributeJSON.get(attribute));
-        }
+        for (Object attribute : attributeJSON.keySet()) log.new Info(attribute +" : "+ attributeJSON.get(attribute));
     }
 
     public WebElement getParentByClass(WebElement childElement, String current, String parentSelectorClass) {
@@ -286,8 +272,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
         String childTag = childElement.getTagName();
 
-        if (childElement.getAttribute("class").contains(parentSelectorClass))
-            return childElement;
+        if (childElement.getAttribute("class").contains(parentSelectorClass)) return childElement;
 
         WebElement parentElement = childElement.findElement(By.xpath(".."));
         List<WebElement> childrenElements = parentElement.findElements(By.xpath("*"));
@@ -295,13 +280,10 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         int count = 0;
         for (WebElement childrenElement : childrenElements) {
             String childrenElementTag = childrenElement.getTagName();
-            if (childTag.equals(childrenElementTag)) {
-                count++;
-            }
+            if (childTag.equals(childrenElementTag)) count++;
             if (childElement.equals(childrenElement)) {
                 return getParentByClass(parentElement, "/" + childTag + "[" + count + "]" + current, parentSelectorClass);
             }
-
         }
         return null;
     }
@@ -314,9 +296,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         int count = 0;
         for (WebElement childrenElement : childrenElements) {
             String childrenElementTag = childrenElement.getTagName();
-            if (childTag.equals(childrenElementTag)) {
-                count++;
-            }
+            if (childTag.equals(childrenElementTag)) count++;
             if (childElement.equals(childrenElement)) {
                 return generateXPath(parentElement, "/" + childTag + "[" + count + "]" + current);
             }
@@ -325,37 +305,33 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
-        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         if (System.currentTimeMillis()-initialTime>15000){
-            driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             return null;
         }
-        try {
-            if (!element.isDisplayed()){waitUntilElementIsVisible(element, initialTime);}
-        }
+        try {if (!element.isDisplayed()){waitUntilElementIsVisible(element, initialTime);}}
         catch (StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
             waitUntilElementIsVisible(element, initialTime);
         }
-        driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         return element;
     }
 
-    public List<WebElement> verifyAbsenceOfElementLocatedBy(String locatorType, String locator, long startTime){
+    public List<WebElement> verifyAbsenceOfElementLocatedBy(Locator locatorType, String locator, long startTime){
 
         List<WebElement> elements;
 
-        switch (locatorType.toLowerCase()){
-            case "xpath":
+        switch (locatorType){
+            case XPATH:
                 elements = driver.findElements(By.xpath(locator));
                 break;
 
-            case "css":
+            case CSS:
                 elements = driver.findElements(By.cssSelector(locator));
                 break;
 
-            default:
-                Assert.fail(GRAY+"No such locator type was defined in Helper.java @verifyAbsenceOfElementLocatedBy."+RESET);
-                return null;
+            default: throw new EnumConstantNotPresentException(Locator.class, locatorType.name());
         }
 
         if ((System.currentTimeMillis() - startTime) > 15000){
@@ -363,37 +339,33 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             return elements;
         }
         if (elements.size() > 0){return verifyAbsenceOfElementLocatedBy(locatorType, locator, startTime);}
-        else
-            return null;
+        else return null;
     }
 
     public void waitUntilElementIsNoLongerPresent(WebElement element, long startTime){
         try {
             WebDriver subDriver = driver;
-            subDriver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+            subDriver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
             List<WebElement> elementPresence = driver.findElements(By.xpath(generateXPath(element,"")));
             while (elementPresence.size()>0){
                 if ((System.currentTimeMillis() - startTime) > 15000)
-                    Assert.fail(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
+                    throw new TimeoutException(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
                 elementPresence = subDriver.findElements(By.xpath(generateXPath(element,"")));
             }
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         }
         catch (StaleElementReferenceException exception) {
-            if (System.currentTimeMillis()-startTime<=15000)
-                waitUntilElementIsNoLongerPresent(element, startTime);
-            else
-                Assert.fail(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
+            if (System.currentTimeMillis()-startTime<=15000) waitUntilElementIsNoLongerPresent(element, startTime);
+            else throw new TimeoutException(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
         }
         catch (NoSuchElementException | IllegalArgumentException ignored){
             log.new Success("The element is no longer present!");
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         }
     }
 
     public WebElement waitUntilElementIsInvisible(WebElement element, long startTime) {
-        if ((System.currentTimeMillis() - startTime) > 15000)
-            return element;
+        if ((System.currentTimeMillis() - startTime) > 15000) return element;
         try {
             wait.until(ExpectedConditions.invisibilityOf(element));
             return null;
@@ -402,18 +374,16 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
-        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         if (System.currentTimeMillis()-initialTime>15000){
-            driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             return null;
         }
-        try {
-            if (!element.isEnabled()){waitUntilElementIsClickable(element, initialTime);}
-        }
+        try {if (!element.isEnabled()){waitUntilElementIsClickable(element, initialTime);}}
         catch (StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
             waitUntilElementIsClickable(element, initialTime);
         }
-        driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         return element;
     }
 
@@ -426,11 +396,9 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     public boolean elementIsDisplayed(WebElement element, long startTime) {
-        if ((System.currentTimeMillis() - startTime) > 10000)
-            return false;
-        try {
-            return element.isDisplayed();
-        } catch (Exception e) {
+        if ((System.currentTimeMillis() - startTime) > 10000) return false;
+        try {return element.isDisplayed();}
+        catch (Exception e) {
             log.new Info(e);
             return elementIsDisplayed(element, startTime);
         }
