@@ -103,16 +103,15 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return element;
     }
 
-    public void loopAndClick(List<WebElement> list,String buttonName){clickElement(loopNMatch(list,buttonName));}
+    public void loopAndClick(List<WebElement> list,String buttonName){clickElement(acquireNamedElementAmongst(list,buttonName));}
 
-    public WebElement loopNMatch(List<WebElement> elementList, String itemText){
-        for (WebElement item:elementList) {
-            System.out.println(item.getText());
-            if (item.getText().equalsIgnoreCase(itemText) || item.getText().contains(itemText))
-                return item;
+    public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
+        log.new Info("Acquiring item called " + selectionName);
+        for (WebElement selection : items) {
+            if (selection.getText().equalsIgnoreCase(selectionName) || selection.getText().contains(selectionName))
+                return selection;
         }
-        Assert.fail(GRAY+"Item could not be located!"+RESET);
-        return null;
+        throw new NoSuchElementException("The item named '" + selectionName + "' could not be acquired!");
     }
 
     public String switchWindowHandle(String handle){
