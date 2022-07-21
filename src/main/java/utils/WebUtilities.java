@@ -110,7 +110,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public void loopAndClick(List<WebElement> list,String buttonName){clickElement(acquireNamedElementAmongst(list,buttonName));}
 
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
-        log.new Info("Acquiring item called " + selectionName);
+        log.new Info("Acquiring item called " + highlighted(Color.BLUE, selectionName));
         for (WebElement selection : items) {
             if (selection.getText().equalsIgnoreCase(selectionName) || selection.getText().contains(selectionName))
                 return selection;
