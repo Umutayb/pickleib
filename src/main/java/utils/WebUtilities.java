@@ -83,8 +83,22 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     //This method clicks an element after waiting it and scrolling it to the center of the view
     public void clickElement(WebElement element){
-        try {centerElement(waitUntilElementIsClickable(element, System.currentTimeMillis())).click();}
-        catch (ElementNotFoundException e){Assert.fail(GRAY+e.getMessage()+RESET);}
+        try {waitAndClickIfElementIsClickable(centerElement(element), System.currentTimeMillis());}
+        catch (ElementNotFoundException e){log.new Error(e.getMessage(),e);}
+    }
+
+    public void waitAndClickIfElementIsClickable(WebElement element, long initialTime){
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        if (System.currentTimeMillis()-initialTime>15000) driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+        try {
+            if (!element.isEnabled()){waitUntilElementIsClickable(element, initialTime);}
+            else element.click();
+        }
+        catch (ElementClickInterceptedException|StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
+            log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+            waitUntilElementIsClickable(element, initialTime);
+        }
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
     }
 
     //This method is for filling an input field, it waits for the element, scrolls to it, clears it and then fills it

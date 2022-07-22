@@ -14,7 +14,7 @@ public class ScreenCaptureUtility {
 
     public File captureScreen(String name, RemoteWebDriver driver) {
         try {
-            log.new Info("Capturing page");
+            log.new Info("Capturing page...");
 
             name += "#"+numeric.randomNumber(1,10000)+".jpg";
             File sourceFile = new File("screenshots");
@@ -25,8 +25,7 @@ public class ScreenCaptureUtility {
             return fileDestination;
         }
         catch (Exception gamma){
-            Assert.fail(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET);
-            driver.quit();
+            log.new Error(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET,gamma);
             return null;
         }
     }
