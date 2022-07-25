@@ -124,12 +124,19 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public void loopAndClick(List<WebElement> list,String buttonName){clickElement(acquireNamedElementAmongst(list,buttonName));}
 
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
-        log.new Info("Acquiring item called " + highlighted(Color.BLUE, selectionName));
+        log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         for (WebElement selection : items) {
-            if (selection.getText().equalsIgnoreCase(selectionName) || selection.getText().contains(selectionName))
+            String name = selection.getAccessibleName();
+            String text = selection.getText();
+            if (
+                    name.equalsIgnoreCase(selectionName) ||
+                    name.contains(selectionName)         ||
+                    text.equalsIgnoreCase(selectionName) ||
+                    text.contains(selectionName)
+            )
                 return selection;
         }
-        throw new NoSuchElementException("No item with text '" + selectionName + "' could be found!");
+        throw new NoSuchElementException("No element with text '" + selectionName + "' could be found!");
     }
 
     public String switchWindowHandle(String handle){
