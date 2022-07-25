@@ -136,7 +136,17 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             )
                 return selection;
         }
-        throw new NoSuchElementException("No element with text '" + selectionName + "' could be found!");
+        throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
+    }
+
+    public WebElement acquireElementUsingAttributeAmongst(List<WebElement> elements, String attributeName, String attributeValue){
+        log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
+        for (WebElement selection : elements) {
+            String attribute = selection.getAttribute(attributeName);
+            if (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue))
+                return selection;
+        }
+        throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
     }
 
     public String switchWindowHandle(String handle){
