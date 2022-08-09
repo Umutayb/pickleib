@@ -98,8 +98,10 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 waitAndClickIfElementIsClickable(element, initialTime);
             }
-            else driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            throw exception;
+            else {
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+                throw exception;
+            }
         }
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
     }
