@@ -112,10 +112,13 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     //This method is for filling an input field, it waits for the element, scrolls to it, clears it and then fills it
-    public void clearFillInput(WebElement inputElement, String inputText, Boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, Boolean scroll, Boolean verify){
         try {
             // This method clears the input field before filling it
-            clearInputField(centerElement(waitUntilElementIsVisible(inputElement, System.currentTimeMillis()))).sendKeys(inputText);
+            if (scroll)
+                clearInputField(centerElement(waitUntilElementIsVisible(inputElement, System.currentTimeMillis()))).sendKeys(inputText);
+            else
+                clearInputField(waitUntilElementIsVisible(inputElement, System.currentTimeMillis())).sendKeys(inputText);
 
             if (verify) Assert.assertEquals(inputElement.getAttribute("value"), inputText);
         }
