@@ -89,14 +89,17 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public void waitAndClickIfElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        if (System.currentTimeMillis()-initialTime>15000) driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         try {
-            if (!element.isEnabled()){waitUntilElementIsClickable(element, initialTime);}
+            if (!element.isEnabled()){throw new InvalidElementStateException("Element is not enabled!");}
             else element.click();
         }
-        catch (ElementClickInterceptedException|StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
-            log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
-            waitUntilElementIsClickable(element, initialTime);
+        catch (InvalidElementStateException|StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
+            if (!(System.currentTimeMillis()-initialTime>15000)) {
+                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                waitAndClickIfElementIsClickable(element, initialTime);
+            }
+            else driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            throw exception;
         }
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
     }
@@ -345,7 +348,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             return null;
         }
-        try {if (!element.isDisplayed()){waitUntilElementIsVisible(element, initialTime);}}
+        try {if (!element.isDisplayed()){waitUntilElementIsVisible(element, initialTime).isDisplayed();}}
         catch (StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
             waitUntilElementIsVisible(element, initialTime);
         }
