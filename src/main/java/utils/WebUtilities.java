@@ -82,8 +82,13 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     //This method clicks an element after waiting it and scrolling it to the center of the view
-    public void clickElement(WebElement element){
-        try {waitAndClickIfElementIsClickable(centerElement(element), System.currentTimeMillis());}
+    public void clickElement(WebElement element, Boolean scroll){
+        try {
+            if (scroll)
+                waitAndClickIfElementIsClickable(centerElement(element), System.currentTimeMillis());
+            else
+                waitAndClickIfElementIsClickable(element, System.currentTimeMillis());
+        }
         catch (ElementNotFoundException e){log.new Error(e.getMessage(),e);}
     }
 
@@ -126,7 +131,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return element;
     }
 
-    public void loopAndClick(List<WebElement> list,String buttonName){clickElement(acquireNamedElementAmongst(list,buttonName));}
+    public void loopAndClick(List<WebElement> list, String buttonName, Boolean scroll){clickElement(acquireNamedElementAmongst(list,buttonName), scroll);}
 
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
@@ -166,7 +171,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     //This method clicks a button with a certain text on it
-    public void clickButtonWithText(String buttonText){clickElement(getElementByText(buttonText));}
+    public void clickButtonWithText(String buttonText, Boolean scroll){clickElement(getElementByText(buttonText), scroll);}
 
     //This method clears an input field /w style
     public WebElement clearInputField(WebElement element){
