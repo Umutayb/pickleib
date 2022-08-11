@@ -16,6 +16,7 @@ import java.time.Duration;
 import org.junit.Assert;
 import resources.Colors;
 import java.util.List;
+import java.util.Map;
 
 public abstract class WebUtilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
 
@@ -37,6 +38,11 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
+
+    public WebElement getElementFromPage(String buttonName, String pageName, Object objectRepository){
+        Map<String, Object> fields = objectUtils.getFields(objectUtils.getFields(objectRepository).get(pageName));
+        return (WebElement) fields.get(buttonName);
+    }
 
     public String navigate(String url){
         try {
