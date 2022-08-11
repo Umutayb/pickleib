@@ -39,9 +39,9 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 
-    public WebElement getElementFromPage(String buttonName, String pageName, Object objectRepository){
-        Map<String, Object> fields = objectUtils.getFields(objectUtils.getFields(objectRepository).get(pageName));
-        return (WebElement) fields.get(buttonName);
+    public WebElement getElementFromPage(String elementFieldName, String pageInstanceName, Object objectRepository){
+        Map<String, Object> fields = objectUtils.getFields(objectUtils.getFields(objectRepository).get(pageInstanceName));
+        return (WebElement) fields.get(elementFieldName);
     }
 
     public String navigate(String url){
