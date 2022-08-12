@@ -46,7 +46,7 @@ public class Driver extends WebComponent {
 	}
 
 	public void terminate(){
-		log.new Info("Finalizing driver...");
+		log.new Info("Terminating driver...");
 		driver.quit();
 	}
 }
