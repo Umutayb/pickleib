@@ -193,21 +193,33 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return element;
     }
 
-    public void loopAndClick(List<WebElement> list, String buttonName, Boolean scroll){clickElement(acquireNamedElementAmongst(list,buttonName), scroll);}
+    public void loopAndClick(List<WebElement> list, String buttonName, Boolean scroll){
+        clickElement(acquireNamedElementAmongst(list,buttonName, System.currentTimeMillis()), scroll);
+    }
 
-    public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
+    public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
-        for (WebElement selection : items) {
-            String name = selection.getAccessibleName();
-            String text = selection.getText();
-            if (
-                    name.equalsIgnoreCase(selectionName) ||
-                    name.contains(selectionName)         ||
-                    text.equalsIgnoreCase(selectionName) ||
-                    text.contains(selectionName)
-            ) return selection;
+        try {
+            for (WebElement selection : items) {
+                String name = selection.getAccessibleName();
+                String text = selection.getText();
+                if (
+                        name.equalsIgnoreCase(selectionName) ||
+                                name.contains(selectionName)         ||
+                                text.equalsIgnoreCase(selectionName) ||
+                                text.contains(selectionName)
+                ) return selection;
+            }
+            throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
         }
-        throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
+        catch (InvalidElementStateException|StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            if (!(System.currentTimeMillis()-initialTime>15000)) {
+                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                acquireNamedElementAmongst(items, selectionName, initialTime);
+            }
+            throw exception;
+        }
     }
 
     public WebElement acquireElementUsingAttributeAmongst(List<WebElement> elements, String attributeName, String attributeValue){
