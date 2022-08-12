@@ -12,7 +12,6 @@ import org.openqa.selenium.*;
 import java.util.Properties;
 import utils.driver.Driver;
 import java.time.Duration;
-import io.cucumber.java.*;
 import org.junit.Assert;
 import resources.Colors;
 import java.util.List;
@@ -20,17 +19,16 @@ import java.util.Map;
 
 public abstract class WebUtilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
 
-    Printer log = new Printer(WebUtilities.class);
-
     public TextParser parser = new TextParser();
-    public Properties properties;
-    public Scenario scenario;
+    Printer log = new Printer(WebUtilities.class);
     public StringUtilities strUtils = new StringUtilities();
     public ObjectUtilities objectUtils = new ObjectUtilities();
 
     public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
     public enum Navigation {BACKWARDS, FORWARDS}
     public enum Locator {XPATH, CSS}
+
+    public Properties properties;
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);

@@ -15,13 +15,11 @@
   <properties>
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <serenity.maven.version>1.9.12</serenity.maven.version>
-    <maven.surefire.version>2.22.1</maven.surefire.version>
     <maven.compiler.version>3.8.0</maven.compiler.version>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <serenity.version>1.9.12</serenity.version>
-    <cucumber.version>7.5.0</cucumber.version>
+    <java.utilities.version>0.3.6</java.utilities.version>
+    <selenium.version>4.3.0</selenium.version>
+    <retrofit.version>2.9.0</retrofit.version>
+    <okhttp.version>4.10.0</okhttp.version>
   </properties>
 
   <dependencyManagement>
@@ -45,46 +43,19 @@
     <dependency>
       <groupId>com.github.umutayb</groupId>
       <artifactId>java-utilities</artifactId>
-      <version>0.3.6</version>
-    </dependency>
-
-    <!-- Cucumber -->
-    <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>cucumber-java</artifactId>
-      <version>${cucumber.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>cucumber-core</artifactId>
-      <version>${cucumber.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>cucumber-junit</artifactId>
-      <version>${cucumber.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>datatable</artifactId>
-      <version>${cucumber.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>datatable-dependencies</artifactId>
-      <version>3.0.0</version>
+      <version>${java.utilities.version}</version>
     </dependency>
 
     <!-- Selenium -->
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>4.3.0</version>
+      <version>${selenium.version}</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-api</artifactId>
-      <version>4.3.0</version>
+      <version>${selenium.version}</version>
     </dependency>
 
     <!-- Gson -->
@@ -94,73 +65,11 @@
       <version>2.9.0</version>
     </dependency>
 
-    <!-- Commons -->
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- REST Assured -->
-    <dependency>
-      <groupId>io.rest-assured</groupId>
-      <artifactId>rest-assured</artifactId>
-      <version>4.3.0</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- Jackson Databind -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.13.3</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- HTTP Components -->
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.9</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- Google Simple Json -->
-    <dependency>
-      <groupId>com.googlecode.json-simple</groupId>
-      <artifactId>json-simple</artifactId>
-      <version>1.1.1</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- Javax Mail -->
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>javax.mail-api</artifactId>
-      <version>1.6.2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.mail</groupId>
-      <artifactId>javax.mail</artifactId>
-      <version>1.6.0</version>
-      <scope>compile</scope>
-    </dependency>
-
     <!-- Web Driver Manager -->
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
-      <version>5.2.0</version>
-    </dependency>
-
-    <!-- Assert -->
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>3.22.0</version>
-      <scope>test</scope>
+      <version>5.2.2</version>
     </dependency>
 
     <!-- Web Driver Extensions -->
@@ -184,59 +93,59 @@
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
-      <version>3.11.0</version>
+      <version>${okhttp.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>logging-interceptor</artifactId>
-      <version>3.11.0</version>
+      <version>${okhttp.version}</version>
     </dependency>
 
     <!-- Retrofit -->
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>adapter-rxjava</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-gson</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>retrofit</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-jackson</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-scalars</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-simplexml</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-moshi</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-protobuf</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-wire</artifactId>
-      <version>2.9.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
   </dependencies>
 
