@@ -1,7 +1,6 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
-import io.cucumber.core.backend.TestCaseState;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -13,6 +12,7 @@ import org.openqa.selenium.*;
 import java.util.Properties;
 import utils.driver.Driver;
 import java.time.Duration;
+import io.cucumber.java.*;
 import org.junit.Assert;
 import resources.Colors;
 import java.util.List;
@@ -24,7 +24,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public TextParser parser = new TextParser();
     public Properties properties;
-    public TestCaseState scenario;
+    public Scenario scenario;
     public StringUtilities strUtils = new StringUtilities();
     public ObjectUtilities objectUtils = new ObjectUtilities();
 
