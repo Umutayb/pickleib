@@ -1,12 +1,12 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
+import io.cucumber.core.backend.TestCaseState;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
-import io.cucumber.core.api.Scenario;
 import org.json.simple.JSONObject;
 import static resources.Colors.*;
 import org.openqa.selenium.*;
@@ -24,7 +24,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public TextParser parser = new TextParser();
     public Properties properties;
-    public Scenario scenario;
+    public TestCaseState scenario;
     public StringUtilities strUtils = new StringUtilities();
     public ObjectUtilities objectUtils = new ObjectUtilities();
 

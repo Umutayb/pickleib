@@ -1,7 +1,7 @@
 package utils.driver;
 
 import com.github.webdriverextensions.WebComponent;
-import io.cucumber.core.api.Scenario;
+import io.cucumber.core.backend.TestCaseState;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v85.network.Network;
@@ -46,7 +46,7 @@ public class Driver extends WebComponent {
 		dev.send(Network.setExtraHTTPHeaders(new Headers(map)));
 	}
 
-	public void terminate(Scenario scenario){
+	public void terminate(TestCaseState scenario){
 		log.new Info("Finalizing driver...");
 		if (scenario.isFailed())
 			capture.captureScreen(scenario.getName().replaceAll(" ","")+"@"+scenario.getLine(),driver);
