@@ -139,6 +139,20 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return false;
     }
 
+    public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        try {if (!element.isDisplayed()){throw new InvalidElementStateException("Element is not displayed!");}}
+        catch (InvalidElementStateException | StaleElementReferenceException | NoSuchElementException | TimeoutException exception){
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            if (!(System.currentTimeMillis()-initialTime>15000)){
+                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                waitUntilElementIsVisible(element, initialTime);
+            }
+            else throw new NoSuchElementException("The element could not be located!");
+        }
+        return element;
+    }
+
     public void waitAndClickIfElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
@@ -191,8 +205,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
                     name.contains(selectionName)         ||
                     text.equalsIgnoreCase(selectionName) ||
                     text.contains(selectionName)
-            )
-                return selection;
+            ) return selection;
         }
         throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
     }
@@ -395,20 +408,6 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             }
         }
         return null;
-    }
-
-    public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        if (System.currentTimeMillis()-initialTime>15000){
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            return null;
-        }
-        try {if (!element.isDisplayed()){waitUntilElementIsVisible(element, initialTime).isDisplayed();}}
-        catch (StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
-            waitUntilElementIsVisible(element, initialTime);
-        }
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-        return element;
     }
 
     public List<WebElement> verifyAbsenceOfElementLocatedBy(Locator locatorType, String locator, long startTime){
