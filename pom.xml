@@ -6,7 +6,7 @@
 
   <groupId>com.github.Umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>0.9.8</version>
+  <version>0.9.9</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -45,7 +45,7 @@
     <dependency>
       <groupId>com.github.umutayb</groupId>
       <artifactId>java-utilities</artifactId>
-      <version>0.3.3</version>
+      <version>0.3.4</version>
     </dependency>
 
     <!-- Cucumber -->
@@ -63,12 +63,6 @@
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-junit</artifactId>
-      <version>${cucumber.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.cucumber</groupId>
-      <artifactId>cucumber-testng</artifactId>
       <version>${cucumber.version}</version>
       <scope>test</scope>
     </dependency>
@@ -95,12 +89,12 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
-      <version>4.1.3</version>
+      <version>4.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-api</artifactId>
-      <version>4.1.3</version>
+      <version>4.3.0</version>
     </dependency>
 
     <!-- Gson -->
