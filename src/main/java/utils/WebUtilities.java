@@ -26,6 +26,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
     public enum Navigation {BACKWARDS, FORWARDS}
+    public enum ElementState {ENABLED, DISPLAYED, SELECTED}
     public enum Locator {XPATH, CSS}
 
     public Properties properties;
@@ -105,43 +106,54 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         catch (ElementNotFoundException e){log.new Error(e.getMessage(),e);}
     }
 
+    public Boolean elementIs(WebElement element, ElementState state, long initialTime){
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        try {
+            boolean condition;
+            switch (state){
+                case ENABLED:
+                    condition = element.isEnabled();
+                    break;
+
+                case DISPLAYED:
+                    condition = element.isDisplayed();
+                    break;
+
+                case SELECTED:
+                    condition = element.isSelected();
+                    break;
+
+                default:
+                    throw new EnumConstantNotPresentException(ElementState.class, state.name());
+            }
+            if (!condition){throw new InvalidElementStateException("Element is not displayed!");}
+            else return true;
+        }
+        catch (InvalidElementStateException | StaleElementReferenceException | NoSuchElementException | TimeoutException exception){
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            if (!(System.currentTimeMillis()-initialTime>15000)) {
+                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                elementIs(element, state, initialTime);
+            }
+        }
+        return false;
+    }
+
     public void waitAndClickIfElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
             if (!element.isEnabled()){throw new InvalidElementStateException("Element is not enabled!");}
             else element.click();
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         }
         catch (InvalidElementStateException|StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             if (!(System.currentTimeMillis()-initialTime>15000)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 waitAndClickIfElementIsClickable(element, initialTime);
             }
-            else {
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-                throw exception;
-            }
+            else throw exception;
         }
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-    }
-
-    public Boolean elementIsPresent(WebElement element, long initialTime){
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        try {
-            if (!element.isDisplayed()){throw new NoSuchElementException("Element is not displayed!");}
-            return element.isDisplayed();
-        }
-        catch (InvalidElementStateException | StaleElementReferenceException | NoSuchElementException | TimeoutException exception){
-            if (!(System.currentTimeMillis()-initialTime>15000)) {
-                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
-                elementIsPresent(element, initialTime);
-            }
-            else {
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-                return false;
-            }
-        }
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-        return false;
     }
 
     //This method is for filling an input field, it waits for the element, scrolls to it, clears it and then fills it
