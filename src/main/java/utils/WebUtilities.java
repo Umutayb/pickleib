@@ -72,7 +72,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         driver.manage().window().setSize(new Dimension(width,height));
     }
 
-    public String highlighted(Color color, String text){return (objectUtils.getFieldValue(color.name(), Colors.class) + text + RESET);}
+    public String highlighted(Color color, String text){return (objectUtils.getFieldValue(color.name(), color) + text + RESET);}
 
     public void navigateBrowser(Navigation direction){
         try {
