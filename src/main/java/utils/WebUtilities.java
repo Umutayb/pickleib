@@ -52,6 +52,15 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return (WebElement) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
     }
 
+    public List<WebElement> getElementsFromPage(String elementFieldName, String pageName, Object objectRepository){
+        Map<String, Object> pageFields = objectUtils.getFields(objectUtils.getFields(objectRepository).get(pageName));
+        return (List<WebElement>) pageFields.get(elementFieldName);
+    }
+
+    public List<WebElement> getElementsFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
+        return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
+    }
+
     public String navigate(String url){
         try {
             log.new Info("Navigating to "+RESET+BLUE+url+RESET);
