@@ -145,11 +145,10 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             if (!(System.currentTimeMillis()-initialTime>15000)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
-                elementIs(element, state, initialTime);
+                return elementIs(element, state, initialTime);
             }
             else return false;
         }
-        return null;
     }
 
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
