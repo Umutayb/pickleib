@@ -26,7 +26,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
     public enum Navigation {BACKWARDS, FORWARDS}
-    public enum ElementState {ENABLED, DISPLAYED, SELECTED}
+    public enum ElementState {ENABLED, DISPLAYED, SELECTED, DISABLED, UNSELECTED, ABSENT}
     public enum Locator {XPATH, CSS}
 
     public Properties properties;
@@ -123,6 +123,18 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
                     condition = element.isSelected();
                     break;
 
+                case DISABLED:
+                    condition = !element.isEnabled();
+                    break;
+
+                case UNSELECTED:
+                    condition = !element.isSelected();
+                    break;
+
+                case ABSENT:
+                    condition = !element.isDisplayed();
+                    break;
+
                 default:
                     throw new EnumConstantNotPresentException(ElementState.class, state.name());
             }
@@ -135,8 +147,9 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 elementIs(element, state, initialTime);
             }
+            else return false;
         }
-        return false;
+        return null;
     }
 
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
@@ -157,8 +170,10 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
             if (!element.isEnabled()){throw new InvalidElementStateException("Element is not enabled!");}
-            else element.click();
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            else {
+                element.click();
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            }
         }
         catch (InvalidElementStateException|StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
