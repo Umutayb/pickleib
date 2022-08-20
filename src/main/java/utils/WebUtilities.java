@@ -247,7 +247,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
                 String text = ((WebElement) selection).getText();
                 if (text.equalsIgnoreCase(selectionName) || text.contains(selectionName)) return selection;
             }
-            throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
+            throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
         }
         catch (InvalidElementStateException | StaleElementReferenceException | NoSuchElementException |
                TimeoutException exception){
