@@ -234,7 +234,27 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             if (!(System.currentTimeMillis()-initialTime>15000)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
-                acquireNamedElementAmongst(items, selectionName, initialTime);
+                return acquireNamedElementAmongst(items, selectionName, initialTime);
+            }
+            throw exception;
+        }
+    }
+
+    public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName, long initialTime){
+        log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
+        try {
+            for (T selection : items) {
+                String text = ((WebElement) selection).getText();
+                if (text.equalsIgnoreCase(selectionName) || text.contains(selectionName)) return selection;
+            }
+            throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
+        }
+        catch (InvalidElementStateException | StaleElementReferenceException | NoSuchElementException |
+               TimeoutException exception){
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            if (!(System.currentTimeMillis()-initialTime>15000)) {
+                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                return acquireNamedComponentAmongst(items, selectionName, initialTime);
             }
             throw exception;
         }
