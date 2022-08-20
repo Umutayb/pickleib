@@ -260,14 +260,24 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
     }
 
-    public WebElement acquireElementUsingAttributeAmongst(List<WebElement> elements, String attributeName, String attributeValue){
+    public WebElement acquireElementUsingAttributeAmongst(List<WebElement> elements, String attributeName, String attributeValue, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
-        for (WebElement selection : elements) {
-            String attribute = selection.getAttribute(attributeName);
-            if (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue))
-                return selection;
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        try {
+            for (WebElement selection : elements) {
+                String attribute = selection.getAttribute(attributeName);
+                if (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue)) return selection;
+            }
+            throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
         }
-        throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
+        catch (WebDriverException exception){
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            if (!(System.currentTimeMillis()-initialTime>15000)) {
+                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue, initialTime);
+            }
+            throw exception;
+        }
     }
 
     public String switchWindowHandle(String handle){
