@@ -106,8 +106,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     //This method clicks an element after waiting it and scrolling it to the center of the view
     public void clickElement(WebElement element, Boolean scroll){
-        if (scroll) waitAndClickIfElementIsClickable(centerElement(element), System.currentTimeMillis());
-        else waitAndClickIfElementIsClickable(element, System.currentTimeMillis());
+        waitAndClickIfElementIsClickable(element, scroll, System.currentTimeMillis());
     }
 
     public Boolean elementIs(WebElement element, ElementState state, long initialTime){
@@ -145,7 +144,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             if (!condition){throw new InvalidElementStateException("Element is not displayed!");}
             else return true;
         }
-        catch (InvalidElementStateException | StaleElementReferenceException | NoSuchElementException | TimeoutException exception){
+        catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             if (!(System.currentTimeMillis()-initialTime>15000)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
@@ -158,7 +157,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {if (!element.isDisplayed()){throw new InvalidElementStateException("Element is not displayed!");}}
-        catch (InvalidElementStateException | StaleElementReferenceException | NoSuchElementException | TimeoutException exception){
+        catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             if (!(System.currentTimeMillis()-initialTime>15000)){
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
@@ -169,20 +168,21 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return element;
     }
 
-    public void waitAndClickIfElementIsClickable(WebElement element, long initialTime){
+    public void waitAndClickIfElementIsClickable(WebElement element, Boolean scroll, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
             if (!element.isEnabled()){throw new InvalidElementStateException("Element is not enabled!");}
             else {
-                element.click();
+                if (scroll) centerElement(element).click();
+                else element.click();
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             }
         }
-        catch (InvalidElementStateException|StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
+        catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             if (!(System.currentTimeMillis()-initialTime>15000)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
-                waitAndClickIfElementIsClickable(element, initialTime);
+                waitAndClickIfElementIsClickable(element, scroll, initialTime);
             }
             else throw exception;
         }
@@ -207,7 +207,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         centerElement(element);
         Actions actions = new Actions(driver);
         try {actions.moveToElement(element).build().perform();}
-        catch (StaleElementReferenceException ignored) {hoverOver(element,initialTime);}
+        catch (WebDriverException ignored) {hoverOver(element,initialTime);}
         return element;
     }
 
@@ -217,6 +217,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
             for (WebElement selection : items) {
                 String name = selection.getAccessibleName();
@@ -230,7 +231,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             }
             throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
         }
-        catch (InvalidElementStateException|StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
+        catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             if (!(System.currentTimeMillis()-initialTime>15000)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
@@ -249,8 +250,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             }
             throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
         }
-        catch (InvalidElementStateException | StaleElementReferenceException | NoSuchElementException |
-               TimeoutException exception){
+        catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             if (!(System.currentTimeMillis()-initialTime>15000)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
@@ -386,7 +386,6 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     //This method scrolls an element to the center of the view
     public WebElement centerElement(WebElement element){
-
         String scrollScript = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
                 + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
@@ -496,11 +495,11 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             }
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         }
-        catch (StaleElementReferenceException exception) {
+        catch (WebDriverException exception){
             if (System.currentTimeMillis()-startTime<=15000) waitUntilElementIsNoLongerPresent(element, startTime);
             else throw new TimeoutException(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
         }
-        catch (NoSuchElementException | IllegalArgumentException ignored){
+        catch (IllegalArgumentException ignored){
             log.new Success("The element is no longer present!");
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         }
@@ -522,8 +521,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             return null;
         }
         try {if (!element.isEnabled()){waitUntilElementIsClickable(element, initialTime);}}
-        catch (StaleElementReferenceException|NoSuchElementException|TimeoutException exception){
-            waitUntilElementIsClickable(element, initialTime);
+        catch (WebDriverException exception){
+            return waitUntilElementIsClickable(element, initialTime);
         }
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         return element;
