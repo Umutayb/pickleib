@@ -106,13 +106,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     //This method clicks an element after waiting it and scrolling it to the center of the view
     public void clickElement(WebElement element, Boolean scroll){
-        try {
-            if (scroll)
-                waitAndClickIfElementIsClickable(centerElement(element), System.currentTimeMillis());
-            else
-                waitAndClickIfElementIsClickable(element, System.currentTimeMillis());
-        }
-        catch (ElementNotFoundException e){log.new Error(e.getMessage(),e);}
+        if (scroll) waitAndClickIfElementIsClickable(centerElement(element), System.currentTimeMillis());
+        else waitAndClickIfElementIsClickable(element, System.currentTimeMillis());
     }
 
     public Boolean elementIs(WebElement element, ElementState state, long initialTime){
@@ -378,7 +373,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
         ((JavascriptExecutor) driver).executeScript(scrollScript, element);
 
-        waitFor(0.5);
+        waitFor(0.3);
         return element;
     }
 
