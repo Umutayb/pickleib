@@ -17,13 +17,16 @@ public abstract class Caller {
 
     public Caller(){
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        objectMapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+        objectMapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
+        objectMapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.NONE);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
-    protected static <T> T perform(Call<T> call, Boolean strict, Boolean printBody, String serviceName) {
+    protected static <Model> Model perform(retrofit2.Call<Model> call, Boolean strict, Boolean printBody, String serviceName) {
         log.new Info("Performing " + call.request().method() + " call for '" + serviceName + "' service on url: " + call.request().url());
         try {
-            Response<T> response = call.execute();
+            Response<Model> response = call.execute();
 
             if (printBody) printBody(response);
 
@@ -50,10 +53,10 @@ public abstract class Caller {
         return null;
     }
 
-    protected static <T> Response<T> getResponse(Call<T> call, Boolean strict, Boolean printBody, String serviceName) {
+    protected static <Model> Response<Model> getResponse(Call<Model> call, Boolean strict, Boolean printBody, String serviceName) {
         log.new Info("Performing " + call.request().method() + " call for '" + serviceName + "' service on url: " + call.request().url());
         try {
-            Response<T> response = call.execute();
+            Response<Model> response = call.execute();
 
             if (printBody) printBody(response);
 
@@ -82,7 +85,7 @@ public abstract class Caller {
         return null;
     }
 
-    static <T> void printBody(Response<T> response) throws IOException {
+    static <Model> void printBody(Response<Model> response) throws IOException {
         JsonUtilities convert = new JsonUtilities();
         String message = "The response body is: \n";
         try {
