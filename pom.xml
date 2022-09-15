@@ -6,7 +6,7 @@
 
   <groupId>com.github.Umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>1.0.8</version>
+  <version>1.0.9</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -16,8 +16,8 @@
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.version>3.8.0</maven.compiler.version>
-    <java.utilities.version>0.3.6</java.utilities.version>
-    <selenium.version>4.3.0</selenium.version>
+    <java.utilities.version>0.3.7</java.utilities.version>
+    <selenium.version>4.4.0</selenium.version>
     <retrofit.version>2.9.0</retrofit.version>
     <okhttp.version>4.10.0</okhttp.version>
   </properties>
