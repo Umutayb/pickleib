@@ -27,6 +27,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
     public enum Navigation {BACKWARDS, FORWARDS}
     public enum ElementState {ENABLED, DISPLAYED, SELECTED, DISABLED, UNSELECTED, ABSENT}
+    public enum Direction {UP, DOWN}
     public enum Locator {XPATH, CSS}
 
     public Properties properties;
@@ -404,6 +405,22 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
         waitFor(0.3);
         return element;
+    }
+
+    public void scroll(Direction direction){
+        String script;
+        switch (direction){
+            case UP:
+                script = "window.scrollBy(0,-document.body.scrollHeight)";
+                break;
+            case DOWN:
+                script = "window.scrollBy(0,document.body.scrollHeight)";
+                break;
+
+            default:
+                throw new EnumConstantNotPresentException(Direction.class, direction.name());
+        }
+        ((JavascriptExecutor) driver).executeScript(script);
     }
 
     //This method verifies current url
