@@ -408,6 +408,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     public void scroll(Direction direction){
+        log.new Info("Scrolling " + highlighted(Color.BLUE, direction.name().toLowerCase()));
         String script;
         switch (direction){
             case UP:
