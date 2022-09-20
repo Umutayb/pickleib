@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import static utils.FileUtilities.properties;
 
+@SuppressWarnings("unused")
 public class ServiceGenerator {
 
     Headers headers = new Headers.Builder().build();
@@ -66,23 +67,32 @@ public class ServiceGenerator {
                         }
                     }
                     if (request.body() != null) {
-                        request = request.newBuilder()
-                                .header("Content-Length", String.valueOf(Objects.requireNonNull(request.body()).contentLength()))
-                                .header("Content-Type", String.valueOf(Objects.requireNonNull(request.body()).contentType()))
-                                .build();
+                        Boolean contentLength = Objects.requireNonNull(request.body()).contentLength()!=0;
+                        Boolean contentType = Objects.requireNonNull(request.body()).contentType() != null;
+
+                        if (contentLength && contentType)
+                            request = request.newBuilder()
+                                    .header(
+                                            "Content-Length",
+                                            String.valueOf(Objects.requireNonNull(request.body()).contentLength()))
+                                    .header(
+                                            "Content-Type",
+                                            String.valueOf(Objects.requireNonNull(request.body()).contentType()))
+                                    .build();
                     }
                     log.new Info(("Headers(" + request.headers().size() + "): \n" + request.headers()).trim());
                     return chain.proceed(request);
                 }).build();
 
         assert BASE_URL != null;
+        @SuppressWarnings("deprecation")
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .addConverterFactory(JacksonConverterFactory.create())
                 .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .addConverterFactory(SimpleXmlConverterFactory.create()) //Deprecated
                 .addConverterFactory(MoshiConverterFactory.create())
                 .addConverterFactory(WireConverterFactory.create())
                 .addConverterFactory(ProtoConverterFactory.create())
