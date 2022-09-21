@@ -1,6 +1,7 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
+import context.TestStore;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -575,5 +576,19 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public <T> WebElement getElement(String fieldName, Class<T> inputClass){
         return (WebElement) objectUtils.getFieldValue(fieldName, inputClass);
+    }
+
+    public String contextCheck(String input){
+        if (input.contains("CONTEXT-"))
+            input = TestStore.get(new TextParser().parse("CONTEXT-", null, input)).toString();
+        if (input.contains("RANDOM-")){
+            boolean useLetters = input.contains("LETTER");
+            boolean useNumbers = input.contains("NUMBER");
+            String keyword = "";
+            if (input.contains("KEYWORD")) keyword = new TextParser().parse("-K=", "-", input);
+            int length = Integer.parseInt(new TextParser().parse("-L=", null, input));
+            input = strUtils.generateRandomString(keyword, length, useLetters, useNumbers);
+        }
+        return input;
     }
 }
