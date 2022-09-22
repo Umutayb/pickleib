@@ -19,13 +19,21 @@ import java.util.concurrent.TimeUnit;
 
 import static utils.FileUtilities.properties;
 
-@SuppressWarnings("unused")
 public class ServiceGenerator {
 
     Headers headers = new Headers.Builder().build();
+
+    String BASE_URL = "";
     private final Printer log = new Printer(ServiceGenerator.class);
 
+    public ServiceGenerator(Headers headers, String BASE_URL) {
+        this.BASE_URL = BASE_URL;
+        setHeaders(headers);
+    }
+
     public ServiceGenerator(Headers headers) {setHeaders(headers);}
+
+    public ServiceGenerator(String BASE_URL) {this.BASE_URL = BASE_URL;}
 
     public ServiceGenerator(){}
 
@@ -37,7 +45,7 @@ public class ServiceGenerator {
      */
     public <S> S generate(Class<S> serviceClass) {
 
-        String BASE_URL = (String) new ObjectUtilities().getFieldValue("BASE_URL", serviceClass);
+        if (BASE_URL.isEmpty()) BASE_URL = (String) new ObjectUtilities().getFieldValue("BASE_URL", serviceClass);
 
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         HttpLoggingInterceptor headerInterceptor = new HttpLoggingInterceptor();
