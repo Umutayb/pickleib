@@ -22,6 +22,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public TextParser parser = new TextParser();
     Printer log = new Printer(WebUtilities.class);
+    RemoteWebDriver driver;
     public StringUtilities strUtils = new StringUtilities();
     public ObjectUtilities objectUtils = new ObjectUtilities();
 
@@ -36,6 +37,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
         properties = FileUtilities.properties;
+        this.driver = browser;
     }
 
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}

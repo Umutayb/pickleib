@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public class Driver extends WebComponent {
 
-	public RemoteWebDriver driver;
+	public RemoteWebDriver browser;
 	public WebDriverWait wait;
 
 	PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
@@ -31,14 +31,14 @@ public class Driver extends WebComponent {
 
 	public void initialize(){
 		log.new Info("Initializing driver");
-		driver = driverFactory.getDriver(strUtils.firstLetterCapped(reader.getProperty("browser")), driver);
-		assert driver != null;
-		wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
+		browser = driverFactory.getDriver(strUtils.firstLetterCapped(reader.getProperty("browser")), browser);
+		assert browser != null;
+		wait = new WebDriverWait(browser, Duration.of(15, ChronoUnit.SECONDS));
 	}
 
 	public void initialize(String id, String password){ //Only works with chrome!
 		initialize();
-		DevTools dev = ((ChromeDriver) driver).getDevTools();
+		DevTools dev = ((ChromeDriver) browser).getDevTools();
 		dev.createSession();
 		dev.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		Map<String, Object> map = new HashMap<>();
@@ -48,6 +48,6 @@ public class Driver extends WebComponent {
 
 	public void terminate(){
 		log.new Info("Terminating driver...");
-		driver.quit();
+		browser.quit();
 	}
 }
