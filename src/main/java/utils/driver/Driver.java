@@ -20,8 +20,8 @@ import java.util.Optional;
 
 public class Driver extends WebComponent {
 
-	public static RemoteWebDriver driver;
-	public static WebDriverWait wait;
+	public RemoteWebDriver driver;
+	public WebDriverWait wait;
 
 	PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
 	ScreenCaptureUtility capture = new ScreenCaptureUtility();
