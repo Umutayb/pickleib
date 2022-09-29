@@ -25,12 +25,13 @@ public class Driver extends WebComponent {
 
 	PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
 	ScreenCaptureUtility capture = new ScreenCaptureUtility();
+	DriverFactory driverFactory = new DriverFactory();
 	StringUtilities strUtils = new StringUtilities();
 	Printer log = new Printer(Driver.class);
 
 	public void initialize(){
 		log.new Info("Initializing driver");
-		driver = DriverFactory.getDriver(strUtils.firstLetterCapped(reader.getProperty("browser")), driver);
+		driver = driverFactory.getDriver(strUtils.firstLetterCapped(reader.getProperty("browser")), driver);
 		assert driver != null;
 		wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
 	}

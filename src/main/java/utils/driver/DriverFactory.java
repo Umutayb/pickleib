@@ -23,7 +23,7 @@ public class DriverFactory {
 
     private static final Printer log = new Printer(DriverFactory.class);
 
-    public static RemoteWebDriver getDriver(String driverName, RemoteWebDriver driver){
+    public RemoteWebDriver getDriver(String driverName, RemoteWebDriver driver){
         Properties properties = new Properties();
         StringUtilities strUtils = new StringUtilities();
         try {
