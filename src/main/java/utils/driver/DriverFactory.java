@@ -91,8 +91,7 @@ public class DriverFactory {
                 }
             }
             driver.manage().window().setSize(new Dimension(frameWidth,frameHeight));
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            driver.manage().window().maximize();
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
             log.new Important(driverName+GRAY+" was selected");
             return driver;
         }
