@@ -80,8 +80,8 @@ public class DriverFactory {
 
                     case "safari":
                         SafariOptions safariOptions = new SafariOptions();
-//                        WebDriverManager.safaridriver().setup();
-                        System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
+                        WebDriverManager.safaridriver().setup();
+//                        System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
                         driver = new SafariDriver(safariOptions);
                         break;
 
@@ -92,7 +92,7 @@ public class DriverFactory {
             }
             driver.manage().window().setSize(new Dimension(frameWidth,frameHeight));
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
-            log.new Important(driverName+GRAY+" was selected");
+            log.new Important(driverName + GRAY + " was selected");
             return driver;
         }
         catch (Exception gamma) {
