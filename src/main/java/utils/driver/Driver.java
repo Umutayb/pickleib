@@ -1,16 +1,15 @@
 package utils.driver;
 
 import com.github.webdriverextensions.WebComponent;
+import org.apache.xerces.impl.dv.util.Base64;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v85.network.Network;
 import org.openqa.selenium.devtools.v85.network.model.Headers;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testcontainers.shaded.com.trilead.ssh2.crypto.Base64;
 import utils.Printer;
 import utils.PropertiesReader;
-import utils.ScreenCaptureUtility;
 import utils.StringUtilities;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -40,7 +39,7 @@ public class Driver extends WebComponent {
 		dev.createSession();
 		dev.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
 		Map<String, Object> map = new HashMap<>();
-		map.put("Authorization", "Basic " + new String(Base64.encode((id + ":" + password).getBytes())));
+		map.put("Authorization", "Basic " + (Base64.encode((id + ":" + password).getBytes())));
 		dev.send(Network.setExtraHTTPHeaders(new Headers(map)));
 	}
 
