@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>io.github.Umutayb</groupId>
+  <groupId>io.github.umutayb</groupId>
   <artifactId>Pickleib</artifactId>
   <version>1.2.4</version>
   <packaging>jar</packaging>
@@ -12,6 +12,22 @@
   <name>Pickleib</name>
   <description>Pickleib library for supporting web application automation with Selenium</description>
   <url>http://github.com/Umutayb/Pickleib</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Umut Ay Bora</name>
+      <email>umutaybora@gmail.com</email>
+      <organization>Bora</organization>
+      <organizationUrl>https://github.com/Umutayb</organizationUrl>
+    </developer>
+  </developers>
 
   <properties>
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
@@ -140,6 +156,7 @@
       <version>${retrofit.version}</version>
     </dependency>
 
+    <!-- Docker -->
     <dependency>
       <groupId>com.github.docker-java</groupId>
       <artifactId>docker-java</artifactId>
