@@ -29,12 +29,12 @@ public class DriverFactory {
         try {
             properties.load(new FileReader("src/test/resources/test.properties"));
 
-            int frameWidth = Integer.parseInt(properties.getProperty("frame-width"));
-            int frameHeight = Integer.parseInt(properties.getProperty("frame-height"));
+            int frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
+            int frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
 
-            if (driverName == null) driverName = strUtils.firstLetterCapped(properties.getProperty("browser"));
+            if (driverName == null) driverName = strUtils.firstLetterCapped(properties.getProperty("browser", "chrome"));
 
-            if (Boolean.parseBoolean(properties.getProperty("selenium-grid"))){
+            if (Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"))){
                 ImmutableCapabilities capabilities;
 
                 switch (driverName.toLowerCase()){
@@ -54,7 +54,7 @@ public class DriverFactory {
                         capabilities = null;
                         Assert.fail(YELLOW+"The driver type \""+driverName+"\" was undefined."+RESET);
                 }
-                driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url")), capabilities);
+                driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
             }
             else {
                 switch (driverName.toLowerCase()){
@@ -63,7 +63,7 @@ public class DriverFactory {
                         WebDriverManager.chromedriver().setup();
                         chromeOptions.addArguments("disable-notifications");
 //                        System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriver");
-                        chromeOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless")));
+                        chromeOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless","false")));
                         chromeOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
                         driver = new ChromeDriver(chromeOptions);
                         break;
@@ -73,7 +73,7 @@ public class DriverFactory {
                         WebDriverManager.firefoxdriver().setup();
                         firefoxOptions.addArguments("disable-notifications");
 //                        System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
-                        firefoxOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless")));
+                        firefoxOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless", "false")));
                         firefoxOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
                         driver = new FirefoxDriver(firefoxOptions);
                         break;
@@ -90,8 +90,14 @@ public class DriverFactory {
                         return null ;
                 }
             }
-            driver.manage().window().setSize(new Dimension(frameWidth,frameHeight));
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(30));
+            driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(
+                    Long.parseLong(properties.getProperty("driver-timeout", "15000"))
+            ));
+            if (Boolean.parseBoolean(properties.getProperty("delete-cookies", "false")))
+                driver.manage().deleteAllCookies();
+            if (Boolean.parseBoolean(properties.getProperty("driver-maximize", "false")))
+                driver.manage().window().maximize();
             log.new Important(driverName + GRAY + " was selected");
             return driver;
         }

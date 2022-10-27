@@ -18,6 +18,7 @@ import resources.Colors;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class WebUtilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
 
     public TextParser parser = new TextParser();
@@ -54,11 +55,13 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return (WebElement) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
     }
 
+    @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromPage(String elementFieldName, String pageName, Object objectRepository){
         Map<String, Object> pageFields = objectUtils.getFields(objectUtils.getFields(objectRepository).get(pageName));
         return (List<WebElement>) pageFields.get(elementFieldName);
     }
 
+    @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
         return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
     }
@@ -148,7 +151,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver.timeout")))) {
+            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 return elementIs(element, state, initialTime);
             }
@@ -161,7 +164,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         try {if (!element.isDisplayed()){throw new InvalidElementStateException("Element is not displayed!");}}
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver.timeout")))){
+            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))){
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 waitUntilElementIsVisible(element, initialTime);
             }
@@ -182,7 +185,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver.timeout")))) {
+            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 waitAndClickIfElementIsClickable(element, scroll, initialTime);
             }
@@ -235,7 +238,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver.timeout")))) {
+            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireNamedElementAmongst(items, selectionName, initialTime);
             }
@@ -254,7 +257,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver.timeout")))) {
+            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireNamedComponentAmongst(items, selectionName, initialTime);
             }
@@ -274,7 +277,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver.timeout")))) {
+            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue, initialTime);
             }
@@ -504,7 +507,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             default: throw new EnumConstantNotPresentException(Locator.class, locatorType.name());
         }
 
-        if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver.timeout"))){
+        if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver-timeout", "15000"))){
             Assert.fail(GRAY+"An element was located unexpectedly"+RESET);
             return elements;
         }
@@ -518,14 +521,14 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             subDriver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
             List<WebElement> elementPresence = driver.findElements(By.xpath(generateXPath(element,"")));
             while (elementPresence.size()>0){
-                if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver.timeout")))
+                if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver-timeout", "15000")))
                     throw new TimeoutException(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
                 elementPresence = subDriver.findElements(By.xpath(generateXPath(element,"")));
             }
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
         }
         catch (WebDriverException exception){
-            if (System.currentTimeMillis()-startTime<=Long.parseLong(properties.getProperty("driver.timeout"))) waitUntilElementIsNoLongerPresent(element, startTime);
+            if (System.currentTimeMillis()-startTime<=Long.parseLong(properties.getProperty("driver-timeout", "15000"))) waitUntilElementIsNoLongerPresent(element, startTime);
             else throw new TimeoutException(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
         }
         catch (IllegalArgumentException ignored){
@@ -535,7 +538,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     public WebElement waitUntilElementIsInvisible(WebElement element, long startTime) {
-        if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver.timeout"))) return element;
+        if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver-timeout", "15000"))) return element;
         try {
             wait.until(ExpectedConditions.invisibilityOf(element));
             return null;
@@ -545,7 +548,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        if (System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver.timeout"))){
+        if (System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000"))){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             return null;
         }
