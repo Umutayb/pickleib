@@ -34,6 +34,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public Properties properties;
 
+    public long elementTimeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"));
+
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
         properties = FileUtilities.properties;
@@ -109,62 +111,12 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
     }
 
-    //This method clicks an element after waiting it and scrolling it to the center of the view
-    public void clickElement(WebElement element, Boolean scroll){
-        waitAndClickIfElementIsClickable(element, scroll, System.currentTimeMillis());
-    }
-
-    public Boolean elementIs(WebElement element, ElementState state, long initialTime){
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        try {
-            boolean condition;
-            switch (state){
-                case ENABLED:
-                    condition = element.isEnabled();
-                    break;
-
-                case DISPLAYED:
-                    condition = element.isDisplayed();
-                    break;
-
-                case SELECTED:
-                    condition = element.isSelected();
-                    break;
-
-                case DISABLED:
-                    condition = !element.isEnabled();
-                    break;
-
-                case UNSELECTED:
-                    condition = !element.isSelected();
-                    break;
-
-                case ABSENT:
-                    condition = !element.isDisplayed();
-                    break;
-
-                default:
-                    throw new EnumConstantNotPresentException(ElementState.class, state.name());
-            }
-            if (!condition){throw new InvalidElementStateException("Element is not displayed!");}
-            else return true;
-        }
-        catch (WebDriverException exception){
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
-                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
-                return elementIs(element, state, initialTime);
-            }
-            else return false;
-        }
-    }
-
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {if (!element.isDisplayed()){throw new InvalidElementStateException("Element is not displayed!");}}
         catch (WebDriverException exception){
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))){
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
+            if (!(System.currentTimeMillis()-initialTime > elementTimeout)){
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 waitUntilElementIsVisible(element, initialTime);
             }
@@ -173,42 +125,124 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return element;
     }
 
-    public void waitAndClickIfElementIsClickable(WebElement element, Boolean scroll, long initialTime){
+    //This method clicks an element after waiting its state to be enabled and scrolling it to the center of the view
+    public void clickElement(WebElement element, Boolean scroll){waitAndClickIfElementIsClickable(element, scroll);}
+
+    public void waitAndClickIfElementIsClickable(WebElement element, Boolean scroll){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        try {
-            if (!element.isEnabled()){throw new InvalidElementStateException("Element is not enabled!");}
-            else {
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        boolean timeout = false;
+        int counter = 0;
+        waitUntilElementIs(element, ElementState.ENABLED, false);
+        do {
+            try {
                 if (scroll) centerElement(element).click();
                 else element.click();
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.new Warning("Iterating! (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                    counter++;
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.new Warning("Iterating! (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                    counter++;
+                }
+                timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             }
         }
-        catch (WebDriverException exception){
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
-                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
-                waitAndClickIfElementIsClickable(element, scroll, initialTime);
-            }
-            else throw exception;
-        }
+        while (!timeout);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds( elementTimeout / 1000));
+        if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
     }
 
-    //This method is for filling an input field, it waits for the element, scrolls to it, clears it and then fills it
     public void clearFillInput(WebElement inputElement, String inputText, Boolean scroll, Boolean verify){
-        try {
-            // This method clears the input field before filling it
-            if (scroll)
-                clearInputField(centerElement(waitUntilElementIsVisible(inputElement, System.currentTimeMillis()))).sendKeys(inputText);
-            else
-                clearInputField(waitUntilElementIsVisible(inputElement, System.currentTimeMillis())).sendKeys(inputText);
+        // This method clears the input field before filling it
+        if (scroll) clearInputField(centerElement(waitUntilElementIs(inputElement, ElementState.DISPLAYED, false)))
+                .sendKeys(inputText);
+        else
+            clearInputField(waitUntilElementIs(inputElement, ElementState.DISPLAYED, false)).sendKeys(inputText);
 
-            if (verify) Assert.assertEquals(inputElement.getAttribute("value"), inputText);
+        if (verify) Assert.assertEquals(inputElement.getAttribute("value"), inputText);
+    }
+
+    public WebElement waitUntilElementIs(WebElement element, ElementState state, Boolean strict){
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        if (strict) assert elementIs(element, state);
+        else elementIs(element, state);
+        return element;
+    }
+
+    public Boolean elementIs(WebElement element, ElementState state){
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        boolean timeout;
+        boolean condition;
+        int counter = 0;
+        do {
+            try {
+                switch (state){
+                    case ENABLED:
+                        condition = element.isEnabled();
+                        break;
+
+                    case DISPLAYED:
+                        condition = element.isDisplayed();
+                        break;
+
+                    case SELECTED:
+                        condition = element.isSelected();
+                        break;
+
+                    case DISABLED:
+                        condition = !element.isEnabled();
+                        break;
+
+                    case UNSELECTED:
+                        condition = !element.isSelected();
+                        break;
+
+                    case ABSENT:
+                        condition = !element.isDisplayed();
+                        break;
+
+                    default: throw new EnumConstantNotPresentException(ElementState.class, state.name());
+                }
+                if (condition){
+                    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds( elementTimeout / 1000));
+                    return true;
+                }
+                else {
+                    counter++;
+                    throw new WebDriverException("Element could not satisfy the condition, iterating...");
+                }
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.new Warning("Iterating! (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                    counter++;
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.new Warning("Iterating! (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                    counter++;
+                }
+                timeout = System.currentTimeMillis()-initialTime > elementTimeout;
+            }
         }
-        catch (ElementNotFoundException e){Assert.fail(GRAY+e.getMessage()+RESET);}
+        while (!timeout);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds( elementTimeout / 1000));
+        if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
+        return false;
     }
 
     public WebElement hoverOver(WebElement element, Long initialTime){
-        if (System.currentTimeMillis()-initialTime > 10000) return null;
+        if (System.currentTimeMillis() - initialTime > elementTimeout) return null;
         centerElement(element);
         Actions actions = new Actions(driver);
         try {actions.moveToElement(element).build().perform();}
@@ -217,9 +251,43 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     public void loopAndClick(List<WebElement> list, String buttonName, Boolean scroll){
-        clickElement(acquireNamedElementAmongst(list,buttonName, System.currentTimeMillis()), scroll);
+        clickElement(acquireNamedElementAmongst(list,buttonName), scroll);
     }
 
+    public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName){
+        log.new Info("Acquiring component called " + highlighted(Color.BLUE, selectionName));
+        boolean condition = true;
+        long initialTime = System.currentTimeMillis();
+        while (condition){
+            for (T selection : items) {
+                String text = ((WebElement) selection).getText();
+                if (text.equalsIgnoreCase(selectionName) || text.contains(selectionName)) return selection;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) condition = false;
+        }
+        throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
+    }
+
+    public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
+        log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
+        boolean condition = true;
+        long initialTime = System.currentTimeMillis();
+        while (condition){
+            for (WebElement selection : items) {
+                String name = selection.getAccessibleName();
+                String text = selection.getText();
+                if (    name.equalsIgnoreCase(selectionName) ||
+                        name.contains(selectionName)         ||
+                        text.equalsIgnoreCase(selectionName) ||
+                        text.contains(selectionName)
+                ) return selection;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) condition = false;
+        }
+        throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
+    }
+
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
@@ -237,8 +305,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
         }
         catch (WebDriverException exception){
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
+            if (!(System.currentTimeMillis()-initialTime > elementTimeout)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireNamedElementAmongst(items, selectionName, initialTime);
             }
@@ -246,6 +314,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
     }
 
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         try {
@@ -256,8 +325,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
         }
         catch (WebDriverException exception){
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
+            if (!(System.currentTimeMillis()-initialTime > elementTimeout)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireNamedComponentAmongst(items, selectionName, initialTime);
             }
@@ -276,8 +345,8 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
         }
         catch (WebDriverException exception){
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            if (!(System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000")))) {
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
+            if (!(System.currentTimeMillis()-initialTime > elementTimeout)) {
                 log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue, initialTime);
             }
@@ -507,7 +576,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             default: throw new EnumConstantNotPresentException(Locator.class, locatorType.name());
         }
 
-        if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver-timeout", "15000"))){
+        if ((System.currentTimeMillis() - startTime) > elementTimeout){
             Assert.fail(GRAY+"An element was located unexpectedly"+RESET);
             return elements;
         }
@@ -521,24 +590,24 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             subDriver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
             List<WebElement> elementPresence = driver.findElements(By.xpath(generateXPath(element,"")));
             while (elementPresence.size()>0){
-                if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver-timeout", "15000")))
-                    throw new TimeoutException(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
+                if ((System.currentTimeMillis() - startTime) > elementTimeout)
+                    throw new TimeoutException(GRAY+"Element was still present after " + elementTimeout /1000 + " seconds."+RESET);
                 elementPresence = subDriver.findElements(By.xpath(generateXPath(element,"")));
             }
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
         }
         catch (WebDriverException exception){
-            if (System.currentTimeMillis()-startTime<=Long.parseLong(properties.getProperty("driver-timeout", "15000"))) waitUntilElementIsNoLongerPresent(element, startTime);
-            else throw new TimeoutException(GRAY+"Element was still present after "+(System.currentTimeMillis() - startTime)/1000+" seconds."+RESET);
+            if (System.currentTimeMillis()-startTime<elementTimeout) waitUntilElementIsNoLongerPresent(element, startTime);
+            else throw new TimeoutException(GRAY+"Element was still present after " + elementTimeout /1000 + " seconds."+RESET);
         }
         catch (IllegalArgumentException ignored){
             log.new Success("The element is no longer present!");
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
         }
     }
 
     public WebElement waitUntilElementIsInvisible(WebElement element, long startTime) {
-        if ((System.currentTimeMillis() - startTime) > Long.parseLong(properties.getProperty("driver-timeout", "15000"))) return element;
+        if ((System.currentTimeMillis() - startTime) > elementTimeout) return element;
         try {
             wait.until(ExpectedConditions.invisibilityOf(element));
             return null;
@@ -548,15 +617,15 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        if (System.currentTimeMillis()-initialTime>Long.parseLong(properties.getProperty("driver-timeout", "15000"))){
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+        if (System.currentTimeMillis()-initialTime > elementTimeout){
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
             return null;
         }
         try {if (!element.isEnabled()){waitUntilElementIsClickable(element, initialTime);}}
         catch (WebDriverException exception){
             return waitUntilElementIsClickable(element, initialTime);
         }
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
         return element;
     }
 

@@ -92,7 +92,7 @@ public class DriverFactory {
             }
             driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(
-                    Long.parseLong(properties.getProperty("driver-timeout", "15000"))
+                    Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000
             ));
             if (Boolean.parseBoolean(properties.getProperty("delete-cookies", "false")))
                 driver.manage().deleteAllCookies();
