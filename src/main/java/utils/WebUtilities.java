@@ -2,6 +2,7 @@ package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
 import context.TestStore;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -34,7 +35,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public Properties properties;
 
-    public long elementTimeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"));
+    public long elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
@@ -111,6 +112,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
     }
 
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {if (!element.isDisplayed()){throw new InvalidElementStateException("Element is not displayed!");}}
@@ -128,7 +130,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     //This method clicks an element after waiting its state to be enabled and scrolling it to the center of the view
     public void clickElement(WebElement element, Boolean scroll){waitAndClickIfElementIsClickable(element, scroll);}
 
-    public void waitAndClickIfElementIsClickable(WebElement element, Boolean scroll){
+    public void waitAndClickIfElementIsClickable(WebElement element, @NotNull Boolean scroll){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
@@ -142,12 +144,12 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
-                    log.new Warning("Iterating! (" + webDriverException.getClass().getName() + ")");
+                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                     counter++;
                 }
                 else if (!webDriverException.getClass().getName().equals(caughtException)){
-                    log.new Warning("Iterating! (" + webDriverException.getClass().getName() + ")");
+                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                     counter++;
                 }
@@ -159,7 +161,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
     }
 
-    public void clearFillInput(WebElement inputElement, String inputText, Boolean scroll, Boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
         // This method clears the input field before filling it
         if (scroll) clearInputField(centerElement(waitUntilElementIs(inputElement, ElementState.DISPLAYED, false)))
                 .sendKeys(inputText);
@@ -169,14 +171,14 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         if (verify) Assert.assertEquals(inputElement.getAttribute("value"), inputText);
     }
 
-    public WebElement waitUntilElementIs(WebElement element, ElementState state, Boolean strict){
+    public WebElement waitUntilElementIs(WebElement element, ElementState state, @NotNull Boolean strict){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         if (strict) assert elementIs(element, state);
         else elementIs(element, state);
         return element;
     }
 
-    public Boolean elementIs(WebElement element, ElementState state){
+    public Boolean elementIs(WebElement element, @NotNull ElementState state){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
@@ -223,12 +225,12 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
-                    log.new Warning("Iterating! (" + webDriverException.getClass().getName() + ")");
+                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                     counter++;
                 }
                 else if (!webDriverException.getClass().getName().equals(caughtException)){
-                    log.new Warning("Iterating! (" + webDriverException.getClass().getName() + ")");
+                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                     counter++;
                 }
@@ -240,13 +242,42 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
         return false;
     }
-
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement hoverOver(WebElement element, Long initialTime){
         if (System.currentTimeMillis() - initialTime > elementTimeout) return null;
         centerElement(element);
         Actions actions = new Actions(driver);
         try {actions.moveToElement(element).build().perform();}
         catch (WebDriverException ignored) {hoverOver(element,initialTime);}
+        return element;
+    }
+
+    public WebElement hoverOver(WebElement element){
+        long initialTime = System.currentTimeMillis();
+        Actions actions = new Actions(driver);
+        String caughtException = null;
+        boolean timeout = false;
+        int counter = 0;
+        do {
+            try {
+                centerElement(element);
+                actions.moveToElement(element).build().perform();
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                    counter++;
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                    counter++;
+                }
+                timeout = System.currentTimeMillis()-initialTime > elementTimeout;
+            }
+        }
+        while (timeout);
         return element;
     }
 
@@ -288,7 +319,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     @Deprecated(since = "1.2.7", forRemoval = true)
-    public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName, long initialTime){
+    public WebElement acquireNamedElementAmongst(@NotNull List<WebElement> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
@@ -315,7 +346,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     }
 
     @Deprecated(since = "1.2.7", forRemoval = true)
-    public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName, long initialTime){
+    public <T> T acquireNamedComponentAmongst(@NotNull List<T> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         try {
             for (T selection : items) {
@@ -334,7 +365,22 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
     }
 
-    public WebElement acquireElementUsingAttributeAmongst(List<WebElement> elements, String attributeName, String attributeValue, long initialTime){
+    public WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue){
+        log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
+        boolean condition = true;
+        long initialTime = System.currentTimeMillis();
+        while (condition){
+            for (WebElement selection : items) {
+                String attribute = selection.getAttribute(attributeName);
+                if (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue)) return selection;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) condition = false;
+        }
+        throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
+    }
+
+    @Deprecated(since = "1.2.7", forRemoval = true)
+    public WebElement acquireElementUsingAttributeAmongst(@NotNull List<WebElement> elements, String attributeName, String attributeValue, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
@@ -369,7 +415,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
     public void clickButtonWithText(String buttonText, Boolean scroll){clickElement(getElementByText(buttonText), scroll);}
 
     //This method clears an input field /w style
-    public WebElement clearInputField(WebElement element){
+    public WebElement clearInputField(@NotNull WebElement element){
         int textLength = element.getAttribute("value").length();
         for(int i = 0; i < textLength; i++){element.sendKeys(Keys.BACK_SPACE);}
         return element;
@@ -457,7 +503,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public Alert getAlert(){return driver.switchTo().alert();}
 
-    public void uploadFile(WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
+    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
 
     public String combineKeys(Keys key1, Keys key2){return Keys.chord(key1,key2);}
 
@@ -480,7 +526,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return element;
     }
 
-    public void scroll(Direction direction){
+    public void scroll(@NotNull Direction direction){
         log.new Info("Scrolling " + highlighted(Color.BLUE, direction.name().toLowerCase()));
         String script;
         switch (direction){
@@ -544,7 +590,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return null;
     }
 
-    public String generateXPath(WebElement childElement, String current) {
+    public String generateXPath(@NotNull WebElement childElement, String current) {
         String childTag = childElement.getTagName();
         if (childTag.equals("html")) {return "/html[1]" + current;}
         WebElement parentElement = childElement.findElement(By.xpath(".."));
@@ -560,7 +606,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return null;
     }
 
-    public List<WebElement> verifyAbsenceOfElementLocatedBy(Locator locatorType, String locator, long startTime){
+    public List<WebElement> verifyAbsenceOfElementLocatedBy(@NotNull Locator locatorType, String locator, long startTime){
 
         List<WebElement> elements;
 
@@ -584,6 +630,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         else return null;
     }
 
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public void waitUntilElementIsNoLongerPresent(WebElement element, long startTime){
         try {
             WebDriver subDriver = driver;
@@ -606,6 +653,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         }
     }
 
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement waitUntilElementIsInvisible(WebElement element, long startTime) {
         if ((System.currentTimeMillis() - startTime) > elementTimeout) return element;
         try {
@@ -615,6 +663,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         catch (TimeoutException e) {return waitUntilElementIsInvisible(element, startTime);}
     }
 
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         if (System.currentTimeMillis()-initialTime > elementTimeout){
@@ -637,6 +686,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", webElement);
     }
 
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public boolean elementIsDisplayed(WebElement element, long startTime) {
         if ((System.currentTimeMillis() - startTime) > 10000) return false;
         try {return element.isDisplayed();}
@@ -650,7 +700,7 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
         return (WebElement) objectUtils.getFieldValue(fieldName, inputClass);
     }
 
-    public String contextCheck(String input){
+    public String contextCheck(@NotNull String input){
         if (input.contains("CONTEXT-"))
             input = TestStore.get(new TextParser().parse("CONTEXT-", null, input)).toString();
         if (input.contains("RANDOM-")){
