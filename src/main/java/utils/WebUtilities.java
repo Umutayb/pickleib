@@ -20,7 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public abstract class WebUtilities extends Driver { //TODO: Write a method which creates a unique css selector for elements
+public abstract class WebUtilities extends Driver {
+    //TODO: Write a method which creates a unique css selector for elements
+    //TODO: Method has to loop through the parents of the element and add tag names back to back, then add unique
+    //TODO: attributes of the element at the lowest level (target element)
 
     public TextParser parser = new TextParser();
     Printer log = new Printer(WebUtilities.class);
@@ -35,11 +38,12 @@ public abstract class WebUtilities extends Driver { //TODO: Write a method which
 
     public Properties properties;
 
-    public long elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
+    public long elementTimeout;
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
         properties = FileUtilities.properties;
+        elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
     }
 
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
