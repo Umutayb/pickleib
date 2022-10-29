@@ -228,13 +228,12 @@ public abstract class WebUtilities extends Driver {
                 if (counter == 0) {
                     log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
-                    counter++;
                 }
                 else if (!webDriverException.getClass().getName().equals(caughtException)){
                     log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
-                    counter++;
                 }
+                counter++;
                 timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             }
         }
