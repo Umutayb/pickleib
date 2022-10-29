@@ -136,13 +136,14 @@ public abstract class WebUtilities extends Driver {
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
-        boolean timeout = false;
+        boolean timeout;
         int counter = 0;
         waitUntilElementIs(element, ElementState.ENABLED, false);
         do {
             try {
                 if (scroll) centerElement(element).click();
                 else element.click();
+                break;
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
@@ -262,6 +263,7 @@ public abstract class WebUtilities extends Driver {
             try {
                 centerElement(element);
                 actions.moveToElement(element).build().perform();
+                break;
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
@@ -287,23 +289,23 @@ public abstract class WebUtilities extends Driver {
 
     public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName){
         log.new Info("Acquiring component called " + highlighted(Color.BLUE, selectionName));
-        boolean condition = true;
+        boolean timeout = false;
         long initialTime = System.currentTimeMillis();
-        while (condition){
+        while (!timeout){
             for (T selection : items) {
                 String text = ((WebElement) selection).getText();
                 if (text.equalsIgnoreCase(selectionName) || text.contains(selectionName)) return selection;
             }
-            if (System.currentTimeMillis() - initialTime > elementTimeout) condition = false;
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
         }
         throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
     }
 
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
-        boolean condition = true;
+        boolean timeout = false;
         long initialTime = System.currentTimeMillis();
-        while (condition){
+        while (!timeout){
             for (WebElement selection : items) {
                 String name = selection.getAccessibleName();
                 String text = selection.getText();
@@ -313,7 +315,7 @@ public abstract class WebUtilities extends Driver {
                         text.contains(selectionName)
                 ) return selection;
             }
-            if (System.currentTimeMillis() - initialTime > elementTimeout) condition = false;
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
         }
         throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
     }
