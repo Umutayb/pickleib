@@ -132,9 +132,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     //This method clicks an element after waiting its state to be enabled and scrolling it to the center of the view
-    public void clickElement(WebElement element, Boolean scroll){waitAndClickIfElementIsClickable(element, scroll);}
-
-    public void waitAndClickIfElementIsClickable(WebElement element, @NotNull Boolean scroll){
+    public void clickElement(WebElement element, Boolean scroll){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
