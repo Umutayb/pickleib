@@ -133,49 +133,48 @@ public abstract class WebUtilities extends Driver {
 
     //This method clicks an element after waiting its state to be enabled and scrolling it to the center of the view
     public void clickElement(WebElement element, Boolean scroll){
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         long initialTime = System.currentTimeMillis();
-        String caughtException = null;
+        WebDriverException caughtException = null;
         boolean timeout;
         int counter = 0;
         waitUntilElementIs(element, ElementState.ENABLED, false);
         do {
+            timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             try {
                 if (scroll) centerElement(element).click();
                 else element.click();
-                break;
+                return;
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
                     log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
+                    caughtException = webDriverException;
                 }
-                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
                     log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
+                    caughtException = webDriverException;
                 }
                 counter++;
-                timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             }
         }
         while (!timeout);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds( elementTimeout / 1000));
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
+        log.new Warning(caughtException.getMessage());
+        throw new RuntimeException(caughtException);
     }
 
     public void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
         // This method clears the input field before filling it
         if (scroll) clearInputField(centerElement(waitUntilElementIs(inputElement, ElementState.DISPLAYED, false)))
                 .sendKeys(inputText);
-        else
-            clearInputField(waitUntilElementIs(inputElement, ElementState.DISPLAYED, false)).sendKeys(inputText);
+        else clearInputField(waitUntilElementIs(inputElement, ElementState.DISPLAYED, false))
+                .sendKeys(inputText);
 
-        if (verify) Assert.assertEquals(inputElement.getAttribute("value"), inputText);
+        if (verify) Assert.assertEquals(inputText, inputElement.getAttribute("value"));
     }
 
     public WebElement waitUntilElementIs(WebElement element, ElementState state, @NotNull Boolean strict){
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        if (strict) assert elementIs(element, state);
+        if (strict) Assert.assertTrue("Element is not in " + state.name() + " state!", elementIs(element, state));
         else elementIs(element, state);
         return element;
     }
@@ -188,6 +187,7 @@ public abstract class WebUtilities extends Driver {
         boolean condition;
         int counter = 0;
         do {
+            timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             try {
                 switch (state){
                     case ENABLED:
@@ -216,14 +216,7 @@ public abstract class WebUtilities extends Driver {
 
                     default: throw new EnumConstantNotPresentException(ElementState.class, state.name());
                 }
-                if (condition){
-                    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds( elementTimeout / 1000));
-                    return true;
-                }
-                else {
-                    counter++;
-                    throw new WebDriverException("Element could not satisfy the condition, iterating...");
-                }
+                if (condition) return true;
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
@@ -235,11 +228,9 @@ public abstract class WebUtilities extends Driver {
                     caughtException = webDriverException.getClass().getName();
                 }
                 counter++;
-                timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             }
         }
         while (!timeout);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds( elementTimeout / 1000));
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
         return false;
     }
@@ -257,7 +248,7 @@ public abstract class WebUtilities extends Driver {
         long initialTime = System.currentTimeMillis();
         Actions actions = new Actions(driver);
         String caughtException = null;
-        boolean timeout = false;
+        boolean timeout;
         int counter = 0;
         do {
             try {
@@ -491,9 +482,9 @@ public abstract class WebUtilities extends Driver {
     public void refreshThePage(){driver.navigate().refresh();}
 
     //This method clicks an element at an offset
-    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset){
+    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset, boolean scroll){
 
-        centerElement(element);
+        if (scroll) centerElement(element);
 
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
         builder
