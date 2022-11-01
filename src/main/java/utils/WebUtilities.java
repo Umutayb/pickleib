@@ -185,6 +185,7 @@ public abstract class WebUtilities extends Driver {
         String caughtException = null;
         boolean timeout;
         boolean condition;
+        boolean negativeCheck;
         int counter = 0;
         do {
             timeout = System.currentTimeMillis()-initialTime > elementTimeout;
@@ -192,31 +193,38 @@ public abstract class WebUtilities extends Driver {
                 switch (state){
                     case ENABLED:
                         condition = element.isEnabled();
+                        negativeCheck = false;
                         break;
 
                     case DISPLAYED:
                         condition = element.isDisplayed();
+                        negativeCheck = false;
                         break;
 
                     case SELECTED:
                         condition = element.isSelected();
+                        negativeCheck = false;
                         break;
 
                     case DISABLED:
                         condition = !element.isEnabled();
+                        negativeCheck = true;
                         break;
 
                     case UNSELECTED:
                         condition = !element.isSelected();
+                        negativeCheck = true;
                         break;
 
                     case ABSENT:
                         condition = !element.isDisplayed();
+                        negativeCheck = true;
                         break;
 
                     default: throw new EnumConstantNotPresentException(ElementState.class, state.name());
                 }
                 if (condition) return true;
+                else if (counter > 1 && negativeCheck) return true;
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
@@ -240,7 +248,7 @@ public abstract class WebUtilities extends Driver {
         centerElement(element);
         Actions actions = new Actions(driver);
         try {actions.moveToElement(element).build().perform();}
-        catch (WebDriverException ignored) {hoverOver(element,initialTime);}
+        catch (WebDriverException ignored) {hoverOver(element, initialTime);}
         return element;
     }
 

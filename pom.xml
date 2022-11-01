@@ -6,7 +6,7 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>1.2.9</version>
+  <version>1.3.0</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -33,9 +33,9 @@
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.version>3.8.0</maven.compiler.version>
-    <java.utilities.version>1.0.6</java.utilities.version>
+    <java.utilities.version>1.0.7</java.utilities.version>
     <docker-java.version>3.2.12</docker-java.version>
-    <selenium.version>4.5.0</selenium.version>
+    <selenium.version>4.5.3</selenium.version>
     <retrofit.version>2.9.0</retrofit.version>
     <okhttp.version>4.10.0</okhttp.version>
   </properties>
@@ -75,6 +75,24 @@
       <artifactId>selenium-api</artifactId>
       <version>${selenium.version}</version>
     </dependency>
+
+    <!-- Google Simple Json
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1.1</version>
+      <scope>compile</scope>
+    </dependency>-->
+
+    <!-- Framework
+    <dependency>
+      <groupId>bora</groupId>
+      <artifactId>Utilities-1.0.7-SNAPSHOT.jar</artifactId>
+      <version>1.0.7-SNAPSHOT</version>
+      <systemPath>${project.basedir}/lib/Utilities-1.0.7-SNAPSHOT.jar</systemPath>
+      <scope>system</scope>
+      <type>jar</type>
+    </dependency>-->
 
     <!-- Gson -->
     <dependency>
@@ -291,7 +309,6 @@
           </execution>
         </executions>
       </plugin>
-
     </plugins>
   </build>
 </project>

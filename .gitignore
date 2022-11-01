@@ -5,3 +5,4 @@
 POM-Framework.iml
 *.iml
 .DS_Store
+/lib/
