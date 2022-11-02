@@ -184,47 +184,47 @@ public abstract class WebUtilities extends Driver {
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
         boolean timeout;
-        boolean condition;
-        boolean negativeCheck;
+        boolean condition = false;
+        boolean negativeCheck = false;
         int counter = 0;
         do {
             timeout = System.currentTimeMillis()-initialTime > elementTimeout;
+            if (condition) return true;
+            else if (counter > 1 && negativeCheck) return true;
             try {
                 switch (state){
                     case ENABLED:
-                        condition = element.isEnabled();
                         negativeCheck = false;
+                        condition = element.isEnabled();
                         break;
 
                     case DISPLAYED:
-                        condition = element.isDisplayed();
                         negativeCheck = false;
+                        condition = element.isDisplayed();
                         break;
 
                     case SELECTED:
-                        condition = element.isSelected();
                         negativeCheck = false;
+                        condition = element.isSelected();
                         break;
 
                     case DISABLED:
-                        condition = !element.isEnabled();
                         negativeCheck = true;
+                        condition = !element.isEnabled();
                         break;
 
                     case UNSELECTED:
-                        condition = !element.isSelected();
                         negativeCheck = true;
+                        condition = !element.isSelected();
                         break;
 
                     case ABSENT:
-                        condition = !element.isDisplayed();
                         negativeCheck = true;
+                        condition = !element.isDisplayed();
                         break;
 
                     default: throw new EnumConstantNotPresentException(ElementState.class, state.name());
                 }
-                if (condition) return true;
-                else if (counter > 1 && negativeCheck) return true;
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
