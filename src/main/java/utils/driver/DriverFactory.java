@@ -1,6 +1,5 @@
 package utils.driver;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Assert;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.ImmutableCapabilities;
@@ -31,6 +30,7 @@ public class DriverFactory {
 
             int frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
             int frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
+            long timeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000;
 
             if (driverName == null) driverName = strUtils.firstLetterCapped(properties.getProperty("browser", "chrome"));
 
@@ -60,9 +60,7 @@ public class DriverFactory {
                 switch (driverName.toLowerCase()){
                     case "chrome":
                         ChromeOptions chromeOptions = new ChromeOptions();
-                        WebDriverManager.chromedriver().setup();
                         chromeOptions.addArguments("disable-notifications");
-//                        System.setProperty("webdriver.chrome.driver", "src/test/resources/drivers/chromedriver");
                         chromeOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless","false")));
                         chromeOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
                         driver = new ChromeDriver(chromeOptions);
@@ -70,9 +68,7 @@ public class DriverFactory {
 
                     case "firefox":
                         FirefoxOptions firefoxOptions = new FirefoxOptions();
-                        WebDriverManager.firefoxdriver().setup();
                         firefoxOptions.addArguments("disable-notifications");
-//                        System.setProperty("webdriver.gecko.driver", "src/test/resources/drivers/geckodriver");
                         firefoxOptions.setHeadless(Boolean.parseBoolean(properties.getProperty("headless", "false")));
                         firefoxOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
                         driver = new FirefoxDriver(firefoxOptions);
@@ -80,8 +76,6 @@ public class DriverFactory {
 
                     case "safari":
                         SafariOptions safariOptions = new SafariOptions();
-                        WebDriverManager.safaridriver().setup();
-//                        System.setProperty("webdriver.safari.driver","/usr/bin/safaridriver.");
                         driver = new SafariDriver(safariOptions);
                         break;
 
@@ -91,9 +85,7 @@ public class DriverFactory {
                 }
             }
             driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(
-                    Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000
-            ));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
             if (Boolean.parseBoolean(properties.getProperty("delete-cookies", "false")))
                 driver.manage().deleteAllCookies();
             if (Boolean.parseBoolean(properties.getProperty("driver-maximize", "false")))

@@ -26,7 +26,7 @@ public abstract class WebUtilities extends Driver {
     //TODO: attributes of the element at the lowest level (target element)
 
     public TextParser parser = new TextParser();
-    Printer log = new Printer(WebUtilities.class);
+    public Printer log = new Printer(this.getClass());
     public StringUtilities strUtils = new StringUtilities();
     public ObjectUtilities objectUtils = new ObjectUtilities();
 
@@ -242,6 +242,7 @@ public abstract class WebUtilities extends Driver {
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
         return false;
     }
+
     @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement hoverOver(WebElement element, Long initialTime){
         if (System.currentTimeMillis() - initialTime > elementTimeout) return null;
