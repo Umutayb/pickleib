@@ -1,7 +1,6 @@
 package utils;
 
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
-import context.TestStore;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -12,6 +11,7 @@ import org.json.simple.JSONObject;
 import static resources.Colors.*;
 import org.openqa.selenium.*;
 import java.util.Properties;
+import context.ContextStore;
 import utils.driver.Driver;
 import java.time.Duration;
 import org.junit.Assert;
@@ -704,7 +704,7 @@ public abstract class WebUtilities extends Driver {
 
     public String contextCheck(@NotNull String input){
         if (input.contains("CONTEXT-"))
-            input = TestStore.get(new TextParser().parse("CONTEXT-", null, input)).toString();
+            input = ContextStore.get(new TextParser().parse("CONTEXT-", null, input)).toString();
         if (input.contains("RANDOM-")){
             boolean useLetters = input.contains("LETTER");
             boolean useNumbers = input.contains("NUMBER");
