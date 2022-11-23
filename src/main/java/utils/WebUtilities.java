@@ -16,6 +16,8 @@ import utils.driver.Driver;
 import java.time.Duration;
 import org.junit.Assert;
 import resources.Colors;
+import exceptions.PickleibException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -49,13 +51,19 @@ public abstract class WebUtilities extends Driver {
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 
     public WebElement getElementFromPage(String elementFieldName, String pageName, Object objectRepository){
-        Map<String, Object> pageFields = objectUtils.getFields(objectUtils.getFields(objectRepository).get(pageName));
+        Map<String, Object> pageFields;
+        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
         return (WebElement) pageFields.get(elementFieldName);
     }
 
     public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName, Object objectRepository){
-        Map<String, Object> pageFields = objectUtils.getFields(objectUtils.getFields(objectRepository).get(pageName));
-        return objectUtils.getFields(pageFields.get(componentName));
+        Map<String, Object> componentFields;
+        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
+        if (pageObject != null) componentFields = objectUtils.getFields(pageObject);
+        else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
+        return objectUtils.getFields(componentFields.get(componentName));
     }
 
     public WebElement getElementFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
@@ -64,7 +72,10 @@ public abstract class WebUtilities extends Driver {
 
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromPage(String elementFieldName, String pageName, Object objectRepository){
-        Map<String, Object> pageFields = objectUtils.getFields(objectUtils.getFields(objectRepository).get(pageName));
+        Map<String, Object> pageFields;
+        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
         return (List<WebElement>) pageFields.get(elementFieldName);
     }
 
@@ -160,7 +171,41 @@ public abstract class WebUtilities extends Driver {
         while (!timeout);
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
         log.new Warning(caughtException.getMessage());
-        throw new RuntimeException(caughtException);
+        throw new PickleibException(caughtException);
+    }
+
+    //This method clicks an element after waiting its state to be enabled and scrolling it to the center of the view
+    public void clickIfPresent(WebElement element, Boolean scroll){
+        try {
+            long initialTime = System.currentTimeMillis();
+            WebDriverException caughtException = null;
+            boolean timeout;
+            int counter = 0;
+            waitUntilElementIs(element, ElementState.ENABLED, false);
+            do {
+                timeout = System.currentTimeMillis()-initialTime > elementTimeout;
+                try {
+                    if (scroll) centerElement(element).click();
+                    else element.click();
+                    return;
+                }
+                catch (WebDriverException webDriverException){
+                    if (counter == 0) {
+                        log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                        caughtException = webDriverException;
+                    }
+                    else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
+                        log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                        caughtException = webDriverException;
+                    }
+                    counter++;
+                }
+            }
+            while (!timeout);
+            if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
+            log.new Warning(caughtException.getMessage());
+        }
+        catch (WebDriverException exception){log.new Warning(exception.getMessage());}
     }
 
     public void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
@@ -705,13 +750,17 @@ public abstract class WebUtilities extends Driver {
     public String contextCheck(@NotNull String input){
         if (input.contains("CONTEXT-"))
             input = ContextStore.get(new TextParser().parse("CONTEXT-", null, input)).toString();
-        if (input.contains("RANDOM-")){
+        else if (input.contains("RANDOM-")){
             boolean useLetters = input.contains("LETTER");
             boolean useNumbers = input.contains("NUMBER");
             String keyword = "";
             if (input.contains("KEYWORD")) keyword = new TextParser().parse("-K=", "-", input);
             int length = Integer.parseInt(new TextParser().parse("-L=", null, input));
             input = strUtils.generateRandomString(keyword, length, useLetters, useNumbers);
+        }
+        else if (input.contains("UPLOAD-")){
+            String relativePath = new TextParser().parse("UPLOAD-", null, input);
+            input = new FileUtilities().getAbsolutePath(relativePath);
         }
         return input;
     }
