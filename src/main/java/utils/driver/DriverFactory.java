@@ -26,15 +26,22 @@ public class DriverFactory {
 
     private static final Printer log = new Printer(DriverFactory.class);
 
+    static int frameWidth;
+    static int frameHeight;
+    static long driverTimeout;
+    static boolean headless;
+    static boolean deleteCookies;
+    static boolean maximise;
+
     public static RemoteWebDriver getDriver(String driverName){
         Properties properties = new Properties();
         StringUtilities strUtils = new StringUtilities();
-        int frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
-        int frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
-        long timeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000;
-        boolean headless = Boolean.parseBoolean(properties.getProperty("headless", "false"));
-        boolean deleteCookies = Boolean.parseBoolean(properties.getProperty("delete-cookies", "false"));
-        boolean maximise = Boolean.parseBoolean(properties.getProperty("driver-maximize", "false"));
+        frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
+        frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
+        driverTimeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000;
+        headless = Boolean.parseBoolean(properties.getProperty("headless", "false"));
+        deleteCookies = Boolean.parseBoolean(properties.getProperty("delete-cookies", "false"));
+        maximise = Boolean.parseBoolean(properties.getProperty("driver-maximize", "false"));
         RemoteWebDriver driver;
         try {
             properties.load(new FileReader("src/test/resources/test.properties"));
@@ -57,25 +64,11 @@ public class DriverFactory {
             else {driver = driverSwitch(headless, frameWidth, frameHeight, driverName);}
             assert driver != null;
             driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             log.new Important(driverName + GRAY + " was selected");
             return driver;
-        }
-        catch (SessionNotCreatedException sessionException){
-            if (sessionException.getLocalizedMessage().contains("Could not start a new session. Response code 500. Message: session not created: This version of")){
-                log.new Warning("Using WebDriverManager...");
-                driver = driverSwitch(headless, frameWidth, frameHeight, driverName);
-                assert driver != null;
-                driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
-                if (deleteCookies) driver.manage().deleteAllCookies();
-                if (maximise) driver.manage().window().maximize();
-                log.new Important(driverName + GRAY + " was selected");
-                return driver;
-            }
-            else {throw new RuntimeException(sessionException);}
         }
         catch (IOException malformedURLException) {throw new RuntimeException(malformedURLException);}
         catch (Exception gamma) {
@@ -88,35 +81,51 @@ public class DriverFactory {
         }
     }
 
-    static RemoteWebDriver driverSwitch(Boolean headless, Integer frameWidth, Integer frameHeight, String driverName){
+    static RemoteWebDriver driverSwitch(
+            Boolean headless,
+            Integer frameWidth,
+            Integer frameHeight,
+            String driverName){
         RemoteWebDriver driver;
-        switch (Objects.requireNonNull(driverName).toLowerCase()) {
-            case "chrome" -> {
-                ChromeOptions chromeOptions = new ChromeOptions();
-                chromeOptions.addArguments("disable-notifications");
-                chromeOptions.setHeadless(headless);
-                chromeOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
-                WebDriverManager.chromedriver().setup();
-                driver = new ChromeDriver(chromeOptions);
+        boolean timeout;
+        boolean useWDM = false;
+        long prius = System.currentTimeMillis();
+        do {
+            timeout = System.currentTimeMillis() - prius > driverTimeout;
+            if (useWDM) log.new Warning("Using WebDriverManager...");
+            try {
+                switch (Objects.requireNonNull(driverName).toLowerCase()) {
+                    case "chrome" -> {
+                        ChromeOptions chromeOptions = new ChromeOptions();
+                        chromeOptions.addArguments("disable-notifications");
+                        chromeOptions.setHeadless(headless);
+                        chromeOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
+                        if (useWDM) WebDriverManager.chromedriver().setup();
+                        driver = new ChromeDriver(chromeOptions);
+                    }
+                    case "firefox" -> {
+                        FirefoxOptions firefoxOptions = new FirefoxOptions();
+                        firefoxOptions.addArguments("disable-notifications");
+                        firefoxOptions.setHeadless(headless);
+                        firefoxOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
+                        if (useWDM) WebDriverManager.firefoxdriver().setup();
+                        driver = new FirefoxDriver(firefoxOptions);
+                    }
+                    case "safari" -> {
+                        SafariOptions safariOptions = new SafariOptions();
+                        if (useWDM) WebDriverManager.safaridriver().setup();
+                        driver = new SafariDriver(safariOptions);
+                    }
+                    default -> {
+                        Assert.fail("No such driver was defined.");
+                        return null;
+                    }
+                }
+                return driver;
             }
-            case "firefox" -> {
-                FirefoxOptions firefoxOptions = new FirefoxOptions();
-                firefoxOptions.addArguments("disable-notifications");
-                firefoxOptions.setHeadless(headless);
-                firefoxOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
-                WebDriverManager.firefoxdriver().setup();
-                driver = new FirefoxDriver(firefoxOptions);
-            }
-            case "safari" -> {
-                SafariOptions safariOptions = new SafariOptions();
-                WebDriverManager.safaridriver().setup();
-                driver = new SafariDriver(safariOptions);
-            }
-            default -> {
-                Assert.fail("No such driver was defined.");
-                return null;
-            }
+            catch (SessionNotCreatedException sessionException){useWDM = true;}
         }
-        return driver;
+        while (!timeout);
+        return null;
     }
 }
