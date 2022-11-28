@@ -40,23 +40,14 @@ public class DriverFactory {
 
             if (Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"))){
                 ImmutableCapabilities capabilities;
-
-                switch (driverName.toLowerCase()){
-                    case "chrome":
-                        capabilities = new ImmutableCapabilities("browserName", "chrome");
-                        break;
-
-                    case "firefox":
-                        capabilities = new ImmutableCapabilities("browserName", "firefox");
-                        break;
-
-                    case "opera":
-                        capabilities = new ImmutableCapabilities("browserName", "opera");
-                        break;
-
-                    default:
+                switch (driverName.toLowerCase()) {
+                    case "chrome" -> capabilities = new ImmutableCapabilities("browserName", "chrome");
+                    case "firefox" -> capabilities = new ImmutableCapabilities("browserName", "firefox");
+                    case "opera" -> capabilities = new ImmutableCapabilities("browserName", "opera");
+                    default -> {
                         capabilities = null;
-                        Assert.fail(YELLOW+"The driver type \""+driverName+"\" was undefined."+RESET);
+                        Assert.fail(YELLOW + "The driver type \"" + driverName + "\" was undefined." + RESET);
+                    }
                 }
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
             }
@@ -133,9 +124,7 @@ public class DriverFactory {
                 log.new Important(driverName + GRAY + " was selected");
                 return driver;
             }
-            else {
-                throw new RuntimeException(sessionException);
-            }
+            else {throw new RuntimeException(sessionException);}
         }
         catch (IOException malformedURLException) {throw new RuntimeException(malformedURLException);}
         catch (Exception gamma) {
@@ -143,7 +132,8 @@ public class DriverFactory {
                 log.new Info("Please make sure the "+PURPLE+"Selenium Grid "+GRAY+"is on & verify the port that its running on at 'resources/test.properties'."+RESET);
                 throw new RuntimeException(gamma);
             }
-            else {throw new RuntimeException(YELLOW+"Something went wrong while selecting a driver "+"\n\t"+RED+gamma+RESET);}
+            else
+            {throw new RuntimeException(YELLOW+"Something went wrong while selecting a driver "+"\n\t"+RED+gamma+RESET);}
         }
     }
 }
