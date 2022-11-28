@@ -40,7 +40,7 @@ public abstract class WebUtilities extends Driver {
 
     public Properties properties;
 
-    public long elementTimeout;
+    public static long elementTimeout;
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
