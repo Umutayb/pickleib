@@ -54,8 +54,7 @@ public class DriverFactory {
                 }
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
             }
-            else {
-                driver = driverSwitch(headless, frameWidth, frameHeight, driverName);}
+            else {driver = driverSwitch(headless, frameWidth, frameHeight, driverName);}
             assert driver != null;
             driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeout));
@@ -66,6 +65,7 @@ public class DriverFactory {
         }
         catch (SessionNotCreatedException sessionException){
             if (sessionException.getLocalizedMessage().contains("Could not start a new session. Response code 500. Message: session not created: This version of")){
+                log.new Warning("Using WebDriverManager...");
                 driver = driverSwitch(headless, frameWidth, frameHeight, driverName);
                 assert driver != null;
                 driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
