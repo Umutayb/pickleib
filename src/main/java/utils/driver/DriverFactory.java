@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Objects;
-import java.util.Properties;
 import static resources.Colors.*;
+import static utils.FileUtilities.properties;
 
 public class DriverFactory {
 
@@ -34,7 +34,6 @@ public class DriverFactory {
     static boolean maximise;
 
     public static RemoteWebDriver getDriver(String driverName){
-        Properties properties = new Properties();
         StringUtilities strUtils = new StringUtilities();
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
         frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
@@ -61,7 +60,7 @@ public class DriverFactory {
                 }
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
             }
-            else {driver = driverSwitch(headless, frameWidth, frameHeight, driverName);}
+            else {driver = driverSwitch(headless, false, frameWidth, frameHeight, driverName);}
             assert driver != null;
             driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
@@ -83,49 +82,44 @@ public class DriverFactory {
 
     static RemoteWebDriver driverSwitch(
             Boolean headless,
+            Boolean useWDM,
             Integer frameWidth,
             Integer frameHeight,
             String driverName){
-        RemoteWebDriver driver;
-        boolean timeout;
-        boolean useWDM = false;
-        long prius = System.currentTimeMillis();
-        do {
-            timeout = System.currentTimeMillis() - prius > driverTimeout;
-            if (useWDM) log.new Warning("Using WebDriverManager...");
-            try {
-                switch (Objects.requireNonNull(driverName).toLowerCase()) {
-                    case "chrome" -> {
-                        ChromeOptions chromeOptions = new ChromeOptions();
-                        chromeOptions.addArguments("disable-notifications");
-                        chromeOptions.setHeadless(headless);
-                        chromeOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
-                        if (useWDM) WebDriverManager.chromedriver().setup();
-                        driver = new ChromeDriver(chromeOptions);
-                    }
-                    case "firefox" -> {
-                        FirefoxOptions firefoxOptions = new FirefoxOptions();
-                        firefoxOptions.addArguments("disable-notifications");
-                        firefoxOptions.setHeadless(headless);
-                        firefoxOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
-                        if (useWDM) WebDriverManager.firefoxdriver().setup();
-                        driver = new FirefoxDriver(firefoxOptions);
-                    }
-                    case "safari" -> {
-                        SafariOptions safariOptions = new SafariOptions();
-                        if (useWDM) WebDriverManager.safaridriver().setup();
-                        driver = new SafariDriver(safariOptions);
-                    }
-                    default -> {
-                        Assert.fail("No such driver was defined.");
-                        return null;
-                    }
+        if (useWDM) log.new Warning("Using WebDriverManager...");
+        try {
+            switch (Objects.requireNonNull(driverName).toLowerCase()) {
+                case "chrome" -> {
+                    ChromeOptions chromeOptions = new ChromeOptions();
+                    chromeOptions.addArguments("disable-notifications");
+                    chromeOptions.setHeadless(headless);
+                    chromeOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
+                    if (useWDM) WebDriverManager.chromedriver().setup();
+                    return new ChromeDriver(chromeOptions);
                 }
-                return driver;
+                case "firefox" -> {
+                    FirefoxOptions firefoxOptions = new FirefoxOptions();
+                    firefoxOptions.addArguments("disable-notifications");
+                    firefoxOptions.setHeadless(headless);
+                    firefoxOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
+                    if (useWDM) WebDriverManager.firefoxdriver().setup();
+                    return new FirefoxDriver(firefoxOptions);
+                }
+                case "safari" -> {
+                    SafariOptions safariOptions = new SafariOptions();
+                    if (useWDM) WebDriverManager.safaridriver().setup();
+                    return new SafariDriver(safariOptions);
+                }
+                default -> {
+                    Assert.fail("No such driver was defined.");
+                    return null;
+                }
             }
-            catch (SessionNotCreatedException sessionException){useWDM = true;}
         }
-        while (!timeout);
-        return null;
+        catch (SessionNotCreatedException sessionException){
+            log.new Warning(sessionException);
+            if (!useWDM) return driverSwitch(headless, true, frameWidth, frameHeight, driverName);
+            else return null;
+        }
     }
 }
