@@ -17,7 +17,6 @@ import java.time.Duration;
 import org.junit.Assert;
 import resources.Colors;
 import exceptions.PickleibException;
-
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +25,7 @@ public abstract class WebUtilities extends Driver {
     //TODO: Write a method which creates a unique css selector for elements
     //TODO: Method has to loop through the parents of the element and add tag names back to back, then add unique
     //TODO: attributes of the element at the lowest level (target element)
+    //TODO: Write a method that acquires all attributes of an element
 
     public TextParser parser = new TextParser();
     public Printer log = new Printer(this.getClass());
@@ -43,6 +43,13 @@ public abstract class WebUtilities extends Driver {
     public static long elementTimeout;
 
     public WebUtilities(){
+        PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
+        properties = FileUtilities.properties;
+        elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
+    }
+
+    public WebUtilities(WebDriver driver){
+        Driver.driver = (RemoteWebDriver) driver;
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
         properties = FileUtilities.properties;
         elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
@@ -109,17 +116,10 @@ public abstract class WebUtilities extends Driver {
         try {
             log.new Info("Navigating "+highlighted(Color.BLUE, direction.name()));
 
-            switch (direction){
-                case FORWARDS:
-                    driver.navigate().forward();
-                    break;
-
-                case BACKWARDS:
-                    driver.navigate().back();
-                    break;
-
-                default:
-                    throw new EnumConstantNotPresentException(Navigation.class, direction.name());
+            switch (direction) {
+                case FORWARDS -> driver.navigate().forward();
+                case BACKWARDS -> driver.navigate().back();
+                default -> throw new EnumConstantNotPresentException(Navigation.class, direction.name());
             }
         }
         catch (Exception e){
@@ -127,7 +127,7 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {if (!element.isDisplayed()){throw new InvalidElementStateException("Element is not displayed!");}}
@@ -237,38 +237,32 @@ public abstract class WebUtilities extends Driver {
             if (condition) return true;
             else if (counter > 1 && negativeCheck) return true;
             try {
-                switch (state){
-                    case ENABLED:
+                switch (state) {
+                    case ENABLED -> {
                         negativeCheck = false;
                         condition = element.isEnabled();
-                        break;
-
-                    case DISPLAYED:
+                    }
+                    case DISPLAYED -> {
                         negativeCheck = false;
                         condition = element.isDisplayed();
-                        break;
-
-                    case SELECTED:
+                    }
+                    case SELECTED -> {
                         negativeCheck = false;
                         condition = element.isSelected();
-                        break;
-
-                    case DISABLED:
+                    }
+                    case DISABLED -> {
                         negativeCheck = true;
                         condition = !element.isEnabled();
-                        break;
-
-                    case UNSELECTED:
+                    }
+                    case UNSELECTED -> {
                         negativeCheck = true;
                         condition = !element.isSelected();
-                        break;
-
-                    case ABSENT:
+                    }
+                    case ABSENT -> {
                         negativeCheck = true;
                         condition = !element.isDisplayed();
-                        break;
-
-                    default: throw new EnumConstantNotPresentException(ElementState.class, state.name());
+                    }
+                    default -> throw new EnumConstantNotPresentException(ElementState.class, state.name());
                 }
             }
             catch (WebDriverException webDriverException){
@@ -288,7 +282,7 @@ public abstract class WebUtilities extends Driver {
         return false;
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public WebElement hoverOver(WebElement element, Long initialTime){
         if (System.currentTimeMillis() - initialTime > elementTimeout) return null;
         centerElement(element);
@@ -365,7 +359,7 @@ public abstract class WebUtilities extends Driver {
         throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public WebElement acquireNamedElementAmongst(@NotNull List<WebElement> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
@@ -392,7 +386,7 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public <T> T acquireNamedComponentAmongst(@NotNull List<T> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         try {
@@ -426,7 +420,7 @@ public abstract class WebUtilities extends Driver {
         throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public WebElement acquireElementUsingAttributeAmongst(@NotNull List<WebElement> elements, String attributeName, String attributeValue, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
@@ -575,18 +569,10 @@ public abstract class WebUtilities extends Driver {
 
     public void scroll(@NotNull Direction direction){
         log.new Info("Scrolling " + highlighted(Color.BLUE, direction.name().toLowerCase()));
-        String script;
-        switch (direction){
-            case UP:
-                script = "window.scrollBy(0,-document.body.scrollHeight)";
-                break;
-            case DOWN:
-                script = "window.scrollBy(0,document.body.scrollHeight)";
-                break;
-
-            default:
-                throw new EnumConstantNotPresentException(Direction.class, direction.name());
-        }
+        String script = switch (direction) {
+            case UP -> "window.scrollBy(0,-document.body.scrollHeight)";
+            case DOWN -> "window.scrollBy(0,document.body.scrollHeight)";
+        };
         ((JavascriptExecutor) driver).executeScript(script);
     }
 
@@ -655,19 +641,10 @@ public abstract class WebUtilities extends Driver {
 
     public List<WebElement> verifyAbsenceOfElementLocatedBy(@NotNull Locator locatorType, String locator, long startTime){
 
-        List<WebElement> elements;
-
-        switch (locatorType){
-            case XPATH:
-                elements = driver.findElements(By.xpath(locator));
-                break;
-
-            case CSS:
-                elements = driver.findElements(By.cssSelector(locator));
-                break;
-
-            default: throw new EnumConstantNotPresentException(Locator.class, locatorType.name());
-        }
+        List<WebElement> elements = switch (locatorType) {
+            case XPATH -> driver.findElements(By.xpath(locator));
+            case CSS -> driver.findElements(By.cssSelector(locator));
+        };
 
         if ((System.currentTimeMillis() - startTime) > elementTimeout){
             Assert.fail(GRAY+"An element was located unexpectedly"+RESET);
@@ -677,7 +654,7 @@ public abstract class WebUtilities extends Driver {
         else return null;
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public void waitUntilElementIsNoLongerPresent(WebElement element, long startTime){
         try {
             WebDriver subDriver = driver;
@@ -700,7 +677,7 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public WebElement waitUntilElementIsInvisible(WebElement element, long startTime) {
         if ((System.currentTimeMillis() - startTime) > elementTimeout) return element;
         try {
@@ -710,7 +687,7 @@ public abstract class WebUtilities extends Driver {
         catch (TimeoutException e) {return waitUntilElementIsInvisible(element, startTime);}
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         if (System.currentTimeMillis()-initialTime > elementTimeout){
@@ -733,7 +710,7 @@ public abstract class WebUtilities extends Driver {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", webElement);
     }
 
-    @Deprecated(since = "1.2.7", forRemoval = true)
+    @Deprecated(since = "1.2.7")
     public boolean elementIsDisplayed(WebElement element, long startTime) {
         if ((System.currentTimeMillis() - startTime) > 10000) return false;
         try {return element.isDisplayed();}
