@@ -86,6 +86,23 @@ public abstract class WebUtilities extends Driver {
         return (List<WebElement>) pageFields.get(elementFieldName);
     }
 
+    public WebElement getElementAmongstComponentsFromPage(String elementFieldName, String selectionName, String componentListName, String pageName, Object objectRepository){
+        List<Object> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+        Object component = acquireNamedComponentAmongst(componentList, selectionName);
+        Map<String, Object> componentFields = objectUtils.getFields(component);
+        return (WebElement) componentFields.get(elementFieldName);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Object> getComponentsFromPage(String componentListName, String pageName, Object objectRepository){
+        Map<String, Object> pageFields;
+        Map<String, Object> componentFields;
+        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
+        return (List<Object>) pageFields.get(componentListName);
+    }
+
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
         return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
