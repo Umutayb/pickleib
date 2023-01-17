@@ -1,5 +1,6 @@
 package utils;
 
+import com.github.webdriverextensions.WebComponent;
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -65,18 +66,6 @@ public abstract class WebUtilities extends Driver {
         return (WebElement) pageFields.get(elementFieldName);
     }
 
-    public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName, Object objectRepository){
-        Map<String, Object> componentFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) componentFields = objectUtils.getFields(pageObject);
-        else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
-        return objectUtils.getFields(componentFields.get(componentName));
-    }
-
-    public WebElement getElementFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
-        return (WebElement) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
-    }
-
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromPage(String elementFieldName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
@@ -86,26 +75,104 @@ public abstract class WebUtilities extends Driver {
         return (List<WebElement>) pageFields.get(elementFieldName);
     }
 
-    public WebElement getElementAmongstComponentsFromPage(String elementFieldName, String selectionName, String componentListName, String pageName, Object objectRepository){
-        List<Object> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
-        Object component = acquireNamedComponentAmongst(componentList, selectionName);
+    public WebElement getElementAmongstComponentsFromPage(
+            String elementFieldName,
+            String selectionName,
+            String componentListName,
+            String pageName,
+            Object objectRepository){
+        List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+        WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
         Map<String, Object> componentFields = objectUtils.getFields(component);
         return (WebElement) componentFields.get(elementFieldName);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Object> getComponentsFromPage(String componentListName, String pageName, Object objectRepository){
+    public List<WebElement> getElementsAmongstComponentsFromPage(
+            String elementFieldName,
+            String selectionName,
+            String componentListName,
+            String pageName,
+            Object objectRepository){
+        List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+        WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
+        Map<String, Object> componentFields = objectUtils.getFields(component);
+        return (List<WebElement>) componentFields.get(elementFieldName);
+    }
+
+
+    public WebElement getElementAmongstNamedComponentsFromPage(
+            String elementFieldName,
+            String selectionName,
+            String componentListName,
+            String pageName,
+            Object objectRepository){
+        List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+        WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
+        Map<String, Object> componentFields = objectUtils.getFields(component);
+        return (WebElement) componentFields.get(elementFieldName);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<WebElement> getElementsAmongstNamedComponentsFromPage(
+            String listFieldName,
+            String selectionName,
+            String componentListName,
+            String pageName,
+            Object objectRepository){
+        List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+        WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
+        Map<String, Object> componentFields = objectUtils.getFields(component);
+        return (List<WebElement>) componentFields.get(listFieldName);
+    }
+
+    @SuppressWarnings("unchecked")
+    public WebElement getElementAmongstExactComponentsFromPage(
+            String elementFieldName,
+            String elementIdentifier,
+            String componentListName,
+            String pageName,
+            Object objectRepository){
+        WebComponent component = acquireExactNamedComponentAmongst(elementIdentifier, elementFieldName, componentListName, pageName, objectRepository);
+        Map<String, Object> componentFields = objectUtils.getFields(component);
+        return (WebElement) componentFields.get(elementFieldName);
+    }
+
+    public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName, Object objectRepository){
+        Map<String, Object> componentFields;
+        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
+        if (pageObject != null) componentFields = objectUtils.getFields(pageObject);
+        else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
+        return objectUtils.getFields(componentFields.get(componentName));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<WebComponent> getComponentsFromPage(String componentListName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
         Map<String, Object> componentFields;
         Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
         if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
-        return (List<Object>) pageFields.get(componentListName);
+        return (List<WebComponent>) pageFields.get(componentListName);
+    }
+
+    public WebElement getElementFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
+        return (WebElement) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
+    }
+
+
+    public WebElement getElementFromComponent(String elementFieldName, WebComponent component, String pageName, Object objectRepository){
+        return (WebElement) getComponentFieldsFromPage(component.getClass().getName(), pageName, objectRepository).get(elementFieldName);
     }
 
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
         return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<WebElement> getElementsFromComponent(String elementListFieldName, WebComponent component, String pageName, Object objectRepository){
+        return (List<WebElement>) getComponentFieldsFromPage(component.getClass().getName(), pageName, objectRepository).get(elementListFieldName);
     }
 
     public String navigate(String url){
@@ -355,6 +422,28 @@ public abstract class WebUtilities extends Driver {
             if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
         }
         throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
+    }
+
+    public WebComponent acquireExactNamedComponentAmongst(
+            String elementText,
+            String elementFieldName,
+            String componentListName,
+            String pageName,
+            Object objectRepository){
+        log.new Info("Acquiring component called " + highlighted(Color.BLUE, elementText));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (WebComponent component : getComponentsFromPage(componentListName, pageName, objectRepository)) {
+                Map<String, Object> componentFields = objectUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(elementFieldName);
+                String text = element.getText();
+                String name = element.getAccessibleName();
+                if (text.equalsIgnoreCase(elementText) || name.equalsIgnoreCase(elementText)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
     }
 
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
@@ -742,19 +831,24 @@ public abstract class WebUtilities extends Driver {
     }
 
     public String contextCheck(@NotNull String input){
+        TextParser parser = new TextParser();
         if (input.contains("CONTEXT-"))
-            input = ContextStore.get(new TextParser().parse("CONTEXT-", null, input)).toString();
+            input = ContextStore.get(parser.parse("CONTEXT-", null, input)).toString();
         else if (input.contains("RANDOM-")){
             boolean useLetters = input.contains("LETTER");
             boolean useNumbers = input.contains("NUMBER");
             String keyword = "";
-            if (input.contains("KEYWORD")) keyword = new TextParser().parse("-K=", "-", input);
-            int length = Integer.parseInt(new TextParser().parse("-L=", null, input));
+            if (input.contains("KEYWORD")) keyword = parser.parse("-K=", "-", input);
+            int length = Integer.parseInt(parser.parse("-L=", null, input));
             input = strUtils.generateRandomString(keyword, length, useLetters, useNumbers);
         }
         else if (input.contains("UPLOAD-")){
-            String relativePath = new TextParser().parse("UPLOAD-", null, input);
+            String relativePath = parser.parse("UPLOAD-", null, input);
             input = new FileUtilities().getAbsolutePath(relativePath);
+        }
+        else if (input.contains("PROPERTY-")){
+            String propertyName = parser.parse("TEST_PROPERTY-", null, input);
+            input = properties.getProperty(propertyName, "NULL");
         }
         return input;
     }
