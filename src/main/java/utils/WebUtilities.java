@@ -3,6 +3,8 @@ package utils;
 import com.github.webdriverextensions.WebComponent;
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -12,16 +14,14 @@ import org.json.simple.JSONObject;
 import static resources.Colors.*;
 import org.openqa.selenium.*;
 
-import java.util.ArrayList;
-import java.util.Properties;
+import java.util.*;
+
 import context.ContextStore;
 import utils.driver.Driver;
 import java.time.Duration;
 import org.junit.Assert;
 import resources.Colors;
 import exceptions.PickleibException;
-import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class WebUtilities extends Driver {
@@ -549,7 +549,7 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    public String switchWindowHandle(String handle){
+    public String switchWindowByHandle(@Nullable String handle){
         log.new Info("Switching to the next tab");
         String parentWindowHandle = driver.getWindowHandle();
         if (handle == null)
@@ -558,18 +558,16 @@ public abstract class WebUtilities extends Driver {
                     driver = (RemoteWebDriver) driver.switchTo().window((windowHandle));
             }
         else driver = (RemoteWebDriver) driver.switchTo().window(handle);
-
         return parentWindowHandle;
-
     }
 
-    public void switchWindowHandle(Integer tabIndex){
+    public String switchWindowByIndex(Integer tabIndex){
         log.new Info("Switching the tab with the window index: " + tabIndex);
         String parentWindowHandle = driver.getWindowHandle();
-        ArrayList<String> newTab = new ArrayList<String>(driver.getWindowHandles());
-        String handle = newTab.get(tabIndex);
+        List<String> handles = new ArrayList<>(driver.getWindowHandles());
+        String handle = handles.get(tabIndex);
         driver = (RemoteWebDriver) driver.switchTo().window(handle);
-
+        return parentWindowHandle;
     }
 
     //This method clicks a button with a certain text on it
