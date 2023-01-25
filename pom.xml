@@ -6,7 +6,7 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>1.5.0</version>
+  <version>1.5.1</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -35,7 +35,7 @@
     <maven.compiler.version>3.8.0</maven.compiler.version>
     <java.utilities.version>1.2.0</java.utilities.version>
     <docker-java.version>3.2.12</docker-java.version>
-    <selenium.version>4.7.1</selenium.version>
+    <selenium.version>4.8.0</selenium.version>
     <retrofit.version>2.9.0</retrofit.version>
     <okhttp.version>4.10.0</okhttp.version>
   </properties>
