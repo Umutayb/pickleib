@@ -90,7 +90,7 @@ public class DriverFactory {
     static RemoteWebDriver driverSwitch(
             Boolean headless,
             Boolean useWDM,
-            Boolean insecureLocalHost,
+            Boolean insecureLocalHost, 
             Boolean disableNotifications,
             PageLoadStrategy loadStrategy,
             Integer frameWidth,
