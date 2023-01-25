@@ -11,6 +11,8 @@ import com.gargoylesoftware.htmlunit.*;
 import org.json.simple.JSONObject;
 import static resources.Colors.*;
 import org.openqa.selenium.*;
+
+import java.util.ArrayList;
 import java.util.Properties;
 import context.ContextStore;
 import utils.driver.Driver;
@@ -548,6 +550,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     public String switchWindowHandle(String handle){
+        log.new Info("Switching to the next tab");
         String parentWindowHandle = driver.getWindowHandle();
         if (handle == null)
             for (String windowHandle:driver.getWindowHandles()) {
@@ -555,7 +558,18 @@ public abstract class WebUtilities extends Driver {
                     driver = (RemoteWebDriver) driver.switchTo().window((windowHandle));
             }
         else driver = (RemoteWebDriver) driver.switchTo().window(handle);
+
         return parentWindowHandle;
+
+    }
+
+    public void switchWindowHandle(Integer tabIndex){
+        log.new Info("Switching the tab with the window index: " + tabIndex);
+        String parentWindowHandle = driver.getWindowHandle();
+        ArrayList<String> newTab = new ArrayList<String>(driver.getWindowHandles());
+        String handle = newTab.get(tabIndex);
+        driver = (RemoteWebDriver) driver.switchTo().window(handle);
+
     }
 
     //This method clicks a button with a certain text on it
