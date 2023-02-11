@@ -521,7 +521,7 @@ public abstract class WebUtilities extends Driver {
         while (condition){
             for (WebElement selection : items) {
                 String attribute = selection.getAttribute(attributeName);
-                if (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue)) return selection;
+                if (attribute != null && (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue))) return selection;
             }
             if (System.currentTimeMillis() - initialTime > elementTimeout) condition = false;
         }
