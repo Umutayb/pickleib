@@ -1,6 +1,7 @@
 package utils.driver;
 
 import com.github.webdriverextensions.WebComponent;
+import jdk.jfr.Description;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
@@ -28,10 +29,13 @@ public class Driver extends WebComponent {
 
 	public void initialize(){
 		log.new Info("Initializing driver");
-		driver = DriverFactory.getDriver(strUtils.firstLetterCapped(reader.getProperty("browser")));
+		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
+		driver = DriverFactory.getDriver(DriverFactory.DriverType.fromString(driverName));
 		wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
 	}
 
+	@Description("This method is no longer maintained")
+	@Deprecated(since = "1.5.6")
 	public void initialize(String id, String password){ //Only works with chrome!
 		initialize();
 		DevTools dev = ((ChromeDriver) driver).getDevTools();

@@ -13,12 +13,10 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import utils.Printer;
-import utils.StringUtilities;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Objects;
 import static resources.Colors.*;
 import static utils.FileUtilities.properties;
 
@@ -28,16 +26,17 @@ public class DriverFactory {
 
     static int frameWidth;
     static int frameHeight;
-    static long driverTimeout;
     static boolean headless;
-    static boolean deleteCookies;
     static boolean maximise;
+    static long driverTimeout;
+    static boolean deleteCookies;
+    static boolean useSeleniumGrid;
     static boolean insecureLocalHost;
     static boolean disableNotifications;
     static PageLoadStrategy loadStrategy;
 
-    public static RemoteWebDriver getDriver(String driverName){
-        StringUtilities strUtils = new StringUtilities();
+    public static RemoteWebDriver getDriver(DriverType driverType){
+        useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
         frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
         driverTimeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000;
@@ -49,31 +48,24 @@ public class DriverFactory {
         disableNotifications = Boolean.parseBoolean(properties.getProperty("disable-notifications", "true"));
 
         RemoteWebDriver driver;
+
         try {
             properties.load(new FileReader("src/test/resources/test.properties"));
 
-            if (driverName == null) driverName = strUtils.firstLetterCapped(properties.getProperty("browser", "chrome"));
+            if (driverType == null) driverType = DriverType.fromString(properties.getProperty("browser", "chrome"));
 
-            if (Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"))){
-                ImmutableCapabilities capabilities;
-                switch (driverName.toLowerCase()) {
-                    case "chrome" -> capabilities = new ImmutableCapabilities("browserName", "chrome");
-                    case "firefox" -> capabilities = new ImmutableCapabilities("browserName", "firefox");
-                    case "opera" -> capabilities = new ImmutableCapabilities("browserName", "opera");
-                    default -> {
-                        capabilities = null;
-                        Assert.fail(YELLOW + "The driver type \"" + driverName + "\" was undefined." + RESET);
-                    }
-                }
+            if (useSeleniumGrid){
+                ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", driverType.getDriverKey());
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
             }
-            else {driver = driverSwitch(headless, false, insecureLocalHost, disableNotifications, loadStrategy, frameWidth, frameHeight, driverName);}
+            else {driver = driverSwitch(headless, false, insecureLocalHost, disableNotifications, loadStrategy, frameWidth, frameHeight, driverType);}
+
             assert driver != null;
             driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
-            log.new Important(driverName + GRAY + " was selected");
+            log.new Important(driverType + GRAY + " was selected");
             return driver;
         }
         catch (IOException malformedURLException) {throw new RuntimeException(malformedURLException);}
@@ -95,11 +87,11 @@ public class DriverFactory {
             PageLoadStrategy loadStrategy,
             Integer frameWidth,
             Integer frameHeight,
-            String driverName){
+            DriverType driverType){
         if (useWDM) log.new Warning("Using WebDriverManager...");
         try {
-            switch (Objects.requireNonNull(driverName).toLowerCase()) {
-                case "chrome" -> {
+            switch (driverType) {
+                case CHROME -> {
                     ChromeOptions chromeOptions = new ChromeOptions();
                     if (disableNotifications) chromeOptions.addArguments("disable-notifications");
                     if (insecureLocalHost){
@@ -114,7 +106,7 @@ public class DriverFactory {
                     if (useWDM) WebDriverManager.chromedriver().setup();
                     return new ChromeDriver(chromeOptions);
                 }
-                case "firefox" -> {
+                case FIREFOX -> {
                     FirefoxOptions firefoxOptions = new FirefoxOptions();
                     if (insecureLocalHost){
                         firefoxOptions.addArguments("--allow-insecure-localhost");
@@ -129,7 +121,7 @@ public class DriverFactory {
                     if (useWDM) WebDriverManager.firefoxdriver().setup();
                     return new FirefoxDriver(firefoxOptions);
                 }
-                case "safari" -> {
+                case SAFARI -> {
                     SafariOptions safariOptions = new SafariOptions();
                     if (useWDM) WebDriverManager.safaridriver().setup();
                     return new SafariDriver(safariOptions);
@@ -142,8 +134,36 @@ public class DriverFactory {
         }
         catch (SessionNotCreatedException sessionException){
             log.new Warning(sessionException);
-            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, loadStrategy, frameWidth, frameHeight, driverName);
+            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, loadStrategy, frameWidth, frameHeight, driverType);
             else return null;
+        }
+    }
+
+    enum DriverType {
+        CHROME("Chrome"),
+        FIREFOX("Firefox"),
+        SAFARI("Safari"),
+        OPERA("Opera");
+
+        String driverName;
+
+        DriverType(String driverName){
+            this.driverName = driverName;
+        }
+
+        public String getDriverName() {
+            return driverName;
+        }
+        public String getDriverKey() {
+            return driverName.toLowerCase();
+        }
+
+        public static DriverType fromString(String text) {
+            if (text != null)
+                for (DriverType driverType:values())
+                    if (driverType.name().equalsIgnoreCase(text))
+                        return driverType;
+            return null;
         }
     }
 }
