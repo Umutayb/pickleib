@@ -23,21 +23,25 @@ public class Driver extends WebComponent {
 	public static RemoteWebDriver driver;
 	public static WebDriverWait wait;
 
-	PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
-	StringUtilities strUtils = new StringUtilities();
-	Printer log = new Printer(Driver.class);
+	static PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
+	static StringUtilities strUtils = new StringUtilities();
+	static Printer log = new Printer(Driver.class);
 
-	public void initialize(){
-		log.new Info("Initializing driver");
+	public static void initialize(DriverFactory.DriverType driverType){
+		log.new Info("Initializing driver...");
+		driver = DriverFactory.getDriver(driverType);
+		wait = new WebDriverWait(driver, Duration.of(DriverFactory.driverTimeout, ChronoUnit.SECONDS));
+	}
+
+	public static void initialize(){
 		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
-		driver = DriverFactory.getDriver(DriverFactory.DriverType.fromString(driverName));
-		wait = new WebDriverWait(driver, Duration.of(15, ChronoUnit.SECONDS));
+		initialize(DriverFactory.DriverType.fromString(driverName));
 	}
 
 	@Description("This method is no longer maintained")
 	@Deprecated(since = "1.5.6")
-	public void initialize(String id, String password){ //Only works with chrome!
-		initialize();
+	public static void initialize(String id, String password, DriverFactory.DriverType driverType){ //Only works with chrome!
+		initialize(driverType);
 		DevTools dev = ((ChromeDriver) driver).getDevTools();
 		dev.createSession();
 		dev.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
@@ -46,7 +50,7 @@ public class Driver extends WebComponent {
 		dev.send(Network.setExtraHTTPHeaders(new Headers(map)));
 	}
 
-	public void terminate(){
+	public static void terminate(){
 		log.new Info("Terminating driver...");
 		driver.quit();
 	}

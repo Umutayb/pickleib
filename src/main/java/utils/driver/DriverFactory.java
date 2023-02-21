@@ -13,16 +13,20 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import utils.Printer;
-import java.io.FileReader;
+import utils.PropertyUtility;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Properties;
+
 import static resources.Colors.*;
-import static utils.FileUtilities.properties;
+import static utils.PropertyUtility.properties;
 
 public class DriverFactory {
 
     private static final Printer log = new Printer(DriverFactory.class);
+    private static Properties properties = new Properties();
 
     static int frameWidth;
     static int frameHeight;
@@ -34,6 +38,8 @@ public class DriverFactory {
     static boolean insecureLocalHost;
     static boolean disableNotifications;
     static PageLoadStrategy loadStrategy;
+
+    public DriverFactory() {properties = PropertyUtility.properties;}
 
     public static RemoteWebDriver getDriver(DriverType driverType){
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
@@ -50,21 +56,19 @@ public class DriverFactory {
         RemoteWebDriver driver;
 
         try {
-            properties.load(new FileReader("src/test/resources/test.properties"));
-
             if (driverType == null) driverType = DriverType.fromString(properties.getProperty("browser", "chrome"));
 
             if (useSeleniumGrid){
                 ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", driverType.getDriverKey());
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
             }
-            else {driver = driverSwitch(headless, false, insecureLocalHost, disableNotifications, loadStrategy, frameWidth, frameHeight, driverType);}
+            else {driver = driverSwitch(headless, false, insecureLocalHost, disableNotifications, loadStrategy, driverType);}
 
             assert driver != null;
-            driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
+            else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             log.new Important(driverType + GRAY + " was selected");
             return driver;
         }
@@ -85,8 +89,6 @@ public class DriverFactory {
             Boolean insecureLocalHost, 
             Boolean disableNotifications,
             PageLoadStrategy loadStrategy,
-            Integer frameWidth,
-            Integer frameHeight,
             DriverType driverType){
         if (useWDM) log.new Warning("Using WebDriverManager...");
         try {
@@ -102,7 +104,6 @@ public class DriverFactory {
                     chromeOptions.setAcceptInsecureCerts(insecureLocalHost);
                     chromeOptions.setLogLevel(ChromeDriverLogLevel.fromString(properties.getProperty("log-level", "severe")));
                     chromeOptions.setHeadless(headless);
-                    chromeOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
                     if (useWDM) WebDriverManager.chromedriver().setup();
                     return new ChromeDriver(chromeOptions);
                 }
@@ -117,7 +118,6 @@ public class DriverFactory {
                     firefoxOptions.setLogLevel(FirefoxDriverLogLevel.fromString(properties.getProperty("log-level", "severe")));
                     if (disableNotifications) firefoxOptions.addArguments("disable-notifications");
                     firefoxOptions.setHeadless(headless);
-                    firefoxOptions.addArguments("window-size=" + frameWidth + "," + frameHeight);
                     if (useWDM) WebDriverManager.firefoxdriver().setup();
                     return new FirefoxDriver(firefoxOptions);
                 }
@@ -134,12 +134,12 @@ public class DriverFactory {
         }
         catch (SessionNotCreatedException sessionException){
             log.new Warning(sessionException);
-            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, loadStrategy, frameWidth, frameHeight, driverType);
+            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, loadStrategy, driverType);
             else return null;
         }
     }
 
-    enum DriverType {
+    public enum DriverType {
         CHROME("Chrome"),
         FIREFOX("Firefox"),
         SAFARI("Safari"),

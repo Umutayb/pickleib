@@ -41,20 +41,20 @@ public abstract class WebUtilities extends Driver {
     public enum Direction {UP, DOWN}
     public enum Locator {XPATH, CSS}
 
-    public Properties properties;
+    public static Properties properties = new Properties();
 
     public static long elementTimeout;
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
-        properties = FileUtilities.properties;
+        properties = PropertyUtility.properties;
         elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
     }
 
     public WebUtilities(WebDriver driver){
         Driver.driver = (RemoteWebDriver) driver;
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
-        properties = FileUtilities.properties;
+        properties = PropertyUtility.properties;
         elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
     }
 
