@@ -11,6 +11,12 @@ public class ScreenCaptureUtility {
     Printer log = new Printer(ScreenCaptureUtility.class);
     NumericUtilities numeric = new NumericUtilities();
 
+    /**
+     * Captures screen
+     * @param name screenshot name
+     * @param driver session driver
+     * @return returns the screenshot file
+     */
     public File captureScreen(String name, RemoteWebDriver driver) {
         try {
             log.new Info("Capturing page...");

@@ -4,10 +4,8 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverLogLevel;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
@@ -17,7 +15,10 @@ import utils.PropertyUtility;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import static resources.Colors.*;
 
@@ -26,18 +27,61 @@ public class DriverFactory {
     private static final Printer log = new Printer(DriverFactory.class);
     static Properties properties = PropertyUtility.properties;
 
+    /**
+     * determines frameWidth value
+     */
     static int frameWidth;
+
+    /**
+     * determines frameHeight value
+     */
     static int frameHeight;
+
+    /**
+     * session runs headless if true
+     */
     static boolean headless;
+
+    /**
+     * maximises session window if true
+     */
     static boolean maximise;
+
+    /**
+     * determines driverTimeout duration
+     */
     static long driverTimeout;
+
+    /**
+     * cookies are deleted if true
+     */
     static boolean deleteCookies;
+
+    /**
+     * Selenium Grid is used if true
+     */
     static boolean useSeleniumGrid;
+
+    /**
+     * enables insecure local host if true
+     */
     static boolean insecureLocalHost;
+
+    /**
+     * disables browser notifications if true
+     */
     static boolean disableNotifications;
+
+    /**
+     * determines page load strategy
+     */
     static PageLoadStrategy loadStrategy;
 
-
+    /**
+     * Initializes and returns a driver of specified type
+     * @param driverType driver type
+     * @return returns driver
+     */
     public static RemoteWebDriver getDriver(DriverType driverType){
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
@@ -66,6 +110,7 @@ public class DriverFactory {
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
+            driver.setLogLevel(getLevel(properties.getProperty("log-level", "off")));
             log.new Important(driverType.getDriverName() + GRAY + " was selected");
             return driver;
         }
@@ -80,6 +125,17 @@ public class DriverFactory {
         }
     }
 
+    /**
+     * Selects the driver type and assigns desired capabilities
+     *
+     * @param headless session runs headless if true
+     * @param useWDM WebDriverManager is used if true
+     * @param insecureLocalHost enables insecure local host if true
+     * @param disableNotifications disables browser notifications if true
+     * @param loadStrategy determines page load strategy
+     * @param driverType driver type
+     * @return returns the configured driver
+     */
     static RemoteWebDriver driverSwitch(
             Boolean headless,
             Boolean useWDM,
@@ -99,8 +155,7 @@ public class DriverFactory {
                     }
                     chromeOptions.setPageLoadStrategy(loadStrategy);
                     chromeOptions.setAcceptInsecureCerts(insecureLocalHost);
-                    chromeOptions.setLogLevel(ChromeDriverLogLevel.fromString(properties.getProperty("log-level", "severe")));
-                    chromeOptions.setHeadless(headless);
+                    if (headless) chromeOptions.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
                     return new ChromeDriver(chromeOptions);
                 }
@@ -112,9 +167,8 @@ public class DriverFactory {
                     }
                     firefoxOptions.setPageLoadStrategy(loadStrategy);
                     firefoxOptions.setAcceptInsecureCerts(insecureLocalHost);
-                    firefoxOptions.setLogLevel(FirefoxDriverLogLevel.fromString(properties.getProperty("log-level", "severe")));
                     if (disableNotifications) firefoxOptions.addArguments("disable-notifications");
-                    firefoxOptions.setHeadless(headless);
+                    if (headless) firefoxOptions.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.firefoxdriver().setup();
                     return new FirefoxDriver(firefoxOptions);
                 }
@@ -136,13 +190,30 @@ public class DriverFactory {
         }
     }
 
+    /**
+     * returns log level from a string
+     *
+     * @param logLevel desired log level
+     * @return returns log level
+     */
+    public static Level getLevel(String logLevel){
+        return Level.parse(Objects.requireNonNull(Arrays.stream(Level.class.getFields()).filter(field -> {
+            field.setAccessible(true);
+            String fieldName = field.getName();
+            return fieldName.equalsIgnoreCase(logLevel);
+        }).findAny().orElse(null)).getName());
+    }
+
+    /**
+     * available driver types
+     */
     public enum DriverType {
         CHROME("Chrome"),
         FIREFOX("Firefox"),
         SAFARI("Safari"),
         OPERA("Opera");
 
-        String driverName;
+        final String driverName;
 
         DriverType(String driverName){
             this.driverName = driverName;
@@ -155,6 +226,11 @@ public class DriverFactory {
             return driverName.toLowerCase();
         }
 
+        /**
+         * Returns driver type matching a given text (Non-case-sensitive)
+         * @param text desired driver
+         * @return returns matching driver type
+         */
         public static DriverType fromString(String text) {
             if (text != null)
                 for (DriverType driverType:values())
