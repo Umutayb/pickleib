@@ -2,8 +2,7 @@ package utils;
 
 import org.junit.Assert;
 import static resources.Colors.*;
-
-//This is where the xPaths are being generated
+@Deprecated(since = "1.6.2")
 public class XPathUtilities {
     public  String acquireXpath(String locatorType, String locatorID, String specificClass, String secondaryLocatorType, String secondaryLocatorID){
 

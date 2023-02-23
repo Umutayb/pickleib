@@ -26,18 +26,61 @@ public class DriverFactory {
     private static final Printer log = new Printer(DriverFactory.class);
     static Properties properties = PropertyUtility.properties;
 
+    /**
+     * determines frameWidth value
+     */
     static int frameWidth;
+
+    /**
+     * determines frameHeight value
+     */
     static int frameHeight;
+
+    /**
+     * session runs headless if true
+     */
     static boolean headless;
+
+    /**
+     * maximises session window if true
+     */
     static boolean maximise;
+
+    /**
+     * determines driverTimeout duration
+     */
     static long driverTimeout;
+
+    /**
+     * cookies are deleted if true
+     */
     static boolean deleteCookies;
+
+    /**
+     * Selenium Grid is used if true
+     */
     static boolean useSeleniumGrid;
+
+    /**
+     * enables insecure local host if true
+     */
     static boolean insecureLocalHost;
+
+    /**
+     * disables browser notifications if true
+     */
     static boolean disableNotifications;
+
+    /**
+     * determines page load strategy
+     */
     static PageLoadStrategy loadStrategy;
 
-
+    /**
+     * Initializes and returns a driver of specified type
+     * @param driverType driver type
+     * @return returns driver
+     */
     public static RemoteWebDriver getDriver(DriverType driverType){
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
@@ -80,6 +123,17 @@ public class DriverFactory {
         }
     }
 
+    /**
+     * Selects the driver type and assigns desired capabilities
+     *
+     * @param headless session runs headless if true
+     * @param useWDM WebDriverManager is used if true
+     * @param insecureLocalHost enables insecure local host if true
+     * @param disableNotifications disables browser notifications if true
+     * @param loadStrategy determines page load strategy
+     * @param driverType driver type
+     * @return returns the configured driver
+     */
     static RemoteWebDriver driverSwitch(
             Boolean headless,
             Boolean useWDM,
@@ -136,13 +190,16 @@ public class DriverFactory {
         }
     }
 
+    /**
+     * available driver types
+     */
     public enum DriverType {
         CHROME("Chrome"),
         FIREFOX("Firefox"),
         SAFARI("Safari"),
         OPERA("Opera");
 
-        String driverName;
+        final String driverName;
 
         DriverType(String driverName){
             this.driverName = driverName;
@@ -155,6 +212,11 @@ public class DriverFactory {
             return driverName.toLowerCase();
         }
 
+        /**
+         * Returns driver type matching a given text (Non-case-sensitive)
+         * @param text desired driver
+         * @return returns matching driver type
+         */
         public static DriverType fromString(String text) {
             if (text != null)
                 for (DriverType driverType:values())

@@ -1,7 +1,6 @@
 package utils.driver;
 
 import com.github.webdriverextensions.WebComponent;
-import jdk.jfr.Description;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
@@ -20,25 +19,42 @@ import java.util.Optional;
 
 public class Driver extends WebComponent {
 
+	/**
+	 * RemoteWebDriver instance
+	 */
 	public static RemoteWebDriver driver;
+
+	/**
+	 * WebDriverWait instance
+	 */
 	public static WebDriverWait wait;
 
 	static PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
 	static StringUtilities strUtils = new StringUtilities();
 	static Printer log = new Printer(Driver.class);
 
+	/**
+	 * Initializes a specified driver
+	 *
+	 * @param driverType driver type
+	 */
 	public static void initialize(DriverFactory.DriverType driverType){
 		log.new Info("Initializing driver...");
 		driver = DriverFactory.getDriver(driverType);
 		wait = new WebDriverWait(driver, Duration.of(DriverFactory.driverTimeout, ChronoUnit.SECONDS));
 	}
 
+	/**
+	 * Initializes driver according to the browser property
+	 */
 	public static void initialize(){
 		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
 		initialize(DriverFactory.DriverType.fromString(driverName));
 	}
 
-	@Description("This method is no longer maintained")
+	/**
+	 * @deprecated This method is no longer maintained
+	 */
 	@Deprecated(since = "1.5.6")
 	public static void initialize(String id, String password, DriverFactory.DriverType driverType){ //Only works with chrome!
 		initialize(driverType);
@@ -50,6 +66,9 @@ public class Driver extends WebComponent {
 		dev.send(Network.setExtraHTTPHeaders(new Headers(map)));
 	}
 
+	/**
+	 * Quits the driver session
+	 */
 	public static void terminate(){
 		log.new Info("Terminating driver...");
 		driver.quit();
