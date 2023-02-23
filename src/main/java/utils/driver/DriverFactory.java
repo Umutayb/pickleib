@@ -14,19 +14,17 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import utils.Printer;
 import utils.PropertyUtility;
-
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Properties;
 
 import static resources.Colors.*;
-import static utils.PropertyUtility.properties;
 
 public class DriverFactory {
 
     private static final Printer log = new Printer(DriverFactory.class);
-    private static Properties properties = new Properties();
+    static Properties properties = PropertyUtility.properties;
 
     static int frameWidth;
     static int frameHeight;
@@ -39,7 +37,6 @@ public class DriverFactory {
     static boolean disableNotifications;
     static PageLoadStrategy loadStrategy;
 
-    public DriverFactory() {properties = PropertyUtility.properties;}
 
     public static RemoteWebDriver getDriver(DriverType driverType){
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
@@ -69,7 +66,7 @@ public class DriverFactory {
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-            log.new Important(driverType + GRAY + " was selected");
+            log.new Important(driverType.getDriverName() + GRAY + " was selected");
             return driver;
         }
         catch (IOException malformedURLException) {throw new RuntimeException(malformedURLException);}

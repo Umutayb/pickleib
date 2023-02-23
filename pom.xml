@@ -6,7 +6,7 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>1.5.9</version>
+  <version>1.6.1</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -33,7 +33,7 @@
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.version>3.8.0</maven.compiler.version>
-    <java.utilities.version>1.2.7</java.utilities.version>
+    <java.utilities.version>1.2.8</java.utilities.version>
     <docker-java.version>3.2.12</docker-java.version>
     <selenium.version>4.8.0</selenium.version>
     <retrofit.version>2.9.0</retrofit.version>

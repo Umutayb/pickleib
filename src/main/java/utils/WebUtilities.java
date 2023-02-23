@@ -5,6 +5,9 @@ import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -12,10 +15,9 @@ import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
 import org.json.simple.JSONObject;
 import static resources.Colors.*;
+import static utils.WebUtilities.Color.BLUE;
 import org.openqa.selenium.*;
-
 import java.util.*;
-
 import context.ContextStore;
 import utils.driver.Driver;
 import java.time.Duration;
@@ -41,20 +43,18 @@ public abstract class WebUtilities extends Driver {
     public enum Direction {UP, DOWN}
     public enum Locator {XPATH, CSS}
 
-    public static Properties properties = new Properties();
+    public static Properties properties = PropertyUtility.properties;
 
     public static long elementTimeout;
 
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
-        properties = PropertyUtility.properties;
         elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
     }
 
     public WebUtilities(WebDriver driver){
         Driver.driver = (RemoteWebDriver) driver;
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
-        properties = PropertyUtility.properties;
         elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
     }
 
@@ -128,7 +128,6 @@ public abstract class WebUtilities extends Driver {
         return (List<WebElement>) componentFields.get(listFieldName);
     }
 
-    @SuppressWarnings("unchecked")
     public WebElement getElementAmongstExactComponentsFromPage(
             String elementFieldName,
             String elementIdentifier,
@@ -838,10 +837,23 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
+    /**
+     * Acquires web element from a page object by using Java reflections
+     *
+     * @param fieldName field name of the element, in the page object
+     * @param inputClass instance of the page object that the WebElement resides in
+     * @return corresponding WebElement from the given page object
+     */
     public <T> WebElement getElement(String fieldName, Class<T> inputClass){
         return (WebElement) objectUtils.getFieldValue(fieldName, inputClass);
     }
 
+    /**
+     * Custom context checker to re-format an input text or acquire context data
+     *
+     * @param input string that is to be context checked
+     * @return value depending on the context (could be from ContextStore, Properties, Random etc)
+     */
     public String contextCheck(@NotNull String input){
         TextParser parser = new TextParser();
         if (input.contains("CONTEXT-"))
@@ -863,5 +875,53 @@ public abstract class WebUtilities extends Driver {
             input = properties.getProperty(propertyName, "NULL");
         }
         return input;
+    }
+
+    /**
+     * Checks if an event was fired
+     * Creates a custom script to listen for an event by generating a unique event key and catches this key in the console
+     * Ex: "dataLayerObject.listen(eventName, function(){console.warn(eventKey)});"
+     *
+     * @param eventName event name of the event that is expected to be fired
+     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen( eventName );"
+     * @return true if the specified event was fired.
+     */
+    public boolean isEventFired(String eventName, String listenerScript){
+        String eventKey = strUtils.generateRandomString(eventName + "#", 6, false, true);
+        listenerScript = listenerScript.replace(eventName, "'" + eventName + "', function(){console.warn('" + eventKey +"')}");
+        executeScript(listenerScript);
+        LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
+        for (LogEntry entry: logs.getAll())
+            if (entry.toString().contains(eventKey)) {
+                log.new Success("'" + eventName + "' event is fired!");
+                return true;
+            }
+        log.new Warning(eventName + " event is not fired!");
+        return false;
+    }
+
+    /**
+     * Checks if an event was fired
+     *
+     * @param eventKey key that is meant to be caught from the console in case the event fires
+     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen('page.info', function(){console.warn(eventKey)});"
+     * @return true if the specified event was fired.
+     */
+    public boolean isEventFiredByScript(String eventKey, String listenerScript){
+        executeScript(listenerScript);
+        LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
+        for (LogEntry entry: logs.getAll()) if (entry.toString().contains(eventKey)) return true;
+        return false;
+    }
+
+    /**
+     * Executes a JS script and returns the responding object
+     *
+     * @param script script that is to be executed
+     * @return object if the scripts yields one
+     */
+    public Object executeScript(String script){
+        log.new Info("Executing script: " + highlighted(BLUE,script));
+        return ((JavascriptExecutor) driver).executeScript(script);
     }
 }
