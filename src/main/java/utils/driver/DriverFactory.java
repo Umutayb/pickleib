@@ -110,7 +110,7 @@ public class DriverFactory {
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-            driver.setLogLevel(getLevel(properties.getProperty("log-level", "off")));
+            driver.setLogLevel(getLevel(properties.getProperty("selenium-log-level", "off")));
             log.new Important(driverType.getDriverName() + GRAY + " was selected");
             return driver;
         }
