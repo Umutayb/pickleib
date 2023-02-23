@@ -128,6 +128,7 @@ public abstract class WebUtilities extends Driver {
         return (List<WebElement>) componentFields.get(listFieldName);
     }
 
+    @Deprecated(since = "1.6.2")
     public WebElement getElementAmongstExactComponentsFromPage(
             String elementFieldName,
             String elementIdentifier,
@@ -162,8 +163,8 @@ public abstract class WebUtilities extends Driver {
     }
 
 
-    public WebElement getElementFromComponent(String elementFieldName, WebComponent component, String pageName, Object objectRepository){
-        return (WebElement) getComponentFieldsFromPage(component.getClass().getName(), pageName, objectRepository).get(elementFieldName);
+    public WebElement getElementFromComponent(String elementFieldName, Object component){
+        return (WebElement) getComponentFields(component).get(elementFieldName);
     }
 
     @SuppressWarnings("unchecked")
@@ -172,8 +173,12 @@ public abstract class WebUtilities extends Driver {
     }
 
     @SuppressWarnings("unchecked")
-    public List<WebElement> getElementsFromComponent(String elementListFieldName, WebComponent component, String pageName, Object objectRepository){
-        return (List<WebElement>) getComponentFieldsFromPage(component.getClass().getName(), pageName, objectRepository).get(elementListFieldName);
+    public List<WebElement> getElementsFromComponent(String elementListFieldName, Object component){
+        return (List<WebElement>) getComponentFields(component).get(elementListFieldName);
+    }
+
+    public Map<String, Object> getComponentFields(Object componentName){
+        return  objectUtils.getFields(componentName);
     }
 
     public String navigate(String url){
@@ -425,6 +430,53 @@ public abstract class WebUtilities extends Driver {
         throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
     }
 
+    public <T> T acquireComponentByElementAttributeAmongst(
+            List<T> items,
+            String attributeName,
+            String attributeValue,
+            String elementFieldName
+    ){
+        log.new Info("Acquiring component by attribute " + highlighted(Color.BLUE, attributeName + " -> " + attributeValue));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (T component : items) {
+                Map<String, Object> componentFields = objectUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(elementFieldName);
+                String attribute = element.getAttribute(attributeName);
+                if (attribute.equals(attributeValue)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with " + attributeName + " : " + attributeValue + " could be found!");
+    }
+
+    public <T> T acquireExactNamedComponentAmongst(
+            List<T> items,
+            String elementText,
+            String elementFieldName
+    ){
+        log.new Info("Acquiring component called " + highlighted(Color.BLUE, elementText));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (T component : items) {
+                Map<String, Object> componentFields = objectUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(elementFieldName);
+                String text = element.getText();
+                String name = element.getAccessibleName();
+                if (text.equalsIgnoreCase(elementText) || name.equalsIgnoreCase(elementText)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
+    }
+
+    /**
+     *
+     * @deprecated replaced by acquireExactNamedComponentAmongst(components, elementText, elementFieldName)
+     */
+    @Deprecated(since = "1.6.2")
     public WebComponent acquireExactNamedComponentAmongst(
             String elementText,
             String elementFieldName,
