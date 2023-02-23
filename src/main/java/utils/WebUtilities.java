@@ -38,7 +38,7 @@ public abstract class WebUtilities extends Driver {
     public TextParser parser = new TextParser();
 
     /**
-     * Picklieb Logger<3
+     * Picklieb Logger
      */
     public Printer log = new Printer(this.getClass());
     public StringUtilities strUtils = new StringUtilities();
@@ -248,7 +248,7 @@ public abstract class WebUtilities extends Driver {
      * @param componentName component name
      * @param pageName name of the page instance
      * @param objectRepository instance of an object that contains instances of every page
-     * @return returns map of fields (Map<String, Object>)
+     * @return returns map of fields
      */
     public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName, Object objectRepository){
         Map<String, Object> componentFields;
@@ -331,7 +331,7 @@ public abstract class WebUtilities extends Driver {
      * Acquire a map of fields from a given component
      *
      * @param componentName component name
-     * @return returns the map of fields (Map<String, Object>)
+     * @return returns the map of fields
      */
     public Map<String, Object> getComponentFields(Object componentName){
         return  objectUtils.getFields(componentName);
@@ -395,7 +395,7 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    @Deprecated(since = "1.2.7")
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement waitUntilElementIsVisible(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {if (!element.isDisplayed()){throw new InvalidElementStateException("Element is not displayed!");}}
@@ -644,7 +644,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * @deprecated for removal (redundant)
+     * @deprecated redundant method
      */
     @Deprecated(since = "1.6.2", forRemoval = true)
     public void loopAndClick(List<WebElement> list, String buttonName, Boolean scroll){
@@ -787,7 +787,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * @deprecated replace by acquireNamedElementAmongst(List<WebElement> items, String selectionName)
+     * @deprecated replace by acquireNamedElementAmongst(items, String selectionName)
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement acquireNamedElementAmongst(@NotNull List<WebElement> items, String selectionName, long initialTime){
@@ -817,7 +817,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * @deprecated replace by acquireNamedComponentAmongst(List<T> items, String selectionName)
+     * @deprecated replace by acquireNamedComponentAmongst(items, String selectionName)
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public <T> T acquireNamedComponentAmongst(@NotNull List<T> items, String selectionName, long initialTime){
@@ -862,7 +862,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * @depracted replace by acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue)
+     * @deprecated replace by acquireElementUsingAttributeAmongst(items, String attributeName, String attributeValue)
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement acquireElementUsingAttributeAmongst(@NotNull List<WebElement> elements, String attributeName, String attributeValue, long initialTime){
@@ -1259,7 +1259,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     * @deprecated replaced by elementIs(element, state)
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public void waitUntilElementIsNoLongerPresent(WebElement element, long startTime){
@@ -1285,7 +1285,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     * @deprecated replaced by elementIs(element, state)
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement waitUntilElementIsInvisible(WebElement element, long startTime) {
@@ -1298,7 +1298,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     * @deprecated replaced by elementIs(element, state)
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
@@ -1334,7 +1334,7 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     * @deprecated replaced by elementIs(element, state)
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public boolean elementIsDisplayed(WebElement element, long startTime) {

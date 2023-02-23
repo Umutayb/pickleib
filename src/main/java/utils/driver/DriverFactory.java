@@ -4,10 +4,8 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverLogLevel;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
@@ -17,7 +15,10 @@ import utils.PropertyUtility;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import static resources.Colors.*;
 
@@ -109,6 +110,7 @@ public class DriverFactory {
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
+            driver.setLogLevel(getLevel(properties.getProperty("log-level", "off")));
             log.new Important(driverType.getDriverName() + GRAY + " was selected");
             return driver;
         }
@@ -153,8 +155,7 @@ public class DriverFactory {
                     }
                     chromeOptions.setPageLoadStrategy(loadStrategy);
                     chromeOptions.setAcceptInsecureCerts(insecureLocalHost);
-                    chromeOptions.setLogLevel(ChromeDriverLogLevel.fromString(properties.getProperty("log-level", "severe")));
-                    chromeOptions.setHeadless(headless);
+                    if (headless) chromeOptions.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
                     return new ChromeDriver(chromeOptions);
                 }
@@ -166,9 +167,8 @@ public class DriverFactory {
                     }
                     firefoxOptions.setPageLoadStrategy(loadStrategy);
                     firefoxOptions.setAcceptInsecureCerts(insecureLocalHost);
-                    firefoxOptions.setLogLevel(FirefoxDriverLogLevel.fromString(properties.getProperty("log-level", "severe")));
                     if (disableNotifications) firefoxOptions.addArguments("disable-notifications");
-                    firefoxOptions.setHeadless(headless);
+                    if (headless) firefoxOptions.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.firefoxdriver().setup();
                     return new FirefoxDriver(firefoxOptions);
                 }
@@ -188,6 +188,20 @@ public class DriverFactory {
             if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, loadStrategy, driverType);
             else return null;
         }
+    }
+
+    /**
+     * returns log level from a string
+     *
+     * @param logLevel desired log level
+     * @return returns log level
+     */
+    public static Level getLevel(String logLevel){
+        return Level.parse(Objects.requireNonNull(Arrays.stream(Level.class.getFields()).filter(field -> {
+            field.setAccessible(true);
+            String fieldName = field.getName();
+            return fieldName.equalsIgnoreCase(logLevel);
+        }).findAny().orElse(null)).getName());
     }
 
     /**
