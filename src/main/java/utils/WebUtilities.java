@@ -30,12 +30,23 @@ public abstract class WebUtilities extends Driver {
     //TODO: Write a method which creates a unique css selector for elements
     //TODO: Method has to loop through the parents of the element and add tag names back to back, then add unique
     //TODO: attributes of the element at the lowest level (target element)
-    //TODO: Write a method that acquires all attributes of an element
+    //TODO: Write a method that acquires all attributes of an element (check elementObject method)
 
+    /**
+     * Used to extract snipped from texts
+     */
     public TextParser parser = new TextParser();
+
+    /**
+     * Picklieb Logger<3
+     */
     public Printer log = new Printer(this.getClass());
     public StringUtilities strUtils = new StringUtilities();
     public ObjectUtilities objectUtils = new ObjectUtilities();
+
+    /**
+     * Default Pickleib properties
+     */
     public static Properties properties = PropertyUtility.properties;
 
     /**
@@ -219,6 +230,7 @@ public abstract class WebUtilities extends Driver {
      * @param objectRepository instance of an object that contains instances of every page
      * @return returns the element if exact match found
      */
+    @Deprecated(since = "1.6.2")
     public WebElement getElementAmongstExactComponentsFromPage(
             String elementFieldName,
             String elementIdentifier,
@@ -282,12 +294,11 @@ public abstract class WebUtilities extends Driver {
      *
      * @param elementFieldName element field name
      * @param component target component
-     * @param pageName name of the page instance
-     * @param objectRepository instance of an object that contains instances of every page
      * @return returns the element
      */
-    public WebElement getElementFromComponent(String elementFieldName, WebComponent component, String pageName, Object objectRepository){
-        return (WebElement) getComponentFieldsFromPage(component.getClass().getName(), pageName, objectRepository).get(elementFieldName);
+    public WebElement getElementFromComponent(String elementFieldName, Object component){
+        return (WebElement) getComponentFields(component).get(elementFieldName);
+
     }
 
     /**
@@ -309,13 +320,21 @@ public abstract class WebUtilities extends Driver {
      *
      * @param elementListFieldName elements list field
      * @param component target component
-     * @param pageName name of the page instance
-     * @param objectRepository instance of an object that contains instances of every page
      * @return returns the list of elements
      */
     @SuppressWarnings("unchecked")
-    public List<WebElement> getElementsFromComponent(String elementListFieldName, WebComponent component, String pageName, Object objectRepository){
-        return (List<WebElement>) getComponentFieldsFromPage(component.getClass().getName(), pageName, objectRepository).get(elementListFieldName);
+    public List<WebElement> getElementsFromComponent(String elementListFieldName, Object component){
+        return (List<WebElement>) getComponentFields(component).get(elementListFieldName);
+    }
+
+    /**
+     * Acquire a map of fields from a given component
+     *
+     * @param componentName component name
+     * @return returns the map of fields (Map<String, Object>)
+     */
+    public Map<String, Object> getComponentFields(Object componentName){
+        return  objectUtils.getFields(componentName);
     }
 
     /**
@@ -624,7 +643,10 @@ public abstract class WebUtilities extends Driver {
         return element;
     }
 
-    @Deprecated(since = "1.6.2")
+    /**
+     * @deprecated for removal (redundant)
+     */
+    @Deprecated(since = "1.6.2", forRemoval = true)
     public void loopAndClick(List<WebElement> list, String buttonName, Boolean scroll){
         clickElement(acquireNamedElementAmongst(list,buttonName), scroll);
     }
@@ -653,13 +675,69 @@ public abstract class WebUtilities extends Driver {
     /**
      * Acquire listed component by the text of its given child element
      *
-     * @param elementText child element text
-     * @param elementFieldName child element field name
-     * @param componentListName component list field name
-     * @param pageName name of the page instance
-     * @param objectRepository instance of an object that contains instances of every page
-     * @return returns the selected web component
+     * @param items list of components
+     * @param attributeName component element attribute name
+     * @param attributeValue attribute value
+     * @param elementFieldName component elements field name
+     * @return returns the matching component
+     * @param <T> component type
      */
+    public <T> T acquireComponentByElementAttributeAmongst(
+            List<T> items,
+            String attributeName,
+            String attributeValue,
+            String elementFieldName
+    ){
+        log.new Info("Acquiring component by attribute " + highlighted(Color.BLUE, attributeName + " -> " + attributeValue));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (T component : items) {
+                Map<String, Object> componentFields = objectUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(elementFieldName);
+                String attribute = element.getAttribute(attributeName);
+                if (attribute.equals(attributeValue)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with " + attributeName + " : " + attributeValue + " could be found!");
+    }
+
+    /**
+     * Acquire listed component by the text of its given child element
+     *
+     * @param items list of components
+     * @param elementText text of the component element
+     * @param elementFieldName component elements field name
+     * @return returns the matching component
+     * @param <T> component type
+     */
+    public <T> T acquireExactNamedComponentAmongst(
+            List<T> items,
+            String elementText,
+            String elementFieldName
+    ){
+        log.new Info("Acquiring component called " + highlighted(Color.BLUE, elementText));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (T component : items) {
+                Map<String, Object> componentFields = objectUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(elementFieldName);
+                String text = element.getText();
+                String name = element.getAccessibleName();
+                if (text.equalsIgnoreCase(elementText) || name.equalsIgnoreCase(elementText)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
+    }
+
+    /**
+     *
+     * @deprecated replaced by acquireExactNamedComponentAmongst(components, elementText, elementFieldName)
+     */
+    @Deprecated(since = "1.6.2")
     public WebComponent acquireExactNamedComponentAmongst(
             String elementText,
             String elementFieldName,
@@ -681,6 +759,7 @@ public abstract class WebUtilities extends Driver {
         }
         throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
     }
+
     /**
      * Acquire listed element by its name
      *
@@ -707,7 +786,10 @@ public abstract class WebUtilities extends Driver {
         throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
     }
 
-    @Deprecated(since = "1.2.7")
+    /**
+     * @deprecated replace by acquireNamedElementAmongst(List<WebElement> items, String selectionName)
+     */
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement acquireNamedElementAmongst(@NotNull List<WebElement> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
@@ -734,7 +816,10 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    @Deprecated(since = "1.2.7")
+    /**
+     * @deprecated replace by acquireNamedComponentAmongst(List<T> items, String selectionName)
+     */
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public <T> T acquireNamedComponentAmongst(@NotNull List<T> items, String selectionName, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         try {
@@ -776,7 +861,10 @@ public abstract class WebUtilities extends Driver {
         throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
     }
 
-    @Deprecated(since = "1.2.7")
+    /**
+     * @depracted replace by acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue)
+     */
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement acquireElementUsingAttributeAmongst(@NotNull List<WebElement> elements, String attributeName, String attributeValue, long initialTime){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
@@ -1151,7 +1239,10 @@ public abstract class WebUtilities extends Driver {
         return null;
     }
 
-    @Deprecated (since = "1.6.2")
+    /**
+     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     */
+    @Deprecated (since = "1.6.2", forRemoval = true)
     public List<WebElement> verifyAbsenceOfElementLocatedBy(@NotNull Locator locatorType, String locator, long startTime){
 
         List<WebElement> elements = switch (locatorType) {
@@ -1167,7 +1258,10 @@ public abstract class WebUtilities extends Driver {
         else return null;
     }
 
-    @Deprecated(since = "1.2.7")
+    /**
+     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     */
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public void waitUntilElementIsNoLongerPresent(WebElement element, long startTime){
         try {
             WebDriver subDriver = driver;
@@ -1190,7 +1284,10 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    @Deprecated(since = "1.2.7")
+    /**
+     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     */
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement waitUntilElementIsInvisible(WebElement element, long startTime) {
         if ((System.currentTimeMillis() - startTime) > elementTimeout) return element;
         try {
@@ -1200,7 +1297,10 @@ public abstract class WebUtilities extends Driver {
         catch (TimeoutException e) {return waitUntilElementIsInvisible(element, startTime);}
     }
 
-    @Deprecated(since = "1.2.7")
+    /**
+     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     */
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement waitUntilElementIsClickable(WebElement element, long initialTime){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         if (System.currentTimeMillis()-initialTime > elementTimeout){
@@ -1233,7 +1333,10 @@ public abstract class WebUtilities extends Driver {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", webElement);
     }
 
-    @Deprecated(since = "1.2.7")
+    /**
+     * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
+     */
+    @Deprecated(since = "1.2.7", forRemoval = true)
     public boolean elementIsDisplayed(WebElement element, long startTime) {
         if ((System.currentTimeMillis() - startTime) > 10000) return false;
         try {return element.isDisplayed();}
