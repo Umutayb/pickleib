@@ -30,7 +30,7 @@ public abstract class WebUtilities extends Driver {
     //TODO: Write a method which creates a unique css selector for elements
     //TODO: Method has to loop through the parents of the element and add tag names back to back, then add unique
     //TODO: attributes of the element at the lowest level (target element)
-    //TODO: Write a method that acquires all attributes of an element
+    //TODO: Write a method that acquires all attributes of an element (check elementObject method)
 
     public TextParser parser = new TextParser();
     public Printer log = new Printer(this.getClass());
