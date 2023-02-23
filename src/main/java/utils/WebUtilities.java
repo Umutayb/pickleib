@@ -36,30 +36,69 @@ public abstract class WebUtilities extends Driver {
     public Printer log = new Printer(this.getClass());
     public StringUtilities strUtils = new StringUtilities();
     public ObjectUtilities objectUtils = new ObjectUtilities();
-
-    public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
-    public enum Navigation {BACKWARDS, FORWARDS}
-    public enum ElementState {ENABLED, DISPLAYED, SELECTED, DISABLED, UNSELECTED, ABSENT}
-    public enum Direction {UP, DOWN}
-    public enum Locator {XPATH, CSS}
-
     public static Properties properties = PropertyUtility.properties;
 
+    /**
+     * Basic direction
+     */
+    public enum Direction {UP, DOWN}
+    /**
+     * Basic element selectors
+     */
+    public enum Locator {XPATH, CSS}
+    /**
+     * Duration value for methods
+     */
     public static long elementTimeout;
+    /**
+     * Browser navigators
+     */
+    public enum Navigation {BACKWARDS, FORWARDS}
+    /**
+     * Specified color codes
+     */
+    public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
+    /**
+     * Element states
+     */
+    public enum ElementState {ENABLED, DISPLAYED, SELECTED, DISABLED, UNSELECTED, ABSENT}
 
+    /**
+     * WebUtilities for frameworks that use the Pickleib driver
+     *
+     */
     public WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
         elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
     }
 
+    /**
+     * WebUtilities for frameworks that do not use the Pickleib driver
+     *
+     */
     public WebUtilities(WebDriver driver){
         Driver.driver = (RemoteWebDriver) driver;
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
         elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
     }
 
+    /**
+     * Acquires a specified attribute of a given element
+     *
+     * @param element target element
+     * @param attribute target attribute
+     * @return returns the elements attribute
+     */
     public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 
+    /**
+     * Acquires an element from a given page
+     *
+     * @param elementFieldName element field name
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the element
+     */
     public WebElement getElementFromPage(String elementFieldName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
         Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
@@ -68,6 +107,14 @@ public abstract class WebUtilities extends Driver {
         return (WebElement) pageFields.get(elementFieldName);
     }
 
+    /**
+     * Acquires a list of elements from a given page
+     *
+     * @param elementFieldName element field name
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the list of elements
+     */
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromPage(String elementFieldName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
@@ -77,6 +124,15 @@ public abstract class WebUtilities extends Driver {
         return (List<WebElement>) pageFields.get(elementFieldName);
     }
 
+    /**
+     * Acquires an element from a given component
+     *
+     * @param elementFieldName element field name
+     * @param selectionName element text
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the element
+     */
     public WebElement getElementAmongstComponentsFromPage(
             String elementFieldName,
             String selectionName,
@@ -89,6 +145,15 @@ public abstract class WebUtilities extends Driver {
         return (WebElement) componentFields.get(elementFieldName);
     }
 
+    /**
+     * Acquires a list of elements from a given component
+     *
+     * @param elementFieldName element field name
+     * @param selectionName element text
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the list of elements
+     */
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsAmongstComponentsFromPage(
             String elementFieldName,
@@ -102,7 +167,15 @@ public abstract class WebUtilities extends Driver {
         return (List<WebElement>) componentFields.get(elementFieldName);
     }
 
-
+    /**
+     * Acquires an element from a component amongst a list of components
+     *
+     * @param elementFieldName element field name
+     * @param selectionName element text
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the element
+     */
     public WebElement getElementAmongstNamedComponentsFromPage(
             String elementFieldName,
             String selectionName,
@@ -115,6 +188,15 @@ public abstract class WebUtilities extends Driver {
         return (WebElement) componentFields.get(elementFieldName);
     }
 
+    /**
+     * Acquires a list of elements from a component amongst a list of components
+     *
+     * @param listFieldName list field name
+     * @param selectionName element text
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the list of elements
+     */
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsAmongstNamedComponentsFromPage(
             String listFieldName,
@@ -128,6 +210,15 @@ public abstract class WebUtilities extends Driver {
         return (List<WebElement>) componentFields.get(listFieldName);
     }
 
+    /**
+     * Acquires an element from a component amongst a list of components
+     *
+     * @param elementFieldName element field name
+     * @param elementIdentifier element text
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the element if exact match found
+     */
     public WebElement getElementAmongstExactComponentsFromPage(
             String elementFieldName,
             String elementIdentifier,
@@ -139,6 +230,14 @@ public abstract class WebUtilities extends Driver {
         return (WebElement) componentFields.get(elementFieldName);
     }
 
+    /**
+     * Acquires a map of fields from a given component
+     *
+     * @param componentName component name
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns map of fields (Map<String, Object>)
+     */
     public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName, Object objectRepository){
         Map<String, Object> componentFields;
         Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
@@ -147,6 +246,14 @@ public abstract class WebUtilities extends Driver {
         return objectUtils.getFields(componentFields.get(componentName));
     }
 
+    /**
+     * Acquires a list of element from a given page
+     *
+     * @param componentListName component list name
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the list of components
+     */
     @SuppressWarnings("unchecked")
     public List<WebComponent> getComponentsFromPage(String componentListName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
@@ -157,25 +264,65 @@ public abstract class WebUtilities extends Driver {
         return (List<WebComponent>) pageFields.get(componentListName);
     }
 
+    /**
+     * Acquires an element from a given component name
+     *
+     * @param elementFieldName element field name
+     * @param componentName target component
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the element
+     */
     public WebElement getElementFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
         return (WebElement) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
     }
 
-
+    /**
+     * Acquires an element from a given component
+     *
+     * @param elementFieldName element field name
+     * @param component target component
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the element
+     */
     public WebElement getElementFromComponent(String elementFieldName, WebComponent component, String pageName, Object objectRepository){
         return (WebElement) getComponentFieldsFromPage(component.getClass().getName(), pageName, objectRepository).get(elementFieldName);
     }
 
+    /**
+     * Acquires a list elements from a given component name
+     *
+     * @param elementFieldName element field
+     * @param componentName target component name
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the list of elements
+     */
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
         return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
     }
 
+    /**
+     * Acquires a list elements from a given component
+     *
+     * @param elementListFieldName elements list field
+     * @param component target component
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the list of elements
+     */
     @SuppressWarnings("unchecked")
     public List<WebElement> getElementsFromComponent(String elementListFieldName, WebComponent component, String pageName, Object objectRepository){
         return (List<WebElement>) getComponentFieldsFromPage(component.getClass().getName(), pageName, objectRepository).get(elementListFieldName);
     }
 
+    /**
+     * Navigates to a given url
+     *
+     * @param url target url
+     */
     public String navigate(String url){
         try {
             log.new Info("Navigating to "+RESET+BLUE+url+RESET);
@@ -191,12 +338,29 @@ public abstract class WebUtilities extends Driver {
         return url;
     }
 
+    /**
+     * Sets the window size
+     *
+     * @param width windows width
+     * @param height windows height
+     */
     public void setWindowSize(Integer width, Integer height) {
         driver.manage().window().setSize(new Dimension(width,height));
     }
 
+    /**
+     * Highlights a given text with a specified color
+     *
+     * @param color target color
+     * @param text target text
+     */
     public String highlighted(Color color, String text){return (objectUtils.getFieldValue(color.name(), Colors.class) + text + RESET);}
 
+    /**
+     * Navigates browsers in a given direction
+     *
+     * @param direction backwards or forwards
+     */
     public void navigateBrowser(Navigation direction){
         try {
             log.new Info("Navigating "+highlighted(Color.BLUE, direction.name()));
@@ -227,13 +391,18 @@ public abstract class WebUtilities extends Driver {
         return element;
     }
 
-    //This method clicks an element after waiting its state to be enabled and scrolling it to the center of the view
+    /**
+     * Clicks an element after waiting for its state to be enabled
+     *
+     * @param element target element
+     * @param scroll scrolls if true
+     */
     public void clickElement(WebElement element, Boolean scroll){
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
         boolean timeout;
         int counter = 0;
-        waitUntilElementIs(element, ElementState.ENABLED, false);
+        elementIs(element, ElementState.ENABLED);
         do {
             timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             try {
@@ -259,14 +428,19 @@ public abstract class WebUtilities extends Driver {
         throw new PickleibException(caughtException);
     }
 
-    //This method clicks an element after waiting its state to be enabled and scrolling it to the center of the view
+    /**
+     * Clicks an element if its present (in enable state)
+     *
+     * @param element target element
+     * @param scroll scrolls if true
+     */
     public void clickIfPresent(WebElement element, Boolean scroll){
         try {
             long initialTime = System.currentTimeMillis();
             WebDriverException caughtException = null;
             boolean timeout;
             int counter = 0;
-            waitUntilElementIs(element, ElementState.ENABLED, false);
+            elementIs(element, ElementState.ENABLED);
             do {
                 timeout = System.currentTimeMillis()-initialTime > elementTimeout;
                 try {
@@ -293,22 +467,54 @@ public abstract class WebUtilities extends Driver {
         catch (WebDriverException exception){log.new Warning(exception.getMessage());}
     }
 
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     * @param scroll scrolls if true
+     * @param verify verifies the input text value equals to expected text if true
+     */
     public void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
         // This method clears the input field before filling it
-        if (scroll) clearInputField(centerElement(waitUntilElementIs(inputElement, ElementState.DISPLAYED, false)))
-                .sendKeys(inputText);
-        else clearInputField(waitUntilElementIs(inputElement, ElementState.DISPLAYED, false))
-                .sendKeys(inputText);
-
+        elementIs(inputElement, ElementState.DISPLAYED);
+        if (scroll) clearInputField(centerElement(inputElement)).sendKeys(inputText);
+        else clearInputField(inputElement).sendKeys(inputText);
         if (verify) Assert.assertEquals(inputText, inputElement.getAttribute("value"));
     }
 
+    /**
+     * Verifies a given element is in expected state
+     *
+     * @deprecated replaced by verifyElementState(element, state)
+     */
+    @Deprecated(since = "1.6.2")
     public WebElement waitUntilElementIs(WebElement element, ElementState state, @NotNull Boolean strict){
         if (strict) Assert.assertTrue("Element is not in " + state.name() + " state!", elementIs(element, state));
         else elementIs(element, state);
         return element;
     }
 
+    /**
+     * Verifies a given element is in expected state
+     *
+     * @param element target element
+     * @param state expected state
+     * @return returns the element if its in expected state
+     */
+    public WebElement verifyElementState(WebElement element, ElementState state){
+        Assert.assertTrue("Element is not in " + state.name() + " state!", elementIs(element, state));
+        log.new Success("Element state is verified to be: " + state.name());
+        return element;
+    }
+
+    /**
+     * Waits until a given element is in expected state
+     *
+     * @param element target element
+     * @param state expected state
+     * @return returns true if element is in the expected state
+     */
     public Boolean elementIs(WebElement element, @NotNull ElementState state){
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         long initialTime = System.currentTimeMillis();
@@ -367,6 +573,11 @@ public abstract class WebUtilities extends Driver {
         return false;
     }
 
+    /**
+     * Hovers cursor over of a given element
+     *
+     * @deprecated replaced by hoverOver(element)
+     */
     @Deprecated(since = "1.2.7")
     public WebElement hoverOver(WebElement element, Long initialTime){
         if (System.currentTimeMillis() - initialTime > elementTimeout) return null;
@@ -377,6 +588,12 @@ public abstract class WebUtilities extends Driver {
         return element;
     }
 
+    /**
+     * Hovers cursor over of a given element
+     *
+     * @param element target element
+     * @return returns the selected element
+     */
     public WebElement hoverOver(WebElement element){
         long initialTime = System.currentTimeMillis();
         Actions actions = new Actions(driver);
@@ -407,10 +624,18 @@ public abstract class WebUtilities extends Driver {
         return element;
     }
 
+    @Deprecated(since = "1.6.2")
     public void loopAndClick(List<WebElement> list, String buttonName, Boolean scroll){
         clickElement(acquireNamedElementAmongst(list,buttonName), scroll);
     }
 
+    /**
+     * Acquire a component amongst a list of components by its name
+     *
+     * @param items list of components
+     * @param selectionName component name
+     * @return returns the selected component
+     */
     public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName){
         log.new Info("Acquiring component called " + highlighted(Color.BLUE, selectionName));
         boolean timeout = false;
@@ -425,6 +650,16 @@ public abstract class WebUtilities extends Driver {
         throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
     }
 
+    /**
+     * Acquire listed component by the text of its given child element
+     *
+     * @param elementText child element text
+     * @param elementFieldName child element field name
+     * @param componentListName component list field name
+     * @param pageName name of the page instance
+     * @param objectRepository instance of an object that contains instances of every page
+     * @return returns the selected web component
+     */
     public WebComponent acquireExactNamedComponentAmongst(
             String elementText,
             String elementFieldName,
@@ -446,7 +681,13 @@ public abstract class WebUtilities extends Driver {
         }
         throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
     }
-
+    /**
+     * Acquire listed element by its name
+     *
+     * @param items list that includes target element
+     * @param selectionName element name
+     * @return returns the selected element
+     */
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
         boolean timeout = false;
@@ -513,6 +754,14 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
+    /**
+     * Acquire listed element by its attribute
+     *
+     * @param items list that includes target element
+     * @param attributeName attribute name
+     * @param attributeValue attribute value
+     * @return returns the selected element
+     */
     public WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue){
         log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
         boolean condition = true;
@@ -548,6 +797,11 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
+    /**
+     * Switches driver focus by using tab handle
+     *
+     * @param handle target tab/window
+     */
     public String switchWindowByHandle(@Nullable String handle){
         log.new Info("Switching to the next tab");
         String parentWindowHandle = driver.getWindowHandle();
@@ -560,6 +814,11 @@ public abstract class WebUtilities extends Driver {
         return parentWindowHandle;
     }
 
+    /**
+     * Switches driver focus by using tab index
+     *
+     * @param tabIndex target tab/window
+     */
     public String switchWindowByIndex(Integer tabIndex){
         log.new Info("Switching the tab with the window index: " + tabIndex);
         String parentWindowHandle = driver.getWindowHandle();
@@ -569,17 +828,30 @@ public abstract class WebUtilities extends Driver {
         return parentWindowHandle;
     }
 
-    //This method clicks a button with a certain text on it
+    /**
+     * Clicks an element acquired by text
+     *
+     * @param buttonText target element text
+     * @param scroll scrolls if true
+     */
     public void clickButtonWithText(String buttonText, Boolean scroll){clickElement(getElementByText(buttonText), scroll);}
 
-    //This method clears an input field /w style
+    /**
+     * Clears an input element
+     *
+     * @param element target element
+     */
     public WebElement clearInputField(@NotNull WebElement element){
         int textLength = element.getAttribute("value").length();
         for(int i = 0; i < textLength; i++){element.sendKeys(Keys.BACK_SPACE);}
         return element;
     }
 
-    //This method returns an element with a certain text on it
+    /**
+     * Acquires an element by its text
+     *
+     * @param elementText target element text
+     */
     public WebElement getElementByText(String elementText){
         try {
             return driver.findElement(By.xpath("//*[text()='" +elementText+ "']"));
@@ -589,7 +861,11 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    //This method returns an element with a certain text on it
+    /**
+     * Acquires an element that contains a certain text
+     *
+     * @param elementText target element text
+     */
     public WebElement getElementContainingText(String elementText){
         try {
             return driver.findElement(By.xpath("//*[contains(text(), '" +elementText+ "')]"));
@@ -599,7 +875,12 @@ public abstract class WebUtilities extends Driver {
         }
     }
 
-    //This method performs click, hold, drag and drop action on a certain element
+    /**
+     * Drags and drops a given element on top of another element
+     *
+     * @param element element that drags
+     * @param destinationElement target element
+     */
     public void dragDropToAction(WebElement element, WebElement destinationElement){
 
         centerElement(element);
@@ -614,6 +895,13 @@ public abstract class WebUtilities extends Driver {
         waitFor(0.5);
     }
 
+    /**
+     * Drags a given element to coordinates specified by offsets from the center of the element
+     *
+     * @param element target element
+     * @param xOffset x offset from the center of the element
+     * @param yOffset y offset from the center of the element
+     */
     //This method performs click, hold, dragAndDropBy action on at a certain offset
     public void dragDropByAction(WebElement element, int xOffset, int yOffset){
 
@@ -628,7 +916,14 @@ public abstract class WebUtilities extends Driver {
         waitFor(0.5);
     }
 
-    //This method performs click, hold, drag and drop action on at a certain offset
+    /**
+     * Drags a given element to coordinates specified by offsets from the center of the element
+     * Uses moveToElement()
+     *
+     * @param element target element
+     * @param xOffset x offset from the center of the element
+     * @param yOffset y offset from the center of the element
+     */
     public void dragDropAction(WebElement element, int xOffset, int yOffset){
 
         centerElement(element);
@@ -643,10 +938,20 @@ public abstract class WebUtilities extends Driver {
         waitFor(0.5);
     }
 
-    //This method refreshes the current page
+    /**
+     * Refreshes the current page
+     *
+     */
     public void refreshThePage(){driver.navigate().refresh();}
 
-    //This method clicks an element at an offset
+    /**
+     * Click coordinates specified by the given offsets from the center of a given element
+     *
+     * @param element target element
+     * @param xOffset x offset from the center of the element
+     * @param yOffset y offset from the center of the element
+     * @param scroll scroll action (scrolls if true)
+     */
     public void clickAtAnOffset(WebElement element, int xOffset, int yOffset, boolean scroll){
 
         if (scroll) centerElement(element);
@@ -659,12 +964,36 @@ public abstract class WebUtilities extends Driver {
                 .perform();
     }
 
+    /**
+     * Switches to present alert
+     *
+     * @return returns the alert
+     */
     public Alert getAlert(){return driver.switchTo().alert();}
 
+    /**
+     * Uploads a given file
+     *
+     * @param fileUploadInput upload element
+     * @param directory absolute file directory (excluding the file name)
+     * @param fileName file name (including file extension)
+     */
     public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
 
-    public String combineKeys(Keys key1, Keys key2){return Keys.chord(key1,key2);}
+    /**
+     * Combines the given keys
+     *
+     * @param keys key inputs
+     */
+    public String combineKeys(Keys... keys) {
+        return Keys.chord(keys);
+    }
 
+    /**
+     * Waits for a certain while
+     *
+     * @param seconds duration as a double
+     */
     //This method makes the thread wait for a certain while
     public void waitFor(double seconds){
         if (seconds > 1) log.new Info("Waiting for "+BLUE+seconds+GRAY+" seconds");
@@ -672,6 +1001,12 @@ public abstract class WebUtilities extends Driver {
         catch (InterruptedException exception){Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);}
     }
 
+    /**
+     * Scrolls an element to the center of the view
+     *
+     * @param element target element
+     * @return returns the targeted element
+     */
     //This method scrolls an element to the center of the view
     public WebElement centerElement(WebElement element){
         String scrollScript = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
@@ -684,6 +1019,11 @@ public abstract class WebUtilities extends Driver {
         return element;
     }
 
+    /**
+     * Scroll in a given direction
+     *
+     * @param direction target direction (UP or DOWN)
+     */
     public void scroll(@NotNull Direction direction){
         log.new Info("Scrolling " + highlighted(Color.BLUE, direction.name().toLowerCase()));
         String script = switch (direction) {
@@ -693,16 +1033,51 @@ public abstract class WebUtilities extends Driver {
         ((JavascriptExecutor) driver).executeScript(script);
     }
 
-    //This method verifies current url
+    /**
+     * Verifies the current url
+     *
+     * @param url target url
+     * @deprecated replaced by verifyCurrentUrl(url)
+     */
+    @Deprecated(since = "1.6.2")
     public void verifyUrl(String url){
         Assert.assertTrue(driver.getCurrentUrl().contains(url));
     }
 
+    /**
+     * Verifies the current url contains the given url
+     *
+     * @param url target url
+     */
+    public void verifyUrlContains(String url){
+        Assert.assertTrue(driver.getCurrentUrl().contains(url));
+    }
+
+    /**
+     * Verifies the current url equals to given url
+     *
+     * @param url target url
+     */
+    public void verifyCurrentUrl(String url){
+        Assert.assertTrue(driver.getCurrentUrl().equalsIgnoreCase(url));
+    }
+
+    /**
+     * Verifies the given page title
+     *
+     * @param pageTitle target page
+     */
     //This method verifies the page title
     public void verifyPageTitle(String pageTitle){
         Assert.assertTrue(driver.getTitle().contains(pageTitle));
     }
 
+    /**
+     * Transform a given element to an object using javascript
+     *
+     * @param element target element
+     * @return returns an object with the attributes of a given element
+     */
     //This method returns all the attributes of an element as an object
     public Object getElementObject(WebElement element){
         return ((JavascriptExecutor) driver).executeScript("var items = {}; for (index = 0;" +
@@ -712,12 +1087,25 @@ public abstract class WebUtilities extends Driver {
         );
     }
 
+    /**
+     * Prints all the attributes of a given element
+     *
+     * @param element target element
+     */
     //This method prints all the attributes of a given element
     public void printElementAttributes(WebElement element){
         JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
         for (Object attribute : attributeJSON.keySet()) log.new Info(attribute +" : "+ attributeJSON.get(attribute));
     }
 
+    /**
+     * Gets the parent class from a child element using a selector class
+     *
+     * @param childElement element that generates the parent class
+     * @param current empty string (at the beginning)
+     * @param parentSelectorClass selector class for selecting the parent elements
+     * @return returns the targeted parent element
+     */
     public WebElement getParentByClass(WebElement childElement, String current, String parentSelectorClass) {
 
         if (current == null) {current = "";}
@@ -740,6 +1128,13 @@ public abstract class WebUtilities extends Driver {
         return null;
     }
 
+    /**
+     * Generate a xPath for a given element
+     *
+     * @param childElement web element gets generated a xPath from
+     * @param current empty string (at the beginning)
+     * @return returns generated xPath
+     */
     public String generateXPath(@NotNull WebElement childElement, String current) {
         String childTag = childElement.getTagName();
         if (childTag.equals("html")) {return "/html[1]" + current;}
@@ -756,6 +1151,7 @@ public abstract class WebUtilities extends Driver {
         return null;
     }
 
+    @Deprecated (since = "1.6.2")
     public List<WebElement> verifyAbsenceOfElementLocatedBy(@NotNull Locator locatorType, String locator, long startTime){
 
         List<WebElement> elements = switch (locatorType) {
@@ -819,10 +1215,20 @@ public abstract class WebUtilities extends Driver {
         return element;
     }
 
+    /**
+     * Click element into view by using javascript
+     *
+     * @param webElement element that gets clicked
+     */
     public void clickWithJS(WebElement webElement) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].click();", webElement);
     }
 
+    /**
+     * Scrolls element into view by using javascript
+     *
+     * @param webElement element that gets scrolled into the view
+     */
     public void scrollWithJS(WebElement webElement) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", webElement);
     }
