@@ -14,8 +14,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
 import org.json.simple.JSONObject;
-import static resources.Colors.*;
-import static utils.WebUtilities.Color.BLUE;
 import org.openqa.selenium.*;
 import java.util.*;
 import context.ContextStore;
@@ -24,6 +22,8 @@ import java.time.Duration;
 import org.junit.Assert;
 import resources.Colors;
 import exceptions.PickleibException;
+
+import static resources.Colors.*;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class WebUtilities extends Driver {
@@ -53,22 +53,27 @@ public abstract class WebUtilities extends Driver {
      * Basic direction
      */
     public enum Direction {UP, DOWN}
+
     /**
      * Basic element selectors
      */
     public enum Locator {XPATH, CSS}
+
     /**
      * Duration value for methods
      */
     public static long elementTimeout;
+
     /**
      * Browser navigators
      */
     public enum Navigation {BACKWARDS, FORWARDS}
+
     /**
      * Specified color codes
      */
     public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
+
     /**
      * Element states
      */
@@ -427,6 +432,41 @@ public abstract class WebUtilities extends Driver {
             try {
                 if (scroll) centerElement(element).click();
                 else element.click();
+                return;
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException;
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
+                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException;
+                }
+                counter++;
+            }
+        }
+        while (!timeout);
+        if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
+        log.new Warning(caughtException.getMessage());
+        throw new PickleibException(caughtException);
+    }
+
+    /**
+     * Clicks an element after waiting for its state to be enabled
+     *
+     * @param element target element
+     */
+    public void clickElement(WebElement element){
+        long initialTime = System.currentTimeMillis();
+        WebDriverException caughtException = null;
+        boolean timeout;
+        int counter = 0;
+        elementIs(element, ElementState.ENABLED);
+        do {
+            timeout = System.currentTimeMillis()-initialTime > elementTimeout;
+            try {
+                centerElement(element).click();
                 return;
             }
             catch (WebDriverException webDriverException){
@@ -1396,6 +1436,7 @@ public abstract class WebUtilities extends Driver {
      * @return true if the specified event was fired.
      */
     public boolean isEventFired(String eventName, String listenerScript){
+        log.new Info("Listening to '" + eventName + "' event");
         String eventKey = strUtils.generateRandomString(eventName + "#", 6, false, true);
         listenerScript = listenerScript.replace(eventName, "'" + eventName + "', function(){console.warn('" + eventKey +"')}");
         executeScript(listenerScript);
@@ -1417,6 +1458,7 @@ public abstract class WebUtilities extends Driver {
      * @return true if the specified event was fired.
      */
     public boolean isEventFiredByScript(String eventKey, String listenerScript){
+        log.new Info("Listening to '" + eventKey + "' event");
         executeScript(listenerScript);
         LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
         for (LogEntry entry: logs.getAll()) if (entry.toString().contains(eventKey)) return true;
@@ -1430,7 +1472,7 @@ public abstract class WebUtilities extends Driver {
      * @return object if the scripts yields one
      */
     public Object executeScript(String script){
-        log.new Info("Executing script: " + highlighted(BLUE,script));
+        log.new Info("Executing script: " + highlighted(Color.BLUE, script));
         return ((JavascriptExecutor) driver).executeScript(script);
     }
 }
