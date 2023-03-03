@@ -10,20 +10,19 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
+import utils.LogUtilities;
 import utils.Printer;
 import utils.PropertyUtility;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.Level;
 import static resources.Colors.*;
 
 public class DriverFactory {
 
     private static final Printer log = new Printer(DriverFactory.class);
+    private static final LogUtilities logUtils = new LogUtilities();
     static Properties properties = PropertyUtility.properties;
 
     /**
@@ -109,7 +108,7 @@ public class DriverFactory {
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-            driver.setLogLevel(getLevel(properties.getProperty("selenium-log-level", "off")));
+            driver.setLogLevel(logUtils.getLevel(properties.getProperty("selenium-log-level", "off")));
             log.new Important(driverType.getDriverName() + GRAY + " was selected");
             return driver;
         }
@@ -187,20 +186,6 @@ public class DriverFactory {
             if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, loadStrategy, driverType);
             else return null;
         }
-    }
-
-    /**
-     * returns log level from a string
-     *
-     * @param logLevel desired log level
-     * @return returns log level
-     */
-    public static Level getLevel(String logLevel){
-        return Level.parse(Objects.requireNonNull(Arrays.stream(Level.class.getFields()).filter(field -> {
-            field.setAccessible(true);
-            String fieldName = field.getName();
-            return fieldName.equalsIgnoreCase(logLevel);
-        }).findAny().orElse(null)).getName());
     }
 
     /**
