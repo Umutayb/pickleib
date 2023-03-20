@@ -52,7 +52,7 @@ public abstract class WebUtilities extends Driver {
     /**
      * Basic direction
      */
-    public enum Direction {UP, DOWN}
+    public enum Direction {up, down}
 
     /**
      * Basic element selectors
@@ -67,7 +67,7 @@ public abstract class WebUtilities extends Driver {
     /**
      * Browser navigators
      */
-    public enum Navigation {BACKWARDS, FORWARDS}
+    public enum Navigation {backwards, forwards}
 
     /**
      * Specified color codes
@@ -390,8 +390,8 @@ public abstract class WebUtilities extends Driver {
             log.new Info("Navigating "+highlighted(Color.BLUE, direction.name()));
 
             switch (direction) {
-                case FORWARDS -> driver.navigate().forward();
-                case BACKWARDS -> driver.navigate().back();
+                case forwards -> driver.navigate().forward();
+                case backwards -> driver.navigate().back();
                 default -> throw new EnumConstantNotPresentException(Navigation.class, direction.name());
             }
         }
@@ -1155,8 +1155,8 @@ public abstract class WebUtilities extends Driver {
     public void scroll(@NotNull Direction direction){
         log.new Info("Scrolling " + highlighted(Color.BLUE, direction.name().toLowerCase()));
         String script = switch (direction) {
-            case UP -> "window.scrollBy(0,-document.body.scrollHeight)";
-            case DOWN -> "window.scrollBy(0,document.body.scrollHeight)";
+            case up -> "window.scrollBy(0,-document.body.scrollHeight)";
+            case down -> "window.scrollBy(0,document.body.scrollHeight)";
         };
         ((JavascriptExecutor) driver).executeScript(script);
     }
