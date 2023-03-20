@@ -76,6 +76,16 @@ public class DriverFactory {
     static PageLoadStrategy loadStrategy;
 
     /**
+     * determines usage of web driver manager
+     */
+    static Boolean useWDM;
+
+    /**
+     * determines usage of web driver manager
+     */
+    static Boolean allowRemoteOrigin;
+
+    /**
      * Initializes and returns a driver of specified type
      * @param driverType driver type
      * @return returns driver
@@ -91,6 +101,8 @@ public class DriverFactory {
         insecureLocalHost = Boolean.parseBoolean(properties.getProperty("insecure-localhost", "false"));
         loadStrategy = PageLoadStrategy.fromString(properties.getProperty("load-strategy", "normal"));
         disableNotifications = Boolean.parseBoolean(properties.getProperty("disable-notifications", "true"));
+        allowRemoteOrigin = Boolean.parseBoolean(properties.getProperty("allow-remote-origin", "true"));
+        useWDM = Boolean.parseBoolean(properties.getProperty("web-driver-manager", "false"));
 
         RemoteWebDriver driver;
 
@@ -101,7 +113,7 @@ public class DriverFactory {
                 ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", driverType.getDriverKey());
                 driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
             }
-            else {driver = driverSwitch(headless, false, insecureLocalHost, disableNotifications, loadStrategy, driverType);}
+            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);}
 
             assert driver != null;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
@@ -139,6 +151,7 @@ public class DriverFactory {
             Boolean useWDM,
             Boolean insecureLocalHost, 
             Boolean disableNotifications,
+            Boolean allowRemoteOrigin,
             PageLoadStrategy loadStrategy,
             DriverType driverType){
         if (useWDM) log.new Warning("Using WebDriverManager...");
@@ -153,6 +166,7 @@ public class DriverFactory {
                     }
                     chromeOptions.setPageLoadStrategy(loadStrategy);
                     chromeOptions.setAcceptInsecureCerts(insecureLocalHost);
+                    if (allowRemoteOrigin) chromeOptions.addArguments("--remote-allow-origins=*");
                     if (headless) chromeOptions.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
                     return new ChromeDriver(chromeOptions);
@@ -165,6 +179,7 @@ public class DriverFactory {
                     }
                     firefoxOptions.setPageLoadStrategy(loadStrategy);
                     firefoxOptions.setAcceptInsecureCerts(insecureLocalHost);
+                    if (allowRemoteOrigin) firefoxOptions.addArguments("--remote-allow-origins=*");
                     if (disableNotifications) firefoxOptions.addArguments("disable-notifications");
                     if (headless) firefoxOptions.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.firefoxdriver().setup();
@@ -183,7 +198,7 @@ public class DriverFactory {
         }
         catch (SessionNotCreatedException sessionException){
             log.new Warning(sessionException);
-            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, loadStrategy, driverType);
+            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);
             else return null;
         }
     }
