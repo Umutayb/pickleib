@@ -52,7 +52,7 @@ public class PickleibSteps extends WebUtilities {
      * Swithches to the next tab
      *
      */
-    public void switchToTabByIndex() {
+    public void switchToNextTab() {
         String parentHandle = switchWindowByHandle(null);
         ContextStore.put("parentHandle", parentHandle);
     }
@@ -73,7 +73,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param handle target tab handle
      */
-    public void switchToTabByIndex(String handle) {
+    public void switchToTabByHandle(String handle) {
         handle = contextCheck(handle);
         String parentHandle = switchWindowByHandle(handle);
         ContextStore.put("parentHandle", parentHandle);
@@ -114,7 +114,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Adds the given values to LocalStorage
+     * Adds given values to the local storage
      *
      * @param form Map<String, String>
      */
@@ -129,7 +129,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Adds the given cookies
+     * Adds given cookies
      *
      * @param cookies Map<String, String>
      */
@@ -152,9 +152,9 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Navigate browser to {direction}
+     * Navigate browser in {direction} direction
      *
-     * @param direction target direction (up or forwards)
+     * @param direction target direction (backwards or forwards)
      */
     public void browserNavigate(WebUtilities.Navigation direction) {navigateBrowser(direction);}
 
@@ -172,14 +172,14 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param text target text
      */
-    public void clickWithLocator(String text) {
+    public void clickByCssSelector(String text) {
         WebElement element = driver.findElement(By.cssSelector(text));
         clickElement(element, true);
     }
 
     /**
      *
-     * Wait {duration} seconds
+     * Wait for {duration} seconds
      *
      * @param duration desired duration
      */
@@ -193,7 +193,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param direction target direction (up or down)
      */
-    public void scrollTo(WebUtilities.Direction direction){scroll(direction);}
+    public void scrollInDirection(WebUtilities.Direction direction){scroll(direction);}
 
     /**
      *
@@ -201,7 +201,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param buttonName target button name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void click(String buttonName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
@@ -221,9 +221,8 @@ public class PickleibSteps extends WebUtilities {
      * @param attributeName acquired attribute name
      * @param elementName target element name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    // Use 'innerHTML' attributeName to acquire text on an element
     public void getAttributeValue(String attributeName, String elementName, String pageName, Object objectRepository){
         log.new Info("Acquiring " +
                 highlighted(BLUE,attributeName) +
@@ -247,16 +246,21 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Acquire attribute {attribute name} from component element {element name} of {component name} component on the {page name}
+     * Acquire attribute {attribute name} from component element {element name} of {component field name} component on the {page name}
      * (Use 'innerHTML' attributeName to acquire text on an element)
      *
      * @param attributeName acquired attribute name
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void getAttributeValue(String attributeName, String elementName, String componentName, String pageName, Object objectRepository){
+    public void getAttributeValue(
+            String attributeName,
+            String elementName,
+            String componentFieldName,
+            String pageName,
+            Object objectRepository){
         log.new Info("Acquiring " +
                 highlighted(BLUE,attributeName) +
                 highlighted(GRAY," attribute of ") +
@@ -265,7 +269,7 @@ public class PickleibSteps extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        WebElement element = getElementFromComponent(elementName, componentName, pageName, objectRepository);
+        WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
         String attribute = element.getAttribute(attributeName);
         log.new Info("Attribute -> " + highlighted(BLUE, attributeName) + highlighted(GRAY," : ") + highlighted(BLUE, attribute));
         ContextStore.put(elementName + "-" + attributeName, attribute);
@@ -283,7 +287,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param elementName target element name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void center(String elementName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
@@ -297,11 +301,11 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Click towards the {button name} on the {page name}
+     * Click towards to {button name} on the {page name}
      *
      * @param buttonName target button name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void clickTowards(String buttonName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
@@ -317,57 +321,57 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Click component element {button name} of {component name} component on the {page name}
+     * Click component element {button name} of {component field name} component on the {page name}
      *
      * @param buttonName target button name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void click(String buttonName, String componentName, String pageName, Object objectRepository){
+    public void click(String buttonName, String componentFieldName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        clickElement(getElementFromComponent(buttonName, componentName, pageName, objectRepository), true);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        clickElement(getElementFromComponent(buttonName, componentFieldName, pageName, objectRepository), true);
     }
 
     /**
      *
-     * Center component element {element name} of {component name} component on the {page name}
+     * Center component element {element name} of {component field name} component on the {page name}
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void center(String elementName, String componentName, String pageName, Object objectRepository){
+    public void center(String elementName, String componentFieldName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        centerElement(getElementFromComponent(elementName, componentName, pageName, objectRepository));
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        centerElement(getElementFromComponent(elementName, componentFieldName, pageName, objectRepository));
     }
 
     /**
      *
-     * Click towards component element {button name} of {component name} component on the {page name}
+     * Click towards component element {button name} of {component field name} component on the {page name}
      *
      * @param buttonName target button name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void clickTowards(String buttonName, String componentName, String pageName, Object objectRepository){
+    public void clickTowards(String buttonName, String componentFieldName, String pageName, Object objectRepository){
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(buttonName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(buttonName, componentFieldName, pageName, objectRepository);
         log.new Info("Clicking towards " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
@@ -382,7 +386,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param buttonName target button name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void performJSClick(String buttonName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
@@ -397,22 +401,22 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Perform a JS click on component element {button name} of {component name} component on the {page name}
+     * Perform a JS click on component element {button name} of {component field name} component on the {page name}
      *
      * @param buttonName target button name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void performJSClick(String buttonName, String componentName, String pageName, Object objectRepository){
+    public void performJSClick(String buttonName, String componentFieldName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(buttonName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(buttonName, componentFieldName, pageName, objectRepository);
         clickWithJS(centerElement(element));
     }
 
@@ -422,7 +426,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param buttonName target button name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void clickIfPresent(String buttonName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
@@ -441,14 +445,14 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * If present, click component element {button name} of {component name} component on the {page name}
+     * If present, click component element {button name} of {component field name} component on the {page name}
      *
      * @param buttonName target button name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void clickIfPresent(String buttonName, String componentName, String pageName, Object objectRepository){
+    public void clickIfPresent(String buttonName, String componentFieldName, String pageName, Object objectRepository){
         log.new Info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
@@ -456,9 +460,9 @@ public class PickleibSteps extends WebUtilities {
                 highlighted(GRAY, ", if present...")
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         try {
-            WebElement element = getElementFromComponent(buttonName, componentName, pageName, objectRepository);
+            WebElement element = getElementFromComponent(buttonName, componentFieldName, pageName, objectRepository);
             if (elementIs(element, WebUtilities.ElementState.DISPLAYED)) clickElement(element, true);
         }
         catch (WebDriverException ignored){log.new Warning("The " + buttonName + " was not present");}
@@ -471,7 +475,7 @@ public class PickleibSteps extends WebUtilities {
      * @param buttonName target button name
      * @param listName specified list name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void clickListedButton(String buttonName, String listName, String pageName, Object objectRepository){
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -493,22 +497,27 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Click listed component element {button name} of {component name} from {component list name} list on the {page name}
+     * Click listed component element {button name} of {component field name} from {component list name} list on the {page name}
      *
      * @param buttonName target button name
-     * @param componentName specified component name
-     * @param listName specified component list name
+     * @param componentFieldName specified component field name
+     * @param componentListName specified component list name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void clickListedButton(String buttonName, String componentName, String listName, String pageName, Object objectRepository){
-        componentName = strUtils.firstLetterDeCapped(componentName);
+    public void clickListedButton(
+            String buttonName,
+            String componentFieldName,
+            String componentListName,
+            String pageName,
+            Object objectRepository){
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         pageName = strUtils.firstLetterDeCapped(pageName);
-        listName = strUtils.firstLetterDeCapped(listName);
+        componentListName = strUtils.firstLetterDeCapped(componentListName);
         buttonName = contextCheck(buttonName);
         List<WebElement> elements = getElementsFromComponent(
-                listName,
-                componentName,
+                componentListName,
+                componentFieldName,
                 pageName,
                 objectRepository
         );
@@ -525,26 +534,31 @@ public class PickleibSteps extends WebUtilities {
      *
      * Select component named {component name} from {component list name} component list on the {page name} and click the {button name} element
      *
-     * @param selectionName specified component name
-     * @param listName specified component list name
+     * @param componentName specified component name
+     * @param componentListName specified component list name
      * @param pageName specified page instance name
      * @param buttonName target button name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void clickButtonAmongstComponents(String selectionName, String listName, String pageName, String buttonName, Object objectRepository){
+    public void clickButtonAmongstComponents(
+            String componentName,
+            String componentListName,
+            String pageName,
+            String buttonName,
+            Object objectRepository){
         pageName = strUtils.firstLetterDeCapped(pageName);
-        listName = strUtils.firstLetterDeCapped(listName);
+        componentListName = strUtils.firstLetterDeCapped(componentListName);
         WebElement element = getElementAmongstNamedComponentsFromPage(
                 buttonName,
-                selectionName,
-                listName,
+                componentName,
+                componentListName,
                 pageName,
                 objectRepository
         );
         log.new Info("Clicking listed button " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," of selected ") +
-                highlighted(BLUE, selectionName) +
+                highlighted(BLUE, componentName) +
                 highlighted(GRAY," component on the ") +
                 highlighted(BLUE, pageName)
         );
@@ -555,22 +569,27 @@ public class PickleibSteps extends WebUtilities {
      *
      * Select exact component named {component name} from {component list name} component list on the {page name} and click the {button name} element
      *
-     * @param selectionName specified component name
-     * @param listName specified component list name
+     * @param componentName specified component name
+     * @param componentListName specified component list name
      * @param pageName specified page instance name
      * @param buttonName target button name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void clickButtonAmongstExactNamedComponents(String selectionName, String listName, String pageName, String buttonName, Object objectRepository){
+    public void clickButtonAmongstExactNamedComponents(
+            String componentName,
+            String componentListName,
+            String pageName,
+            String buttonName,
+            Object objectRepository){
         pageName = strUtils.firstLetterDeCapped(pageName);
-        listName = strUtils.firstLetterDeCapped(listName);
-        List<WebComponent> components = getComponentsFromPage(listName, pageName, objectRepository);
-        WebComponent component = acquireExactNamedComponentAmongst(components, selectionName, buttonName);
+        componentListName = strUtils.firstLetterDeCapped(componentListName);
+        List<WebComponent> components = getComponentsFromPage(componentListName, pageName, objectRepository);
+        WebComponent component = acquireExactNamedComponentAmongst(components, componentName, buttonName);
         WebElement element = getElementFromComponent(buttonName, component);
         log.new Info("Clicking listed button " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," of selected ") +
-                highlighted(BLUE, selectionName) +
+                highlighted(BLUE, componentName) +
                 highlighted(GRAY," component on the ") +
                 highlighted(BLUE, pageName)
         );
@@ -586,7 +605,7 @@ public class PickleibSteps extends WebUtilities {
      * @param pageName specified page instance name
      * @param buttonName target button name
      * @param elementListName target element list name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void clickListedButtonAmongstComponents(
             String componentName,
@@ -621,9 +640,14 @@ public class PickleibSteps extends WebUtilities {
      * @param attributeName target attribute name
      * @param listName target list name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void clickListedButtonByAttribute(String attributeValue, String attributeName, String listName, String pageName, Object objectRepository) {
+    public void clickListedButtonByAttribute(
+            String attributeValue,
+            String attributeName,
+            String listName,
+            String pageName,
+            Object objectRepository) {
         List<WebElement> elements = getElementsFromPage(
                 listName,
                 strUtils.firstLetterDeCapped(pageName),
@@ -647,9 +671,15 @@ public class PickleibSteps extends WebUtilities {
      * @param attributeName target attribute name
      * @param listName target list name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void clickListedButtonByAttribute(String componentName, String attributeValue, String attributeName, String listName, String pageName, Object objectRepository) {
+    public void clickListedButtonByAttribute(
+            String componentName,
+            String attributeValue,
+            String attributeName,
+            String listName,
+            String pageName,
+            Object objectRepository) {
         List<WebElement> elements = getElementsFromComponent(
                 listName,
                 strUtils.firstLetterDeCapped(componentName),
@@ -673,7 +703,7 @@ public class PickleibSteps extends WebUtilities {
      * @param listName target list name
      * @param pageName specified page instance name
      * @param input input text
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void fillListedInput(String inputName, String listName, String pageName, String input, Object objectRepository){
         input = contextCheck(input);
@@ -698,7 +728,7 @@ public class PickleibSteps extends WebUtilities {
      * @param componentName specified component name
      * @param pageName specified page instance name
      * @param input input text
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void fill(String inputName, String componentName, String pageName, String input, Object objectRepository){
         input = contextCheck(input);
@@ -725,7 +755,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param pageName specified page instance name
      * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void fillForm(String pageName, List<Map<String, String>> signForms, Object objectRepository){
         String inputName;
@@ -756,7 +786,7 @@ public class PickleibSteps extends WebUtilities {
      * @param componentName specified component name
      * @param pageName specified page instance name
      * @param forms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void fillForm(String componentName, String pageName, List<Map<String, String>> forms, Object objectRepository){
         String inputName;
@@ -790,9 +820,14 @@ public class PickleibSteps extends WebUtilities {
      * @param iframeName target iframe name
      * @param pageName specified page instance name
      * @param inputText input text
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void fillIframeInput(String inputName,String iframeName,String pageName, String inputText, Object objectRepository){
+    public void fillIframeInput(
+            String inputName,
+            String iframeName,
+            String pageName,
+            String inputText,
+            Object objectRepository){
         inputText = contextCheck(inputText);
         log.new Info("Filling " +
                 highlighted(BLUE, inputName) +
@@ -812,14 +847,14 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Click i-frame element {element name} in {iframe name} on the {page name}
+     * Click iFrame element {element name} in {iframe name} on the {page name}
      *
      * @param elementName target element name
      * @param iframeName target iframe name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void clickIframeElement(String elementName,String iframeName,String pageName, Object objectRepository){
+    public void clickIframeElement(String elementName, String iframeName, String pageName, Object objectRepository){
         log.new Info("Clicking the i-frame element " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
@@ -834,16 +869,21 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Fill {iframe} iframe component form input of {component name} component on the {page name}
+     * Fill {iframe name} iframe component form input of {component field name} component on the {page name}
      *
      * @param iframeName target iframe name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
      * @param forms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     //@Given("Fill iframe component form input of {} component on the {}")
-    public void fillFormIframe(String iframeName, String componentName, String pageName, List<Map<String, String>> forms, Object objectRepository){
+    public void fillFormIframe(
+            String iframeName,
+            String componentFieldName,
+            String pageName,
+            List<Map<String, String>> forms,
+            Object objectRepository){
         String inputName;
         String input;
         for (Map<String, String> form : forms) {
@@ -857,12 +897,12 @@ public class PickleibSteps extends WebUtilities {
                     highlighted(BLUE, input)
             );
             pageName = strUtils.firstLetterDeCapped(pageName);
-            componentName = strUtils.firstLetterDeCapped(componentName);
+            componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
             WebElement element = getElementFromPage(iframeName, pageName, objectRepository);
             driver.switchTo().frame(element);
 
             clearFillInput(
-                    getElementFromComponent(inputName, componentName, pageName, objectRepository), //Input element
+                    getElementFromComponent(inputName, componentFieldName, pageName, objectRepository), //Input element
                     input,
                     false,
                     true
@@ -877,7 +917,7 @@ public class PickleibSteps extends WebUtilities {
      * @param elementName target element name
      * @param pageName specified page instance name
      * @param expectedText expected text
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void verifyText(String elementName, String pageName, String expectedText, Object objectRepository){
         expectedText = contextCheck(expectedText);
@@ -898,9 +938,13 @@ public class PickleibSteps extends WebUtilities {
      * @param listName target list name
      * @param pageName specified page instance name
      * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyListedText(String listName, String pageName, List<Map<String, String>> signForms, Object objectRepository){
+    public void verifyListedText(
+            String listName,
+            String pageName,
+            List<Map<String, String>> signForms,
+            Object objectRepository){
         String elementName;
         String expectedText;
         for (Map<String, String> form : signForms) {
@@ -924,15 +968,20 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify text of the component element {element name} of {component name} on the {page name} to be: {expected text}
+     * Verify text of the component element {element name} of {component field name} on the {page name} to be: {expected text}
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
      * @param expectedText expected text
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyText(String elementName, String componentName, String pageName, String expectedText, Object objectRepository){
+    public void verifyText(
+            String elementName,
+            String componentFieldName,
+            String pageName,
+            String expectedText,
+            Object objectRepository){
         expectedText = contextCheck(expectedText);
         log.new Info("Performing text verification for " +
                 highlighted(BLUE, elementName) +
@@ -940,8 +989,8 @@ public class PickleibSteps extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(elementName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
         elementIs(element, WebUtilities.ElementState.DISPLAYED);
         Assert.assertEquals("The " + elementName + " does not contain text '",
                 expectedText,
@@ -952,15 +1001,20 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify text of component element list {list name} of {component name} on the {page name}
+     * Verify text of component element list {list name} of {component field name} on the {page name}
      *
      * @param listName target list name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
      * @param forms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyListedText(String listName,String componentName, String pageName, List<Map<String, String>> forms, Object objectRepository){
+    public void verifyListedText(
+            String listName,
+            String componentFieldName,
+            String pageName,
+            List<Map<String, String>> forms,
+            Object objectRepository){
         String elementName;
         String expectedText;
         for (Map<String, String> form : forms) {
@@ -974,8 +1028,8 @@ public class PickleibSteps extends WebUtilities {
                     highlighted(BLUE, expectedText)
             );
             pageName = strUtils.firstLetterDeCapped(pageName);
-            componentName = strUtils.firstLetterDeCapped(componentName);
-            List<WebElement> elements = getElementsFromComponent(listName, componentName, pageName, objectRepository);
+            componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+            List<WebElement> elements = getElementsFromComponent(listName, componentFieldName, pageName, objectRepository);
             WebElement element = acquireNamedElementAmongst(elements, elementName);
             Assert.assertEquals("The " + element.getText() + " does not contain text '",expectedText,element.getText());
             log.new Success("Text of the element " + element.getText() + " was verified!");
@@ -988,7 +1042,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param elementName target element name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void verifyPresence(String elementName, String pageName, Object objectRepository){
         log.new Info("Verifying presence of " +
@@ -1004,22 +1058,22 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify presence of the component element {element name} of {component name} on the {page name}
+     * Verify presence of the component element {element name} of {component field name} on the {page name}
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyPresence(String elementName, String componentName, String pageName, Object objectRepository){
+    public void verifyPresence(String elementName, String componentFieldName, String pageName, Object objectRepository){
         log.new Info("Verifying presence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(elementName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
         verifyElementState(element, WebUtilities.ElementState.DISPLAYED);
         log.new Success("Presence of the element " + elementName + " was verified!");
     }
@@ -1061,7 +1115,7 @@ public class PickleibSteps extends WebUtilities {
      * @param elementName target element name
      * @param pageName specified page instance name
      * @param expectedState expected state
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     //@Given("Verify that element {} on the {} is in {} state")
     public void verifyState(String elementName, String pageName, String expectedState, Object objectRepository){
@@ -1080,15 +1134,20 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify that component element {element name} of {component name} on the {page name} is in {expected state} state
+     * Verify that component element {element name} of {component field name} on the {page name} is in {expected state} state
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
      * @param expectedState expected state
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyState(String elementName, String componentName, String pageName, String expectedState, Object objectRepository){
+    public void verifyState(
+            String elementName,
+            String componentFieldName,
+            String pageName,
+            String expectedState,
+            Object objectRepository){
         log.new Info("Verifying " +
                 highlighted(BLUE, expectedState) +
                 highlighted(GRAY," state of ")+
@@ -1098,8 +1157,8 @@ public class PickleibSteps extends WebUtilities {
         );
         expectedState = expectedState.toUpperCase();
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(elementName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
         verifyElementState(element, WebUtilities.ElementState.valueOf(expectedState));
         log.new Success("The element " + elementName + " was verified to be enabled!");
     }
@@ -1111,9 +1170,14 @@ public class PickleibSteps extends WebUtilities {
      * @param elementName target element name
      * @param pageName specified page instance name
      * @param expectedState expected state
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyIfPresentElement(String elementName, String componentName, String pageName, WebUtilities.ElementState expectedState, Object objectRepository){
+    public void verifyIfPresentElement(
+            String elementName,
+            String componentName,
+            String pageName,
+            WebUtilities.ElementState expectedState,
+            Object objectRepository){
         log.new Info("Verifying " +
                 highlighted(BLUE, expectedState.name()) +
                 highlighted(GRAY," state of ")+
@@ -1136,7 +1200,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param elementName target element name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void waitUntilAbsence(String elementName, String pageName, Object objectRepository){
         log.new Info("Waiting for the absence of " +
@@ -1151,22 +1215,22 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Wait for absence of component element {element name} of {component name} on the {page name}
+     * Wait for absence of component element {element name} of {component field name} on the {page name}
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void waitUntilAbsence(String elementName, String componentName, String pageName, Object objectRepository){
+    public void waitUntilAbsence(String elementName, String componentFieldName, String pageName, Object objectRepository) {
         log.new Info("Waiting for the absence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(elementName, componentName,pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(elementName, componentFieldName,pageName, objectRepository);
         elementIs(element, WebUtilities.ElementState.ABSENT);
     }
 
@@ -1176,9 +1240,9 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param elementName target element name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void waitUntilVisible(String elementName, String pageName, Object objectRepository){
+    public void waitUntilVisible(String elementName, String pageName, Object objectRepository) {
         log.new Info("Waiting for the absence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
@@ -1191,22 +1255,22 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Wait for component element {element name} of {component name} on the {page name} to be visible
+     * Wait for component element {element name} of {component field name} on the {page name} to be visible
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void waitUntilVisible(String elementName, String componentName, String pageName, Object objectRepository){
+    public void waitUntilVisible(String elementName, String componentFieldName, String pageName, Object objectRepository) {
         log.new Info("Waiting for the absence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(elementName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
         elementIs(element, WebUtilities.ElementState.DISPLAYED);
     }
 
@@ -1218,7 +1282,7 @@ public class PickleibSteps extends WebUtilities {
      * @param pageName specified page instance name
      * @param attributeValue expected attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void waitUntilElementContainsAttribute(
             String elementName,
@@ -1240,26 +1304,26 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Wait until component element {element name} of {component name} on the {page name} has {attribute value} value for its {attribute name} attribute
+     * Wait until component element {element name} of {component field name} on the {page name} has {attribute value} value for its {attribute name} attribute
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
      * @param attributeValue expected attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void waitUntilElementContainsAttribute(
+    public void waitUntilComponentElementContainsAttribute(
             String elementName,
-            String componentName,
+            String componentFieldName,
             String pageName,
             String attributeValue,
             String attributeName,
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(elementName, componentName,pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
         log.new Info("Waiting for the presence of " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
@@ -1279,7 +1343,7 @@ public class PickleibSteps extends WebUtilities {
      * @param pageName specified page instane name
      * @param attributeValue expected attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void verifyElementContainsAttribute(
             String elementName,
@@ -1314,7 +1378,7 @@ public class PickleibSteps extends WebUtilities {
      * @param elementName target attribute name
      * @param pageName specified page instance name
      * @param attributeValue expected attribute value
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     //@Given("Verify {} css attribute of element {} on the {} is {}")
     public void verifyElementColor(
@@ -1343,26 +1407,26 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify that component element {element name} of {component name} on the {page name} has {attribute value} value for its {attribute name} attribute
+     * Verify that component element {element name} of {component field name} on the {page name} has {attribute value} value for its {attribute name} attribute
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
      * @param attributeValue target attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyElementContainsAttribute(
+    public void verifyComponentElementContainsAttribute(
             String elementName,
-            String componentName,
+            String componentFieldName,
             String pageName,
             String attributeValue,
             String attributeName,
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        WebElement element = getElementFromComponent(elementName, componentName,pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
         log.new Info("Verifying " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
@@ -1380,19 +1444,19 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Select component by {element field name} named {selection name} from {list name} component list on the {page name} and verify that it has {attribute value} value for its {attribute name} attribute
+     * Select component by {element field name} named {component field name} from {list name} component list on the {page name} and verify that it has {attribute value} value for its {attribute name} attribute
      *
      * @param elementFieldName target element field name
-     * @param selectionName specified component name
+     * @param componentFieldName specified component field name
      * @param listName specified component list name
      * @param pageName specified page instance name
      * @param attributeValue target attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void verifySelectedComponentContainsAttribute(
             String elementFieldName,
-            String selectionName,
+            String componentFieldName,
             String listName,
             String pageName,
             String attributeValue,
@@ -1402,16 +1466,16 @@ public class PickleibSteps extends WebUtilities {
         pageName = strUtils.firstLetterDeCapped(pageName);
         listName = strUtils.firstLetterDeCapped(listName);
         List<WebComponent> components = getComponentsFromPage(listName, pageName, objectRepository);
-        WebComponent component = acquireExactNamedComponentAmongst(components, selectionName, elementFieldName);
+        WebComponent component = acquireExactNamedComponentAmongst(components, componentFieldName, elementFieldName);
         log.new Info("Verifying " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
-                highlighted(BLUE, selectionName) +
+                highlighted(BLUE, componentFieldName) +
                 highlighted(GRAY," component on the ") +
                 highlighted(BLUE, pageName)
         );
         Assert.assertTrue(
-                "The " + attributeName + " attribute of element " + selectionName + " could not be verified." +
+                "The " + attributeName + " attribute of element " + componentFieldName + " could not be verified." +
                         "\nExpected value: " + attributeValue + "\nActual value: " + component.getAttribute(attributeName),
                 wait.until(ExpectedConditions.attributeContains(component, attributeName, attributeValue))
         );
@@ -1420,18 +1484,19 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Select component named {selection name} from {list name} component list on the {page name} and verify that the {element name} element has {attrbiute value} value for its {attribute name} attribute
+     * Select component named {component name} from {list name} component list on the {page name} and verify that the {element name} element has {attrbiute value} value for its {attribute name} attribute
      *
-     * @param selectionName target component name
+     * @param componentName target component name
      * @param listName target component list name
      * @param pageName specified page instance name
      * @param elementName target element name
      * @param attributeValue expected attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
+    @Deprecated(since = "1.6.9")
     public void verifySelectedComponentElementContainsAttribute(
-            String selectionName,
+            String componentName,
             String listName,
             String pageName,
             String elementName,
@@ -1443,7 +1508,7 @@ public class PickleibSteps extends WebUtilities {
         listName = strUtils.firstLetterDeCapped(listName);
         WebElement element = getElementAmongstComponentsFromPage(
                 elementName,
-                selectionName,
+                componentName,
                 listName,
                 pageName,
                 objectRepository
@@ -1451,12 +1516,12 @@ public class PickleibSteps extends WebUtilities {
         log.new Info("Verifying " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
-                highlighted(BLUE, selectionName) +
+                highlighted(BLUE, componentName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         Assert.assertTrue(
-                "The " + attributeName + " attribute of element " + selectionName + " could not be verified." +
+                "The " + attributeName + " attribute of element " + componentName + " could not be verified." +
                         "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
                 wait.until(ExpectedConditions.attributeContains(element, attributeName, attributeValue))
         );
@@ -1474,9 +1539,9 @@ public class PickleibSteps extends WebUtilities {
      * @param elementListName specified element list name
      * @param attributeValue expected attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifySelectedComponentContainsAttribute(
+    public void verifyListedElementOfListedComponentContainsAttribute(
             String componentName,
             String componentListName,
             String pageName,
@@ -1518,7 +1583,7 @@ public class PickleibSteps extends WebUtilities {
      * @param pageName specified page instance name
      * @param attributeValue expected attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void verifyListedElementContainsAttribute(
             String elementName,
@@ -1548,15 +1613,15 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify text of listed element {element name} from the {list name} on the {page name} is equal to {expected name}
+     * Verify presence of listed element {element name} from the {list name} on the {page name} is equal to {expected name}
      *
      * @param elementName target element name
      * @param listName target element name
      * @param pageName specified page instance name
      * @param expectedText expected text
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyListedElementContainsText(
+    public void verifyPresenceOfListedElement(
             String elementName,
             String listName,
             String pageName,
@@ -1580,14 +1645,18 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify text of listed element from the {list name} on the {page name}
+     * Verify presence of listed element from the {list name} on the {page name}
      *
      * @param listName target list name
      * @param pageName specified page instance name
      * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyListedElementContainsText(String listName, String pageName, List<Map<String, String>> signForms, Object objectRepository){
+    public void verifyPresenceOfListedElements(
+            String listName,
+            String pageName,
+            List<Map<String, String>> signForms,
+            Object objectRepository){
         String elementName;
         String expectedText;
         for (Map<String, String> form : signForms) {
@@ -1613,25 +1682,25 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify text of listed component element {element name} from the {list name} of {component name} on the {page name} is equal to {expected text}
+     * Verify presence of listed component element {element name} from the {list name} of {component field name} on the {page name} is equal to {expected text}
      *
      * @param elementName target element
      * @param listName target list name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
      * @param expectedText expected text
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyListedComponentElementContainsText(
+    public void verifyPresenceOfComponentListedElement(
             String elementName,
             String listName,
-            String componentName,
+            String componentFieldName,
             String pageName,
             String expectedText,
             Object objectRepository) {
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        List<WebElement> elements = getElementsFromComponent(listName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        List<WebElement> elements = getElementsFromComponent(listName, componentFieldName, pageName, objectRepository);
         WebElement element = acquireNamedElementAmongst(elements, elementName);
         log.new Info("Verifying text of " +
                 highlighted(BLUE, elementName) +
@@ -1647,23 +1716,28 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify text of listed component element from the {list name} of {component name} on the {page name}
+     * Verify text of listed component element from the {list name} of {component field name} on the {page name}
      *
      * @param listName target list name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
      * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyListedComponentElementContainsText(String listName, String componentName, String pageName, List<Map<String, String>> signForms, Object objectRepository){
+    public void verifyPresenceOfComponentListedElements(
+            String listName,
+            String componentFieldName,
+            String pageName,
+            List<Map<String, String>> signForms,
+            Object objectRepository) {
         String elementName;
         String expectedText;
         for (Map<String, String> form : signForms) {
             elementName = form.get("Input Element");
             expectedText = contextCheck(form.get("Input"));
             pageName = strUtils.firstLetterDeCapped(pageName);
-            componentName = strUtils.firstLetterDeCapped(componentName);
-            List<WebElement> elements = getElementsFromComponent(listName, componentName, pageName, objectRepository);
+            componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+            List<WebElement> elements = getElementsFromComponent(listName, componentFieldName, pageName, objectRepository);
             WebElement element = acquireNamedElementAmongst(elements, elementName);
             log.new Info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
@@ -1686,15 +1760,20 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param elementText target element text
      * @param listName target list name
-     * @param componentName specified component name
+     * @param componentFieldName specified component name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void verifyListedComponentElementContainsText(String elementText, String listName, String componentName, String pageName, Object objectRepository){
+    public void verifyListedComponentElementContainsText(
+            String elementText,
+            String listName,
+            String componentFieldName,
+            String pageName,
+            Object objectRepository) {
         elementText = contextCheck(elementText);
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        List<WebElement> elements = getElementsFromComponent(listName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        List<WebElement> elements = getElementsFromComponent(listName, componentFieldName, pageName, objectRepository);
         WebElement element = acquireNamedElementAmongst(elements, elementText);
         log.new Info("Performing text verification for " +
                 highlighted(BLUE, elementText) +
@@ -1712,19 +1791,19 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify that component element {element name} of {component name} from {list name} list on the {page name} has {attribute value} value for its {attribute name} attribute
+     * Verify that component element {element name} of {component field name} from {list name} list on the {page name} has {attribute value} value for its {attribute name} attribute
      *
      * @param elementName target element name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param listName target list name
      * @param pageName specified page instance name
      * @param attributeValue expected attribute value
      * @param attributeName target attribute name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void verifyListedElementContainsAttribute(
             String elementName,
-            String componentName,
+            String componentFieldName,
             String listName,
             String pageName,
             String attributeValue,
@@ -1732,8 +1811,8 @@ public class PickleibSteps extends WebUtilities {
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
-        List<WebElement> elements = getElementsFromComponent(listName, componentName, pageName, objectRepository);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
+        List<WebElement> elements = getElementsFromComponent(listName, componentFieldName, pageName, objectRepository);
         WebElement element = acquireNamedElementAmongst(elements, elementName);
         log.new Info("Verifying " +
                 highlighted(BLUE, attributeName) +
@@ -1759,21 +1838,16 @@ public class PickleibSteps extends WebUtilities {
     public void verifyCurrentUrl(String url) {
         url = contextCheck(url);
         log.new Info("The url contains " + url);
-        Assert.assertTrue("The page is not redirected to: " + url, driver.getCurrentUrl().contains(url));
+        Assert.assertTrue("Current url does not contain the expected url!", driver.getCurrentUrl().contains(url));
     }
 
     /**
      *
-     * Verify the url contains with the text {target text}
+     * Click on a button that contains {button text} text
      *
-     * @param text target text
+     * @param buttonText target button text
+     * @param scroll scrolls if true
      */
-    public void verifyTextUrl(String text) {
-        log.new Info("The url contains " + text);
-        Assert.assertTrue("The page is not directed to: " + text ,driver.getCurrentUrl().contains(text));
-    }
-
-    //@Given("Click the specific text {} button")
     public void clickButtonWithText(String buttonText, Boolean scroll) {
         this.clickElement(this.getElementByText(buttonText), scroll);
     }
@@ -1796,7 +1870,7 @@ public class PickleibSteps extends WebUtilities {
      * @param elementName target element
      * @param componentName specified component name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void clearInputField(String elementName, String componentName, String pageName, Object objectRepository){
         componentName = strUtils.firstLetterDeCapped(componentName);
@@ -1812,7 +1886,7 @@ public class PickleibSteps extends WebUtilities {
      * @param key target key
      * @param elementName target element name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
     public void pressKey(Keys key, String elementName, String pageName, Object objectRepository){
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -1828,9 +1902,14 @@ public class PickleibSteps extends WebUtilities {
      * @param elementName target element name
      * @param componentName component name
      * @param pageName specified page instance name
-     * @param objectRepository class that includes specified page instance
+     * @param objectRepository instance that includes specified page instance
      */
-    public void pressKey(Keys key, String elementName, String componentName, String pageName, Object objectRepository){
+    public void pressKey(
+            Keys key,
+            String elementName,
+            String componentName,
+            String pageName,
+            Object objectRepository){
         componentName = strUtils.firstLetterDeCapped(componentName);
         pageName = strUtils.firstLetterDeCapped(pageName);
         WebElement element = getElementFromComponent(elementName, componentName, pageName, objectRepository);
@@ -1851,13 +1930,13 @@ public class PickleibSteps extends WebUtilities {
     /**
      *
      * Listen to {event name} event & print {specified script} object
+     * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName target event name
      * @param objectScript object script
      */
     //@Given("Listen to {} event & print {} object")
-    public void listenGetAndPrintObject(String eventName, String objectScript)  {
-        String listenerScript = "_ddm.listen(" + eventName + ");";
+    public void listenGetAndPrintObject(String listenerScript, String eventName, String objectScript)  {
         objectScript = "return " + objectScript;
         if (isEventFired(eventName, listenerScript)) {
             Object object = executeScript(objectScript);
@@ -1867,28 +1946,33 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Upload file on component input {input element field name} of {component name} component on the {page name} with file: {target file path}
+     * Upload file on component input {input element field name} of {component field name} component on the {page name} with file: {target file path}
      *
      * @param inputName input element field name
-     * @param componentName specified component name
+     * @param componentFieldName specified component field name
      * @param pageName specified page instance name
-     * @param input target file path
-     * @param objectRepository class that includes specified page instance
+     * @param absoluteFilePath target file path
+     * @param objectRepository instance that includes specified page instance
      */
-    public void fillInputWithFile(String inputName, String componentName, String pageName, String input, Object objectRepository){
-        input = contextCheck(input);
+    public void fillInputWithFile(
+            String inputName,
+            String componentFieldName,
+            String pageName,
+            String absoluteFilePath,
+            Object objectRepository){
+        absoluteFilePath = contextCheck(absoluteFilePath);
         log.new Info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName) +
                 highlighted(GRAY, " with the text: ") +
-                highlighted(BLUE, input)
+                highlighted(BLUE, absoluteFilePath)
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
-        componentName = strUtils.firstLetterDeCapped(componentName);
+        componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         clearFillInput(
-                getElementFromComponent(inputName, componentName, pageName, objectRepository), //Element
-                input,
+                getElementFromComponent(inputName, componentFieldName, pageName, objectRepository), //Element
+                absoluteFilePath,
                 false,
                 false
         );
@@ -1897,14 +1981,14 @@ public class PickleibSteps extends WebUtilities {
     /**
      *
      * Listen to {event name} event & verify value of {node source} node is {expected value}
+     * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName evet name
      * @param nodeSource node source
      * @param expectedValue expected value
      */
-    public void listenGetAndVerifyObject(String eventName, String nodeSource, String expectedValue)  {
+    public void listenGetAndVerifyObject(String listenerScript, String eventName, String nodeSource, String expectedValue)  {
         log.new Info("Verifying value of '" + nodeSource + "' node");
-        String listenerScript = "_ddm.listen(" + eventName + ");";
         String nodeScript = "return " + nodeSource;
         if (isEventFired(eventName, listenerScript)) {
             Object object = executeScript(nodeScript);
@@ -1918,14 +2002,13 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Listen to {evetn name} event & verify values of the following nodes
+     * Listen to {event name} event & verify values of the following nodes
+     * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName event name
      * @param nodeList target node list
      */
-    public void listenGetAndVerifyObject(String eventName,  List<Map<String, String>> nodeList)  {
-        String listenerScript = "_ddm.listen(" + eventName + ");";
-
+    public void listenGetAndVerifyObject(String listenerScript, String eventName,  List<Map<String, String>> nodeList)  {
         if (isEventFired(eventName, listenerScript)) {
             for (Map<String, String> nodeMap:nodeList) {
                 String nodeSource = nodeMap.get("Node Source");
