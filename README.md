@@ -7,13 +7,13 @@
 Pickleib is a utility library for software automation projects. It helps you design and run tests with Selenium WebDriver in a simple and efficient way. It provides a set of utilities and ready to go driver setup that provide great convenience for designing test automations.
 
 Some features and benefits of using Pickleib are:
-* Easy configuration: You can set up your test environment with minimal code! Pickleib supports different browsers, drivers, timeouts, etc.
-* Utilities: Pickleib has various utilities that can help you interact with WebElements in a consistent/non-flaky way. Check basic interaction methods such as click, fill, scroll, or more advanced utilities like element state, element attribute verifications. Find these at `WebUtilities.java`
-* Page Object Model: Pickleib can be use the Page Object Model pattern to organize your web elements and actions in separate classes. Pickleib provides classes and methods to simplify this process.
-* API support: Pickleib has built in api capabilities that enable defining calls to endpoints, model request & response bodies as well as verifying response details, testing frontend interactions against backends
-* Emails: It has email capabilities that enable sending or receiving emails directly in the framework. This feature is further supported by utilities that acquire email HTML and test email design, content and structure using the web driver.
-* Database: Pickleib provides database connection capabilities with JDBC. Database utilities can be used to establish an SQL connection, pass queries and map the results.
-* Data Layer: Built in data layer desting capabilities allow verifying specific events or data stored in the data layer.
+* **Easy configuration**: You can set up your test environment with minimal code! Pickleib supports different browsers, drivers, timeouts, etc.
+* **Utilities**: Pickleib has various utilities that can help you interact with WebElements in a consistent/non-flaky way. Check basic interaction methods such as click, fill, scroll, or more advanced utilities like element state, element attribute verifications. Find these at `WebUtilities.java`
+* **Page Object Model**: Pickleib can be use the Page Object Model pattern to organize your web elements and actions in separate classes. Pickleib provides classes and methods to simplify this process.
+* **API support**: Pickleib has built in api capabilities that enable defining calls to endpoints, model request & response bodies as well as verifying response details, testing frontend interactions against backends
+* **Emails**: It has email capabilities that enable sending or receiving emails directly in the framework. This feature is further supported by utilities that acquire email HTML and test email design, content and structure using the web driver.
+* **Database**: Pickleib provides database connection capabilities with JDBC. Database utilities can be used to establish an SQL connection, pass queries and map the results.
+* **Data Layer**: Built in data layer desting capabilities allow verifying specific events or data stored in the data layer.
 
 ### Installation
 
