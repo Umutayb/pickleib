@@ -21,7 +21,7 @@ To use Pickleib in your Maven project, add the following dependency to your pom.
 ```xml
 <dependency>
     <groupId>com.github.umutayb</groupId>
-    <artifactId>picklelib</artifactId>
+    <artifactId>pickleib</artifactId>
     <version>1.x.x</version>
 </dependency>
 ```
