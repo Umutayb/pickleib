@@ -5,7 +5,8 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import java.io.File;
-import static resources.Colors.*;
+
+import static utils.StringUtilities.Color.*;
 
 public class ScreenCaptureUtility {
     Printer log = new Printer(ScreenCaptureUtility.class);
