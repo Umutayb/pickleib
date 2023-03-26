@@ -406,36 +406,11 @@ public abstract class WebUtilities extends Driver {
      * @param list
      * @param buttonText
      */
-    public void scrollAndClickElement(List<WebElement> list, String buttonText){
+    public void scrollInContainer(List<WebElement> list, String buttonText){
         for (WebElement element : list) {
             scrollWithJS(element);
             if (element.getText().contains(buttonText)) {
-                long initialTime = System.currentTimeMillis();
-                WebDriverException caughtException = null;
-                boolean timeout;
-                int counter = 0;
-                elementIs(element, ElementState.ENABLED);
-                do {
-                    timeout = System.currentTimeMillis() - initialTime > elementTimeout;
-                    try {
-                        if (true) centerElement(element).click();
-                        else element.click();
-                        return;
-                    } catch (WebDriverException webDriverException) {
-                        if (counter == 0) {
-                            log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                            caughtException = webDriverException;
-                        } else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())) {
-                            log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                            caughtException = webDriverException;
-                        }
-                        counter++;
-                    }
-                }
-                while (!timeout);
-                if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
-                log.new Warning(caughtException.getMessage());
-                throw new PickleibException(caughtException);
+                break;
             }
         }
     }
