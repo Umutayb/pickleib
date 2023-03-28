@@ -105,7 +105,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Set window width & height as {width} & {height}
+     * Set window width and height as {width} and {height}
      *
      * @param width target width
      * @param height target height
@@ -116,7 +116,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * Adds given values to the local storage
      *
-     * @param form Map<String, String>
+     * @param form Map(String, String)
      */
     public void addLocalStorageValues(Map<String, String> form){
         for (String valueKey: form.keySet()) {
@@ -131,7 +131,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * Adds given cookies
      *
-     * @param cookies Map<String, String>
+     * @param cookies Map(String, String)
      */
     public void addCookies(Map<String, String> cookies){
         for (String cookieName: cookies.keySet()) {
@@ -1929,7 +1929,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Listen to {event name} event & print {specified script} object
+     * Listen to {event name} event and print {specified script} object
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName target event name
@@ -1980,7 +1980,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Listen to {event name} event & verify value of {node source} node is {expected value}
+     * Listen to {event name} event and verify value of {node source} node is {expected value}
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName evet name
@@ -2002,7 +2002,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Listen to {event name} event & verify values of the following nodes
+     * Listen to {event name} event and verify values of the following nodes
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName event name
