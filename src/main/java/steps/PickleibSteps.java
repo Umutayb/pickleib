@@ -698,6 +698,32 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
+     * Fill input element {input name} from {pageName} with text: {input text}
+     *
+     * @param inputName target input element name
+     * @param pageName specified page instance name
+     * @param input input text
+     */
+    public void basicFill(String inputName, String pageName, String input){
+        input = contextCheck(input);
+        log.new Info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, input)
+        );
+        pageName = strUtils.firstLetterDeCapped(pageName);
+        clearFillInput(
+                getElementFromComponent(inputName, pageName), //Element
+                input,
+                false,
+                true
+        );
+    }
+
+    /**
+     *
      * Fill listed input {input name} from {list name} list on the {page name} with text: {input text}
      *
      * @param inputName target input element name
