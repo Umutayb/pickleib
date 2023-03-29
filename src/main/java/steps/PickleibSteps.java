@@ -22,7 +22,7 @@ import static utils.WebUtilities.Color.GRAY;
 @SuppressWarnings("unused")
 public class PickleibSteps extends WebUtilities {
 
-    private ScreenCaptureUtility capture = new ScreenCaptureUtility();
+    private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
 
     /**
      *
@@ -49,7 +49,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Swithches to the next tab
+     * Switches to the next tab
      *
      */
     public void switchToNextTab() {
@@ -105,7 +105,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Set window width & height as {width} & {height}
+     * Set window width and height as {width} and {height}
      *
      * @param width target width
      * @param height target height
@@ -116,7 +116,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * Adds given values to the local storage
      *
-     * @param form Map<String, String>
+     * @param form Map(String, String)
      */
     public void addLocalStorageValues(Map<String, String> form){
         for (String valueKey: form.keySet()) {
@@ -131,7 +131,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * Adds given cookies
      *
-     * @param cookies Map<String, String>
+     * @param cookies Map(String, String)
      */
     public void addCookies(Map<String, String> cookies){
         for (String cookieName: cookies.keySet()) {
@@ -156,7 +156,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param direction target direction (backwards or forwards)
      */
-    public void browserNavigate(WebUtilities.Navigation direction) {navigateBrowser(direction);}
+    public void browserNavigate(Navigation direction) {navigateBrowser(direction);}
 
     /**
      *
@@ -164,7 +164,8 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param text target text
      */
-    public void clickWithText(String text) {clickButtonWithText(text, true);}
+    public void clickByText(String text) {
+        clickButtonByText(text, true);}
 
     /**
      *
@@ -193,7 +194,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param direction target direction (up or down)
      */
-    public void scrollInDirection(WebUtilities.Direction direction){scroll(direction);}
+    public void scrollInDirection(Direction direction){scroll(direction);}
 
     /**
      *
@@ -438,7 +439,7 @@ public class PickleibSteps extends WebUtilities {
         pageName = strUtils.firstLetterDeCapped(pageName);
         try {
             WebElement element = getElementFromPage(buttonName, pageName, objectRepository);
-            if (elementIs(element, WebUtilities.ElementState.DISPLAYED)) clickElement(element, true);
+            if (elementIs(element, ElementState.DISPLAYED)) clickElement(element, true);
         }
         catch (WebDriverException ignored){log.new Warning("The " + buttonName + " was not present");}
     }
@@ -463,7 +464,7 @@ public class PickleibSteps extends WebUtilities {
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         try {
             WebElement element = getElementFromComponent(buttonName, componentFieldName, pageName, objectRepository);
-            if (elementIs(element, WebUtilities.ElementState.DISPLAYED)) clickElement(element, true);
+            if (elementIs(element, ElementState.DISPLAYED)) clickElement(element, true);
         }
         catch (WebDriverException ignored){log.new Warning("The " + buttonName + " was not present");}
     }
@@ -722,6 +723,32 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
+     * Fill listed input {input name} from {list name} list on the {page name} with text: {input text}
+     *
+     * @param inputName target input element name
+     * @param listName target list name
+     * @param pageName specified page instance name
+     * @param input input text
+     * @param objectRepository instance that includes specified page instance
+     */
+    public void fillListedComponentInput(String inputName, String listName, String componentName, String pageName, String input, Object objectRepository){
+        input = contextCheck(input);
+        log.new Info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, input)
+        );
+        pageName = strUtils.firstLetterDeCapped(pageName);
+        componentName = strUtils.firstLetterDeCapped(componentName);
+        List<WebElement> elements = getElementsFromComponent(listName, componentName, pageName, objectRepository);
+        WebElement element = acquireNamedElementAmongst(elements, inputName);
+        clearFillInput(element, input, false, true);
+    }
+
+    /**
+     *
      * Fill component input {input name} of {component name} component on the {page name} with text: {input text}
      *
      * @param inputName target input element name
@@ -838,7 +865,7 @@ public class PickleibSteps extends WebUtilities {
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
         WebElement iframe = getElementFromPage(iframeName, pageName, objectRepository);
-        elementIs(iframe, WebUtilities.ElementState.DISPLAYED);
+        elementIs(iframe, ElementState.DISPLAYED);
         driver.switchTo().frame(iframe);
         WebElement element = getElementFromPage(inputName, pageName, objectRepository);
         clearFillInput(element, inputText,true,true);
@@ -991,7 +1018,7 @@ public class PickleibSteps extends WebUtilities {
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
-        elementIs(element, WebUtilities.ElementState.DISPLAYED);
+        elementIs(element, ElementState.DISPLAYED);
         Assert.assertEquals("The " + elementName + " does not contain text '",
                 expectedText,
                 centerElement(element).getText()
@@ -1052,7 +1079,7 @@ public class PickleibSteps extends WebUtilities {
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
         WebElement element = getElementFromPage(elementName, pageName, objectRepository);
-        verifyElementState(element, WebUtilities.ElementState.DISPLAYED);
+        verifyElementState(element, ElementState.DISPLAYED);
         log.new Success("Presence of the element " + elementName + " was verified!");
     }
 
@@ -1074,7 +1101,7 @@ public class PickleibSteps extends WebUtilities {
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
-        verifyElementState(element, WebUtilities.ElementState.DISPLAYED);
+        verifyElementState(element, ElementState.DISPLAYED);
         log.new Success("Presence of the element " + elementName + " was verified!");
     }
 
@@ -1096,7 +1123,7 @@ public class PickleibSteps extends WebUtilities {
             );
 
             WebElement element = getElementContainingText(elementText);
-            verifyElementState(element, WebUtilities.ElementState.ENABLED);
+            verifyElementState(element, ElementState.DISPLAYED);
             log.new Success("Presence of the element text " + elementText + " was verified!");
         }
     }
@@ -1128,7 +1155,7 @@ public class PickleibSteps extends WebUtilities {
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
         WebElement element = getElementFromPage(elementName, pageName, objectRepository);
-        verifyElementState(element, WebUtilities.ElementState.valueOf(expectedState));
+        verifyElementState(element, ElementState.valueOf(expectedState));
         log.new Success("The element '" + elementName + "' was verified to be enabled!");
     }
 
@@ -1159,7 +1186,7 @@ public class PickleibSteps extends WebUtilities {
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
-        verifyElementState(element, WebUtilities.ElementState.valueOf(expectedState));
+        verifyElementState(element, ElementState.valueOf(expectedState));
         log.new Success("The element " + elementName + " was verified to be enabled!");
     }
 
@@ -1176,7 +1203,7 @@ public class PickleibSteps extends WebUtilities {
             String elementName,
             String componentName,
             String pageName,
-            WebUtilities.ElementState expectedState,
+            ElementState expectedState,
             Object objectRepository){
         log.new Info("Verifying " +
                 highlighted(BLUE, expectedState.name()) +
@@ -1189,7 +1216,7 @@ public class PickleibSteps extends WebUtilities {
         componentName = strUtils.firstLetterDeCapped(componentName);
         try {
             WebElement element = getElementFromComponent(elementName, componentName, pageName, objectRepository);
-            if (elementIs(element, WebUtilities.ElementState.DISPLAYED)) verifyElementState(element, expectedState);
+            if (elementIs(element, ElementState.DISPLAYED)) verifyElementState(element, expectedState);
         }
         catch (WebDriverException ignored){log.new Warning("The " + elementName + " was not present");}
     }
@@ -1210,7 +1237,7 @@ public class PickleibSteps extends WebUtilities {
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
         WebElement element = getElementFromPage(elementName, pageName, objectRepository);
-        elementIs(element, WebUtilities.ElementState.ABSENT);
+        elementIs(element, ElementState.ABSENT);
     }
 
     /**
@@ -1231,7 +1258,7 @@ public class PickleibSteps extends WebUtilities {
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         WebElement element = getElementFromComponent(elementName, componentFieldName,pageName, objectRepository);
-        elementIs(element, WebUtilities.ElementState.ABSENT);
+        elementIs(element, ElementState.ABSENT);
     }
 
     /**
@@ -1250,7 +1277,7 @@ public class PickleibSteps extends WebUtilities {
         );
         pageName = strUtils.firstLetterDeCapped(pageName);
         WebElement element = getElementFromPage(elementName,pageName, objectRepository);
-        elementIs(element, WebUtilities.ElementState.DISPLAYED);
+        elementIs(element, ElementState.DISPLAYED);
     }
 
     /**
@@ -1271,7 +1298,7 @@ public class PickleibSteps extends WebUtilities {
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
-        elementIs(element, WebUtilities.ElementState.DISPLAYED);
+        elementIs(element, ElementState.DISPLAYED);
     }
 
     /**
@@ -1287,8 +1314,8 @@ public class PickleibSteps extends WebUtilities {
     public void waitUntilElementContainsAttribute(
             String elementName,
             String pageName,
-            String attributeValue,
             String attributeName,
+            String attributeValue,
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -1317,8 +1344,8 @@ public class PickleibSteps extends WebUtilities {
             String elementName,
             String componentFieldName,
             String pageName,
-            String attributeValue,
             String attributeName,
+            String attributeValue,
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -1348,8 +1375,8 @@ public class PickleibSteps extends WebUtilities {
     public void verifyElementContainsAttribute(
             String elementName,
             String pageName,
-            String attributeValue,
             String attributeName,
+            String attributeValue,
             Object objectRepository) {
 
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -1420,8 +1447,8 @@ public class PickleibSteps extends WebUtilities {
             String elementName,
             String componentFieldName,
             String pageName,
-            String attributeValue,
             String attributeName,
+            String attributeValue,
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -1459,8 +1486,8 @@ public class PickleibSteps extends WebUtilities {
             String componentFieldName,
             String listName,
             String pageName,
-            String attributeValue,
             String attributeName,
+            String attributeValue,
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -1478,6 +1505,47 @@ public class PickleibSteps extends WebUtilities {
                 "The " + attributeName + " attribute of element " + componentFieldName + " could not be verified." +
                         "\nExpected value: " + attributeValue + "\nActual value: " + component.getAttribute(attributeName),
                 wait.until(ExpectedConditions.attributeContains(component, attributeName, attributeValue))
+        );
+        log.new Success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
+    }
+
+    /**
+     *
+     * Select component named {component name} from {list name} component list on the {page name} and verify that the {element name} element has {attrbiute value} value for its {attribute name} attribute
+     *
+     * @param componentName target component name
+     * @param listName target component list name
+     * @param pageName specified page instance name
+     * @param elementName target element name
+     * @param attributeValue expected attribute value
+     * @param attributeName target attribute name
+     * @param objectRepository instance that includes specified page instance
+     */
+    public void selectedComponentElementContainsAttribute(
+            String componentName,
+            String listName,
+            String pageName,
+            String elementName,
+            String attributeValue,
+            String attributeName,
+            Object objectRepository) {
+        attributeValue = contextCheck(attributeValue);
+        pageName = strUtils.firstLetterDeCapped(pageName);
+        listName = strUtils.firstLetterDeCapped(listName);
+        List<WebComponent> components = getComponentsFromPage(listName, pageName, objectRepository);
+        WebComponent component = acquireNamedComponentAmongst(components, componentName);
+        WebElement element = getElementFromComponent(elementName, component);
+        log.new Info("Verifying " +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " attribute of ") +
+                highlighted(BLUE, componentName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        Assert.assertTrue(
+                "The " + attributeName + " attribute of element " + componentName + " could not be verified." +
+                        "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
+                wait.until(ExpectedConditions.attributeContains(element, attributeName, attributeValue))
         );
         log.new Success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
     }
@@ -1589,8 +1657,8 @@ public class PickleibSteps extends WebUtilities {
             String elementName,
             String listName,
             String pageName,
-            String attributeValue,
             String attributeName,
+            String attributeValue,
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -1806,8 +1874,8 @@ public class PickleibSteps extends WebUtilities {
             String componentFieldName,
             String listName,
             String pageName,
-            String attributeValue,
             String attributeName,
+            String attributeValue,
             Object objectRepository) {
         attributeValue = contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
@@ -1848,7 +1916,7 @@ public class PickleibSteps extends WebUtilities {
      * @param buttonText target button text
      * @param scroll scrolls if true
      */
-    public void clickButtonWithText(String buttonText, Boolean scroll) {
+    public void clickButtonByText(String buttonText, Boolean scroll) {
         this.clickElement(this.getElementByText(buttonText), scroll);
     }
 
@@ -1860,7 +1928,14 @@ public class PickleibSteps extends WebUtilities {
      * @param value Context value
      */
     public void updateContext(String key, String value){
-        ContextStore.put(key, contextCheck(value));
+        value = contextCheck(value);
+        log.new Info(
+                "Updating context: " +
+                        highlighted(BLUE, key) +
+                        highlighted(GRAY, " -> ") +
+                        highlighted(BLUE, value)
+        );
+        ContextStore.put(key, value);
     }
 
     /**
@@ -1929,7 +2004,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Listen to {event name} event & print {specified script} object
+     * Listen to {event name} event and print {specified script} object
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName target event name
@@ -1980,7 +2055,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Listen to {event name} event & verify value of {node source} node is {expected value}
+     * Listen to {event name} event and verify value of {node source} node is {expected value}
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName evet name
@@ -2002,7 +2077,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Listen to {event name} event & verify values of the following nodes
+     * Listen to {event name} event and verify values of the following nodes
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
      * @param eventName event name
