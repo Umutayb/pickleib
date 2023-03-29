@@ -400,6 +400,20 @@ public abstract class WebUtilities extends Driver {
         }
         return element;
     }
+    /**
+     * Scrolls through a list of elements until an element containing a given text is found
+     *
+     * @param list target element list
+     * @param elementText target element text
+     */
+    public void scrollInContainer(List<WebElement> list, String elementText){
+        for (WebElement element : list) {
+            scrollWithJS(element);
+            if (element.getText().contains(elementText)) {
+                break;
+            }
+        }
+    }
 
     /**
      * Clicks an element after waiting for its state to be enabled
