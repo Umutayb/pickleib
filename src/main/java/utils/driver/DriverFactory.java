@@ -17,7 +17,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Properties;
-import static resources.Colors.*;
+
+import static utils.StringUtilities.Color.*;
 
 public class DriverFactory {
 
@@ -197,7 +198,7 @@ public class DriverFactory {
             }
         }
         catch (SessionNotCreatedException sessionException){
-            log.new Warning(sessionException);
+            log.new Warning(sessionException.getLocalizedMessage());
             if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);
             else return null;
         }

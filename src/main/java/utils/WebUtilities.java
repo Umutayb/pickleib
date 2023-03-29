@@ -20,10 +20,9 @@ import context.ContextStore;
 import utils.driver.Driver;
 import java.time.Duration;
 import org.junit.Assert;
-import resources.Colors;
 import exceptions.PickleibException;
 
-import static resources.Colors.*;
+import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class WebUtilities extends Driver {
@@ -68,11 +67,6 @@ public abstract class WebUtilities extends Driver {
      * Browser navigators
      */
     public enum Navigation {backwards, forwards}
-
-    /**
-     * Specified color codes
-     */
-    public enum Color {CYAN, RED, GREEN, YELLOW, PURPLE, GRAY, BLUE}
 
     /**
      * Element states
@@ -356,7 +350,7 @@ public abstract class WebUtilities extends Driver {
             driver.get(url);
         }
         catch (Exception gamma){
-            Assert.fail("Unable to navigate to the \""+highlighted(Color.YELLOW, url)+"\"");
+            Assert.fail("Unable to navigate to the \""+strUtils.highlighted(YELLOW, url)+"\"");
             driver.quit();
         }
         return url;
@@ -373,21 +367,13 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
-     * Highlights a given text with a specified color
-     *
-     * @param color target color
-     * @param text target text
-     */
-    public String highlighted(Color color, String text){return (objectUtils.getFieldValue(color.name(), Colors.class) + text + RESET);}
-
-    /**
      * Navigates browsers in a given direction
      *
      * @param direction backwards or forwards
      */
     public void navigateBrowser(Navigation direction){
         try {
-            log.new Info("Navigating "+highlighted(Color.BLUE, direction.name()));
+            log.new Info("Navigating "+strUtils.highlighted(BLUE, direction.name()));
 
             switch (direction) {
                 case forwards -> driver.navigate().forward();
@@ -396,7 +382,7 @@ public abstract class WebUtilities extends Driver {
             }
         }
         catch (Exception e){
-            Assert.fail("Unable to navigate browser \""+highlighted(Color.YELLOW, direction.name())+"\" due to: " + e);
+            Assert.fail("Unable to navigate browser \""+strUtils.highlighted(YELLOW, direction.name())+"\" due to: " + e);
         }
     }
 
@@ -699,7 +685,7 @@ public abstract class WebUtilities extends Driver {
      * @return returns the selected component
      */
     public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName){
-        log.new Info("Acquiring component called " + highlighted(Color.BLUE, selectionName));
+        log.new Info("Acquiring component called " + strUtils.highlighted(BLUE, selectionName));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
@@ -728,7 +714,7 @@ public abstract class WebUtilities extends Driver {
             String attributeValue,
             String elementFieldName
     ){
-        log.new Info("Acquiring component by attribute " + highlighted(Color.BLUE, attributeName + " -> " + attributeValue));
+        log.new Info("Acquiring component by attribute " + strUtils.highlighted(BLUE, attributeName + " -> " + attributeValue));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
@@ -757,7 +743,7 @@ public abstract class WebUtilities extends Driver {
             String elementText,
             String elementFieldName
     ){
-        log.new Info("Acquiring component called " + highlighted(Color.BLUE, elementText));
+        log.new Info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
@@ -784,7 +770,7 @@ public abstract class WebUtilities extends Driver {
             String componentListName,
             String pageName,
             Object objectRepository){
-        log.new Info("Acquiring component called " + highlighted(Color.BLUE, elementText));
+        log.new Info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
@@ -808,7 +794,7 @@ public abstract class WebUtilities extends Driver {
      * @return returns the selected element
      */
     public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
-        log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
+        log.new Info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
@@ -831,7 +817,7 @@ public abstract class WebUtilities extends Driver {
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement acquireNamedElementAmongst(@NotNull List<WebElement> items, String selectionName, long initialTime){
-        log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
+        log.new Info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
             for (WebElement selection : items) {
@@ -861,7 +847,7 @@ public abstract class WebUtilities extends Driver {
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public <T> T acquireNamedComponentAmongst(@NotNull List<T> items, String selectionName, long initialTime){
-        log.new Info("Acquiring element called " + highlighted(Color.BLUE, selectionName));
+        log.new Info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
         try {
             for (T selection : items) {
                 String text = ((WebElement) selection).getText();
@@ -888,7 +874,7 @@ public abstract class WebUtilities extends Driver {
      * @return returns the selected element
      */
     public WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue){
-        log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
+        log.new Info("Acquiring element called " + strUtils.markup(BLUE, attributeValue) + " using its " + strUtils.markup(BLUE, attributeName) + " attribute");
         boolean condition = true;
         long initialTime = System.currentTimeMillis();
         while (condition){
@@ -906,7 +892,7 @@ public abstract class WebUtilities extends Driver {
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     public WebElement acquireElementUsingAttributeAmongst(@NotNull List<WebElement> elements, String attributeName, String attributeValue, long initialTime){
-        log.new Info("Acquiring element called " + highlighted(Color.BLUE, attributeValue) + " using its " + highlighted(Color.BLUE, attributeName) + " attribute");
+        log.new Info("Acquiring element called " + strUtils.markup(BLUE, attributeValue) + " using its " + strUtils.markup(BLUE, attributeName) + " attribute");
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
             for (WebElement selection : elements) {
@@ -1153,7 +1139,7 @@ public abstract class WebUtilities extends Driver {
      * @param direction target direction (UP or DOWN)
      */
     public void scroll(@NotNull Direction direction){
-        log.new Info("Scrolling " + highlighted(Color.BLUE, direction.name().toLowerCase()));
+        log.new Info("Scrolling " + strUtils.highlighted(BLUE, direction.name().toLowerCase()));
         String script = switch (direction) {
             case up -> "window.scrollBy(0,-document.body.scrollHeight)";
             case down -> "window.scrollBy(0,document.body.scrollHeight)";
@@ -1381,7 +1367,7 @@ public abstract class WebUtilities extends Driver {
         if ((System.currentTimeMillis() - startTime) > 10000) return false;
         try {return element.isDisplayed();}
         catch (Exception e) {
-            log.new Info(e);
+            log.new Info(e.getLocalizedMessage());
             return elementIsDisplayed(element, startTime);
         }
     }
@@ -1402,7 +1388,9 @@ public abstract class WebUtilities extends Driver {
      *
      * @param input string that is to be context checked
      * @return value depending on the context (could be from ContextStore, Properties, Random etc)
+     * @deprecated now moved to io.github.umutayb/Utilities
      */
+    @Deprecated(since = "1.7.0")
     public String contextCheck(@NotNull String input){
         TextParser parser = new TextParser();
         if (input.contains("CONTEXT-"))
@@ -1458,7 +1446,7 @@ public abstract class WebUtilities extends Driver {
      * @return true if the specified event was fired.
      */
     public boolean isEventFiredByScript(String eventKey, String listenerScript){
-        log.new Info("Listening to '" + eventKey + "' event");
+        log.new Info("Listening to '" + strUtils.markup(BLUE, eventKey) + "' event");
         executeScript(listenerScript);
         LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
         for (LogEntry entry: logs.getAll()) if (entry.toString().contains(eventKey)) return true;
@@ -1472,7 +1460,7 @@ public abstract class WebUtilities extends Driver {
      * @return object if the scripts yields one
      */
     public Object executeScript(String script){
-        log.new Info("Executing script: " + highlighted(Color.BLUE, script));
+        log.new Info("Executing script: " + strUtils.highlighted(BLUE, script));
         return ((JavascriptExecutor) driver).executeScript(script);
     }
 }
