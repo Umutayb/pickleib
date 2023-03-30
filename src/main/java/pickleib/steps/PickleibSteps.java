@@ -201,16 +201,14 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param buttonName target button name
      * @param pageName specified page instance name
-     * @param objectRepository instance that includes specified page instance
      */
-    public void click(String buttonName, String pageName, Object objectRepository){
+    public void click(WebElement button, String buttonName, String pageName){
         log.new Info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        pageName = strUtils.firstLetterDeCapped(pageName);
-        clickElement(getElementFromPage(buttonName, pageName, objectRepository), true);
+        clickElement(centerElement(button));
     }
 
     /**
