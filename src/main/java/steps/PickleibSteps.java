@@ -16,8 +16,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static utils.WebUtilities.Color.BLUE;
-import static utils.WebUtilities.Color.GRAY;
+import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
 public class PickleibSteps extends WebUtilities {
@@ -31,7 +30,7 @@ public class PickleibSteps extends WebUtilities {
      * @param url target url
      */
     public void getUrl(String url) {
-        url = contextCheck(url);
+        url = strUtils.contextCheck(url);
         driver.get(url);
     }
 
@@ -74,7 +73,7 @@ public class PickleibSteps extends WebUtilities {
      * @param handle target tab handle
      */
     public void switchToTabByHandle(String handle) {
-        handle = contextCheck(handle);
+        handle = strUtils.contextCheck(handle);
         String parentHandle = switchWindowByHandle(handle);
         ContextStore.put("parentHandle", parentHandle);
     }
@@ -98,7 +97,7 @@ public class PickleibSteps extends WebUtilities {
      * @param htmlPath target directory
      */
     public void getHTML(String htmlPath) {
-        htmlPath = contextCheck(htmlPath);
+        htmlPath = strUtils.contextCheck(htmlPath);
         log.new Info("Navigating to the email @" + htmlPath);
         driver.get(htmlPath);
     }
@@ -123,7 +122,7 @@ public class PickleibSteps extends WebUtilities {
             RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(driver);
             RemoteWebStorage webStorage = new RemoteWebStorage(executeMethod);
             LocalStorage storage = webStorage.getLocalStorage();
-            storage.setItem(valueKey, contextCheck(form.get(valueKey)));
+            storage.setItem(valueKey, strUtils.contextCheck(form.get(valueKey)));
         }
     }
 
@@ -135,7 +134,7 @@ public class PickleibSteps extends WebUtilities {
      */
     public void addCookies(Map<String, String> cookies){
         for (String cookieName: cookies.keySet()) {
-            Cookie cookie = new Cookie(cookieName, contextCheck(cookies.get(cookieName)));
+            Cookie cookie = new Cookie(cookieName, strUtils.contextCheck(cookies.get(cookieName)));
             driver.manage().addCookie(cookie);
         }
     }
@@ -481,7 +480,7 @@ public class PickleibSteps extends WebUtilities {
     public void clickListedButton(String buttonName, String listName, String pageName, Object objectRepository){
         pageName = strUtils.firstLetterDeCapped(pageName);
         listName = strUtils.firstLetterDeCapped(listName);
-        buttonName = contextCheck(buttonName);
+        buttonName = strUtils.contextCheck(buttonName);
         List<WebElement> elements = getElementsFromPage(
                 listName,
                 strUtils.firstLetterDeCapped(pageName),
@@ -515,7 +514,7 @@ public class PickleibSteps extends WebUtilities {
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentListName = strUtils.firstLetterDeCapped(componentListName);
-        buttonName = contextCheck(buttonName);
+        buttonName = strUtils.contextCheck(buttonName);
         List<WebElement> elements = getElementsFromComponent(
                 componentListName,
                 componentFieldName,
@@ -615,8 +614,8 @@ public class PickleibSteps extends WebUtilities {
             String buttonName,
             String elementListName,
             Object objectRepository) {
-        buttonName = contextCheck(buttonName);
-        componentName = contextCheck(componentName);
+        buttonName = strUtils.contextCheck(buttonName);
+        componentName = strUtils.contextCheck(componentName);
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentListName = strUtils.firstLetterDeCapped(componentListName);
         List<WebComponent> components = getComponentsFromPage(componentListName, pageName, objectRepository);
@@ -705,7 +704,7 @@ public class PickleibSteps extends WebUtilities {
      * @param input input text
      */
     public void basicFill(String inputName, String pageName, String input){
-        input = contextCheck(input);
+        input = strUtils.contextCheck(input);
         log.new Info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
@@ -733,7 +732,7 @@ public class PickleibSteps extends WebUtilities {
      * @param objectRepository instance that includes specified page instance
      */
     public void fillListedInput(String inputName, String listName, String pageName, String input, Object objectRepository){
-        input = contextCheck(input);
+        input = strUtils.contextCheck(input);
         log.new Info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
@@ -758,7 +757,7 @@ public class PickleibSteps extends WebUtilities {
      * @param objectRepository instance that includes specified page instance
      */
     public void fillListedComponentInput(String inputName, String listName, String componentName, String pageName, String input, Object objectRepository){
-        input = contextCheck(input);
+        input = strUtils.contextCheck(input);
         log.new Info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
@@ -784,7 +783,7 @@ public class PickleibSteps extends WebUtilities {
      * @param objectRepository instance that includes specified page instance
      */
     public void fill(String inputName, String componentName, String pageName, String input, Object objectRepository){
-        input = contextCheck(input);
+        input = strUtils.contextCheck(input);
         log.new Info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
@@ -815,7 +814,7 @@ public class PickleibSteps extends WebUtilities {
         String input;
         for (Map<String, String> form : signForms) {
             inputName = form.get("Input Element");
-            input = contextCheck(form.get("Input"));
+            input = strUtils.contextCheck(form.get("Input"));
             log.new Info("Filling " +
                     highlighted(BLUE, inputName) +
                     highlighted(GRAY," on the ") +
@@ -846,7 +845,7 @@ public class PickleibSteps extends WebUtilities {
         String input;
         for (Map<String, String> form : forms) {
             inputName = form.get("Input Element");
-            input = contextCheck(form.get("Input"));
+            input = strUtils.contextCheck(form.get("Input"));
             log.new Info("Filling " +
                     highlighted(BLUE, inputName) +
                     highlighted(GRAY," on the ") +
@@ -881,7 +880,7 @@ public class PickleibSteps extends WebUtilities {
             String pageName,
             String inputText,
             Object objectRepository){
-        inputText = contextCheck(inputText);
+        inputText = strUtils.contextCheck(inputText);
         log.new Info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," i-frame element input on the ") +
@@ -941,7 +940,7 @@ public class PickleibSteps extends WebUtilities {
         String input;
         for (Map<String, String> form : forms) {
             inputName = form.get("Input Element");
-            input = contextCheck(form.get("Input"));
+            input = strUtils.contextCheck(form.get("Input"));
             log.new Info("Filling " +
                     highlighted(BLUE, inputName) +
                     highlighted(GRAY," on the ") +
@@ -973,7 +972,7 @@ public class PickleibSteps extends WebUtilities {
      * @param objectRepository instance that includes specified page instance
      */
     public void verifyText(String elementName, String pageName, String expectedText, Object objectRepository){
-        expectedText = contextCheck(expectedText);
+        expectedText = strUtils.contextCheck(expectedText);
         log.new Info("Performing text verification for " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
@@ -1002,7 +1001,7 @@ public class PickleibSteps extends WebUtilities {
         String expectedText;
         for (Map<String, String> form : signForms) {
             elementName = form.get("Input Element");
-            expectedText = contextCheck(form.get("Input"));
+            expectedText = strUtils.contextCheck(form.get("Input"));
             log.new Info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," on the ") +
@@ -1035,7 +1034,7 @@ public class PickleibSteps extends WebUtilities {
             String pageName,
             String expectedText,
             Object objectRepository){
-        expectedText = contextCheck(expectedText);
+        expectedText = strUtils.contextCheck(expectedText);
         log.new Info("Performing text verification for " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
@@ -1072,7 +1071,7 @@ public class PickleibSteps extends WebUtilities {
         String expectedText;
         for (Map<String, String> form : forms) {
             elementName = form.get("Input Element");
-            expectedText = contextCheck(form.get("Input"));
+            expectedText = strUtils.contextCheck(form.get("Input"));
             log.new Info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," on the ") +
@@ -1141,7 +1140,7 @@ public class PickleibSteps extends WebUtilities {
     public void verifyPresenceText(String pageName, List<Map<String, String>> signForms) {
         String elementText;
         for (Map<String, String> form : signForms) {
-            elementText = contextCheck(form.get("Text"));
+            elementText = strUtils.contextCheck(form.get("Text"));
             log.new Info("Performing text verification for " +
                     highlighted(BLUE, elementText) +
                     highlighted(GRAY, " on the ") +
@@ -1343,7 +1342,7 @@ public class PickleibSteps extends WebUtilities {
             String attributeName,
             String attributeValue,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         WebElement element = getElementFromPage(elementName,pageName, objectRepository);
         log.new Info("Waiting for the absence of " +
@@ -1373,7 +1372,7 @@ public class PickleibSteps extends WebUtilities {
             String attributeName,
             String attributeValue,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
@@ -1406,7 +1405,7 @@ public class PickleibSteps extends WebUtilities {
             Object objectRepository) {
 
         pageName = strUtils.firstLetterDeCapped(pageName);
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         WebElement element = getElementFromPage(elementName,pageName, objectRepository);
         log.new Info("Verifying " +
                 highlighted(BLUE, attributeName) +
@@ -1440,7 +1439,7 @@ public class PickleibSteps extends WebUtilities {
             String pageName,
             String attributeValue,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         WebElement element = getElementFromPage(elementName,pageName, objectRepository);
         log.new Info("Verifying " +
@@ -1476,7 +1475,7 @@ public class PickleibSteps extends WebUtilities {
             String attributeName,
             String attributeValue,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         WebElement element = getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
@@ -1515,7 +1514,7 @@ public class PickleibSteps extends WebUtilities {
             String attributeName,
             String attributeValue,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         listName = strUtils.firstLetterDeCapped(listName);
         List<WebComponent> components = getComponentsFromPage(listName, pageName, objectRepository);
@@ -1555,7 +1554,7 @@ public class PickleibSteps extends WebUtilities {
             String attributeValue,
             String attributeName,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         listName = strUtils.firstLetterDeCapped(listName);
         List<WebComponent> components = getComponentsFromPage(listName, pageName, objectRepository);
@@ -1597,7 +1596,7 @@ public class PickleibSteps extends WebUtilities {
             String attributeValue,
             String attributeName,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         listName = strUtils.firstLetterDeCapped(listName);
         WebElement element = getElementAmongstComponentsFromPage(
@@ -1644,9 +1643,9 @@ public class PickleibSteps extends WebUtilities {
             String attributeValue,
             String attributeName,
             Object objectRepository) {
-        elementName = contextCheck(elementName);
-        componentName = contextCheck(componentName);
-        attributeValue = contextCheck(attributeValue);
+        elementName = strUtils.contextCheck(elementName);
+        componentName = strUtils.contextCheck(componentName);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentListName = strUtils.firstLetterDeCapped(componentListName);
         List<WebComponent> components = getComponentsFromPage(componentListName, pageName, objectRepository);
@@ -1686,7 +1685,7 @@ public class PickleibSteps extends WebUtilities {
             String attributeName,
             String attributeValue,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         List<WebElement> elements = getElementsFromPage(listName, pageName, objectRepository);
         WebElement element = acquireNamedElementAmongst(elements, elementName);
@@ -1721,7 +1720,7 @@ public class PickleibSteps extends WebUtilities {
             String pageName,
             String expectedText,
             Object objectRepository) {
-        expectedText = contextCheck(expectedText);
+        expectedText = strUtils.contextCheck(expectedText);
         pageName = strUtils.firstLetterDeCapped(pageName);
         List<WebElement> elements = getElementsFromPage(listName, pageName, objectRepository);
         WebElement element = acquireNamedElementAmongst(elements, elementName);
@@ -1755,7 +1754,7 @@ public class PickleibSteps extends WebUtilities {
         String expectedText;
         for (Map<String, String> form : signForms) {
             elementName = form.get("Input Element");
-            expectedText = contextCheck(form.get("Input"));
+            expectedText = strUtils.contextCheck(form.get("Input"));
             pageName = strUtils.firstLetterDeCapped(pageName);
             List<WebElement> elements = getElementsFromPage(listName, pageName, objectRepository);
             WebElement element = acquireNamedElementAmongst(elements, elementName);
@@ -1828,7 +1827,7 @@ public class PickleibSteps extends WebUtilities {
         String expectedText;
         for (Map<String, String> form : signForms) {
             elementName = form.get("Input Element");
-            expectedText = contextCheck(form.get("Input"));
+            expectedText = strUtils.contextCheck(form.get("Input"));
             pageName = strUtils.firstLetterDeCapped(pageName);
             componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
             List<WebElement> elements = getElementsFromComponent(listName, componentFieldName, pageName, objectRepository);
@@ -1864,7 +1863,7 @@ public class PickleibSteps extends WebUtilities {
             String componentFieldName,
             String pageName,
             Object objectRepository) {
-        elementText = contextCheck(elementText);
+        elementText = strUtils.contextCheck(elementText);
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         List<WebElement> elements = getElementsFromComponent(listName, componentFieldName, pageName, objectRepository);
@@ -1903,7 +1902,7 @@ public class PickleibSteps extends WebUtilities {
             String attributeName,
             String attributeValue,
             Object objectRepository) {
-        attributeValue = contextCheck(attributeValue);
+        attributeValue = strUtils.contextCheck(attributeValue);
         pageName = strUtils.firstLetterDeCapped(pageName);
         componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
         List<WebElement> elements = getElementsFromComponent(listName, componentFieldName, pageName, objectRepository);
@@ -1930,7 +1929,7 @@ public class PickleibSteps extends WebUtilities {
      * @param url target url
      */
     public void verifyCurrentUrl(String url) {
-        url = contextCheck(url);
+        url = strUtils.contextCheck(url);
         log.new Info("The url contains " + url);
         Assert.assertTrue("Current url does not contain the expected url!", driver.getCurrentUrl().contains(url));
     }
@@ -1954,7 +1953,7 @@ public class PickleibSteps extends WebUtilities {
      * @param value Context value
      */
     public void updateContext(String key, String value){
-        value = contextCheck(value);
+        value = strUtils.contextCheck(value);
         log.new Info(
                 "Updating context: " +
                         highlighted(BLUE, key) +
@@ -2041,7 +2040,7 @@ public class PickleibSteps extends WebUtilities {
         objectScript = "return " + objectScript;
         if (isEventFired(eventName, listenerScript)) {
             Object object = executeScript(objectScript);
-            log.new Info(object);
+            log.new Info(object.toString());
         }
     }
 
@@ -2061,7 +2060,7 @@ public class PickleibSteps extends WebUtilities {
             String pageName,
             String absoluteFilePath,
             Object objectRepository){
-        absoluteFilePath = contextCheck(absoluteFilePath);
+        absoluteFilePath = strUtils.contextCheck(absoluteFilePath);
         log.new Info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +

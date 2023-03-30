@@ -93,6 +93,17 @@ public abstract class WebUtilities extends Driver {
     }
 
     /**
+     * Highlights a given text with a specified color (resets to plain)
+     *
+     * @param color target color
+     * @param text target text
+     */
+    public String highlighted(StringUtilities.Color color, CharSequence text){
+        StringJoiner colorFormat = new StringJoiner("", color.getValue(), RESET.getValue());
+        return String.valueOf(colorFormat.add(text));
+    }
+
+    /**
      * Acquires a specified attribute of a given element
      *
      * @param element target element
@@ -373,7 +384,7 @@ public abstract class WebUtilities extends Driver {
      */
     public void navigateBrowser(Navigation direction){
         try {
-            log.new Info("Navigating "+strUtils.highlighted(BLUE, direction.name()));
+            log.new Info("Navigating " + strUtils.highlighted(BLUE, direction.name()));
 
             switch (direction) {
                 case forwards -> driver.navigate().forward();
@@ -382,7 +393,7 @@ public abstract class WebUtilities extends Driver {
             }
         }
         catch (Exception e){
-            Assert.fail("Unable to navigate browser \""+strUtils.highlighted(YELLOW, direction.name())+"\" due to: " + e);
+            Assert.fail("Unable to navigate browser \"" + strUtils.highlighted(YELLOW, direction.name())+"\" due to: " + e);
         }
     }
 
