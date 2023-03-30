@@ -1,4 +1,4 @@
-package steps;
+package pickleib.steps;
 
 import com.github.webdriverextensions.WebComponent;
 import context.ContextStore;
@@ -8,8 +8,8 @@ import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import utils.ScreenCaptureUtility;
-import utils.WebUtilities;
+import pickleib.utilities.ScreenCaptureUtility;
+import pickleib.utilities.WebUtilities;
 
 import java.util.List;
 import java.util.Map;

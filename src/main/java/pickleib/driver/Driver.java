@@ -1,4 +1,4 @@
-package utils.driver;
+package pickleib.driver;
 
 import com.github.webdriverextensions.WebComponent;
 import org.apache.xerces.impl.dv.util.Base64;
@@ -34,12 +34,12 @@ public class Driver extends WebComponent {
 	static Printer log = new Printer(Driver.class);
 
 	/**
-	 * Initializes a specified driver
+	 * Initializes a specified type of driver
 	 *
 	 * @param driverType driver type
 	 */
 	public static void initialize(DriverFactory.DriverType driverType){
-		log.new Info("Initializing driver...");
+		log.new Info("Initializing pickleib.driver...");
 		driver = DriverFactory.getDriver(driverType);
 		wait = new WebDriverWait(driver, Duration.of(DriverFactory.driverTimeout, ChronoUnit.SECONDS));
 	}

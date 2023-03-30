@@ -1,4 +1,4 @@
-package utils;
+package pickleib.utilities;
 
 import com.github.webdriverextensions.WebComponent;
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
@@ -17,11 +17,11 @@ import org.json.simple.JSONObject;
 import org.openqa.selenium.*;
 import java.util.*;
 import context.ContextStore;
-import utils.driver.Driver;
 import java.time.Duration;
 import org.junit.Assert;
-import exceptions.PickleibException;
-
+import pickleib.driver.Driver;
+import pickleib.exceptions.PickleibException;
+import utils.*;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
@@ -945,7 +945,7 @@ public abstract class WebUtilities extends Driver {
         log.new Info("Switching to the next tab");
         String parentWindowHandle = driver.getWindowHandle();
         if (handle == null)
-            for (String windowHandle:driver.getWindowHandles()) {
+            for (String windowHandle: driver.getWindowHandles()) {
                 if (!windowHandle.equalsIgnoreCase(parentWindowHandle))
                     driver = (RemoteWebDriver) driver.switchTo().window((windowHandle));
             }
@@ -1081,7 +1081,8 @@ public abstract class WebUtilities extends Driver {
      * Refreshes the current page
      *
      */
-    public void refreshThePage(){driver.navigate().refresh();}
+    public void refreshThePage(){
+        driver.navigate().refresh();}
 
     /**
      * Click coordinates specified by the given offsets from the center of a given element

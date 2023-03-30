@@ -1,9 +1,12 @@
-package utils;
+package pickleib.utilities;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import utils.NumericUtilities;
+import utils.Printer;
+
 import java.io.File;
 
 import static utils.StringUtilities.Color.*;
