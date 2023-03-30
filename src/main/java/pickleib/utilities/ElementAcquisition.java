@@ -1,23 +1,36 @@
 package pickleib.utilities;
 
 import com.github.webdriverextensions.WebComponent;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import utils.StringUtilities;
+import org.openqa.selenium.support.pagefactory.ByAll;
+import pickleib.enums.PrimarySelectorType;
+import pickleib.enums.SelectorType;
+import records.Bundle;
+import records.Pair;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import static utils.StringUtilities.Color.*;
 
-import static utils.StringUtilities.Color.BLUE;
-import static utils.StringUtilities.Color.GRAY;
-
+@SuppressWarnings("unused")
 public class ElementAcquisition {
 
+    public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
+        JsonArray pages = objectRepository.getAsJsonArray("pages");
+        JsonObject pageJson = Objects.requireNonNull(pages.asList().stream().filter(
+                page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
+        ).findAny().orElse(null)).getAsJsonObject();
+        JsonArray elements = pageJson.getAsJsonArray("elements");
+        for (JsonElement elementJson:elements)
+            if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
+                return elementJson.getAsJsonObject();
+        return null;
+    }
+
     public static class PageObjectModel extends WebUtilities {
-
-
-        public StringUtilities strUtils = new StringUtilities();
-
         /**
          *
          * Acquire element {element name} from {page name}
@@ -265,12 +278,10 @@ public class ElementAcquisition {
         /**
          * Acquire component form input on the {page name}
          *
-         * @param signForms        Input table
          * @param pageName         specified page instance name
          * @param signForms        table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
          * @param objectRepository instance that includes specified page instance
          */
-
         public List<Bundle<WebElement, String, String>> elementList(List<Map<String, String>> signForms, String pageName, Object objectRepository) {
             List<Bundle<WebElement, String, String>> bundles = new ArrayList<>();
             for (Map<String, String> form : signForms) {
@@ -293,5 +304,87 @@ public class ElementAcquisition {
             return bundles;
         }
 
+    }
+
+    public static class PageObjectJson extends WebUtilities {
+
+        /**
+         *
+         * Acquire element {element name} from {page name}
+         *
+         * @param elementName target button name
+         * @param pageName specified page instance name
+         * @param objectRepository instance that includes specified page instance
+         */
+        public WebElement elementFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
+            log.new Info("Acquiring element " +
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," from the ") +
+                    highlighted(BLUE, pageName)
+            );
+            JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
+            assert elementJson != null;
+
+            List<By> locators = new ArrayList<>();
+            for (SelectorType selectorType:selectorTypes) {
+                By locator;
+                switch (selectorType){
+                    case id ->          locator = By.id(elementJson.get("id").getAsString());
+                    case name ->        locator = By.name(elementJson.get("name").getAsString());
+                    case tagName ->     locator = By.tagName(elementJson.get("tagName").getAsString());
+                    case className ->   locator = By.className(elementJson.get("className").getAsString());
+                    case css ->         locator = By.cssSelector(elementJson.get("cssSelector").getAsString());
+                    case xpath ->       locator = By.xpath(elementJson.get("xpath").getAsString());
+                    case text ->{
+                        String text = elementJson.get("text").getAsString();
+                        locator = By.xpath("//*[text()='" +text+ "']");
+                    }
+                    default -> throw new EnumConstantNotPresentException(SelectorType.class, selectorType.name());
+                }
+                locators.add(locator);
+            }
+
+            ByAll byAll = new ByAll(new By[locators.size()]);
+            return driver.findElement(byAll);
+        }
+
+        @SafeVarargs
+        public final WebElement getElementByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
+            By locator;
+            switch (selectorType){
+                case css ->     locator = By.cssSelector(generateCssByAttributes(attributePairs));
+                case xpath ->   locator = By.xpath(generateXPathByAttributes(attributePairs));
+                default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
+            }
+            return driver.findElement(locator);
+        }
+
+        @SafeVarargs
+        public final String generateCssByAttributes(Pair<String, String>... attributePairs){
+            StringBuilder selector = new StringBuilder();
+            for (Pair<String, String> attributePair:attributePairs) {
+                StringJoiner cssFormat = new StringJoiner(
+                        attributePair.alpha() + " = '" + attributePair.beta(),
+                        "[",
+                        "']"
+                );
+                selector.append(cssFormat);
+            }
+            return selector.toString();
+        }
+
+        @SafeVarargs
+        public final String generateXPathByAttributes(Pair<String, String>... attributePairs){
+            StringBuilder selector = new StringBuilder();
+            for (Pair<String, String> attributePair:attributePairs) {
+                StringJoiner cssFormat = new StringJoiner(
+                        attributePair.alpha() + " = '" + attributePair.beta(),
+                        "//*[@",
+                        "']"
+                );
+                selector.append(cssFormat);
+            }
+            return selector.toString();
+        }
     }
 }

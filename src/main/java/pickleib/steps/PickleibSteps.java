@@ -7,9 +7,9 @@ import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import pickleib.utilities.Bundle;
 import pickleib.utilities.ScreenCaptureUtility;
 import pickleib.utilities.WebUtilities;
+import records.Bundle;
 
 import java.util.List;
 import java.util.Map;
@@ -202,7 +202,7 @@ public class PickleibSteps extends WebUtilities {
      * @param buttonName target button name
      * @param pageName specified page instance name
      */
-    public void click(WebElement button, String buttonName, String pageName){
+    public void clickStep(WebElement button, String buttonName, String pageName){
         log.new Info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
