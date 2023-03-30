@@ -48,7 +48,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Switches to the next tab
+     * Switch to the next tab
      *
      */
     public void switchToNextTab() {
@@ -58,7 +58,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Switches to a specified parent tab
+     * Switch to a specified parent tab
      *
      */
     public void switchToParentTab() {
@@ -168,12 +168,12 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Click button with {text} css locator
+     * Click button includes {button text} text with css locator
      *
-     * @param text target text
+     * @param buttonText target text
      */
-    public void clickByCssSelector(String text) {
-        WebElement element = driver.findElement(By.cssSelector(text));
+    public void clickByCssSelector(String buttonText) {
+        WebElement element = driver.findElement(By.cssSelector(buttonText));
         clickElement(element, true);
     }
 
@@ -242,7 +242,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Acquire attribute {attribute name} from component element {element name} of the specified component on the {page name}
+     * Acquire attribute {attribute name} from element {element name} on the {page name}
      * (Use 'innerHTML' attributeName to acquire text on an element)
      *
      * @param element target element
@@ -293,15 +293,15 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Click towards to {button name} on the {page name}
+     * Click towards to {element name} on the {page name}
      *
      * @param element target element
-     * @param buttonName target button name
+     * @param elementName target element name
      * @param pageName specified page instance name
      */
-    public void clickTowards(WebElement element, String buttonName, String pageName){
+    public void clickTowards(WebElement element, String elementName, String pageName){
         log.new Info("Clicking " +
-                highlighted(BLUE, buttonName) +
+                highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
@@ -311,15 +311,15 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Perform a JS click on element {button name} on the {page name}
+     * Perform a JS click on element {element name} on the {page name}
      *
      * @param element target element
-     * @param buttonName target button name
+     * @param elementName target element name
      * @param pageName specified page instance name
      */
-    public void performJSClick(WebElement element, String buttonName, String pageName){
+    public void performJSClick(WebElement element, String elementName, String pageName){
         log.new Info("Clicking " +
-                highlighted(BLUE, buttonName) +
+                highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
@@ -328,15 +328,15 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * If present, click component element {button name} of the specified component on the {page name}
+     * If present, click element {element name} on the {page name}
      *
      * @param element target element
-     * @param buttonName target button name
+     * @param elementName target element name
      * @param pageName specified page instance name
      */
-    public void clickIfPresent(WebElement element, String buttonName, String pageName){
+    public void clickIfPresent(WebElement element, String elementName, String pageName){
         log.new Info("Clicking " +
-                highlighted(BLUE, buttonName) +
+                highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName) +
                 highlighted(GRAY, ", if present...")
@@ -344,7 +344,7 @@ public class PickleibSteps extends WebUtilities {
         try {
             if (elementIs(element, ElementState.DISPLAYED)) clickElement(element, true);
         }
-        catch (WebDriverException ignored){log.new Warning("The " + buttonName + " was not present");}
+        catch (WebDriverException ignored){log.new Warning("The " + elementName + " was not present");}
     }
 
     /**
@@ -375,7 +375,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Fill component form input on the {page name}
+     * Fill form input on the {page name}
      *
      * @param bundles list of bundles where input element, input name and input texts are stored
      * @param pageName specified page instance name
@@ -404,8 +404,9 @@ public class PickleibSteps extends WebUtilities {
      *
      * Fill iFrame element {element name} of {iframe name} on the {page name} with text: {input text}
      *
+     * @param iframe target iframe
+     * @param element target element
      * @param inputName target element name
-     * @param iframeName target iframe name
      * @param pageName specified page instance name
      * @param inputText input text
      */
@@ -451,7 +452,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Fill {iframe name} iframe component form input of the specified component on the {page name}
+     * Fill {iframe name} iframe form input on the {page name}
      *
      * @param bundles list of bundles where input element, input name and input texts are stored
      * @param element target element
@@ -529,25 +530,17 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify text of element list {list name} on the {page name}
+     * Verify text of element from list on the {page name}
      *
-     * @param element target element
-     * @param elements target element list
-     * @param listName target list name
+     *
      * @param pageName specified page instance name
-     * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
      */
     public void verifyListedText(
-            WebElement element,
-            List<WebElement> elements,
-            String listName,
-            String pageName,
-            List<Map<String, String>> signForms){
-        String elementName;
-        String expectedText;
-        for (Map<String, String> form : signForms) {
-            elementName = form.get("Input Element");
-            expectedText = strUtils.contextCheck(form.get("Input"));
+            List<Bundle<WebElement, String, String>> bundles,
+            String pageName){
+        for (Bundle<WebElement, String, String> bundle : bundles) {
+            String elementName = bundle.beta();
+            String expectedText = bundle.theta();
             log.new Info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," on the ") +
@@ -555,8 +548,8 @@ public class PickleibSteps extends WebUtilities {
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, expectedText)
             );
-            Assert.assertEquals("The " + element.getText() + " does not contain text '",expectedText, element.getText());
-            log.new Success("Text of the element" + element.getText() + " was verified!");
+            Assert.assertEquals("The " + bundle.alpha().getText() + " does not contain text '", expectedText, bundle.alpha().getText());
+            log.new Success("Text of the element" + bundle.alpha().getText() + " was verified!");
 
         }
     }
@@ -676,7 +669,7 @@ public class PickleibSteps extends WebUtilities {
      *
      * @param element target element
      * @param elementName target element name
-     * @param pageName specified page instane name
+     * @param pageName specified page instance name
      * @param attributeValue expected attribute value
      * @param attributeName target attribute name
      */
@@ -736,10 +729,9 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Verify presence of listed element from the {list name} on the {page name}
+     * Verify presence of listed element from list on the {page name}
      *
      * @param bundles list that contains element, elementName, elementText
-     * @param listName target list name
      * @param pageName specified page instance name
      * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
      */
@@ -747,7 +739,6 @@ public class PickleibSteps extends WebUtilities {
             List<Bundle<WebElement, String, String>> bundles,
             WebElement element,
             List<WebElement> elements,
-            String listName,
             String pageName,
             List<Map<String, String>> signForms){
 
@@ -854,7 +845,7 @@ public class PickleibSteps extends WebUtilities {
 
     /**
      *
-     * Upload file on component input {input element field name} of {component field name} component on the {page name} with file: {target file path}
+     * Upload file on input {input element field name} on the {page name} with file: {target file path}
      *
      * @param inputElement target input element
      * @param inputName input element field name
