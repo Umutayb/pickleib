@@ -19,32 +19,6 @@ import static utils.StringUtilities.Color.*;
 @SuppressWarnings("unused")
 public class ElementAcquisition {
 
-
-    /**
-     * Acquires specified selectors for target element from a given Json file.
-     * Json file includes specified page names with element selectors.
-     *
-     * @param elementName specified target element name
-     * @param pageName specified page name that includes target element selectors
-     * @param objectRepository target json file directory
-     * @return target element selectors as JsonObject
-     */
-    public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
-        JsonArray pages = objectRepository.getAsJsonArray("pages");
-
-        JsonObject pageJson = Objects.requireNonNull(
-                pages.asList().stream().filter(
-                        page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
-                ).findAny().orElse(null)
-        ).getAsJsonObject();
-
-        JsonArray elements = pageJson.getAsJsonArray("elements");
-        for (JsonElement elementJson:elements)
-            if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
-                return elementJson.getAsJsonObject();
-        return null;
-    }
-
     /**
      * Acquisition methods for POM
      */
@@ -493,5 +467,29 @@ public class ElementAcquisition {
             return selector.toString();
         }
 
+        /**
+         * Acquires specified selectors for target element from a given Json file.
+         * Json file includes specified page names with element selectors.
+         *
+         * @param elementName specified target element name
+         * @param pageName specified page name that includes target element selectors
+         * @param objectRepository target json file directory
+         * @return target element selectors as JsonObject
+         */
+        public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
+            JsonArray pages = objectRepository.getAsJsonArray("pages");
+
+            JsonObject pageJson = Objects.requireNonNull(
+                    pages.asList().stream().filter(
+                            page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
+                    ).findAny().orElse(null)
+            ).getAsJsonObject();
+
+            JsonArray elements = pageJson.getAsJsonArray("elements");
+            for (JsonElement elementJson:elements)
+                if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
+                    return elementJson.getAsJsonObject();
+            return null;
+        }
     }
 }
