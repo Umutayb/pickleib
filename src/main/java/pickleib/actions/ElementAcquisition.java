@@ -31,9 +31,13 @@ public class ElementAcquisition {
      */
     public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
         JsonArray pages = objectRepository.getAsJsonArray("pages");
-        JsonObject pageJson = Objects.requireNonNull(pages.asList().stream().filter(
-                page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
-        ).findAny().orElse(null)).getAsJsonObject();
+
+        JsonObject pageJson = Objects.requireNonNull(
+                pages.asList().stream().filter(
+                        page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
+                ).findAny().orElse(null)
+        ).getAsJsonObject();
+
         JsonArray elements = pageJson.getAsJsonArray("elements");
         for (JsonElement elementJson:elements)
             if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
@@ -370,7 +374,7 @@ public class ElementAcquisition {
 
         /**
          *
-         * Acquire element {element name} from {page name}
+         * Acquire list of elements {element name} from {page name}
          *
          * @param elementName target button name
          * @param pageName specified page instance name
@@ -410,7 +414,7 @@ public class ElementAcquisition {
 
 
         /**
-         * Generates a primary selector by element attributes (css or xpath)
+         * Generates a webElement using primary selector by given element attributes (css or xpath)
          *
          * @param selectorType desired primary selector type
          * @param attributePairs target element attributes as 'label = value'
@@ -429,10 +433,10 @@ public class ElementAcquisition {
 
         /**
          *
-         * Generates cssSelector by element attributes
+         * Generates a webElement list using primary selector by given element attributes (css or xpath)
          *
          * @param attributePairs target element attributes as 'label = value'
-         * @return target element selector
+         * @return list of target elements
          */
         @SafeVarargs
         public final List<WebElement> getElementsByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
@@ -480,20 +484,5 @@ public class ElementAcquisition {
             return selector.toString();
         }
 
-        public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
-            JsonArray pages = objectRepository.getAsJsonArray("pages");
-
-            JsonObject pageJson = Objects.requireNonNull(
-                    pages.asList().stream().filter(
-                            page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
-                    ).findAny().orElse(null)
-            ).getAsJsonObject();
-
-            JsonArray elements = pageJson.getAsJsonArray("elements");
-            for (JsonElement elementJson:elements)
-                if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
-                    return elementJson.getAsJsonObject();
-            return null;
-        }
     }
 }
