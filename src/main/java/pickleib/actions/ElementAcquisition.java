@@ -449,6 +449,13 @@ public class ElementAcquisition {
             return driver.findElements(locator);
         }
 
+        /**
+         *
+         * Generates cssSelector by element attributes
+         *
+         * @param attributePairs target element attributes as 'label = value'
+         * @return target element selector
+         */
         @SafeVarargs
         public final String generateCssByAttributes(Pair<String, String>... attributePairs){
             StringBuilder selector = new StringBuilder();
