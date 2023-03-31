@@ -374,11 +374,13 @@ public class ElementAcquisition {
 
         /**
          *
-         * Acquire list of elements {element name} from {page name}
+         * Acquires an element list selector by desired selector types from a given Json file
          *
-         * @param elementName target button name
-         * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
+         * @param elementName target element name
+         * @param pageName page name that includes target element selectors
+         * @param objectRepository target json file directory
+         * @param selectorTypes desired selector types
+         * @return target element list
          */
         public List<WebElement> elementsFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
             log.new Info("Acquiring element " +
@@ -414,7 +416,7 @@ public class ElementAcquisition {
 
 
         /**
-         * Generates a webElement using primary selector by given element attributes (css or xpath)
+         * Generates an element using primary selector by given element attributes (css or xpath)
          *
          * @param selectorType desired primary selector type
          * @param attributePairs target element attributes as 'label = value'
@@ -433,10 +435,10 @@ public class ElementAcquisition {
 
         /**
          *
-         * Generates a webElement list using primary selector by given element attributes (css or xpath)
+         * Generates an element list using primary selector by given element attributes (css or xpath)
          *
          * @param attributePairs target element attributes as 'label = value'
-         * @return list of target elements
+         * @return target element list
          */
         @SafeVarargs
         public final List<WebElement> getElementsByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
