@@ -21,8 +21,8 @@ public class ElementAcquisition {
 
 
     /**
-     * Acquires specified selectors for target element from a given Json file
-     * Json file includes specified page names with element selectors
+     * Acquires specified selectors for target element from a given Json file.
+     * Json file includes specified page names with element selectors.
      *
      * @param elementName specified target element name
      * @param pageName specified page name that includes target element selectors
