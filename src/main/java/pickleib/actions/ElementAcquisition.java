@@ -370,7 +370,6 @@ public class ElementAcquisition {
 
         /**
          *
-<<<<<<< Updated upstream:src/main/java/pickleib/utilities/ElementAcquisition.java
          * Acquire element {element name} from {page name}
          *
          * @param elementName target button name
