@@ -1,4 +1,4 @@
-package pickleib.utilities;
+package pickleib.actions;
 
 import com.github.webdriverextensions.WebComponent;
 import com.google.gson.JsonArray;
@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
+import pickleib.utilities.WebUtilities;
 import records.Bundle;
 import records.Pair;
 import java.util.*;
@@ -17,6 +18,32 @@ import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
 public class ElementAcquisition {
+
+
+    /**
+     * Acquires specified selectors for target element from a given Json file
+     * Json file includes specified page names with element selectors
+     *
+     * @param elementName specified target element name
+     * @param pageName specified page name that includes target element selectors
+     * @param objectRepository target json file directory
+     * @return target element selectors as JsonObject
+     */
+    public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
+        JsonArray pages = objectRepository.getAsJsonArray("pages");
+        JsonObject pageJson = Objects.requireNonNull(pages.asList().stream().filter(
+                page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
+        ).findAny().orElse(null)).getAsJsonObject();
+        JsonArray elements = pageJson.getAsJsonArray("elements");
+        for (JsonElement elementJson:elements)
+            if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
+                return elementJson.getAsJsonObject();
+        return null;
+    }
+
+    /**
+     * Acquisition methods for POM
+     */
 
     public static class PageObjectModel extends WebUtilities {
         /**
@@ -294,15 +321,20 @@ public class ElementAcquisition {
 
     }
 
+    /**
+     * Acquisition methods for POJson
+     */
     public static class PageObjectJson extends WebUtilities {
 
         /**
          *
-         * Acquire element {element name} from {page name}
+         * Acquires an element selector by desired selector types from a given Json file
          *
-         * @param elementName target button name
-         * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
+         * @param elementName target element name
+         * @param pageName page name that includes target element selectors
+         * @param objectRepository target json file directory
+         * @param selectorTypes desired selector types
+         * @return target element
          */
         public WebElement elementFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
             log.new Info("Acquiring element " +
@@ -338,6 +370,7 @@ public class ElementAcquisition {
 
         /**
          *
+<<<<<<< Updated upstream:src/main/java/pickleib/utilities/ElementAcquisition.java
          * Acquire element {element name} from {page name}
          *
          * @param elementName target button name
@@ -376,6 +409,14 @@ public class ElementAcquisition {
             return driver.findElements(byAll);
         }
 
+
+        /**
+         * Generates a primary selector by element attributes (css or xpath)
+         *
+         * @param selectorType desired primary selector type
+         * @param attributePairs target element attributes as 'label = value'
+         * @return target element
+         */
         @SafeVarargs
         public final WebElement getElementByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
             By locator;
@@ -387,6 +428,13 @@ public class ElementAcquisition {
             return driver.findElement(locator);
         }
 
+        /**
+         *
+         * Generates cssSelector by element attributes
+         *
+         * @param attributePairs target element attributes as 'label = value'
+         * @return target element selector
+         */
         @SafeVarargs
         public final List<WebElement> getElementsByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
             By locator;
@@ -412,6 +460,13 @@ public class ElementAcquisition {
             return selector.toString();
         }
 
+        /**
+         *
+         * Generates xPath by element attributes
+         *
+         * @param attributePairs target element attributes as 'label = value'
+         * @return target element selector
+         */
         @SafeVarargs
         public final String generateXPathByAttributes(Pair<String, String>... attributePairs){
             StringBuilder selector = new StringBuilder();

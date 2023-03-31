@@ -21,12 +21,21 @@
   </licenses>
 
   <developers>
-    <developer>
-      <name>Umut Ay Bora</name>
-      <email>umutaybora@gmail.com</email>
-      <organization>Bora</organization>
-      <organizationUrl>https://github.com/Umutayb</organizationUrl>
-    </developer>
+      <!-- Umut -->
+      <developer>
+          <name>Umut Ay Bora</name>
+          <email>umutaybora@gmail.com</email>
+          <organization>Bora</organization>
+          <organizationUrl>https://github.com/Umutayb</organizationUrl>
+      </developer>
+
+      <!-- Egecan -->
+      <developer>
+          <name>Egecan Şen</name>
+          <email>benegecansen@gmail.com</email>
+          <organization>Bora</organization>
+          <organizationUrl>https://github.com/egecansen</organizationUrl>
+      </developer>
   </developers>
 
   <properties>

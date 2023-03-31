@@ -1,4 +1,4 @@
-package pickleib.steps;
+package pickleib.actions;
 
 import context.ContextStore;
 import org.junit.Assert;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
-public class PickleibSteps extends WebUtilities {
+public class ElementIntegration extends WebUtilities {
 
     private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
 
