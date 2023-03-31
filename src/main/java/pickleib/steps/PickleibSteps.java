@@ -532,7 +532,6 @@ public class PickleibSteps extends WebUtilities {
      *
      * Verify text of element from list on the {page name}
      *
-     *
      * @param pageName specified page instance name
      */
     public void verifyListedText(

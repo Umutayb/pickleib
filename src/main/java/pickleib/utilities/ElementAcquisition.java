@@ -18,18 +18,6 @@ import static utils.StringUtilities.Color.*;
 @SuppressWarnings("unused")
 public class ElementAcquisition {
 
-    public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
-        JsonArray pages = objectRepository.getAsJsonArray("pages");
-        JsonObject pageJson = Objects.requireNonNull(pages.asList().stream().filter(
-                page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
-        ).findAny().orElse(null)).getAsJsonObject();
-        JsonArray elements = pageJson.getAsJsonArray("elements");
-        for (JsonElement elementJson:elements)
-            if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
-                return elementJson.getAsJsonObject();
-        return null;
-    }
-
     public static class PageObjectModel extends WebUtilities {
         /**
          *
@@ -348,6 +336,46 @@ public class ElementAcquisition {
             return driver.findElement(byAll);
         }
 
+        /**
+         *
+         * Acquire element {element name} from {page name}
+         *
+         * @param elementName target button name
+         * @param pageName specified page instance name
+         * @param objectRepository instance that includes specified page instance
+         */
+        public List<WebElement> elementsFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
+            log.new Info("Acquiring element " +
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," from the ") +
+                    highlighted(BLUE, pageName)
+            );
+            JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
+            assert elementJson != null;
+
+            List<By> locators = new ArrayList<>();
+            for (SelectorType selectorType:selectorTypes) {
+                By locator;
+                switch (selectorType){
+                    case id ->          locator = By.id(elementJson.get("id").getAsString());
+                    case name ->        locator = By.name(elementJson.get("name").getAsString());
+                    case tagName ->     locator = By.tagName(elementJson.get("tagName").getAsString());
+                    case className ->   locator = By.className(elementJson.get("className").getAsString());
+                    case css ->         locator = By.cssSelector(elementJson.get("cssSelector").getAsString());
+                    case xpath ->       locator = By.xpath(elementJson.get("xpath").getAsString());
+                    case text ->{
+                        String text = elementJson.get("text").getAsString();
+                        locator = By.xpath("//*[text()='" +text+ "']");
+                    }
+                    default -> throw new EnumConstantNotPresentException(SelectorType.class, selectorType.name());
+                }
+                locators.add(locator);
+            }
+
+            ByAll byAll = new ByAll(new By[locators.size()]);
+            return driver.findElements(byAll);
+        }
+
         @SafeVarargs
         public final WebElement getElementByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
             By locator;
@@ -357,6 +385,17 @@ public class ElementAcquisition {
                 default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
             }
             return driver.findElement(locator);
+        }
+
+        @SafeVarargs
+        public final List<WebElement> getElementsByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
+            By locator;
+            switch (selectorType){
+                case css ->     locator = By.cssSelector(generateCssByAttributes(attributePairs));
+                case xpath ->   locator = By.xpath(generateXPathByAttributes(attributePairs));
+                default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
+            }
+            return driver.findElements(locator);
         }
 
         @SafeVarargs
@@ -385,6 +424,22 @@ public class ElementAcquisition {
                 selector.append(cssFormat);
             }
             return selector.toString();
+        }
+
+        public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
+            JsonArray pages = objectRepository.getAsJsonArray("pages");
+
+            JsonObject pageJson = Objects.requireNonNull(
+                    pages.asList().stream().filter(
+                            page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
+                    ).findAny().orElse(null)
+            ).getAsJsonObject();
+
+            JsonArray elements = pageJson.getAsJsonArray("elements");
+            for (JsonElement elementJson:elements)
+                if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
+                    return elementJson.getAsJsonObject();
+            return null;
         }
     }
 }
