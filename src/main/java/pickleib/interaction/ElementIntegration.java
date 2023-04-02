@@ -1,4 +1,4 @@
-package pickleib.actions;
+package pickleib.interaction;
 
 import context.ContextStore;
 import org.junit.Assert;
