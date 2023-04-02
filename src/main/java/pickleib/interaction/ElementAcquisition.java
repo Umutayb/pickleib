@@ -388,9 +388,8 @@ public class ElementAcquisition {
             return driver.findElements(byAll);
         }
 
-
         /**
-         * Generates an element using primary selector by given element attributes (css or xpath)
+         * Generates an element using a primary selector by given element attributes (css or xpath)
          *
          * @param selectorType desired primary selector type
          * @param attributePairs target element attributes as 'label = value'
@@ -409,7 +408,7 @@ public class ElementAcquisition {
 
         /**
          *
-         * Generates an element list using primary selector by given element attributes (css or xpath)
+         * Generates an element list using a primary selector by given element attributes (css or xpath)
          *
          * @param attributePairs target element attributes as 'label = value'
          * @return target element list
