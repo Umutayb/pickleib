@@ -77,33 +77,33 @@ public class DriverFactory {
     static PageLoadStrategy loadStrategy;
 
     /**
-     * determines usage of web pickleib.driver manager
+     * determines usage of web driver manager
      */
     static Boolean useWDM;
 
     /**
-     * determines usage of web pickleib.driver manager
+     * determines usage of web driver manager
      */
     static Boolean allowRemoteOrigin;
 
     /**
-     * Initializes and returns a pickleib.driver of specified type
-     * @param driverType pickleib.driver type
-     * @return returns pickleib.driver
+     * Initializes and returns a driver of specified type
+     * @param driverType driver type
+     * @return returns driver
      */
     public static RemoteWebDriver getDriver(DriverType driverType){
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
         frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
-        driverTimeout = Long.parseLong(properties.getProperty("pickleib.driver-timeout", "15000"))/1000;
+        driverTimeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000;
         headless = Boolean.parseBoolean(properties.getProperty("headless", "false"));
         deleteCookies = Boolean.parseBoolean(properties.getProperty("delete-cookies", "false"));
-        maximise = Boolean.parseBoolean(properties.getProperty("pickleib.driver-maximize", "false"));
+        maximise = Boolean.parseBoolean(properties.getProperty("driver-maximize", "false"));
         insecureLocalHost = Boolean.parseBoolean(properties.getProperty("insecure-localhost", "false"));
         loadStrategy = PageLoadStrategy.fromString(properties.getProperty("load-strategy", "normal"));
         disableNotifications = Boolean.parseBoolean(properties.getProperty("disable-notifications", "true"));
         allowRemoteOrigin = Boolean.parseBoolean(properties.getProperty("allow-remote-origin", "true"));
-        useWDM = Boolean.parseBoolean(properties.getProperty("web-pickleib.driver-manager", "false"));
+        useWDM = Boolean.parseBoolean(properties.getProperty("web-driver-manager", "false"));
 
         RemoteWebDriver driver;
 
@@ -122,7 +122,7 @@ public class DriverFactory {
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.setLogLevel(logUtils.getLevel(properties.getProperty("selenium-log-level", "off")));
-            log.new Important(driverType.getDriverName() + GRAY + " was selected");
+            log.new Important(driverType.getDriverName() + GRAY.getValue() + " was selected");
             return driver;
         }
         catch (IOException malformedURLException) {throw new RuntimeException(malformedURLException);}
@@ -132,20 +132,20 @@ public class DriverFactory {
                 throw new RuntimeException(gamma);
             }
             else
-            {throw new RuntimeException(YELLOW+"Something went wrong while selecting a pickleib.driver "+"\n\t"+RED+gamma+RESET);}
+            {throw new RuntimeException(YELLOW+"Something went wrong while selecting a driver "+"\n\t"+RED+gamma+RESET);}
         }
     }
 
     /**
-     * Selects the pickleib.driver type and assigns desired capabilities
+     * Selects the driver type and assigns desired capabilities
      *
      * @param headless session runs headless if true
      * @param useWDM WebDriverManager is used if true
      * @param insecureLocalHost enables insecure local host if true
      * @param disableNotifications disables browser notifications if true
      * @param loadStrategy determines page load strategy
-     * @param driverType pickleib.driver type
-     * @return returns the configured pickleib.driver
+     * @param driverType driver type
+     * @return returns the configured driver
      */
     static RemoteWebDriver driverSwitch(
             Boolean headless,
@@ -192,7 +192,7 @@ public class DriverFactory {
                     return new SafariDriver(safariOptions);
                 }
                 default -> {
-                    Assert.fail("No such pickleib.driver was defined.");
+                    Assert.fail("No such driver was defined.");
                     return null;
                 }
             }
@@ -205,7 +205,7 @@ public class DriverFactory {
     }
 
     /**
-     * available pickleib.driver types
+     * available driver types
      */
     public enum DriverType {
         CHROME("Chrome"),
@@ -227,9 +227,9 @@ public class DriverFactory {
         }
 
         /**
-         * Returns pickleib.driver type matching a given text (Non-case-sensitive)
-         * @param text desired pickleib.driver
-         * @return returns matching pickleib.driver type
+         * Returns driver type matching a given text (Non-case-sensitive)
+         * @param text desired driver
+         * @return returns matching driver type
          */
         public static DriverType fromString(String text) {
             if (text != null)

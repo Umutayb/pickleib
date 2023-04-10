@@ -26,30 +26,6 @@ To use Pickleib in your Maven project, add the following dependency to your pom.
 </dependency>
 ```
 
-To use Pickleib in your Gradle project, add the following dependency to your build.gradle file:
-```
-dependencies {
-    implementation 'com.github.umutayb:picklelib:1.x.x'
-}
-
-```
-Project can also be cloned and built into the target framework;
-```shell
-mvn clean package -DbuildDirectory=/Users/{user}/Web-Automation-Sample-Cucumber/lib
-```
-There, the imported jar file should be added as a dependency in `pom.xml file of that project:
-```xml
-    <!-- Framework -->
-        <dependency>
-            <groupId>bora</groupId>
-            <artifactId>Pickleib-1.x.x.jar</artifactId>
-            <version>1.x.x</version>
-            <systemPath>${project.basedir}/lib/Pickleib-1.x.x.jar</systemPath>
-            <scope>system</scope>
-            <type>jar</type>
-        </dependency>
-```
-
 After updating your project, the quickstart library is ready to use. 
 ___
 ### Usage
