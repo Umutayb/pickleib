@@ -92,22 +92,22 @@ public class ElementAcquisition {
          *
          * @param elementName target button name
          * @param componentFieldName specified component field name
-         * @param componentListName specified component list name
+         * @param listFieldName specified component list name
          * @param pageName specified page instance name
          * @param objectRepository instance that includes specified page instance
          */
         public WebElement listedElementFromComponent(
                 String elementName,
                 String componentFieldName,
-                String componentListName,
+                String listFieldName,
                 String pageName,
                 Object objectRepository
         ) {
             log.new Info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," selected from ") +
-                    highlighted(BLUE, componentListName) +
-                    highlighted(GRAY," on the ") +
+                    highlighted(BLUE, listFieldName) +
+                    highlighted(GRAY," of ") +
                     highlighted(BLUE, componentFieldName) +
                     highlighted(GRAY," component on the ") +
                     highlighted(BLUE, pageName)
@@ -115,10 +115,10 @@ public class ElementAcquisition {
 
             componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
             pageName = strUtils.firstLetterDeCapped(pageName);
-            componentListName = strUtils.firstLetterDeCapped(componentListName);
+            listFieldName = strUtils.firstLetterDeCapped(listFieldName);
             elementName = strUtils.contextCheck(elementName);
             List<WebElement> elements = getElementsFromComponent(
-                    componentListName,
+                    listFieldName,
                     componentFieldName,
                     pageName,
                     objectRepository
