@@ -320,15 +320,15 @@ public abstract class WebUtilities extends Driver {
     /**
      * Acquires a list elements from a given component name
      *
-     * @param elementFieldName element field
+     * @param listFieldName element field
      * @param componentName target component name
      * @param pageName name of the page instance
      * @param objectRepository instance of an object that contains instances of every page
      * @return returns the list of elements
      */
     @SuppressWarnings("unchecked")
-    protected List<WebElement> getElementsFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
-        return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
+    protected List<WebElement> getElementsFromComponent(String listFieldName, String componentName, String pageName, Object objectRepository){
+        return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(listFieldName);
     }
 
     /**
