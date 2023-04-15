@@ -342,7 +342,7 @@ public class ElementInteraction extends WebUtilities {
                 highlighted(GRAY, ", if present...")
         );
         try {
-            if (elementIs(element, ElementState.DISPLAYED)) clickElement(element, true);
+            if (elementIs(element, ElementState.displayed)) clickElement(element, true);
         }
         catch (WebDriverException ignored){log.new Warning("The " + elementName + " was not present");}
     }
@@ -424,7 +424,7 @@ public class ElementInteraction extends WebUtilities {
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        elementIs(iframe, ElementState.DISPLAYED);
+        elementIs(iframe, ElementState.displayed);
         driver.switchTo().frame(iframe);
         clearFillInput(element, inputText,true,true);
         driver.switchTo().parentFrame();
@@ -567,7 +567,7 @@ public class ElementInteraction extends WebUtilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        verifyElementState(element, ElementState.DISPLAYED);
+        verifyElementState(element, ElementState.displayed);
         log.new Success("Presence of the element " + elementName + " was verified!");
     }
 
@@ -617,7 +617,7 @@ public class ElementInteraction extends WebUtilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        elementIs(element, ElementState.ABSENT);
+        elementIs(element, ElementState.absent);
     }
 
     /**
@@ -634,7 +634,7 @@ public class ElementInteraction extends WebUtilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        elementIs(element, ElementState.DISPLAYED);
+        elementIs(element, ElementState.displayed);
     }
 
     /**
