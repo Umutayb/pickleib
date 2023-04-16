@@ -1,9 +1,18 @@
 package pickleib.element;
 
 import com.github.webdriverextensions.WebComponent;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.pagefactory.ByAll;
+import pickleib.enums.PrimarySelectorType;
+import pickleib.enums.SelectorType;
 import pickleib.utilities.WebUtilities;
 import records.Bundle;
+import records.Pair;
+
 import java.util.*;
 
 import static utils.StringUtilities.Color.*;
@@ -523,189 +532,179 @@ public class ElementAcquisition {
     }
 
     public static class PageObjectJson extends WebUtilities {
-//
-     //   /**
-     //    * Finds WebElements based on the provided element name, page name, object repository, and selector types.
-     //    * @param elementName a String representing the name of the element to find
-     //    * @param pageName a String representing the name of the page containing the element
-     //    * @param objectRepository a JsonObject representing the object repository where the element is defined
-     //    * @param selectorTypes an array of SelectorType enum values representing the types of selectors to use
-     //    * @return a List of WebElements that match the provided element name and selector types
-     //    * @throws NoSuchElementException if no matching WebElement is found
-     //    */
-     //   public WebElement elementFromPage(
-     //           String elementName,
-     //           String pageName,
-     //           JsonObject objectRepository,
-     //           SelectorType... selectorTypes
-     //   ){
-     //       log.new Info("Acquiring element " +
-     //               highlighted(BLUE, elementName) +
-     //               highlighted(GRAY," from the ") +
-     //               highlighted(BLUE, pageName)
-     //       );
-     //       JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
-     //       assert elementJson != null;
-//
-     //       List<By> locators = new ArrayList<>();
-     //       for (SelectorType selectorType:selectorTypes) {
-     //           By locator;
-     //           switch (selectorType){
-     //               case id ->          locator = By.id(elementJson.get("id").getAsString());
-     //               case name ->        locator = By.name(elementJson.get("name").getAsString());
-     //               case tagName ->     locator = By.tagName(elementJson.get("tagName").getAsString());
-     //               case className ->   locator = By.className(elementJson.get("className").getAsString());
-     //               case css ->         locator = By.cssSelector(elementJson.get("cssSelector").getAsString());
-     //               case xpath ->       locator = By.xpath(elementJson.get("xpath").getAsString());
-     //               case text ->{
-     //                   String text = elementJson.get("text").getAsString();
-     //                   locator = By.xpath("//*[text()='" +text+ "']");
-     //               }
-     //               default -> throw new EnumConstantNotPresentException(SelectorType.class, selectorType.name());
-     //           }
-     //           locators.add(locator);
-     //       }
-//
-     //       ByAll byAll = new ByAll(new By[locators.size()]);
-     //       return driver.findElement(byAll);
-     //   }
-//
-     //   /**
-     //    *
-     //    * Acquire element {element name} from {page name}
-     //    *
-     //    * @param elementName target button name
-     //    * @param pageName specified page instance name
-     //    * @param objectRepository instance that includes specified page instance
-     //    */
-     //   public List<WebElement> elementsFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
-     //       log.new Info("Acquiring element " +
-     //               highlighted(BLUE, elementName) +
-     //               highlighted(GRAY," from the ") +
-     //               highlighted(BLUE, pageName)
-     //       );
-     //       JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
-     //       assert elementJson != null;
-//
-     //       List<By> locators = new ArrayList<>();
-     //       for (SelectorType selectorType:selectorTypes) {
-     //           By locator;
-     //           switch (selectorType){
-     //               case id ->          locator = By.id(elementJson.get("id").getAsString());
-     //               case name ->        locator = By.name(elementJson.get("name").getAsString());
-     //               case tagName ->     locator = By.tagName(elementJson.get("tagName").getAsString());
-     //               case className ->   locator = By.className(elementJson.get("className").getAsString());
-     //               case css ->         locator = By.cssSelector(elementJson.get("cssSelector").getAsString());
-     //               case xpath ->       locator = By.xpath(elementJson.get("xpath").getAsString());
-     //               case text ->{
-     //                   String text = elementJson.get("text").getAsString();
-     //                   locator = By.xpath("//*[text()='" +text+ "']");
-     //               }
-     //               default -> throw new EnumConstantNotPresentException(SelectorType.class, selectorType.name());
-     //           }
-     //           locators.add(locator);
-     //       }
-//
-     //       ByAll byAll = new ByAll(new By[locators.size()]);
-     //       return driver.findElements(byAll);
-     //   }
-//
-     //   /**
-     //    * Finds a single WebElement based on the provided attribute pairs and selector type.
-     //    * @param selectorType a PrimarySelectorType enum value representing the type of selector to use
-     //    * @param attributePairs an array of Pair objects representing attribute name-value pairs
-     //    * @return a WebElement that matches the provided selector and attributes
-     //    * @throws EnumConstantNotPresentException if an invalid PrimarySelectorType value is provided
-     //    * @throws NoSuchElementException if no matching WebElement is found
-     //    */
-     //   @SafeVarargs
-     //   public final WebElement getElementByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
-     //       By locator;
-     //       switch (selectorType){
-     //           case css ->     locator = By.cssSelector(generateCssByAttributes(attributePairs));
-     //           case xpath ->   locator = By.xpath(generateXPathByAttributes(attributePairs));
-     //           default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
-     //       }
-     //       return driver.findElement(locator);
-     //   }
-//
-     //   /**
-     //    * Finds WebElements based on the provided attribute pairs and selector type.
-     //    * @param selectorType a PrimarySelectorType enum value representing the type of selector to use
-     //    * @param attributePairs an array of Pair objects representing attribute name-value pairs
-     //    * @return a List of WebElements that match the provided selector and attributes
-     //    * @throws EnumConstantNotPresentException if an invalid PrimarySelectorType value is provided
-     //    */
-     //   @SafeVarargs
-     //   public final List<WebElement> getElementsByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
-     //       By locator;
-     //       switch (selectorType){
-     //           case css ->     locator = By.cssSelector(generateCssByAttributes(attributePairs));
-     //           case xpath ->   locator = By.xpath(generateXPathByAttributes(attributePairs));
-     //           default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
-     //       }
-     //       return driver.findElements(locator);
-     //   }
-//
-     //   /**
-     //    * Generates a CSS selector based on the provided attribute pairs.
-     //    * @param attributePairs an array of Pair objects representing attribute name-value pairs
-     //    * @return a String representing the generated CSS selector
-     //    */
-     //   @SafeVarargs
-     //   public final String generateCssByAttributes(Pair<String, String>... attributePairs){
-     //       StringBuilder selector = new StringBuilder();
-     //       for (Pair<String, String> attributePair:attributePairs) {
-     //           StringJoiner cssFormat = new StringJoiner(
-     //                   attributePair.alpha() + " = '" + attributePair.beta(),
-     //                   "[",
-     //                   "']"
-     //           );
-     //           selector.append(cssFormat);
-     //       }
-     //       return selector.toString();
-     //   }
-//
-     //   /**
-     //    * Generates an XPath selector based on the provided attribute pairs.
-     //    * @param attributePairs an array of Pair objects representing attribute name-value pairs
-     //    * @return a String representing the generated XPath selector
-     //    */
-     //   @SafeVarargs
-     //   public final String generateXPathByAttributes(Pair<String, String>... attributePairs){
-     //       StringBuilder selector = new StringBuilder();
-     //       for (Pair<String, String> attributePair:attributePairs) {
-     //           StringJoiner cssFormat = new StringJoiner(
-     //                   attributePair.alpha() + " = '" + attributePair.beta(),
-     //                   "//*[@",
-     //                   "']"
-     //           );
-     //           selector.append(cssFormat);
-     //       }
-     //       return selector.toString();
-     //   }
-//
-     //   /**
-     //    * Returns the JSON object for the specified element in the given page from the object repository.
-     //    *
-     //    * @param elementName the name of the element to retrieve
-     //    * @param pageName the name of the page containing the element
-     //    * @param objectRepository the JSON object representing the object repository
-     //    * @return the JSON object for the specified element in the given page, or null if not found
-     //    * @throws NullPointerException if the specified page name is not found in the object repository
-     //    */
-     //   public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
-     //       JsonArray pages = objectRepository.getAsJsonArray("pages");
-     //       JsonObject pageJson = Objects.requireNonNull(
-     //               pages.asList().stream().filter(
-     //                       page -> page.getAsJsonObject().get("name").getAsString().equals(pageName)
-     //               ).findAny().orElse(null)
-     //       ).getAsJsonObject();
-     //       JsonArray elements = pageJson.getAsJsonArray("elements");
-     //       for (JsonElement elementJson:elements)
-     //           if (elementJson.getAsJsonObject().get("name").getAsString().equals(elementName))
-     //               return elementJson.getAsJsonObject();
-     //       return null;
-     //   }
+
+        /**
+         *
+         * Acquires an element selector by desired selector types from a given Json file
+         *
+         * @param elementName target element name
+         * @param pageName page name that includes target element selectors
+         * @param objectRepository target json file directory
+         * @param selectorTypes desired selector types
+         * @return target element
+         */
+        public WebElement elementFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
+            log.new Info("Acquiring element " +
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," from the ") +
+                    highlighted(BLUE, pageName)
+            );
+            JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
+            assert elementJson != null;
+            ByAll byAll = getByAll(elementJson, selectorTypes);
+            return driver.findElement(byAll);
+        }
+
+        /**
+         *
+         * Acquires an element list selector by desired selector types from a given Json file
+         *
+         * @param elementName target element name
+         * @param pageName page name that includes target element selectors
+         * @param objectRepository target json file directory
+         * @param selectorTypes desired selector types
+         * @return target element list
+         */
+        public List<WebElement> elementsFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
+            log.new Info("Acquiring element " +
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," from the ") +
+                    highlighted(BLUE, pageName)
+            );
+            JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
+            assert elementJson != null;
+            ByAll byAll = getByAll(elementJson, selectorTypes);
+            return driver.findElements(byAll);
+        }
+
+        public ByAll getByAll(JsonObject elementJson, SelectorType... selectorTypes){
+            List<By> locators = new ArrayList<>();
+            for (SelectorType selectorType:selectorTypes) {
+                try {
+                    By locator;
+                    switch (selectorType){
+                        case id ->          locator = By.id(elementJson.get("id").getAsJsonPrimitive().getAsString());
+                        case name ->        locator = By.name(elementJson.get("name").getAsJsonPrimitive().getAsString());
+                        case tagName ->     locator = By.tagName(elementJson.get("tagName").getAsJsonPrimitive().getAsString());
+                        case className ->   locator = By.className(elementJson.get("className").getAsJsonPrimitive().getAsString());
+                        case css ->         locator = By.cssSelector(elementJson.get("cssSelector").getAsJsonPrimitive().getAsString());
+                        case xpath ->       locator = By.xpath(elementJson.get("xpath").getAsJsonPrimitive().getAsString());
+                        case text ->{
+                            String text = elementJson.get("text").getAsJsonPrimitive().getAsString();
+                            locator = By.xpath("//*[text()='" +text+ "']");
+                        }
+                        default -> throw new EnumConstantNotPresentException(SelectorType.class, selectorType.name());
+                    }
+                    locators.add(locator);
+                }
+                catch (NullPointerException | IllegalStateException ignored){}
+
+            }
+            return new ByAll(locators.toArray(new By[0]));
+        }
+
+        /**
+         * Generates an element using a primary selector by given element attributes (css or xpath)
+         *
+         * @param selectorType desired primary selector type
+         * @param attributePairs target element attributes as 'label = value'
+         * @return target element
+         */
+        @SafeVarargs
+        public final WebElement getElementByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
+            By locator;
+            switch (selectorType){
+                case css ->     locator = By.cssSelector(generateCssByAttributes(attributePairs));
+                case xpath ->   locator = By.xpath(generateXPathByAttributes(attributePairs));
+                default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
+            }
+            return driver.findElement(locator);
+        }
+
+        /**
+         *
+         * Generates an element list using a primary selector by given element attributes (css or xpath)
+         *
+         * @param attributePairs target element attributes as 'label = value'
+         * @return target element list
+         */
+        @SafeVarargs
+        public final List<WebElement> getElementsByAttributes(PrimarySelectorType selectorType, Pair<String, String>... attributePairs){
+            By locator;
+            switch (selectorType){
+                case css ->     locator = By.cssSelector(generateCssByAttributes(attributePairs));
+                case xpath ->   locator = By.xpath(generateXPathByAttributes(attributePairs));
+                default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
+            }
+            return driver.findElements(locator);
+        }
+
+        /**
+         *
+         * Generates cssSelector by element attributes
+         *
+         * @param attributePairs target element attributes as 'label = value'
+         * @return target element selector
+         */
+        @SafeVarargs
+        public final String generateCssByAttributes(Pair<String, String>... attributePairs){
+            StringBuilder selector = new StringBuilder();
+            for (Pair<String, String> attributePair:attributePairs) {
+                StringJoiner cssFormat = new StringJoiner(
+                        attributePair.alpha() + " = '" + attributePair.beta(),
+                        "[",
+                        "']"
+                );
+                selector.append(cssFormat);
+            }
+            return selector.toString();
+        }
+
+        /**
+         *
+         * Generates xPath by element attributes
+         *
+         * @param attributePairs target element attributes as 'label = value'
+         * @return target element selector
+         */
+        @SafeVarargs
+        public final String generateXPathByAttributes(Pair<String, String>... attributePairs){
+            StringBuilder selector = new StringBuilder();
+            for (Pair<String, String> attributePair:attributePairs) {
+                StringJoiner cssFormat = new StringJoiner(
+                        attributePair.alpha() + " = '" + attributePair.beta(),
+                        "//*[@",
+                        "']"
+                );
+                selector.append(cssFormat);
+            }
+            return selector.toString();
+        }
+
+        /**
+         * Acquires specified selectors for target element from a given Json file.
+         * Json file includes specified page names with element selectors.
+         *
+         * @param elementName specified target element name
+         * @param pageName specified page name that includes target element selectors
+         * @param objectRepository target json file directory
+         * @return target element selectors as JsonObject
+         */
+        public static JsonObject getElementJson(String elementName, String pageName, JsonObject objectRepository){
+            JsonArray pages = objectRepository.getAsJsonArray("pages");
+
+            JsonObject pageJson = Objects.requireNonNull(
+                    pages.asList().stream().filter(
+                            page -> page.getAsJsonObject().get("name").getAsJsonPrimitive().getAsString().equals(pageName)
+                    ).findAny().orElse(null)
+            ).getAsJsonObject();
+
+            JsonArray elements = pageJson.getAsJsonArray("elements");
+            for (JsonElement elementJson:elements)
+                if (elementJson.getAsJsonObject().get("elementName").getAsJsonPrimitive().getAsString().equals(elementName))
+                    return elementJson.getAsJsonObject();
+
+            return null;
+        }
     }
 }
