@@ -40,7 +40,7 @@ public class Driver extends WebComponent {
 	 * @param driverType driver type
 	 */
 	public static void initialize(DriverFactory.DriverType driverType){
-		log.new Info("Initializing pickleib.driver...");
+		log.new Info("Initializing " + driverType.getDriverName() + " driver...");
 		driver = DriverFactory.getDriver(driverType);
 		wait = new WebDriverWait(driver, Duration.of(DriverFactory.driverTimeout, ChronoUnit.SECONDS));
 	}
