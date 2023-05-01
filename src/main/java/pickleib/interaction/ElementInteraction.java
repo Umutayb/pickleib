@@ -629,7 +629,7 @@ public class ElementInteraction extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void waitUntilVisible(WebElement element, String elementName, String pageName) {
-        log.new Info("Waiting for the absence of " +
+        log.new Info("Waiting for visibility of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
