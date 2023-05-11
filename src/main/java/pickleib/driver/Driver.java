@@ -50,7 +50,8 @@ public class Driver extends WebComponent {
 	 */
 	public static void initialize(){
 		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
-		initialize(DriverFactory.DriverType.fromString(driverName));
+		if (driverName!=null) initialize(DriverFactory.DriverType.fromString(driverName));
+		else initialize(DriverFactory.DriverType.CHROME);
 	}
 
 	/**

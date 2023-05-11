@@ -589,9 +589,9 @@ public class ElementAcquisition {
                         case className ->   locator = By.className(elementJson.get("className").getAsJsonPrimitive().getAsString());
                         case css ->         locator = By.cssSelector(elementJson.get("cssSelector").getAsJsonPrimitive().getAsString());
                         case xpath ->       locator = By.xpath(elementJson.get("xpath").getAsJsonPrimitive().getAsString());
-                        case text ->{
+                        case text -> {
                             String text = elementJson.get("text").getAsJsonPrimitive().getAsString();
-                            locator = By.xpath("//*[text()='" +text+ "']");
+                            locator = By.xpath("//*[text()='" + text + "']");
                         }
                         default -> throw new EnumConstantNotPresentException(SelectorType.class, selectorType.name());
                     }
@@ -651,11 +651,11 @@ public class ElementAcquisition {
             StringBuilder selector = new StringBuilder();
             for (Pair<String, String> attributePair:attributePairs) {
                 StringJoiner cssFormat = new StringJoiner(
-                        attributePair.alpha() + " = '" + attributePair.beta(),
+                        "",
                         "[",
                         "']"
                 );
-                selector.append(cssFormat);
+                selector.append(cssFormat.add(attributePair.alpha() + " = '" + attributePair.beta()));
             }
             return selector.toString();
         }
@@ -670,13 +670,14 @@ public class ElementAcquisition {
         @SafeVarargs
         public final String generateXPathByAttributes(Pair<String, String>... attributePairs){
             StringBuilder selector = new StringBuilder();
+            selector.append("//*");
             for (Pair<String, String> attributePair:attributePairs) {
                 StringJoiner cssFormat = new StringJoiner(
-                        attributePair.alpha() + " = '" + attributePair.beta(),
-                        "//*[@",
+                        "",
+                        "[@",
                         "']"
                 );
-                selector.append(cssFormat);
+                selector.append(cssFormat.add(attributePair.alpha() + " = '" + attributePair.beta()));
             }
             return selector.toString();
         }
