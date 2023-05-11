@@ -1,7 +1,14 @@
 package pickleib.utilities;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.webdriverextensions.WebComponent;
 import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.NoSuchElementException;
@@ -34,14 +41,15 @@ public abstract class WebUtilities extends Driver {
     /**
      * Used to extract snipped from texts
      */
-    protected TextParser parser = new TextParser();
+    public TextParser parser = new TextParser();
 
     /**
      * Picklieb Logger
      */
-    protected Printer log = new Printer(this.getClass());
-    protected StringUtilities strUtils = new StringUtilities();
-    protected ObjectUtilities objectUtils = new ObjectUtilities();
+    public Printer log = new Printer(this.getClass());
+    public StringUtilities strUtils = new StringUtilities();
+    public ObjectMapper mapper = new ObjectMapper();
+    public ReflectionUtilities reflection = new ReflectionUtilities();
 
     /**
      * Default Pickleib properties
@@ -86,6 +94,11 @@ public abstract class WebUtilities extends Driver {
      */
     protected WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
+        mapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
+        mapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.NONE);
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
     }
 
@@ -129,8 +142,8 @@ public abstract class WebUtilities extends Driver {
      */
     protected WebElement getElementFromPage(String elementFieldName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        Object pageObject = reflection.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = reflection.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
         return (WebElement) pageFields.get(elementFieldName);
     }
@@ -146,8 +159,8 @@ public abstract class WebUtilities extends Driver {
     @SuppressWarnings("unchecked")
     protected List<WebElement> getElementsFromPage(String elementFieldName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        Object pageObject = reflection.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = reflection.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
         return (List<WebElement>) pageFields.get(elementFieldName);
     }
@@ -169,7 +182,7 @@ public abstract class WebUtilities extends Driver {
             Object objectRepository){
         List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
         WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (WebElement) componentFields.get(elementFieldName);
     }
 
@@ -191,7 +204,7 @@ public abstract class WebUtilities extends Driver {
             Object objectRepository){
         List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
         WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (List<WebElement>) componentFields.get(elementFieldName);
     }
 
@@ -212,7 +225,7 @@ public abstract class WebUtilities extends Driver {
             Object objectRepository){
         List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
         WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (WebElement) componentFields.get(elementFieldName);
     }
 
@@ -234,7 +247,7 @@ public abstract class WebUtilities extends Driver {
             Object objectRepository){
         List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
         WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (List<WebElement>) componentFields.get(listFieldName);
     }
 
@@ -255,7 +268,7 @@ public abstract class WebUtilities extends Driver {
             String pageName,
             Object objectRepository){
         WebComponent component = acquireExactNamedComponentAmongst(elementIdentifier, elementFieldName, componentListName, pageName, objectRepository);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (WebElement) componentFields.get(elementFieldName);
     }
 
@@ -269,10 +282,10 @@ public abstract class WebUtilities extends Driver {
      */
     protected Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName, Object objectRepository){
         Map<String, Object> componentFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) componentFields = objectUtils.getFields(pageObject);
+        Object pageObject = reflection.getFields(objectRepository).get(pageName);
+        if (pageObject != null) componentFields = reflection.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
-        return objectUtils.getFields(componentFields.get(componentName));
+        return reflection.getFields(componentFields.get(componentName));
     }
 
     /**
@@ -287,8 +300,8 @@ public abstract class WebUtilities extends Driver {
     protected List<WebComponent> getComponentsFromPage(String componentListName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
         Map<String, Object> componentFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        Object pageObject = reflection.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = reflection.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
         return (List<WebComponent>) pageFields.get(componentListName);
     }
@@ -350,7 +363,7 @@ public abstract class WebUtilities extends Driver {
      * @return returns the map of fields
      */
     protected Map<String, Object> getComponentFields(Object componentName){
-        return  objectUtils.getFields(componentName);
+        return  reflection.getFields(componentName);
     }
 
     /**
@@ -441,29 +454,25 @@ public abstract class WebUtilities extends Driver {
     protected void clickElement(WebElement element, Boolean scroll){
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
-        boolean timeout;
         int counter = 0;
         elementIs(element, ElementState.enabled);
         do {
-            timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             try {
-                if (scroll) centerElement(element).click();
+                if (scroll) clickTowards(centerElement(element));
                 else element.click();
                 return;
             }
             catch (WebDriverException webDriverException){
-                if (counter == 0) {
+                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
                     log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
+
+                caughtException = webDriverException;
                 counter++;
+
+                if (System.currentTimeMillis()-initialTime > elementTimeout) break;
             }
         }
-        while (!timeout);
+        while (true);
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
         log.new Warning(caughtException.getMessage());
         throw new PickleibException(caughtException);
@@ -475,33 +484,7 @@ public abstract class WebUtilities extends Driver {
      * @param element target element
      */
     protected void clickElement(WebElement element){
-        long initialTime = System.currentTimeMillis();
-        WebDriverException caughtException = null;
-        boolean timeout;
-        int counter = 0;
-        elementIs(element, ElementState.enabled);
-        do {
-            timeout = System.currentTimeMillis()-initialTime > elementTimeout;
-            try {
-                centerElement(element).click();
-                return;
-            }
-            catch (WebDriverException webDriverException){
-                if (counter == 0) {
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                counter++;
-            }
-        }
-        while (!timeout);
-        if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
-        log.new Warning(caughtException.getMessage());
-        throw new PickleibException(caughtException);
+        clickElement(element, true);
     }
 
     /**
@@ -511,35 +494,17 @@ public abstract class WebUtilities extends Driver {
      * @param scroll scrolls if true
      */
     protected void clickIfPresent(WebElement element, Boolean scroll){
-        try {
-            long initialTime = System.currentTimeMillis();
-            WebDriverException caughtException = null;
-            boolean timeout;
-            int counter = 0;
-            elementIs(element, ElementState.enabled);
-            do {
-                timeout = System.currentTimeMillis()-initialTime > elementTimeout;
-                try {
-                    if (scroll) centerElement(element).click();
-                    else element.click();
-                    return;
-                }
-                catch (WebDriverException webDriverException){
-                    if (counter == 0) {
-                        log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                        caughtException = webDriverException;
-                    }
-                    else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
-                        log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                        caughtException = webDriverException;
-                    }
-                    counter++;
-                }
-            }
-            while (!timeout);
-            if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
-            log.new Warning(caughtException.getMessage());
-        }
+        try {clickElement(element, scroll);}
+        catch (WebDriverException exception){log.new Warning(exception.getMessage());}
+    }
+
+    /**
+     * Clicks an element if its present (in enable state)
+     *
+     * @param element target element
+     */
+    protected void clickIfPresent(WebElement element){
+        try {clickElement(element, true);}
         catch (WebDriverException exception){log.new Warning(exception.getMessage());}
     }
 
@@ -750,7 +715,7 @@ public abstract class WebUtilities extends Driver {
         long initialTime = System.currentTimeMillis();
         while (!timeout){
             for (T component : items) {
-                Map<String, Object> componentFields = objectUtils.getFields(component);
+                Map<String, Object> componentFields = reflection.getFields(component);
                 WebElement element = (WebElement) componentFields.get(elementFieldName);
                 String attribute = element.getAttribute(attributeName);
                 if (attribute.equals(attributeValue)) return component;
@@ -779,7 +744,7 @@ public abstract class WebUtilities extends Driver {
         long initialTime = System.currentTimeMillis();
         while (!timeout){
             for (Component component : items) {
-                Map<String, Object> componentFields = objectUtils.getFields(component);
+                Map<String, Object> componentFields = reflection.getFields(component);
                 WebElement element = (WebElement) componentFields.get(targetElementFieldName);
                 String text = element.getText();
                 String name = element.getAccessibleName();
@@ -806,7 +771,7 @@ public abstract class WebUtilities extends Driver {
         long initialTime = System.currentTimeMillis();
         while (!timeout){
             for (WebComponent component : getComponentsFromPage(componentListName, pageName, objectRepository)) {
-                Map<String, Object> componentFields = objectUtils.getFields(component);
+                Map<String, Object> componentFields = reflection.getFields(component);
                 WebElement element = (WebElement) componentFields.get(elementFieldName);
                 String text = element.getText();
                 String name = element.getAccessibleName();
@@ -1096,15 +1061,27 @@ public abstract class WebUtilities extends Driver {
      * @param element target element
      * @param xOffset x offset from the center of the element
      * @param yOffset y offset from the center of the element
-     * @param scroll scroll action (scrolls if true)
      */
-    protected void clickAtAnOffset(WebElement element, int xOffset, int yOffset, boolean scroll){
-
-        if (scroll) centerElement(element);
+    protected void clickAtAnOffset(WebElement element, int xOffset, int yOffset){
 
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
         builder
                 .moveToElement(element, xOffset, yOffset)
+                .click()
+                .build()
+                .perform();
+    }
+
+    /**
+     * Click coordinates specified by the given offsets from the center of a given element
+     *
+     * @param element target element
+     */
+    protected void clickTowards(WebElement element){
+        elementIs(element, ElementState.displayed);
+        Actions builder = new org.openqa.selenium.interactions.Actions(driver);
+        builder
+                .moveToElement(element, 0, 0)
                 .click()
                 .build()
                 .perform();
@@ -1142,7 +1119,7 @@ public abstract class WebUtilities extends Driver {
      */
     //This method makes the thread wait for a certain while
     protected void waitFor(double seconds){
-        if (seconds > 1) log.new Info("Waiting for "+BLUE+seconds+GRAY+" seconds");
+        if (seconds > 1) log.new Info("Waiting for " + strUtils.markup(BLUE,"" + seconds) + " seconds");
         try {Thread.sleep((long) (seconds* 1000L));}
         catch (InterruptedException exception){Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);}
     }
@@ -1225,12 +1202,16 @@ public abstract class WebUtilities extends Driver {
      * @return returns an object with the attributes of a given element
      */
     //This method returns all the attributes of an element as an object
-    protected Object getElementObject(WebElement element){
-        return ((JavascriptExecutor) driver).executeScript("var items = {}; for (index = 0;" +
+    protected JsonObject getElementObject(WebElement element) throws JsonProcessingException {
+        Object elementObject = ((JavascriptExecutor) driver).executeScript(
+                "var items = new Object(); for (index = 0;" +
                         " index < arguments[0].attributes.length; ++index) " +
-                        "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;",
+                        "{ " +
+                        "items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value " +
+                        "}; return JSON.stringify(items);",
                 element
         );
+        return JsonParser.parseString(elementObject.toString()).getAsJsonObject();
     }
 
     /**
@@ -1239,9 +1220,9 @@ public abstract class WebUtilities extends Driver {
      * @param element target element
      */
     //This method prints all the attributes of a given element
-    protected void printElementAttributes(WebElement element){
-        JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
-        for (Object attribute : attributeJSON.keySet()) log.new Info(attribute +" : "+ attributeJSON.get(attribute));
+    protected void printElementAttributes(WebElement element){//TODO: update this
+        //JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
+        //for (Object attribute : attributeJSON.keySet()) log.new Info(attribute +" : "+ attributeJSON.get(attribute));
     }
 
     /**
@@ -1412,7 +1393,7 @@ public abstract class WebUtilities extends Driver {
      * @return corresponding WebElement from the given page object
      */
     protected  <T> WebElement getElement(String fieldName, Class<T> inputClass){
-        return (WebElement) objectUtils.getFieldValue(fieldName, inputClass);
+        return (WebElement) reflection.getFieldValue(fieldName, inputClass);
     }
 
     /**

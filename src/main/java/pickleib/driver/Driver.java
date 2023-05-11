@@ -40,7 +40,7 @@ public class Driver extends WebComponent {
 	 * @param driverType driver type
 	 */
 	public static void initialize(DriverFactory.DriverType driverType){
-		log.new Info("Initializing pickleib.driver...");
+		log.new Info("Initializing " + strUtils.markup(StringUtilities.Color.PURPLE, driverType.getDriverName()) + " driver...");
 		driver = DriverFactory.getDriver(driverType);
 		wait = new WebDriverWait(driver, Duration.of(DriverFactory.driverTimeout, ChronoUnit.SECONDS));
 	}
@@ -50,7 +50,8 @@ public class Driver extends WebComponent {
 	 */
 	public static void initialize(){
 		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
-		initialize(DriverFactory.DriverType.fromString(driverName));
+		if (driverName!=null) initialize(DriverFactory.DriverType.fromString(driverName));
+		else initialize(DriverFactory.DriverType.CHROME);
 	}
 
 	/**
