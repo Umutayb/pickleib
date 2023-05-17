@@ -290,7 +290,7 @@ public class ElementInteractions extends WebUtilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickAtAnOffset(element, 0, 0, false);
+        clickAtAnOffset(element, 0, 0);
     }
 
     /**

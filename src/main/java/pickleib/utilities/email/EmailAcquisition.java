@@ -1,9 +1,7 @@
 package pickleib.utilities.email;
 
-import context.ContextStore;
 import utils.EmailUtilities;
 import utils.StringUtilities;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
