@@ -122,13 +122,13 @@ public class DriverFactory {
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.setLogLevel(logUtils.getLevel(properties.getProperty("selenium-log-level", "off")));
-            log.new Important(driverType.getDriverName() + GRAY.getValue() + " was selected");
+            log.important(driverType.getDriverName() + GRAY.getValue() + " was selected");
             return driver;
         }
         catch (IOException malformedURLException) {throw new RuntimeException(malformedURLException);}
         catch (Exception gamma) {
             if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){
-                log.new Info("Please make sure the "+PURPLE+"Selenium Grid "+GRAY+"is on & verify the port that its running on at 'resources/test.properties'."+RESET);
+                log.info("Please make sure the "+PURPLE+"Selenium Grid "+GRAY+"is on & verify the port that its running on at 'resources/test.properties'."+RESET);
                 throw new RuntimeException(gamma);
             }
             else
@@ -155,7 +155,7 @@ public class DriverFactory {
             Boolean allowRemoteOrigin,
             PageLoadStrategy loadStrategy,
             DriverType driverType){
-        if (useWDM) log.new Warning("Using WebDriverManager...");
+        if (useWDM) log.warning("Using WebDriverManager...");
         try {
             switch (driverType) {
                 case CHROME -> {
@@ -198,7 +198,7 @@ public class DriverFactory {
             }
         }
         catch (SessionNotCreatedException sessionException){
-            log.new Warning(sessionException.getLocalizedMessage());
+            log.warning(sessionException.getLocalizedMessage());
             if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);
             else return null;
         }

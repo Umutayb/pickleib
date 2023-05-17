@@ -12,7 +12,7 @@ import static utils.EmailUtilities.Inbox.EmailField.CONTENT;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressWarnings("UnusedReturnValue")
+@SuppressWarnings({"UnusedReturnValue","unused"})
 public class EmailInbox {
 
     Printer log = new Printer(EmailInbox.class);
@@ -107,7 +107,7 @@ public class EmailInbox {
             String port,
             String secureCon
     ){
-        new Printer(EmailInbox.class).new Info("Flushing email inbox...");
+        new Printer(EmailInbox.class).info("Flushing email inbox...");
         new EmailUtilities.Inbox(
                 host,
                 port,
@@ -121,7 +121,7 @@ public class EmailInbox {
     }
 
     public void clearInbox(){
-        log.new Info("Flushing email inbox...");
+        log.info("Flushing email inbox...");
         new EmailUtilities.Inbox(
                 host,
                 port,
@@ -148,7 +148,7 @@ public class EmailInbox {
     ){
         double initialTime = System.currentTimeMillis();
         Printer log = new Printer(EmailInbox.class);
-        log.new Info("Acquiring email...");
+        log.info("Acquiring email...");
         EmailUtilities.Inbox inbox;
         do {
             inbox = new EmailUtilities.Inbox(
@@ -168,7 +168,7 @@ public class EmailInbox {
             if (System.currentTimeMillis() - initialTime > 45000) throw new TimeoutException("Verification email did not arrive!");
         }
         while (inbox.messages.size() == 0);
-        log.new Success("Email(s) acquired!");
+        log.success("Email(s) acquired!");
         return inbox;
     }
 }

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-
+@SuppressWarnings("unused")
 public class Driver extends WebComponent {
 
 	/**
@@ -40,7 +40,7 @@ public class Driver extends WebComponent {
 	 * @param driverType driver type
 	 */
 	public static void initialize(DriverFactory.DriverType driverType){
-		log.new Info("Initializing pickleib.driver...");
+		log.info("Initializing " + strUtils.markup(StringUtilities.Color.PURPLE, driverType.getDriverName()) + " driver...");
 		driver = DriverFactory.getDriver(driverType);
 		wait = new WebDriverWait(driver, Duration.of(DriverFactory.driverTimeout, ChronoUnit.SECONDS));
 	}
@@ -71,7 +71,7 @@ public class Driver extends WebComponent {
 	 * Quits the driver session
 	 */
 	public static void terminate(){
-		log.new Info("Terminating driver...");
+		log.info("Terminating driver...");
 		driver.quit();
 	}
 }

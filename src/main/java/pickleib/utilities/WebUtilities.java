@@ -13,13 +13,17 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import com.gargoylesoftware.htmlunit.*;
-import org.json.simple.JSONObject;
 import org.openqa.selenium.*;
 import java.util.*;
 import context.ContextStore;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Assert;
 import pickleib.driver.Driver;
+import pickleib.enums.ElementState;
+import pickleib.enums.Navigation;
+import pickleib.enums.PrimarySelectorType;
 import pickleib.exceptions.PickleibException;
 import utils.*;
 import static utils.StringUtilities.Color.*;
@@ -41,7 +45,7 @@ public abstract class WebUtilities extends Driver {
      */
     protected Printer log = new Printer(this.getClass());
     protected StringUtilities strUtils = new StringUtilities();
-    protected ObjectUtilities objectUtils = new ObjectUtilities();
+    protected ReflectionUtilities reflection = new ReflectionUtilities();
 
     /**
      * Default Pickleib properties
@@ -49,36 +53,9 @@ public abstract class WebUtilities extends Driver {
     protected static Properties properties = PropertyUtility.properties;
 
     /**
-     * Basic direction
-     */
-    protected enum Direction {up, down}
-
-    /**
-     * Basic element selectors
-     */
-    protected enum Locator {XPATH, CSS}
-
-    /**
      * Duration value for methods
      */
     protected static long elementTimeout;
-
-    /**
-     * Browser navigators
-     */
-    protected enum Navigation {backwards, forwards}
-
-    /**
-     * Element states
-     */
-    protected enum ElementState {
-        enabled,
-        displayed,
-        selected,
-        disabled,
-        unselected,
-        absent
-    }
 
     /**
      * WebUtilities for frameworks that use the Pickleib driver
@@ -129,8 +106,8 @@ public abstract class WebUtilities extends Driver {
      */
     protected WebElement getElementFromPage(String elementFieldName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        Object pageObject = reflection.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = reflection.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
         return (WebElement) pageFields.get(elementFieldName);
     }
@@ -146,8 +123,8 @@ public abstract class WebUtilities extends Driver {
     @SuppressWarnings("unchecked")
     protected List<WebElement> getElementsFromPage(String elementFieldName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        Object pageObject = reflection.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = reflection.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
         return (List<WebElement>) pageFields.get(elementFieldName);
     }
@@ -169,7 +146,7 @@ public abstract class WebUtilities extends Driver {
             Object objectRepository){
         List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
         WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (WebElement) componentFields.get(elementFieldName);
     }
 
@@ -191,7 +168,7 @@ public abstract class WebUtilities extends Driver {
             Object objectRepository){
         List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
         WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (List<WebElement>) componentFields.get(elementFieldName);
     }
 
@@ -212,7 +189,7 @@ public abstract class WebUtilities extends Driver {
             Object objectRepository){
         List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
         WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (WebElement) componentFields.get(elementFieldName);
     }
 
@@ -234,7 +211,7 @@ public abstract class WebUtilities extends Driver {
             Object objectRepository){
         List<WebComponent> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
         WebComponent component = acquireNamedComponentAmongst(componentList, selectionName);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (List<WebElement>) componentFields.get(listFieldName);
     }
 
@@ -255,7 +232,7 @@ public abstract class WebUtilities extends Driver {
             String pageName,
             Object objectRepository){
         WebComponent component = acquireExactNamedComponentAmongst(elementIdentifier, elementFieldName, componentListName, pageName, objectRepository);
-        Map<String, Object> componentFields = objectUtils.getFields(component);
+        Map<String, Object> componentFields = reflection.getFields(component);
         return (WebElement) componentFields.get(elementFieldName);
     }
 
@@ -269,10 +246,10 @@ public abstract class WebUtilities extends Driver {
      */
     protected Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName, Object objectRepository){
         Map<String, Object> componentFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) componentFields = objectUtils.getFields(pageObject);
+        Object pageObject = reflection.getFields(objectRepository).get(pageName);
+        if (pageObject != null) componentFields = reflection.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
-        return objectUtils.getFields(componentFields.get(componentName));
+        return reflection.getFields(componentFields.get(componentName));
     }
 
     /**
@@ -287,8 +264,8 @@ public abstract class WebUtilities extends Driver {
     protected List<WebComponent> getComponentsFromPage(String componentListName, String pageName, Object objectRepository){
         Map<String, Object> pageFields;
         Map<String, Object> componentFields;
-        Object pageObject = objectUtils.getFields(objectRepository).get(pageName);
-        if (pageObject != null) pageFields = objectUtils.getFields(pageObject);
+        Object pageObject = reflection.getFields(objectRepository).get(pageName);
+        if (pageObject != null) pageFields = reflection.getFields(pageObject);
         else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
         return (List<WebComponent>) pageFields.get(componentListName);
     }
@@ -350,7 +327,7 @@ public abstract class WebUtilities extends Driver {
      * @return returns the map of fields
      */
     protected Map<String, Object> getComponentFields(Object componentName){
-        return  objectUtils.getFields(componentName);
+        return  reflection.getFields(componentName);
     }
 
     /**
@@ -360,7 +337,7 @@ public abstract class WebUtilities extends Driver {
      */
     protected String navigate(String url){
         try {
-            log.new Info("Navigating to "+RESET+BLUE+url+RESET);
+            log.info("Navigating to "+RESET+BLUE+url+RESET);
 
             if (!url.contains("http")) url = "https://"+url;
 
@@ -390,7 +367,7 @@ public abstract class WebUtilities extends Driver {
      */
     protected void navigateBrowser(Navigation direction){
         try {
-            log.new Info("Navigating " + strUtils.highlighted(BLUE, direction.name()));
+            log.info("Navigating " + strUtils.highlighted(BLUE, direction.name()));
 
             switch (direction) {
                 case forwards -> driver.navigate().forward();
@@ -410,7 +387,7 @@ public abstract class WebUtilities extends Driver {
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
             if (!(System.currentTimeMillis()-initialTime > elementTimeout)){
-                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                log.warning("Recursion! (" + exception.getClass().getName() + ")");
                 waitUntilElementIsVisible(element, initialTime);
             }
             else throw new NoSuchElementException("The element could not be located!");
@@ -441,29 +418,25 @@ public abstract class WebUtilities extends Driver {
     protected void clickElement(WebElement element, Boolean scroll){
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
-        boolean timeout;
         int counter = 0;
         elementIs(element, ElementState.enabled);
         do {
-            timeout = System.currentTimeMillis()-initialTime > elementTimeout;
             try {
-                if (scroll) centerElement(element).click();
+                if (scroll) clickTowards(centerElement(element));
                 else element.click();
                 return;
             }
             catch (WebDriverException webDriverException){
-                if (counter == 0) {
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
+                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+
+                caughtException = webDriverException;
                 counter++;
+
+                if (System.currentTimeMillis()-initialTime > elementTimeout) break;
             }
         }
-        while (!timeout);
+        while (true);
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
         log.new Warning(caughtException.getMessage());
         throw new PickleibException(caughtException);
@@ -475,72 +448,18 @@ public abstract class WebUtilities extends Driver {
      * @param element target element
      */
     protected void clickElement(WebElement element){
-        long initialTime = System.currentTimeMillis();
-        WebDriverException caughtException = null;
-        boolean timeout;
-        int counter = 0;
-        elementIs(element, ElementState.enabled);
-        do {
-            timeout = System.currentTimeMillis()-initialTime > elementTimeout;
-            try {
-                centerElement(element).click();
-                return;
-            }
-            catch (WebDriverException webDriverException){
-                if (counter == 0) {
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                counter++;
-            }
-        }
-        while (!timeout);
-        if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
-        log.new Warning(caughtException.getMessage());
-        throw new PickleibException(caughtException);
+        clickElement(element, true);
     }
 
     /**
-     * Clicks an element if its present (in enable state)
+     * Clicks an element if its present (in enabled state)
      *
      * @param element target element
      * @param scroll scrolls if true
      */
     protected void clickIfPresent(WebElement element, Boolean scroll){
-        try {
-            long initialTime = System.currentTimeMillis();
-            WebDriverException caughtException = null;
-            boolean timeout;
-            int counter = 0;
-            elementIs(element, ElementState.enabled);
-            do {
-                timeout = System.currentTimeMillis()-initialTime > elementTimeout;
-                try {
-                    if (scroll) centerElement(element).click();
-                    else element.click();
-                    return;
-                }
-                catch (WebDriverException webDriverException){
-                    if (counter == 0) {
-                        log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                        caughtException = webDriverException;
-                    }
-                    else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
-                        log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                        caughtException = webDriverException;
-                    }
-                    counter++;
-                }
-            }
-            while (!timeout);
-            if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
-            log.new Warning(caughtException.getMessage());
-        }
-        catch (WebDriverException exception){log.new Warning(exception.getMessage());}
+        try {clickElement(element, scroll);}
+        catch (WebDriverException exception){log.warning(exception.getMessage());}
     }
 
     /**
@@ -580,7 +499,7 @@ public abstract class WebUtilities extends Driver {
      */
     protected WebElement verifyElementState(WebElement element, ElementState state){
         Assert.assertTrue("Element is not in " + state.name() + " state!", elementIs(element, state));
-        log.new Success("Element state is verified to be: " + state.name());
+        log.success("Element state is verified to be: " + state.name());
         return element;
     }
 
@@ -634,18 +553,18 @@ public abstract class WebUtilities extends Driver {
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                 }
                 else if (!webDriverException.getClass().getName().equals(caughtException)){
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                 }
                 counter++;
             }
         }
         while (!timeout);
-        if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
         return false;
     }
 
@@ -684,12 +603,12 @@ public abstract class WebUtilities extends Driver {
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                     counter++;
                 }
                 else if (!webDriverException.getClass().getName().equals(caughtException)){
-                    log.new Warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                     counter++;
                 }
@@ -716,7 +635,7 @@ public abstract class WebUtilities extends Driver {
      * @return returns the selected component
      */
     protected  <T> T acquireNamedComponentAmongst(List<T> items, String selectionName){
-        log.new Info("Acquiring component called " + strUtils.highlighted(BLUE, selectionName));
+        log.info("Acquiring component called " + strUtils.highlighted(BLUE, selectionName));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
@@ -745,12 +664,12 @@ public abstract class WebUtilities extends Driver {
             String attributeValue,
             String elementFieldName
     ){
-        log.new Info("Acquiring component by attribute " + strUtils.highlighted(BLUE, attributeName + " -> " + attributeValue));
+        log.info("Acquiring component by attribute " + strUtils.highlighted(BLUE, attributeName + " -> " + attributeValue));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
             for (T component : items) {
-                Map<String, Object> componentFields = objectUtils.getFields(component);
+                Map<String, Object> componentFields = reflection.getFields(component);
                 WebElement element = (WebElement) componentFields.get(elementFieldName);
                 String attribute = element.getAttribute(attributeName);
                 if (attribute.equals(attributeValue)) return component;
@@ -774,12 +693,12 @@ public abstract class WebUtilities extends Driver {
             String elementText,
             String targetElementFieldName
     ){
-        log.new Info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
+        log.info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
             for (Component component : items) {
-                Map<String, Object> componentFields = objectUtils.getFields(component);
+                Map<String, Object> componentFields = reflection.getFields(component);
                 WebElement element = (WebElement) componentFields.get(targetElementFieldName);
                 String text = element.getText();
                 String name = element.getAccessibleName();
@@ -801,12 +720,12 @@ public abstract class WebUtilities extends Driver {
             String componentListName,
             String pageName,
             Object objectRepository){
-        log.new Info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
+        log.info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
             for (WebComponent component : getComponentsFromPage(componentListName, pageName, objectRepository)) {
-                Map<String, Object> componentFields = objectUtils.getFields(component);
+                Map<String, Object> componentFields = reflection.getFields(component);
                 WebElement element = (WebElement) componentFields.get(elementFieldName);
                 String text = element.getText();
                 String name = element.getAccessibleName();
@@ -825,7 +744,7 @@ public abstract class WebUtilities extends Driver {
      * @return returns the selected element
      */
     protected WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
-        log.new Info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
+        log.info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
@@ -848,7 +767,7 @@ public abstract class WebUtilities extends Driver {
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     protected WebElement acquireNamedElementAmongst(@NotNull List<WebElement> items, String selectionName, long initialTime){
-        log.new Info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
+        log.info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
             for (WebElement selection : items) {
@@ -866,7 +785,7 @@ public abstract class WebUtilities extends Driver {
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
             if (!(System.currentTimeMillis()-initialTime > elementTimeout)) {
-                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                log.warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireNamedElementAmongst(items, selectionName, initialTime);
             }
             throw exception;
@@ -878,7 +797,7 @@ public abstract class WebUtilities extends Driver {
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     protected  <T> T acquireNamedComponentAmongst(@NotNull List<T> items, String selectionName, long initialTime){
-        log.new Info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
+        log.info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
         try {
             for (T selection : items) {
                 String text = ((WebElement) selection).getText();
@@ -889,7 +808,7 @@ public abstract class WebUtilities extends Driver {
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
             if (!(System.currentTimeMillis()-initialTime > elementTimeout)) {
-                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                log.warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireNamedComponentAmongst(items, selectionName, initialTime);
             }
             throw exception;
@@ -905,7 +824,7 @@ public abstract class WebUtilities extends Driver {
      * @return returns the selected element
      */
     protected WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue){
-        log.new Info("Acquiring element called " + strUtils.markup(BLUE, attributeValue) + " using its " + strUtils.markup(BLUE, attributeName) + " attribute");
+        log.info("Acquiring element called " + strUtils.markup(BLUE, attributeValue) + " using its " + strUtils.markup(BLUE, attributeName) + " attribute");
         boolean condition = true;
         long initialTime = System.currentTimeMillis();
         while (condition){
@@ -923,7 +842,7 @@ public abstract class WebUtilities extends Driver {
      */
     @Deprecated(since = "1.2.7", forRemoval = true)
     protected WebElement acquireElementUsingAttributeAmongst(@NotNull List<WebElement> elements, String attributeName, String attributeValue, long initialTime){
-        log.new Info("Acquiring element called " + strUtils.markup(BLUE, attributeValue) + " using its " + strUtils.markup(BLUE, attributeName) + " attribute");
+        log.info("Acquiring element called " + strUtils.markup(BLUE, attributeValue) + " using its " + strUtils.markup(BLUE, attributeName) + " attribute");
         driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         try {
             for (WebElement selection : elements) {
@@ -935,7 +854,7 @@ public abstract class WebUtilities extends Driver {
         catch (WebDriverException exception){
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
             if (!(System.currentTimeMillis()-initialTime > elementTimeout)) {
-                log.new Warning("Recursion! (" + exception.getClass().getName() + ")");
+                log.warning("Recursion! (" + exception.getClass().getName() + ")");
                 return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue, initialTime);
             }
             throw exception;
@@ -948,7 +867,7 @@ public abstract class WebUtilities extends Driver {
      * @param handle target tab/window
      */
     protected String switchWindowByHandle(@Nullable String handle){
-        log.new Info("Switching to the next tab");
+        log.info("Switching to the next tab");
         String parentWindowHandle = driver.getWindowHandle();
         if (handle == null)
             for (String windowHandle: driver.getWindowHandles()) {
@@ -965,7 +884,7 @@ public abstract class WebUtilities extends Driver {
      * @param tabIndex target tab/window
      */
     protected String switchWindowByIndex(Integer tabIndex){
-        log.new Info("Switching the tab with the window index: " + tabIndex);
+        log.info("Switching the tab with the window index: " + tabIndex);
         String parentWindowHandle = driver.getWindowHandle();
         List<String> handles = new ArrayList<>(driver.getWindowHandles());
         String handle = handles.get(tabIndex);
@@ -1099,9 +1018,6 @@ public abstract class WebUtilities extends Driver {
      * @param scroll scroll action (scrolls if true)
      */
     protected void clickAtAnOffset(WebElement element, int xOffset, int yOffset, boolean scroll){
-
-        if (scroll) centerElement(element);
-
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
         builder
                 .moveToElement(element, xOffset, yOffset)
@@ -1142,8 +1058,8 @@ public abstract class WebUtilities extends Driver {
      */
     //This method makes the thread wait for a certain while
     protected void waitFor(double seconds){
-        if (seconds > 1) log.new Info("Waiting for "+BLUE+seconds+GRAY+" seconds");
-        try {Thread.sleep((long) (seconds* 1000L));}
+        if (seconds > 1) log.info("Waiting for " + strUtils.markup(BLUE,"" + seconds) + " seconds");
+        try {TimeUnit.MICROSECONDS.wait(Double.valueOf( seconds * 1000).longValue());}
         catch (InterruptedException exception){Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);}
     }
 
@@ -1171,7 +1087,7 @@ public abstract class WebUtilities extends Driver {
      * @param direction target direction (UP or DOWN)
      */
     protected void scroll(@NotNull Direction direction){
-        log.new Info("Scrolling " + strUtils.highlighted(BLUE, direction.name().toLowerCase()));
+        log.info("Scrolling " + strUtils.highlighted(BLUE, direction.name().toLowerCase()));
         String script = switch (direction) {
             case up -> "window.scrollBy(0,-document.body.scrollHeight)";
             case down -> "window.scrollBy(0,document.body.scrollHeight)";
@@ -1239,9 +1155,9 @@ public abstract class WebUtilities extends Driver {
      * @param element target element
      */
     //This method prints all the attributes of a given element
-    protected void printElementAttributes(WebElement element){
-        JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
-        for (Object attribute : attributeJSON.keySet()) log.new Info(attribute +" : "+ attributeJSON.get(attribute));
+    protected void printElementAttributes(WebElement element){//TODO: update this
+        //JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
+        //for (Object attribute : attributeJSON.keySet()) log.info();(attribute +" : "+ attributeJSON.get(attribute));
     }
 
     /**
@@ -1301,11 +1217,11 @@ public abstract class WebUtilities extends Driver {
      * @deprecated replaced by elementIs(WebElement element, @NotNull ElementState state)
      */
     @Deprecated (since = "1.6.2", forRemoval = true)
-    protected List<WebElement> verifyAbsenceOfElementLocatedBy(@NotNull Locator locatorType, String locator, long startTime){
+    protected List<WebElement> verifyAbsenceOfElementLocatedBy(@NotNull PrimarySelectorType locatorType, String locator, long startTime){
 
         List<WebElement> elements = switch (locatorType) {
-            case XPATH -> driver.findElements(By.xpath(locator));
-            case CSS -> driver.findElements(By.cssSelector(locator));
+            case xpath -> driver.findElements(By.xpath(locator));
+            case css -> driver.findElements(By.cssSelector(locator));
         };
 
         if ((System.currentTimeMillis() - startTime) > elementTimeout){
@@ -1337,7 +1253,7 @@ public abstract class WebUtilities extends Driver {
             else throw new TimeoutException(GRAY+"Element was still present after " + elementTimeout /1000 + " seconds."+RESET);
         }
         catch (IllegalArgumentException ignored){
-            log.new Success("The element is no longer present!");
+            log.success("The element is no longer present!");
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout/1000));
         }
     }
@@ -1399,7 +1315,7 @@ public abstract class WebUtilities extends Driver {
         if ((System.currentTimeMillis() - startTime) > 10000) return false;
         try {return element.isDisplayed();}
         catch (Exception e) {
-            log.new Info(e.getLocalizedMessage());
+            log.info(e.getLocalizedMessage());
             return elementIsDisplayed(element, startTime);
         }
     }
@@ -1412,7 +1328,7 @@ public abstract class WebUtilities extends Driver {
      * @return corresponding WebElement from the given page object
      */
     protected  <T> WebElement getElement(String fieldName, Class<T> inputClass){
-        return (WebElement) objectUtils.getFieldValue(fieldName, inputClass);
+        return (WebElement) reflection.getFieldValue(fieldName, inputClass);
     }
 
     /**
@@ -1456,17 +1372,17 @@ public abstract class WebUtilities extends Driver {
      * @return true if the specified event was fired.
      */
     protected boolean isEventFired(String eventName, String listenerScript){
-        log.new Info("Listening to '" + eventName + "' event");
+        log.info("Listening to '" + eventName + "' event");
         String eventKey = strUtils.generateRandomString(eventName + "#", 6, false, true);
         listenerScript = listenerScript.replace(eventName, "'" + eventName + "', function(){console.warn('" + eventKey +"')}");
         executeScript(listenerScript);
         LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
         for (LogEntry entry: logs.getAll())
             if (entry.toString().contains(eventKey)) {
-                log.new Success("'" + eventName + "' event is fired!");
+                log.success("'" + eventName + "' event is fired!");
                 return true;
             }
-        log.new Warning(eventName + " event is not fired!");
+        log.warning(eventName + " event is not fired!");
         return false;
     }
 
@@ -1478,7 +1394,7 @@ public abstract class WebUtilities extends Driver {
      * @return true if the specified event was fired.
      */
     protected boolean isEventFiredByScript(String eventKey, String listenerScript){
-        log.new Info("Listening to '" + strUtils.markup(BLUE, eventKey) + "' event");
+        log.info("Listening to '" + strUtils.markup(BLUE, eventKey) + "' event");
         executeScript(listenerScript);
         LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
         for (LogEntry entry: logs.getAll()) if (entry.toString().contains(eventKey)) return true;
@@ -1492,7 +1408,7 @@ public abstract class WebUtilities extends Driver {
      * @return object if the scripts yields one
      */
     protected Object executeScript(String script){
-        log.new Info("Executing script: " + strUtils.highlighted(BLUE, script));
+        log.info("Executing script: " + strUtils.highlighted(BLUE, script));
         return ((JavascriptExecutor) driver).executeScript(script);
     }
 }

@@ -7,6 +7,9 @@ import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import pickleib.enums.Direction;
+import pickleib.enums.ElementState;
+import pickleib.enums.Navigation;
 import pickleib.utilities.ScreenCaptureUtility;
 import pickleib.utilities.WebUtilities;
 import records.Bundle;
@@ -98,7 +101,7 @@ public class ElementInteractions extends WebUtilities {
      */
     public void getHTML(String htmlPath) {
         htmlPath = strUtils.contextCheck(htmlPath);
-        log.new Info("Navigating to the email @" + htmlPath);
+        log.info("Navigating to the email @" + htmlPath);
         driver.get(htmlPath);
     }
 
@@ -204,7 +207,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickInteraction(WebElement button, String buttonName, String pageName){
-        log.new Info("Clicking " +
+        log.info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -238,7 +241,7 @@ public class ElementInteractions extends WebUtilities {
             String attributeName,
             String elementName,
             String pageName){
-        log.new Info("Acquiring " +
+        log.info("Acquiring " +
                 highlighted(BLUE,attributeName) +
                 highlighted(GRAY," attribute of ") +
                 highlighted(BLUE, elementName) +
@@ -246,9 +249,9 @@ public class ElementInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         String attribute = element.getAttribute(attributeName);
-        log.new Info("Attribute -> " + highlighted(BLUE, attributeName) + highlighted(GRAY," : ") + highlighted(BLUE, attribute));
+        log.info("Attribute -> " + highlighted(BLUE, attributeName) + highlighted(GRAY," : ") + highlighted(BLUE, attribute));
         ContextStore.put(elementName + "-" + attributeName, attribute);
-        log.new Info("Attribute saved to the ContextStore as -> '" +
+        log.info("Attribute saved to the ContextStore as -> '" +
                 highlighted(BLUE, elementName + "-" + attributeName) +
                 highlighted(GRAY, "' : '") +
                 highlighted(BLUE, attribute) +
@@ -265,7 +268,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void center(WebElement element, String elementName, String pageName){
-        log.new Info("Centering " +
+        log.info("Centering " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on ") +
                 highlighted(BLUE, pageName)
@@ -282,7 +285,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickTowards(WebElement element, String elementName, String pageName){
-        log.new Info("Clicking " +
+        log.info("Clicking " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -299,7 +302,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void performJSClick(WebElement element, String elementName, String pageName){
-        log.new Info("Clicking " +
+        log.info("Clicking " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -316,7 +319,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickIfPresent(WebElement element, String elementName, String pageName){
-        log.new Info("Clicking " +
+        log.info("Clicking " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName) +
@@ -325,7 +328,7 @@ public class ElementInteractions extends WebUtilities {
         try {
             if (elementIs(element, ElementState.displayed)) clickElement(element, true);
         }
-        catch (WebDriverException ignored){log.new Warning("The " + elementName + " was not present");}
+        catch (WebDriverException ignored){log.warning("The " + elementName + " was not present");}
     }
 
     /**
@@ -339,7 +342,7 @@ public class ElementInteractions extends WebUtilities {
      */
     public void basicFill(WebElement inputElement, String inputName, String pageName, String input){
         input = strUtils.contextCheck(input);
-        log.new Info("Filling " +
+        log.info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName) +
@@ -365,7 +368,7 @@ public class ElementInteractions extends WebUtilities {
         String inputName;
         String input;
         for (Bundle<WebElement, String, String> bundle : bundles) {
-            log.new Info("Filling " +
+            log.info("Filling " +
                     highlighted(BLUE, bundle.theta()) +
                     highlighted(GRAY," on the ") +
                     highlighted(BLUE, pageName) +
@@ -398,7 +401,7 @@ public class ElementInteractions extends WebUtilities {
             String pageName,
             String inputText){
         inputText = strUtils.contextCheck(inputText);
-        log.new Info("Filling " +
+        log.info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," i-frame element input on the ") +
                 highlighted(BLUE, pageName) +
@@ -422,7 +425,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickIframeElement(WebElement iframe, WebElement element, String elementName, String iframeName, String pageName){
-        log.new Info("Clicking i-frame element " +
+        log.info("Clicking i-frame element " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -449,7 +452,7 @@ public class ElementInteractions extends WebUtilities {
         String inputName;
         String input;
         for (Bundle<WebElement, String, String> bundle : bundles) {
-            log.new Info("Filling " +
+            log.info("Filling " +
                     highlighted(BLUE, bundle.theta()) +
                     highlighted(GRAY," on the ") +
                     highlighted(BLUE, pageName) +
@@ -480,13 +483,13 @@ public class ElementInteractions extends WebUtilities {
      */
     public void verifyText(WebElement element, String elementName, String pageName, String expectedText){
         expectedText = strUtils.contextCheck(expectedText);
-        log.new Info("Performing text verification for " +
+        log.info("Performing text verification for " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         Assert.assertEquals(expectedText, element.getText());
-        log.new Success("Text of the element " + elementName + " was verified!");
+        log.success("Text of the element " + elementName + " was verified!");
     }
 
     /**
@@ -500,13 +503,13 @@ public class ElementInteractions extends WebUtilities {
      */
     public void verifyContainsText(WebElement element, String elementName, String pageName, String expectedText){
         expectedText = strUtils.contextCheck(expectedText);
-        log.new Info("Performing text verification for " +
+        log.info("Performing text verification for " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         Assert.assertTrue(element.getText().contains(expectedText));
-        log.new Success("Text of the element " + elementName + " was verified!");
+        log.success("Text of the element " + elementName + " was verified!");
     }
 
     /**
@@ -521,7 +524,7 @@ public class ElementInteractions extends WebUtilities {
         for (Bundle<WebElement, String, String> bundle : bundles) {
             String elementName = bundle.beta();
             String expectedText = bundle.theta();
-            log.new Info("Performing text verification for " +
+            log.info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," on the ") +
                     highlighted(BLUE, pageName) +
@@ -529,7 +532,7 @@ public class ElementInteractions extends WebUtilities {
                     highlighted(BLUE, expectedText)
             );
             Assert.assertEquals("The " + bundle.alpha().getText() + " does not contain text '", expectedText, bundle.alpha().getText());
-            log.new Success("Text of the element" + bundle.alpha().getText() + " was verified!");
+            log.success("Text of the element" + bundle.alpha().getText() + " was verified!");
 
         }
     }
@@ -543,13 +546,13 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void verifyPresence(WebElement element, String elementName, String pageName){
-        log.new Info("Verifying presence of " +
+        log.info("Verifying presence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
         verifyElementState(element, ElementState.displayed);
-        log.new Success("Presence of the element " + elementName + " was verified!");
+        log.success("Presence of the element " + elementName + " was verified!");
     }
 
     /**
@@ -573,7 +576,7 @@ public class ElementInteractions extends WebUtilities {
             String elementName,
             String pageName,
             ElementState expectedState){
-        log.new Info("Verifying " +
+        log.info("Verifying " +
                 highlighted(BLUE, expectedState.name()) +
                 highlighted(GRAY," state of ")+
                 highlighted(BLUE, elementName) +
@@ -581,7 +584,7 @@ public class ElementInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         verifyElementState(element, expectedState);
-        log.new Success("The element " + elementName + " was verified to be " + expectedState.name());
+        log.success("The element " + elementName + " was verified to be " + expectedState.name());
     }
 
     /**
@@ -593,7 +596,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void waitUntilAbsence(WebElement element, String elementName, String pageName){
-        log.new Info("Waiting for the absence of " +
+        log.info("Waiting for the absence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -610,7 +613,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void waitUntilVisible(WebElement element, String elementName, String pageName) {
-        log.new Info("Waiting for the absence of " +
+        log.info("Waiting for the absence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -634,7 +637,7 @@ public class ElementInteractions extends WebUtilities {
             String pageName,
             String attributeName,
             String attributeValue) {
-        log.new Info("Waiting for the absence of " +
+        log.info("Waiting for the absence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -660,7 +663,7 @@ public class ElementInteractions extends WebUtilities {
             String attributeName,
             String attributeValue) {
 
-        log.new Info("Verifying " +
+        log.info("Verifying " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
                 highlighted(BLUE, elementName) +
@@ -673,7 +676,7 @@ public class ElementInteractions extends WebUtilities {
                         "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
                 wait.until(ExpectedConditions.attributeContains(element, attributeName, attributeValue))
         );
-        log.new Success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
+        log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
     }
 
     /**
@@ -693,7 +696,7 @@ public class ElementInteractions extends WebUtilities {
             String pageName,
             String attributeValue) {
 
-        log.new Info("Verifying " +
+        log.info("Verifying " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
                 highlighted(BLUE, elementName) +
@@ -705,7 +708,7 @@ public class ElementInteractions extends WebUtilities {
                         "\nExpected value: " + attributeValue + "\nActual value: " + element.getCssValue(attributeName),
                 attributeValue
         );
-        log.new Success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
+        log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
     }
 
     /**
@@ -727,7 +730,7 @@ public class ElementInteractions extends WebUtilities {
             String elementName = bundle.beta();
             String expectedText = strUtils.contextCheck(bundle.theta());
 
-            log.new Info("Performing text verification for " +
+            log.info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," on the ") +
                     highlighted(BLUE, pageName) +
@@ -738,7 +741,7 @@ public class ElementInteractions extends WebUtilities {
                     "The " + elementName + " does not contain text '" + expectedText + "' ",
                     element.getText().contains(expectedText)
             );
-            log.new Success("Text of '" + elementName + "' verified as '" + expectedText + "'!");
+            log.success("Text of '" + elementName + "' verified as '" + expectedText + "'!");
         }
     }
 
@@ -750,7 +753,7 @@ public class ElementInteractions extends WebUtilities {
      */
     public void verifyCurrentUrl(String url) {
         url = strUtils.contextCheck(url);
-        log.new Info("The url contains " + url);
+        log.info("The url contains " + url);
         Assert.assertTrue("Current url does not contain the expected url!", driver.getCurrentUrl().contains(url));
     }
 
@@ -762,7 +765,7 @@ public class ElementInteractions extends WebUtilities {
      * @param scroll scrolls if true
      */
     public void clickButtonByText(String buttonText, Boolean scroll) {
-        log.new Info("Clicking button by its text " + buttonText);
+        log.info("Clicking button by its text " + buttonText);
         WebElement element = getElementByText(buttonText);
         centerElement(element);
         clickElement(element, scroll);
@@ -777,7 +780,7 @@ public class ElementInteractions extends WebUtilities {
      */
     public void updateContext(String key, String value){
         value = strUtils.contextCheck(value);
-        log.new Info(
+        log.info(
                 "Updating context: " +
                         highlighted(BLUE, key) +
                         highlighted(GRAY, " -> ") +
@@ -795,7 +798,7 @@ public class ElementInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void pressKey(WebElement element, Keys key, String elementName, String pageName){
-        log.new Info("Filling the giving input " + elementName + " with " + key );
+        log.info("Filling the giving input " + elementName + " with " + key );
         element.sendKeys(key);
     }
 
@@ -823,7 +826,7 @@ public class ElementInteractions extends WebUtilities {
         objectScript = "return " + objectScript;
         if (isEventFired(eventName, listenerScript)) {
             Object object = executeScript(objectScript);
-            log.new Info(object.toString());
+            log.info(object.toString());
         }
     }
 
@@ -842,7 +845,7 @@ public class ElementInteractions extends WebUtilities {
             String pageName,
             String absoluteFilePath){
         absoluteFilePath = strUtils.contextCheck(absoluteFilePath);
-        log.new Info("Filling " +
+        log.info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName) +
@@ -867,19 +870,19 @@ public class ElementInteractions extends WebUtilities {
      * @param expectedValue expected value
      */
     public void listenGetAndVerifyObject(String listenerScript, String eventName, String nodeSource, String expectedValue)  {
-        log.new Info("Verifying value of '" + nodeSource + "' node");
+        log.info("Verifying value of '" + nodeSource + "' node");
         String nodeScript = "return " + nodeSource;
         if (isEventFired(eventName, listenerScript)) {
-            log.new Info("Verifying value of '" + highlighted(BLUE, nodeSource) + highlighted(GRAY, "' node"));
+            log.info("Verifying value of '" + highlighted(BLUE, nodeSource) + highlighted(GRAY, "' node"));
             Object object = executeScript(nodeScript);
 
             Pattern sourcePattern = Pattern.compile(expectedValue);
             Matcher nodeValueMatcher = sourcePattern.matcher(object.toString());
 
             Assert.assertTrue("Node values do not match! Expected: " + expectedValue + ", Found: " + object, nodeValueMatcher.find());
-            log.new Success("Value of '" + nodeSource + "' is verified to be '" + object + "'");
+            log.success("Value of '" + nodeSource + "' is verified to be '" + object + "'");
         }
-        else log.new Warning("'" + eventName + "' event is not fired!");
+        else log.warning("'" + eventName + "' event is not fired!");
     }
 
     /**
@@ -896,7 +899,7 @@ public class ElementInteractions extends WebUtilities {
                 String nodeSource = nodeMap.get("Node Source");
                 String nodeValue = nodeMap.get("Node Value");
 
-                log.new Info("Verifying value of '" + highlighted(BLUE, nodeSource) + highlighted(GRAY, "' node"));
+                log.info("Verifying value of '" + highlighted(BLUE, nodeSource) + highlighted(GRAY, "' node"));
                 String nodeScript = "return " + nodeSource;
                 Object object = executeScript(nodeScript);
 
@@ -904,7 +907,7 @@ public class ElementInteractions extends WebUtilities {
                 Matcher nodeValueMatcher = sourcePattern.matcher(object.toString());
 
                 Assert.assertTrue("Node values do not match! Expected: " + nodeValue + ", Found: " + object, nodeValueMatcher.find());
-                log.new Success("Value of '" + nodeSource + "' is verified to be '" + object + "'");
+                log.success("Value of '" + nodeSource + "' is verified to be '" + object + "'");
             }
         }
         else throw new RuntimeException("'" + eventName + "' event is not fired!");
