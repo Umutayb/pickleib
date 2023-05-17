@@ -11,6 +11,7 @@ import java.io.File;
 
 import static utils.StringUtilities.Color.*;
 
+@SuppressWarnings("unused")
 public class ScreenCaptureUtility {
     Printer log = new Printer(ScreenCaptureUtility.class);
     NumericUtilities numeric = new NumericUtilities();
@@ -21,11 +22,11 @@ public class ScreenCaptureUtility {
      * @param driver session driver
      * @return returns the screenshot file
      */
-    public File captureScreen(String name, RemoteWebDriver driver) {
+    public File captureScreen(String name, String extension, RemoteWebDriver driver) {
         try {
-            log.new Info("Capturing page...");
-
-            name += "#"+numeric.randomNumber(1,10000)+".jpg";
+            log.info("Capturing page...");
+            if (!extension.contains(".")) extension = "." + extension;
+            name += "#"+numeric.randomNumber(1,10000) + extension;
             File sourceFile = new File("screenshots");
             File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(fileDestination, new File(sourceFile, name));

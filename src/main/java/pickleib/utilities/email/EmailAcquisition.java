@@ -10,6 +10,7 @@ import java.util.Objects;
 import static utils.StringUtilities.Color.BLUE;
 import static utils.StringUtilities.Color.GRAY;
 
+@SuppressWarnings("unused")
 public class EmailAcquisition {
 
     StringUtilities strUtils = new StringUtilities();
@@ -20,7 +21,7 @@ public class EmailAcquisition {
     }
 
     public String acquireEmail(EmailUtilities.Inbox.EmailField filterType, String filterKey) {
-        emailInbox.log.new Info("Acquiring & saving email(s) by " +
+        emailInbox.log.info("Acquiring & saving email(s) by " +
                 strUtils.highlighted(BLUE, filterType.name()) +
                 strUtils.highlighted(GRAY, " -> ") +
                 strUtils.highlighted(BLUE, filterKey)

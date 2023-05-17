@@ -30,7 +30,7 @@ public class ElementAcquisition {
          * @param objectRepository instance that includes specified page instance
          */
         public WebElement elementFromPage(String elementName, String pageName, Object objectRepository){
-            log.new Info("Acquiring element " +
+            log.info("Acquiring element " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," from the ") +
                     highlighted(BLUE, pageName)
@@ -50,7 +50,7 @@ public class ElementAcquisition {
          * @param objectRepository instance that includes specified page instance
          */
         public WebElement elementFromComponent(String elementName, String componentFieldName, String pageName, Object objectRepository) {
-            log.new Info("Acquiring element " +
+            log.info("Acquiring element " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," from the ") +
                     highlighted(BLUE, pageName)
@@ -76,7 +76,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ) {
-            log.new Info("Acquiring listed element named " +
+            log.info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," selected from ") +
                     highlighted(BLUE, listName) +
@@ -112,7 +112,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ) {
-            log.new Info("Acquiring listed element named " +
+            log.info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," selected from ") +
                     highlighted(BLUE, listFieldName) +
@@ -152,7 +152,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ) {
-            log.new Info("Acquiring listed element named " +
+            log.info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," selected from ") +
                     highlighted(BLUE, componentListName) +
@@ -186,7 +186,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ) {
-            log.new Info("Acquiring exact listed element named " +
+            log.info("Acquiring exact listed element named " +
                     highlighted(BLUE, elementFieldName) +
                     highlighted(GRAY," selected from ") +
                     highlighted(BLUE, componentListName) +
@@ -214,7 +214,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ) {
-            log.new Info("Acquiring exact listed component by element named " +
+            log.info("Acquiring exact listed component by element named " +
                     highlighted(BLUE, elementFieldName) +
                     highlighted(GRAY," selected from ") +
                     highlighted(BLUE, componentListName) +
@@ -247,7 +247,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ) {
-            log.new Info("Acquiring listed element named " +
+            log.info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," selected from ") +
                     highlighted(BLUE, componentListName) +
@@ -281,7 +281,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ) {
-            log.new Info("Acquiring element by " +
+            log.info("Acquiring element by " +
                     highlighted(BLUE, attributeName) +
                     highlighted(GRAY," attribute selected from ") +
                     highlighted(BLUE, listName) +
@@ -317,7 +317,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ) {
-            log.new Info("Acquiring element by " +
+            log.info("Acquiring element by " +
                     highlighted(BLUE, attributeName) +
                     highlighted(GRAY," attribute selected from ") +
                     highlighted(BLUE, listName) +
@@ -344,7 +344,7 @@ public class ElementAcquisition {
          * @param objectRepository instance that includes specified page instance
          */
         public List<Bundle<WebElement, String, String>> elementList(List<Map<String, String>> signForms, String pageName, Object objectRepository) {
-            log.new Info("Acquiring element list from " + highlighted(BLUE, pageName));
+            log.info("Acquiring element list from " + highlighted(BLUE, pageName));
             pageName = strUtils.firstLetterDeCapped(pageName);
             List<Bundle<WebElement, String, String>> bundles = new ArrayList<>();
             for (Map<String, String> form : signForms) {
@@ -368,7 +368,7 @@ public class ElementAcquisition {
          * @param objectRepository instance that includes specified page instance
          */
         public List<Bundle<WebElement, String, String>> componentElementList(List<Map<String, String>> signForms, String componentName, String pageName, Object objectRepository) {
-            log.new Info("Acquiring element list from " + highlighted(BLUE, pageName));
+            log.info("Acquiring element list from " + highlighted(BLUE, pageName));
             pageName = strUtils.firstLetterDeCapped(pageName);
             List<Bundle<WebElement, String, String>> bundles = new ArrayList<>();
             for (Map<String, String> form : signForms) {
@@ -400,7 +400,7 @@ public class ElementAcquisition {
                 Map<String, String> specifications,
                 Object objectRepository
         ){
-            log.new Info("Acquiring element bundle from " + highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             return new Bundle<>(elementFieldName, elementFromPage(elementFieldName, pageName, objectRepository), specifications);
         }
 
@@ -417,7 +417,7 @@ public class ElementAcquisition {
                 List<Map<String, String>> specifications,
                 Object objectRepository
         ){
-            log.new Info("Acquiring element bundle from " + highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> bundles = new ArrayList<>();
             for (Map<String, String> specification:specifications) {
                 bundles.add(elementBundleFromPage(specification.get("Element Name"), pageName, specification, objectRepository));
@@ -440,7 +440,7 @@ public class ElementAcquisition {
                 Map<String, String> specifications,
                 Object objectRepository
         ){
-            log.new Info("Acquiring element bundle from " + highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             return new Bundle<>(specifications.get("Element Name"), elementFromComponent(
                     specifications.get("Element Name"),
                     componentFieldName,
@@ -464,7 +464,7 @@ public class ElementAcquisition {
                 List<Map<String, String>> specifications,
                 Object objectRepository
         ){
-            log.new Info("Acquiring element bundle from " + highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> bundles = new ArrayList<>();
             for (Map<String, String> specification:specifications) {
                 bundles.add(
@@ -497,7 +497,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ){
-            log.new Info("Acquiring element bundle from " + highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             String selectorElementText = strUtils.contextCheck(specifications.get("Selector Text"));
             String selectorElementName = strUtils.contextCheck(specifications.get("Selector Element"));
             String targetElementName = strUtils.contextCheck(specifications.get("Target Element"));
@@ -522,7 +522,7 @@ public class ElementAcquisition {
                 String pageName,
                 Object objectRepository
         ){
-            log.new Info("Acquiring element bundles from " + highlighted(BLUE, pageName));
+            log.info("Acquiring element bundles from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> pairs = new ArrayList<>();
             for (Map<String, String> map:specifications) {
                 pairs.add(selectChildElementFromComponentsBySecondChildText(map, componentListName, pageName, objectRepository));
@@ -544,7 +544,7 @@ public class ElementAcquisition {
          * @return target element
          */
         public WebElement elementFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
-            log.new Info("Acquiring element " +
+            log.info("Acquiring element " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," from the ") +
                     highlighted(BLUE, pageName)
@@ -566,7 +566,7 @@ public class ElementAcquisition {
          * @return target element list
          */
         public List<WebElement> elementsFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
-            log.new Info("Acquiring element " +
+            log.info("Acquiring element " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," from the ") +
                     highlighted(BLUE, pageName)
