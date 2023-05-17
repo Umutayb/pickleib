@@ -15,6 +15,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
@@ -50,7 +51,8 @@ public class Driver extends WebComponent {
 	 */
 	public static void initialize(){
 		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
-		initialize(DriverFactory.DriverType.fromString(driverName));
+		if (driverName!=null) initialize(DriverFactory.DriverType.fromString(driverName));
+		else initialize(DriverFactory.DriverType.CHROME);
 	}
 
 	/**
