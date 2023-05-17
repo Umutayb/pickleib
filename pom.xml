@@ -172,6 +172,13 @@
       <version>${retrofit.version}</version>
     </dependency>
 
+    <!-- Jsoup -->
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.15.4</version>
+    </dependency>
+
     <!-- Docker -->
     <dependency>
       <groupId>com.github.docker-java</groupId>
