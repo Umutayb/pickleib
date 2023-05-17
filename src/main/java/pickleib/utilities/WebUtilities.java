@@ -1074,7 +1074,7 @@ public abstract class WebUtilities extends Driver {
     //This method makes the thread wait for a certain while
     protected void waitFor(double seconds){
         if (seconds > 1) log.info("Waiting for " + strUtils.markup(BLUE,"" + seconds) + " seconds");
-        try {TimeUnit.MICROSECONDS.wait(Double.valueOf( seconds * 1000).longValue());}
+        try {Thread.sleep((long) (seconds* 1000L));}
         catch (InterruptedException exception){Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);}
     }
 
