@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import pickleib.driver.Driver;
+import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.enums.PrimarySelectorType;
@@ -440,6 +441,21 @@ public abstract class WebUtilities extends Driver {
         if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
         log.new Warning(caughtException.getMessage());
         throw new PickleibException(caughtException);
+    }
+
+    /**
+     * Click coordinates specified by the given offsets from the center of a given element
+     *
+     * @param element target element
+     */
+    protected void clickTowards(WebElement element){
+        elementIs(element, ElementState.displayed);
+        Actions builder = new org.openqa.selenium.interactions.Actions(driver);
+        builder
+                .moveToElement(element, 0, 0)
+                .click()
+                .build()
+                .perform();
     }
 
     /**
