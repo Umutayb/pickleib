@@ -437,8 +437,8 @@ public abstract class WebUtilities extends Driver {
             }
         }
         while (true);
-        if (counter > 0) log.new Warning("Iterated " + counter + " time(s)!");
-        log.new Warning(caughtException.getMessage());
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning(caughtException.getMessage());
         throw new PickleibException(caughtException);
     }
 
@@ -1030,9 +1030,9 @@ public abstract class WebUtilities extends Driver {
      * @param element target element
      * @param xOffset x offset from the center of the element
      * @param yOffset y offset from the center of the element
-     * @param scroll scroll action (scrolls if true)
      */
-    protected void clickAtAnOffset(WebElement element, int xOffset, int yOffset, boolean scroll){
+    @SuppressWarnings("SameParameterValue")
+    protected void clickAtAnOffset(WebElement element, int xOffset, int yOffset){
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
         builder
                 .moveToElement(element, xOffset, yOffset)
