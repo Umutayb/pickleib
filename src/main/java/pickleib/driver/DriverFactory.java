@@ -87,12 +87,35 @@ public class DriverFactory {
      */
     static Boolean allowRemoteOrigin;
 
+    /**
+     * The logging level used by Pickleib.
+     * This value can be set in the properties file with the key "selenium-log-level".
+     * If not specified in the properties file, the default value is "off".
+     */
     static String logLevel;
 
+    /**
+     * The URL of the Selenium Grid hub.
+     * This value can be set in the properties file with the key "hub-url".
+     * If not specified in the properties file, the default value is an empty string.
+     */
     static String hubUrl;
 
+    /**
+     * The browser used for tests.
+     * This value can be set in the properties file with the key "browser".
+     * If not specified in the properties file, the default value is "chrome".
+     */
     static String browser;
 
+    /**
+     * Loads and sets up the properties from a properties file.
+     * This method initializes various settings such as Selenium Grid usage, frame dimensions,
+     * driver timeout, headless mode, cookie handling, maximization settings, security options,
+     * page load strategy, notification settings, remote origin allowance, web driver manager usage,
+     * log level, hub URL, and browser type based on the specified properties file.
+     * For each property, a default value is used if the property is not specified in the file.
+     */
     public static void loadProperties() {
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));

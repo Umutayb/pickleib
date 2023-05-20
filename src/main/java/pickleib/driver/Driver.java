@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static utils.PropertyUtility.properties;
+
 @SuppressWarnings("unused")
 public class Driver extends WebComponent {
 
@@ -50,7 +52,9 @@ public class Driver extends WebComponent {
 	 */
 	public static void initialize(){
 		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
+		String driverProperty = strUtils.firstLetterCapped(properties.getProperty("browser"));
 		if (driverName!=null) initialize(DriverFactory.DriverType.fromString(driverName));
+		else if (driverProperty != null) initialize(DriverFactory.DriverType.fromString(driverProperty));
 		else initialize(DriverFactory.DriverType.CHROME);
 	}
 
