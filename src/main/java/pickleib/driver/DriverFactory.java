@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import static utils.StringUtilities.Color.*;
 
@@ -86,12 +87,13 @@ public class DriverFactory {
      */
     static Boolean allowRemoteOrigin;
 
-    /**
-     * Initializes and returns a driver of specified type
-     * @param driverType driver type
-     * @return returns driver
-     */
-    public static RemoteWebDriver getDriver(DriverType driverType){
+    static String logLevel;
+
+    static String hubUrl;
+
+    static String browser;
+
+    public static void loadProperties() {
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
         frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
@@ -104,15 +106,27 @@ public class DriverFactory {
         disableNotifications = Boolean.parseBoolean(properties.getProperty("disable-notifications", "true"));
         allowRemoteOrigin = Boolean.parseBoolean(properties.getProperty("allow-remote-origin", "true"));
         useWDM = Boolean.parseBoolean(properties.getProperty("web-driver-manager", "false"));
+        logLevel = properties.getProperty("selenium-log-level", "off");
+        hubUrl = properties.getProperty("hub-url","");
+        browser = properties.getProperty("browser", "chrome");
+    }
 
+    /**
+     * Initializes and returns a driver of specified type
+     * @param driverType driver type
+     * @return returns driver
+     */
+    public static RemoteWebDriver getDriver(DriverType driverType){
+
+        loadProperties();
         RemoteWebDriver driver;
 
         try {
-            if (driverType == null) driverType = DriverType.fromString(properties.getProperty("browser", "chrome"));
+            if (driverType == null) driverType = DriverType.fromString(browser);
 
             if (useSeleniumGrid){
                 ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", driverType.getDriverKey());
-                driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
+                driver = new RemoteWebDriver(new URL(hubUrl), capabilities);
             }
             else {driver = driverSwitch(headless, useWDM, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);}
 
@@ -121,7 +135,7 @@ public class DriverFactory {
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-            driver.setLogLevel(logUtils.getLevel(properties.getProperty("selenium-log-level", "off")));
+            driver.setLogLevel(logUtils.getLevel(logLevel));
             log.important(driverType.getDriverName() + GRAY.getValue() + " was selected");
             return driver;
         }

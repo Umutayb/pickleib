@@ -337,7 +337,7 @@ public abstract class WebUtilities extends Driver {
      */
     protected String navigate(String url){
         try {
-            log.info("Navigating to "+RESET+BLUE+url+RESET);
+            log.info("Navigating to "+strUtils.highlighted(BLUE, url));
 
             if (!url.contains("http")) url = "https://"+url;
 
