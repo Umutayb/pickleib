@@ -12,6 +12,7 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import utils.LogUtilities;
 import utils.Printer;
+import utils.PropertiesReader;
 import utils.PropertyUtility;
 import java.io.IOException;
 import java.net.URL;
@@ -25,7 +26,15 @@ public class DriverFactory {
 
     private static final Printer log = new Printer(DriverFactory.class);
     private static final LogUtilities logUtils = new LogUtilities();
-    static Properties properties = PropertyUtility.properties;
+    private static Properties properties = PropertyUtility.getProperties();
+
+    static {
+        if (properties.isEmpty()){
+            PropertyUtility propertyUtility = new PropertyUtility();
+            PropertyUtility.setProperties(propertyUtility.getProperties("pickleib.properties"));
+            properties = PropertyUtility.getProperties();
+        }
+    }
 
     /**
      * determines frameWidth value

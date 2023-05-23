@@ -17,7 +17,7 @@ public class ChatSupport {
     public static void chat() {
         try {
             PropertyUtility.loadProperties("src/test/resources/test.properties");
-            GPT gpt = new GPT(PropertyUtility.properties.getProperty("gpt-token"));
+            GPT gpt = new GPT(PropertyUtility.getProperty("gpt-token"));
             Caller.keepLogs(false);
 
             List<Message> prompts = new ArrayList<>();
