@@ -12,28 +12,55 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import utils.LogUtilities;
 import utils.Printer;
-import utils.PropertiesReader;
 import utils.PropertyUtility;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Properties;
-import java.util.logging.Level;
 
 import static utils.StringUtilities.Color.*;
 
 public class DriverFactory {
 
+    /**
+     * DriverFactory Logger.
+     */
     private static final Printer log = new Printer(DriverFactory.class);
+
+    /**
+     * Logging utilities.
+     */
     private static final LogUtilities logUtils = new LogUtilities();
+
+    /**
+     * Static properties object, initialized from the PropertyUtility class.
+     */
     private static Properties properties = PropertyUtility.getProperties();
 
+    /*
+      Static initializer block.
+
+      <p>
+      This block performs the following operations:
+      1. Initializes a new PropertyUtility instance.
+      2. Retrieves the 'pickleib.properties' file.
+      3. If the static properties are not empty, it adds new properties from the 'pickleib.properties'
+         file only for keys that do not already exist in the static properties.
+      4. If the static properties are empty, it sets them to the properties from the 'pickleib.properties' file.
+      5. Sets the updated static properties in the PropertyUtility class.
+      </p>
+     */
     static {
-        if (properties.isEmpty()){
-            PropertyUtility propertyUtility = new PropertyUtility();
-            PropertyUtility.setProperties(propertyUtility.getProperties("pickleib.properties"));
-            properties = PropertyUtility.getProperties();
+        PropertyUtility propertyUtility = new PropertyUtility();
+        Properties pickleibProperties = propertyUtility.getProperties("pickleib.properties");
+
+        if (!properties.isEmpty()){
+            for (Object key:pickleibProperties.keySet())
+                properties.putIfAbsent(key, pickleibProperties.get(key));
         }
+        else properties = pickleibProperties;
+
+        PropertyUtility.setProperties(properties);
     }
 
     /**
