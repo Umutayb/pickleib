@@ -48,11 +48,6 @@ public abstract class WebUtilities extends Driver {
     protected ReflectionUtilities reflection = new ReflectionUtilities();
 
     /**
-     * Default Pickleib properties
-     */
-    protected static Properties properties = PropertyUtility.properties;
-
-    /**
      * Duration value for methods
      */
     protected static long elementTimeout;
@@ -63,7 +58,7 @@ public abstract class WebUtilities extends Driver {
      */
     protected WebUtilities(){
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
-        elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
+        elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
     }
 
     /**
@@ -73,7 +68,7 @@ public abstract class WebUtilities extends Driver {
     protected WebUtilities(WebDriver driver){
         Driver.driver = (RemoteWebDriver) driver;
         PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
-        elementTimeout = Long.parseLong(properties.getProperty("element-timeout", "15000"));
+        elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
     }
 
     /**
@@ -1372,7 +1367,7 @@ public abstract class WebUtilities extends Driver {
         }
         else if (input.contains("PROPERTY-")){
             String propertyName = parser.parse("TEST_PROPERTY-", null, input);
-            input = properties.getProperty(propertyName, "NULL");
+            input = PropertyUtility.getProperty(propertyName, "NULL");
         }
         return input;
     }
