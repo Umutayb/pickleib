@@ -82,7 +82,6 @@ class UserHandler implements Runnable {
     public void run() {
         String message;
 
-        // when there is a new message, broadcast to all
         Scanner sc = new Scanner(this.user.getInputStream());
         while (sc.hasNextLine()) {
             message = sc.nextLine();
@@ -124,14 +123,13 @@ class User {
         nbUser += 1;
     }
 
-    // change color user
     public void changeColor(String hexColor){
         // check if it's a valid hexColor
         Pattern colorPattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})");
         Matcher m = colorPattern.matcher(hexColor);
         if (m.matches()){
             Color c = Color.decode(hexColor);
-            // if the Color is too Bright don't change
+            // if the color is too Bright don't change
             double luma = 0.2126 * c.getRed() + 0.7152 * c.getGreen() + 0.0722 * c.getBlue(); // per ITU-R BT.709
             if (luma > 160) {
                 this.getOutStream().println("<b>Color Too Bright</b>");
@@ -144,7 +142,6 @@ class User {
         this.getOutStream().println("<b>Failed to change color</b>");
     }
 
-    // getteur
     public PrintStream getOutStream(){
         return this.streamOut;
     }

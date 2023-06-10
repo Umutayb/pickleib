@@ -5,6 +5,8 @@ import gpt.api.GPT;
 import gpt.models.Message;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
+import utils.StringUtilities;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -24,7 +26,7 @@ import java.util.List;
 public class ChatDraft {
     JTextPane jtextFilDiscu = new JTextPane();
     JTextField jtextInputChat = new JTextField();
-    String oldMsg = "";
+    String oldMsg;
     Thread read;
     String serverName;
     int PORT;
@@ -195,7 +197,7 @@ public class ChatDraft {
                 return;
             }
             oldMsg = message;
-            output.println("User: " + message);
+            output.println("<b><span style='color:#3079ab'>User: </span></b>" + message);
             messages.add(new Message("user", message));
             jtextInputChat.requestFocus();
             jtextInputChat.setText(null);
@@ -223,7 +225,9 @@ public class ChatDraft {
                         )
                 );
 
-            output.println("Pickleib: " + messageResponse.getChoices().get(0).getMessage().getContent());
+            String message = messageResponse.getChoices().get(0).getMessage().getContent();
+            output.println("<b><span style='color:#4d7358'>Pickleib: </span></b>" + message);
+
             messages.add(messageResponse.getChoices().get(0).getMessage());
         }
         catch (Exception ex) {
