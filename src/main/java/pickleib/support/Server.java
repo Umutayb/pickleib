@@ -1,6 +1,5 @@
 package pickleib.support;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -9,18 +8,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Server {
 
     private final int port;
     private final List<User> clients;
     ServerSocket server;
-
-    public static void main(String[] args) throws IOException {
-        new Server(12345).run();
-    }
 
     public Server(int port) {
         this.port = port;
@@ -40,7 +33,7 @@ public class Server {
             Socket client = server.accept();
 
             // create new User
-            User newUser = new User(client, "User");
+            User newUser = new User(client);
 
             // add newUser message to list
             this.clients.add(newUser);
@@ -107,39 +100,12 @@ class UserHandler implements Runnable {
 }
 
 class User {
-    private static int nbUser = 0;
     private final PrintStream streamOut;
     private final InputStream streamIn;
-    private final String nickname;
-    private String color;
 
-    // constructor
-    public User(Socket client, String name) throws IOException {
+    public User(Socket client) throws IOException {
         this.streamOut = new PrintStream(client.getOutputStream());
         this.streamIn = client.getInputStream();
-        this.nickname = name;
-        int userId = nbUser;
-        this.color = ColorInt.getColor(userId);
-        nbUser += 1;
-    }
-
-    public void changeColor(String hexColor){
-        // check if it's a valid hexColor
-        Pattern colorPattern = Pattern.compile("#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})");
-        Matcher m = colorPattern.matcher(hexColor);
-        if (m.matches()){
-            Color c = Color.decode(hexColor);
-            // if the color is too Bright don't change
-            double luma = 0.2126 * c.getRed() + 0.7152 * c.getGreen() + 0.0722 * c.getBlue(); // per ITU-R BT.709
-            if (luma > 160) {
-                this.getOutStream().println("<b>Color Too Bright</b>");
-                return;
-            }
-            this.color = hexColor;
-            this.getOutStream().println("<b>Color changed successfully</b> " + this);
-            return;
-        }
-        this.getOutStream().println("<b>Failed to change color</b>");
     }
 
     public PrintStream getOutStream(){
@@ -148,30 +114,5 @@ class User {
 
     public InputStream getInputStream(){
         return this.streamIn;
-    }
-
-    public String getNickname(){
-        return this.nickname;
-    }
-}
-
-class ColorInt {
-    public static String[] mColors = {
-            "#3079ab", // dark blue
-            "#e15258", // red
-            "#f9845b", // orange
-            "#7d669e", // purple
-            "#53bbb4", // aqua
-            "#51b46d", // green
-            "#e0ab18", // mustard
-            "#f092b0", // pink
-            "#e8d174", // yellow
-            "#e39e54", // orange
-            "#d64d4d", // red
-            "#4d7358", // green
-    };
-
-    public static String getColor(int i) {
-        return mColors[i % mColors.length];
     }
 }
