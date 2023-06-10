@@ -1,10 +1,10 @@
 package pickleib.support;
 
+import api_assured.Caller;
 import gpt.api.GPT;
 import gpt.models.Message;
 import gpt.models.MessageModel;
 import gpt.models.MessageResponse;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -19,23 +19,23 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ChatDraft {
-    static JTextPane jtextFilDiscu = new JTextPane();
-    static JTextField jtextInputChat = new JTextField();
-    static String oldMsg = "";
-    static final List<Message> messages = new ArrayList<>();
-    static Thread read;
-    static String serverName;
-    static int PORT;
-    static String name;
-    static BufferedReader input;
-    static PrintWriter output;
-    static Socket server;
-    static GPT gpt = new GPT("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");
-
+    JTextPane jtextFilDiscu = new JTextPane();
+    JTextField jtextInputChat = new JTextField();
+    String oldMsg = "";
+    Thread read;
+    String serverName;
+    int PORT;
+    String name;
+    BufferedReader input;
+    PrintWriter output;
+    Socket server;
+    private final List<Message> messages = new ArrayList<>();
+    private final String modelName;
+    private final Double temperature;
+    private static GPT gpt;
     public static void startServer(){
         Thread serverThread = new Thread(() -> {
             try {
@@ -48,135 +48,147 @@ public class ChatDraft {
         serverThread.start();
     }
 
-    public static void main(String[] args) throws IOException {
+    public ChatDraft(List<String> prompts, GPT gpt) {
+        ChatDraft.gpt = gpt;
+        this.modelName = "gpt-3.5-turbo";
+        this.temperature = 0.5;
+
+        Caller.keepLogs(false);
+        for (String prompt:prompts) messages.add(new Message("user", prompt));
+        ChatDraft.gpt = gpt;
         startServer();
-        serverName = "localhost";
-        PORT = 12345;
-        name = "nickname";
+        startSupportGUI();
+    }
 
-        String fontfamily = "Arial, sans-serif";
-        Font font = new Font(fontfamily, Font.PLAIN, 15);
+    public ChatDraft(GPT gpt) {
+        this.modelName = "gpt-3.5-turbo";
+        this.temperature = 0.7;
 
-        final JFrame jfr = new JFrame("Chat");
-        jfr.getContentPane().setLayout(null);
-        jfr.setSize(700, 500);
-        jfr.setResizable(false);
-        jfr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Caller.keepLogs(false);
+        ChatDraft.gpt = gpt;
+        startServer();
+        startSupportGUI();
+    }
 
-        // Module du fil de discussion
-        jtextFilDiscu.setBounds(25, 25, 650, 320);
-        jtextFilDiscu.setFont(font);
-        jtextFilDiscu.setMargin(new Insets(6, 6, 6, 6));
-        jtextFilDiscu.setEditable(false);
-        JScrollPane jtextFilDiscuSP = new JScrollPane(jtextFilDiscu);
-        jtextFilDiscuSP.setBounds(25, 25, 650, 320);
+    public void startSupportGUI() {
+        try {
+            String fontfamily = "Arial, sans-serif";
+            Font font = new Font(fontfamily, Font.PLAIN, 15);
 
-        jtextFilDiscu.setContentType("text/html");
-        jtextFilDiscu.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+            final JFrame jfr = new JFrame("Chat");
+            jfr.getContentPane().setLayout(null);
+            jfr.setSize(700, 500);
+            jfr.setResizable(false);
+            jfr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Field message user input
-        jtextInputChat.setBounds(0, 350, 400, 50);
-        jtextInputChat.setFont(font);
-        jtextInputChat.setMargin(new Insets(6, 6, 6, 6));
-        final JScrollPane jtextInputChatSP = new JScrollPane(jtextInputChat);
-        jtextInputChatSP.setBounds(25, 350, 650, 50);
+            // Module du fil de discussion
+            jtextFilDiscu.setBounds(25, 25, 650, 320);
+            jtextFilDiscu.setFont(font);
+            jtextFilDiscu.setMargin(new Insets(6, 6, 6, 6));
+            jtextFilDiscu.setEditable(false);
+            JScrollPane jtextFilDiscuSP = new JScrollPane(jtextFilDiscu);
+            jtextFilDiscuSP.setBounds(25, 25, 650, 320);
 
-        // button send
-        final JButton jsbtn = new JButton("Send");
-        jsbtn.setFont(font);
-        jsbtn.setBounds(575, 410, 100, 35);
+            jtextFilDiscu.setContentType("text/html");
+            jtextFilDiscu.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 
-        // button Disconnect
-        //final JButton jsbtndeco = new JButton("Disconnect");
-        //jsbtndeco.setFont(font);
-        //jsbtndeco.setBounds(25, 410, 130, 35);
+            // Field message user input
+            jtextInputChat.setBounds(0, 350, 400, 50);
+            jtextInputChat.setFont(font);
+            jtextInputChat.setMargin(new Insets(6, 6, 6, 6));
+            final JScrollPane jtextInputChatSP = new JScrollPane(jtextInputChat);
+            jtextInputChatSP.setBounds(25, 350, 650, 50);
 
-        jtextInputChat.addKeyListener(new KeyAdapter() {
-            // send message on Enter
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    sendMessage();
+            // button send
+            final JButton jsbtn = new JButton("Send");
+            jsbtn.setFont(font);
+            jsbtn.setBounds(575, 410, 100, 35);
+
+            jtextInputChat.addKeyListener(new KeyAdapter() {
+                // send message on Enter
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        sendMessage();
+                    }
+
+                    // Get last message typed
+                    if (e.getKeyCode() == KeyEvent.VK_UP) {
+                        String currentMessage = jtextInputChat.getText().trim();
+                        jtextInputChat.setText(oldMsg);
+                        oldMsg = currentMessage;
+                    }
+
+                    if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                        String currentMessage = jtextInputChat.getText().trim();
+                        jtextInputChat.setText(oldMsg);
+                        oldMsg = currentMessage;
+                    }
                 }
+            });
 
-                // Get last message typed
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    String currentMessage = jtextInputChat.getText().trim();
-                    jtextInputChat.setText(oldMsg);
-                    oldMsg = currentMessage;
-                }
+            // Click on send button
+            jsbtn.addActionListener(ae -> sendMessage());
 
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    String currentMessage = jtextInputChat.getText().trim();
-                    jtextInputChat.setText(oldMsg);
-                    oldMsg = currentMessage;
-                }
-            }
-        });
+            // Connection view
+            final JTextField jtfName = new JTextField(name);
+            final JTextField jtfport = new JTextField(Integer.toString(PORT));
+            final JTextField jtfAddr = new JTextField(serverName);
 
-        // Click on send button
-        jsbtn.addActionListener(ae -> sendMessage());
+            // check if those field are not empty
+            jtfName.getDocument().addDocumentListener(new TextListener(jtfName, jtfport, jtfAddr));
+            jtfport.getDocument().addDocumentListener(new TextListener(jtfName, jtfport, jtfAddr));
+            jtfAddr.getDocument().addDocumentListener(new TextListener(jtfName, jtfport, jtfAddr));
 
-        // Connection view
-        final JTextField jtfName = new JTextField(name);
-        final JTextField jtfport = new JTextField(Integer.toString(PORT));
-        final JTextField jtfAddr = new JTextField(serverName);
+            // position des Modules
+            jtfAddr.setBounds(25, 380, 135, 40);
+            jtfName.setBounds(375, 380, 135, 40);
+            jtfport.setBounds(200, 380, 135, 40);
 
-        // check if those field are not empty
-        jtfName.getDocument().addDocumentListener(new TextListener(jtfName, jtfport, jtfAddr));
-        jtfport.getDocument().addDocumentListener(new TextListener(jtfName, jtfport, jtfAddr));
-        jtfAddr.getDocument().addDocumentListener(new TextListener(jtfName, jtfport, jtfAddr));
+            // couleur par defaut des Modules fil de discussion et liste des utilisateurs
+            jtextFilDiscu.setBackground(Color.LIGHT_GRAY);
 
-        // position des Modules
-        jtfAddr.setBounds(25, 380, 135, 40);
-        jtfName.setBounds(375, 380, 135, 40);
-        jtfport.setBounds(200, 380, 135, 40);
+            // ajout des éléments
+            jfr.add(jtextFilDiscuSP);
+            jfr.add(jtfName);
+            jfr.add(jtfport);
+            jfr.add(jtfAddr);
+            jfr.setVisible(true);
 
-        // couleur par defaut des Modules fil de discussion et liste des utilisateurs
-        jtextFilDiscu.setBackground(Color.LIGHT_GRAY);
+            // info sur le Chat
+            appendToPane(jtextFilDiscu,
+                    "<b>Welcome To Pickleib Support, please ask your questions!</b> "
+            );
 
-        // ajout des éléments
-        jfr.add(jtextFilDiscuSP);
-        //jfr.add(jsplistuser);
-        jfr.add(jtfName);
-        jfr.add(jtfport);
-        jfr.add(jtfAddr);
-        jfr.setVisible(true);
+            // On connect
+            name = "User";
+            String port = "12345";
+            serverName = "localhost";
+            PORT = Integer.parseInt(port);
 
-        // info sur le Chat
-        appendToPane(jtextFilDiscu,
-                "<b>Welcome To Pickleib Support, please ask your questions!</b> "
-        );
+            server = new Socket(serverName, PORT);
 
-        // On connect
-        name = "User";
-        String port = "12345";
-        serverName = "localhost";
-        PORT = Integer.parseInt(port);
+            input = new BufferedReader(new InputStreamReader(server.getInputStream()));
+            output = new PrintWriter(server.getOutputStream(), true);
 
-        server = new Socket(serverName, PORT);
-
-        input = new BufferedReader(new InputStreamReader(server.getInputStream()));
-        output = new PrintWriter(server.getOutputStream(), true);
-
-        // send nickname to server
-        output.println(name);
-
-        // create new Read Thread
-        read = new Read();
-        read.start();
-        jfr.remove(jtfName);
-        jfr.remove(jtfport);
-        jfr.remove(jtfAddr);
-        jfr.add(jsbtn);
-        jfr.add(jtextInputChatSP);
-        //jfr.add(jsbtndeco);
-        jfr.revalidate();
-        jfr.repaint();
-        jtextFilDiscu.setBackground(Color.WHITE);
+            // create new Read Thread
+            read = new Read();
+            read.start();
+            jfr.remove(jtfName);
+            jfr.remove(jtfport);
+            jfr.remove(jtfAddr);
+            jfr.add(jsbtn);
+            jfr.add(jtextInputChatSP);
+            jfr.revalidate();
+            jfr.repaint();
+            jtextFilDiscu.setBackground(Color.WHITE);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // envoi des messages
-    public static void sendMessage() {
+    public void sendMessage() {
         try {
             String message = jtextInputChat.getText().trim();
             if (message.equals("")) {
@@ -194,24 +206,24 @@ public class ChatDraft {
         }
     }
     // envoi des messages
-    public static void gptResponse() {
+    public void gptResponse() {
         try {
             MessageResponse messageResponse;
             if (messages.size()!=0){
                 messageResponse = gpt.sendMessage(
-                        new MessageModel("gpt-3.5-turbo", messages, 0.7)
+                        new MessageModel(modelName, messages, temperature)
                 );
             }
             else
                 messageResponse = gpt.sendMessage(
                         new MessageModel(
-                                "gpt-3.5-turbo",
+                                modelName,
                                 List.of(new Message("user", "Hello!")),
-                                0.7
+                                temperature
                         )
                 );
 
-            output.println("Pickleib: " +messageResponse.getChoices().get(0).getMessage().getContent());
+            output.println("Pickleib: " + messageResponse.getChoices().get(0).getMessage().getContent());
             messages.add(messageResponse.getChoices().get(0).getMessage());
         }
         catch (Exception ex) {
@@ -258,24 +270,14 @@ public class ChatDraft {
 
     }
 
-    static class Read extends Thread {
+    class Read extends Thread {
         public void run() {
             String message;
             while(!Thread.currentThread().isInterrupted()){
                 try {
                     message = input.readLine();
                     if(message != null){
-                        if (message.charAt(0) == '[') {
-                            message = message.substring(1, message.length()-1);
-                            ArrayList<String> ListUser = new ArrayList<>(
-                                    Arrays.asList(message.split(", "))
-                            );
-                            for (String user : ListUser) {
-                                //appendToPane(jtextListUsers, "@" + user);
-                            }
-                        }else{
-                            appendToPane(jtextFilDiscu, message);
-                        }
+                        appendToPane(jtextFilDiscu, message);
                     }
                 }
                 catch (IOException ex) {
