@@ -61,7 +61,7 @@ public class ChatSupport {
 
     public static void main(String[] args) {
         GPT gpt = new GPT("");
-
-        new ChatDraft(gpt);
+        Chat chat = new Chat(gpt);
+        chat.startChat();
     }
 }
