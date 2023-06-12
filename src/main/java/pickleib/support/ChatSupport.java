@@ -58,4 +58,10 @@ public class ChatSupport {
         }
         catch (IOException e) {throw new RuntimeException(e);}
     }
+
+    public static void main(String[] args) {
+        GPT gpt = new GPT("");
+        Chat chat = new Chat(gpt);
+        chat.startChat();
+    }
 }
