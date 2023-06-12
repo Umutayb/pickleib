@@ -1,4 +1,4 @@
-package pickleib.element;
+package pickleib.utilities;
 
 import com.github.webdriverextensions.WebComponent;
 import com.google.gson.JsonArray;
