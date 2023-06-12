@@ -17,7 +17,7 @@ public class ChatSupport {
     public static void chat() {
         try {
             PropertyUtility.loadProperties("src/test/resources/test.properties");
-            GPT gpt = new GPT(PropertyUtility.properties.getProperty("gpt-token"));
+            GPT gpt = new GPT(PropertyUtility.getProperty("gpt-token"));
             Caller.keepLogs(false);
 
             List<Message> prompts = new ArrayList<>();
@@ -57,5 +57,11 @@ public class ChatSupport {
             chat.startChat();
         }
         catch (IOException e) {throw new RuntimeException(e);}
+    }
+
+    public static void main(String[] args) {
+        GPT gpt = new GPT("");
+        Chat chat = new Chat(gpt);
+        chat.startChat();
     }
 }

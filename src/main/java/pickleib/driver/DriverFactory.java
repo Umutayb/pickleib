@@ -22,9 +22,46 @@ import static utils.StringUtilities.Color.*;
 
 public class DriverFactory {
 
+    /**
+     * DriverFactory Logger.
+     */
     private static final Printer log = new Printer(DriverFactory.class);
+
+    /**
+     * Logging utilities.
+     */
     private static final LogUtilities logUtils = new LogUtilities();
-    static Properties properties = PropertyUtility.properties;
+
+    /**
+     * Static properties object, initialized from the PropertyUtility class.
+     */
+    private static Properties properties = PropertyUtility.getProperties();
+
+    /*
+      Static initializer block.
+
+      <p>
+      This block performs the following operations:
+      1. Initializes a new PropertyUtility instance.
+      2. Retrieves the 'pickleib.properties' file.
+      3. If the static properties are not empty, it adds new properties from the 'pickleib.properties'
+         file only for keys that do not already exist in the static properties.
+      4. If the static properties are empty, it sets them to the properties from the 'pickleib.properties' file.
+      5. Sets the updated static properties in the PropertyUtility class.
+      </p>
+     */
+    static {
+        PropertyUtility propertyUtility = new PropertyUtility();
+        Properties pickleibProperties = propertyUtility.getProperties("pickleib.properties");
+
+        if (!properties.isEmpty()){
+            for (Object key:pickleibProperties.keySet())
+                properties.putIfAbsent(key, pickleibProperties.get(key));
+        }
+        else properties = pickleibProperties;
+
+        PropertyUtility.setProperties(properties);
+    }
 
     /**
      * determines frameWidth value
@@ -87,11 +124,35 @@ public class DriverFactory {
     static Boolean allowRemoteOrigin;
 
     /**
-     * Initializes and returns a driver of specified type
-     * @param driverType driver type
-     * @return returns driver
+     * The logging level used by Pickleib.
+     * This value can be set in the properties file with the key "selenium-log-level".
+     * If not specified in the properties file, the default value is "off".
      */
-    public static RemoteWebDriver getDriver(DriverType driverType){
+    static String logLevel;
+
+    /**
+     * The URL of the Selenium Grid hub.
+     * This value can be set in the properties file with the key "hub-url".
+     * If not specified in the properties file, the default value is an empty string.
+     */
+    static String hubUrl;
+
+    /**
+     * The browser used for tests.
+     * This value can be set in the properties file with the key "browser".
+     * If not specified in the properties file, the default value is "chrome".
+     */
+    static String browser;
+
+    /**
+     * Loads and sets up the properties from a properties file.
+     * This method initializes various settings such as Selenium Grid usage, frame dimensions,
+     * driver timeout, headless mode, cookie handling, maximization settings, security options,
+     * page load strategy, notification settings, remote origin allowance, web driver manager usage,
+     * log level, hub URL, and browser type based on the specified properties file.
+     * For each property, a default value is used if the property is not specified in the file.
+     */
+    public static void loadProperties() {
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
         frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
@@ -104,15 +165,27 @@ public class DriverFactory {
         disableNotifications = Boolean.parseBoolean(properties.getProperty("disable-notifications", "true"));
         allowRemoteOrigin = Boolean.parseBoolean(properties.getProperty("allow-remote-origin", "true"));
         useWDM = Boolean.parseBoolean(properties.getProperty("web-driver-manager", "false"));
+        logLevel = properties.getProperty("selenium-log-level", "off");
+        hubUrl = properties.getProperty("hub-url","");
+        browser = properties.getProperty("browser", "chrome");
+    }
 
+    /**
+     * Initializes and returns a driver of specified type
+     * @param driverType driver type
+     * @return returns driver
+     */
+    public static RemoteWebDriver getDriver(DriverType driverType){
+
+        loadProperties();
         RemoteWebDriver driver;
 
         try {
-            if (driverType == null) driverType = DriverType.fromString(properties.getProperty("browser", "chrome"));
+            if (driverType == null) driverType = DriverType.fromString(browser);
 
             if (useSeleniumGrid){
                 ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", driverType.getDriverKey());
-                driver = new RemoteWebDriver(new URL(properties.getProperty("hub-url","")), capabilities);
+                driver = new RemoteWebDriver(new URL(hubUrl), capabilities);
             }
             else {driver = driverSwitch(headless, useWDM, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);}
 
@@ -121,7 +194,7 @@ public class DriverFactory {
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-            driver.setLogLevel(logUtils.getLevel(properties.getProperty("selenium-log-level", "off")));
+            driver.setLogLevel(logUtils.getLevel(logLevel));
             log.important(driverType.getDriverName() + GRAY.getValue() + " was selected");
             return driver;
         }

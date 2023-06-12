@@ -1,4 +1,4 @@
-package pickleib.element;
+package pickleib.utilities;
 
 import context.ContextStore;
 import org.junit.Assert;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
-public class ElementInteractions extends WebUtilities {
+public class DriverInteractions extends WebUtilities {
 
     private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
 
