@@ -11,7 +11,7 @@ import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.SwipeDirection;
 import pickleib.mobile.utilities.MobileUtilities;
-import pickleib.utilities.ScreenCaptureUtility;
+import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import records.Bundle;
 import java.util.List;
 import java.util.Map;

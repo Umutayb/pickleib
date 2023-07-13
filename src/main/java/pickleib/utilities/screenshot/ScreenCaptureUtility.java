@@ -1,4 +1,4 @@
-package pickleib.utilities;
+package pickleib.utilities.screenshot;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;

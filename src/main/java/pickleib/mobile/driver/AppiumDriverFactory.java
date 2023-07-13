@@ -2,9 +2,8 @@ package pickleib.mobile.driver;
 
 import io.appium.java_client.AppiumDriver;
 import org.json.simple.JSONObject;
-import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import pickleib.utilities.DriverFactory;
+import pickleib.driver.DriverFactory;
 import utils.FileUtilities;
 import utils.Printer;
 import utils.PropertyUtility;

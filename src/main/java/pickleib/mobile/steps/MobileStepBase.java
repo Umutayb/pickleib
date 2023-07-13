@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.ElementAcquisition;
-import pickleib.utilities.ScreenCaptureUtility;
+import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;

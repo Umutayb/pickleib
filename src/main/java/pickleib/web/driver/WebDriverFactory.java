@@ -10,7 +10,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
-import pickleib.utilities.DriverFactory;
+import pickleib.driver.DriverFactory;
 import utils.LogUtilities;
 import utils.Printer;
 import utils.PropertyUtility;

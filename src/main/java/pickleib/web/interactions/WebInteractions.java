@@ -11,7 +11,7 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
-import pickleib.utilities.ScreenCaptureUtility;
+import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.utilities.WebUtilities;
 import records.Bundle;
 

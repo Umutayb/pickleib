@@ -18,7 +18,6 @@ import pickleib.web.driver.WebDriverFactory;
 import utils.Printer;
 import utils.StringUtilities;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -31,67 +30,6 @@ public interface Utilities {
     Printer log = new Printer(Utilities.class);
     RemoteWebDriver driver = getDriver();
     long elementTimeout = getElementTimeout();
-
-
-    /**
-     * Gets the name of the method that called the API.
-     *
-     * @return the name of the method that called the API
-     */
-    private static String getCallingClassName(){
-        StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
-        for (int i=1; i<stElements.length; i++) {
-            StackTraceElement ste = stElements[i];
-            if (!ste.getClassName().equals(Utilities.class.getName()) && ste.getClassName().indexOf("java.lang.Thread")!=0) {
-                return ste.getClassName();
-            }
-        }
-        return null;
-    }
-
-    static private RemoteWebDriver getDriver(){
-        String className = getCallingClassName();
-        switch (Objects.requireNonNull(className)) {
-            case "pickleib.mobile.utilities.MobileUtilities",
-                    "pickleib.mobile.steps.MobileStepBase",
-                    "pickleib.mobile.interactions.MobileInteractions" -> {
-                return PickleibAppiumDriver.driver;
-            }
-            case "pickleib.web.utilities.WebUtilities",
-                    "pickleib.web.steps.WebStepBase",
-                    "pickleib.web.interactions.WebInteractions" -> {
-                return PickleibWebDriver.driver;
-            }
-            case "pickleib.utilities.ElementAcquisition$PageObjectModel",
-                    "pickleib.utilities.ElementAcquisition$PageObjectJson",
-                    "pickleib.utilities.ElementAcquisition$Reflections"-> {
-                return ElementAcquisition.driver;
-            }
-            default -> throw new RuntimeException("Unknown caller: " + className);
-        }
-    }
-
-    static long getElementTimeout(){
-        String className = getCallingClassName();
-        switch (Objects.requireNonNull(className)) {
-            case "pickleib.mobile.utilities.MobileUtilities",
-                    "pickleib.mobile.steps.MobileStepBase",
-                    "pickleib.mobile.interactions.MobileInteractions" -> {
-                return AppiumDriverFactory.elementTimeout;
-            }
-            case "pickleib.web.utilities.WebUtilities",
-                    "pickleib.web.steps.WebStepBase",
-                    "pickleib.web.interactions.WebInteractions" -> {
-                return WebDriverFactory.elementTimeout;
-            }
-            case "pickleib.utilities.ElementAcquisition$PageObjectModel",
-                    "pickleib.utilities.ElementAcquisition$PageObjectJson",
-                    "pickleib.utilities.ElementAcquisition$Reflections"-> {
-                return ElementAcquisition.elementTimeout;
-            }
-            default -> throw new RuntimeException("Unknown caller: " + className);
-        }
-    }
 
     /**
      * Highlights a given text with a specified color (resets to plain)
@@ -733,5 +671,65 @@ public interface Utilities {
     default Object executeScript(String script){
         log.info("Executing script: " + strUtils.highlighted(BLUE, script));
         return ((JavascriptExecutor) driver).executeScript(script);
+    }
+    
+    /**
+     * Gets the name of the method that called the API.
+     *
+     * @return the name of the method that called the API
+     */
+    private static String getCallingClassName(){
+        StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
+        for (int i=1; i<stElements.length; i++) {
+            StackTraceElement ste = stElements[i];
+            if (!ste.getClassName().equals(Utilities.class.getName()) && ste.getClassName().indexOf("java.lang.Thread")!=0) {
+                return ste.getClassName();
+            }
+        }
+        return null;
+    }
+
+    static private RemoteWebDriver getDriver(){
+        String className = getCallingClassName();
+        switch (Objects.requireNonNull(className)) {
+            case "pickleib.mobile.utilities.MobileUtilities",
+                    "pickleib.mobile.steps.MobileStepBase",
+                    "pickleib.mobile.interactions.MobileInteractions" -> {
+                return PickleibAppiumDriver.driver;
+            }
+            case "pickleib.web.utilities.WebUtilities",
+                    "pickleib.web.steps.WebStepBase",
+                    "pickleib.web.interactions.WebInteractions" -> {
+                return PickleibWebDriver.driver;
+            }
+            case "pickleib.utilities.ElementAcquisition$PageObjectModel",
+                    "pickleib.utilities.ElementAcquisition$PageObjectJson",
+                    "pickleib.utilities.ElementAcquisition$Reflections"-> {
+                return ElementAcquisition.driver;
+            }
+            default -> throw new RuntimeException("Unknown caller: " + className);
+        }
+    }
+
+    static long getElementTimeout(){
+        String className = getCallingClassName();
+        switch (Objects.requireNonNull(className)) {
+            case "pickleib.mobile.utilities.MobileUtilities",
+                    "pickleib.mobile.steps.MobileStepBase",
+                    "pickleib.mobile.interactions.MobileInteractions" -> {
+                return AppiumDriverFactory.elementTimeout;
+            }
+            case "pickleib.web.utilities.WebUtilities",
+                    "pickleib.web.steps.WebStepBase",
+                    "pickleib.web.interactions.WebInteractions" -> {
+                return WebDriverFactory.elementTimeout;
+            }
+            case "pickleib.utilities.ElementAcquisition$PageObjectModel",
+                    "pickleib.utilities.ElementAcquisition$PageObjectJson",
+                    "pickleib.utilities.ElementAcquisition$Reflections"-> {
+                return ElementAcquisition.elementTimeout;
+            }
+            default -> throw new RuntimeException("Unknown caller: " + className);
+        }
     }
 }
