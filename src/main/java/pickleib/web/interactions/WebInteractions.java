@@ -1,4 +1,4 @@
-package pickleib.utilities;
+package pickleib.web.interactions;
 
 import context.ContextStore;
 import org.junit.Assert;
@@ -9,9 +9,10 @@ import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
+import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
-import pickleib.utilities.ScreenCaptureUtility;
-import pickleib.utilities.WebUtilities;
+import pickleib.utilities.screenshot.ScreenCaptureUtility;
+import pickleib.web.utilities.WebUtilities;
 import records.Bundle;
 
 import java.util.List;
@@ -19,10 +20,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static pickleib.web.driver.PickleibWebDriver.wait;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
-public class DriverInteractions extends WebUtilities {
+public class WebInteractions extends WebUtilities {
 
     private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
 
@@ -162,7 +164,7 @@ public class DriverInteractions extends WebUtilities {
 
     /**
      *
-     * Click button with {text} text
+     * Clicks a button by its {text} text
      *
      * @param text target text
      */
@@ -431,7 +433,8 @@ public class DriverInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         driver.switchTo().frame(iframe);
-        click(element);
+        centerElement(element);
+        clickElement(element);
         driver.switchTo().parentFrame();
     }
 
@@ -623,7 +626,7 @@ public class DriverInteractions extends WebUtilities {
 
     /**
      *
-     * Wait until element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
+     * Wait until an element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
      *
      * @param element target element
      * @param elementName target element name
@@ -713,7 +716,7 @@ public class DriverInteractions extends WebUtilities {
 
     /**
      *
-     * Verify presence of listed element from list on the {page name}
+     * Verify the presence of listed element from a list on the {page name}
      *
      * @param bundles list that contains element, elementName, elementText
      * @param pageName specified page instance name
@@ -941,11 +944,5 @@ public class DriverInteractions extends WebUtilities {
         }
     }
     // Sample click configuration: bundleInteraction(List.of(new Bundle< >(elementName, element, Map.of("Interaction Type", "click"))), pageName);
-    /**
-     * An enum representing the different types of interactions that can be performed on a web element.
-     * <p>
-     * The available interaction types are click, fill, center, and verify.
-     */
-    public enum InteractionType {click, fill, center, verify}
 
 }
