@@ -2,6 +2,8 @@ package pickleib.support;
 
 import api_assured.Caller;
 import gpt.api.GPT;
+import utils.PropertyUtility;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -12,7 +14,8 @@ public class ChatSupport {
 
     public static void main(String[] args) {
         try {
-            GPT gpt = new GPT("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");
+            PropertyUtility.loadProperties("src/test/resources/test.properties");
+            GPT gpt = new GPT(PropertyUtility.getProperty("gpt-token"));
             Caller.keepLogs(false);
 
             String readme = new String(Files.readAllBytes(Paths.get("README.md")));
