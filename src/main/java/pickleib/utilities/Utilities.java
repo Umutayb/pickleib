@@ -672,7 +672,7 @@ public interface Utilities {
         log.info("Executing script: " + strUtils.highlighted(BLUE, script));
         return ((JavascriptExecutor) driver).executeScript(script);
     }
-    
+
     /**
      * Gets the name of the method that called the API.
      *
