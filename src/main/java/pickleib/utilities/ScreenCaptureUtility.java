@@ -31,11 +31,11 @@ public class ScreenCaptureUtility {
             File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(fileDestination, new File(sourceFile, name));
 
-            log.new Info("Screenshot saved as; "+name+" at the \"screenshots\" file.");
+            log.info("Screenshot saved as; "+name+" at the \"screenshots\" file.");
             return fileDestination;
         }
         catch (Exception gamma){
-            log.new Error(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET,gamma);
+            log.error(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET,gamma);
             return null;
         }
     }
