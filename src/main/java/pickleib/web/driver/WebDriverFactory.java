@@ -157,6 +157,7 @@ public class WebDriverFactory implements DriverFactory {
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
         frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
+        driverTimeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000;
         headless = Boolean.parseBoolean(properties.getProperty("headless", "false"));
         deleteCookies = Boolean.parseBoolean(properties.getProperty("delete-cookies", "false"));
         maximise = Boolean.parseBoolean(properties.getProperty("driver-maximize", "false"));
