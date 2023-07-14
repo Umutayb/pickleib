@@ -1,4 +1,4 @@
-package pickleib.utilities;
+package pickleib.utilities.element;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -11,6 +11,7 @@ import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
 import pickleib.exceptions.PickleibException;
+import pickleib.utilities.Utilities;
 import records.Bundle;
 import records.Pair;
 import utils.Printer;
@@ -23,6 +24,7 @@ import static utils.StringUtilities.Color.*;
 @SuppressWarnings("unused")
 public class ElementAcquisition {
 
+    public static ReflectionUtilities reflectionUtils = new ReflectionUtilities();
     static RemoteWebDriver driver;
     static long elementTimeout;
     static Printer logger = new Printer(ElementAcquisition.class);
@@ -32,8 +34,13 @@ public class ElementAcquisition {
         elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
     }
 
-    public static class PageObjectModel implements Utilities {
-        Reflections reflections = new Reflections();
+    public static class PageObjectModel extends Utilities {
+        Reflections reflections;
+
+        public PageObjectModel(RemoteWebDriver driver) {
+            super(driver);
+            reflections = new Reflections(driver);
+        }
 
         /**
          *
@@ -111,7 +118,7 @@ public class ElementAcquisition {
 
         /**
          *
-         * Acquire listed component element {element name} of {component field name} from {component list name} list on the {page name}
+         * Acquire a listed component element {element name} of {component field name} from {component list name} list on the {page name}
          *
          * @param elementName target button name
          * @param componentFieldName specified component field name
@@ -545,7 +552,11 @@ public class ElementAcquisition {
         }
     }
 
-    public static class PageObjectJson implements Utilities {
+    public static class PageObjectJson extends Utilities {
+
+        public PageObjectJson(RemoteWebDriver driver) {
+            super(driver);
+        }
 
         /**
          *
@@ -723,8 +734,11 @@ public class ElementAcquisition {
         }
     }
 
-    public static class Reflections implements Utilities {
-        public ReflectionUtilities reflectionUtils = new ReflectionUtilities();
+    public static class Reflections extends Utilities {
+
+        public Reflections(RemoteWebDriver driver) {
+            super(driver);
+        }
 
         /**
          * Acquires an element from a given page
@@ -915,7 +929,7 @@ public class ElementAcquisition {
                     String attribute = element.getAttribute(attributeName);
                     if (attribute.equals(attributeValue)) return component;
                 }
-                if (System.currentTimeMillis() - initialTime > 10) timeout = true;
+                if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
             }
             throw new NoSuchElementException("No component with " + attributeName + " : " + attributeValue + " could be found!");
         }
@@ -945,7 +959,7 @@ public class ElementAcquisition {
                     String name = element.getAccessibleName();
                     if (text.equalsIgnoreCase(elementText) || name.equalsIgnoreCase(elementText)) return component;
                 }
-                if (System.currentTimeMillis() - initialTime > 10) timeout = true;
+                if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
             }
             throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
         }

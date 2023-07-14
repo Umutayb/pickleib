@@ -5,26 +5,39 @@ import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.SwipeDirection;
+import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
-import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import records.Bundle;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static pickleib.mobile.driver.PickleibAppiumDriver.driver;
-import static pickleib.mobile.driver.PickleibAppiumDriver.wait;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
 public class MobileInteractions extends MobileUtilities {
 
-    private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
+    protected RemoteWebDriver driver;
+    protected WebDriverWait wait;
+
+    public MobileInteractions(RemoteWebDriver driver, WebDriverWait wait){
+        super(driver);
+        this.driver = driver;
+        this.wait = wait;
+    }
+
+    public MobileInteractions(){
+        super(PickleibAppiumDriver.driver);
+        this.driver = PickleibAppiumDriver.driver;
+        this.wait = PickleibAppiumDriver.wait;
+    }
 
     /**
      * Get HTML at {htmlPath}
@@ -249,7 +262,7 @@ public class MobileInteractions extends MobileUtilities {
                 highlighted(BLUE, input)
         );
         elementIs(inputElement, ElementState.displayed);
-        inputElement.sendKeys(input);
+        fillInput(inputElement, input);
     }
 
     /**

@@ -5,8 +5,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.SwipeDirection;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
@@ -15,17 +15,14 @@ import java.time.Duration;
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 
-@SuppressWarnings({"UnusedReturnValue","unused"})
-public class MobileUtilities implements Utilities {
-
-    io.appium.java_client.AppiumDriver driver;
+public class MobileUtilities extends Utilities {
 
     /**
      * MobileUtilities for frameworks that use the Pickleib drivers
      *
      */
     protected MobileUtilities(){
-        driver = PickleibAppiumDriver.driver;
+        super(PickleibAppiumDriver.driver);
         PageFactory.initElements(
                 new AppiumFieldDecorator(
                         driver,
@@ -42,8 +39,8 @@ public class MobileUtilities implements Utilities {
      * MobileUtilities for frameworks that do not use the Pickleib drivers
      *
      */
-    protected MobileUtilities(io.appium.java_client.AppiumDriver driver, WebDriverWait wait){
-        PickleibAppiumDriver.driver = driver;
+    protected MobileUtilities(RemoteWebDriver driver){
+        super(driver);
         PageFactory.initElements(
                 new AppiumFieldDecorator(
                         driver,
