@@ -1,7 +1,5 @@
 package pickleib.web.utilities;
 
-import com.github.webdriverextensions.WebComponent;
-import com.github.webdriverextensions.WebDriverExtensionFieldDecorator;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.openqa.selenium.Dimension;
@@ -9,28 +7,24 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import pickleib.enums.Navigation;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
-import utils.TextParser;
 import java.util.ArrayList;
 import java.util.List;
 
 import static utils.StringUtilities.Color.*;
 
-@SuppressWarnings({"unused", "UnusedReturnValue"})
-public abstract class WebUtilities extends WebComponent implements Utilities {
-
-    public TextParser parser = new TextParser();
-    public RemoteWebDriver driver;
+public abstract class WebUtilities extends Utilities {
 
     /**
      * WebUtilities for frameworks that use the Pickleib driver
      *
      */
     protected WebUtilities(){
-        driver = PickleibWebDriver.driver;
-        PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
+        super(PickleibWebDriver.driver);
+        PageFactory.initElements(driver, this);
     }
 
     /**
@@ -38,8 +32,27 @@ public abstract class WebUtilities extends WebComponent implements Utilities {
      *
      */
     protected WebUtilities(RemoteWebDriver driver){
-        PickleibWebDriver.driver = driver;
-        PageFactory.initElements(new WebDriverExtensionFieldDecorator(driver), this);
+        super(driver);
+        PageFactory.initElements(driver, this);
+    }
+
+
+    /**
+     * WebUtilities for frameworks with custom field decorator that use the Pickleib driver
+     *
+     */
+    protected <T extends DefaultFieldDecorator> WebUtilities(T fieldDecorator){
+        super(PickleibWebDriver.driver);
+        PageFactory.initElements(fieldDecorator, this);
+    }
+
+    /**
+     * WebUtilities for frameworks with custom field decorator that do not use the Pickleib driver
+     *
+     */
+    protected <T extends DefaultFieldDecorator> WebUtilities(T fieldDecorator, RemoteWebDriver driver){
+        super(driver);
+        PageFactory.initElements(fieldDecorator, this);
     }
 
     /**

@@ -90,11 +90,6 @@ public class WebDriverFactory implements DriverFactory {
     static long driverTimeout;
 
     /**
-     * determines driverTimeout duration
-     */
-    public static long elementTimeout;
-
-    /**
      * cookies are deleted if true
      */
     static boolean deleteCookies;
@@ -162,8 +157,6 @@ public class WebDriverFactory implements DriverFactory {
         useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
         frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
         frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
-        driverTimeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000;
-        elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
         headless = Boolean.parseBoolean(properties.getProperty("headless", "false"));
         deleteCookies = Boolean.parseBoolean(properties.getProperty("delete-cookies", "false"));
         maximise = Boolean.parseBoolean(properties.getProperty("driver-maximize", "false"));
@@ -282,11 +275,6 @@ public class WebDriverFactory implements DriverFactory {
             if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);
             else return null;
         }
-    }
-
-    @Override
-    public long getElementTimeout() {
-        return elementTimeout;
     }
 
     /**

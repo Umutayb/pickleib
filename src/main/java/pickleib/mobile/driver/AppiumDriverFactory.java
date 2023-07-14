@@ -21,13 +21,7 @@ public class AppiumDriverFactory implements DriverFactory {
     static FileUtilities.Json jsonUtils = new FileUtilities.Json();
     static StringUtilities strUtils = new StringUtilities();
 
-    /**
-     * determines driverTimeout duration
-     */
-    public static long elementTimeout;
-
     public static AppiumDriver getDriver(String deviceName, JSONObject capabilities){
-        loadProperties();
         DesiredCapabilities desiredCapabilities = getConfig(capabilities);
         try {
             URL url;
@@ -57,18 +51,5 @@ public class AppiumDriverFactory implements DriverFactory {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         for (Object key : capabilities.keySet()) desiredCapabilities.setCapability((String) key, capabilities.get(key));
         return desiredCapabilities;
-    }
-
-    @Override
-    public long getElementTimeout() {
-        return elementTimeout;
-    }
-
-    /**
-     * Loads and sets up the properties from a properties file.
-     * For each property, a default value is used if the property is not specified in the file.
-     */
-    public static void loadProperties() {
-        elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
     }
 }

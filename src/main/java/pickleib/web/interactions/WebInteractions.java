@@ -5,26 +5,43 @@ import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
+import pickleib.utilities.Utilities;
+import pickleib.utilities.element.ElementAcquisition;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
+import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.utilities.WebUtilities;
 import records.Bundle;
-
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static pickleib.web.driver.PickleibWebDriver.wait;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
 public class WebInteractions extends WebUtilities {
+
+    protected RemoteWebDriver driver;
+    protected WebDriverWait wait;
+
+    public WebInteractions(RemoteWebDriver driver, WebDriverWait wait){
+        super(driver);
+        this.driver = driver;
+        this.wait = wait;
+    }
+
+    public WebInteractions(){
+        super(PickleibWebDriver.driver);
+        this.driver = PickleibWebDriver.driver;
+        this.wait = PickleibWebDriver.wait;
+    }
 
     private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
 
@@ -944,5 +961,4 @@ public class WebInteractions extends WebUtilities {
         }
     }
     // Sample click configuration: bundleInteraction(List.of(new Bundle< >(elementName, element, Map.of("Interaction Type", "click"))), pageName);
-
 }
