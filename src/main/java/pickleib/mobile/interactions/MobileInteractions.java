@@ -1,96 +1,42 @@
-package pickleib.utilities;
+package pickleib.mobile.interactions;
 
 import context.ContextStore;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import pickleib.enums.Direction;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.ElementState;
-import pickleib.enums.Navigation;
-import pickleib.utilities.ScreenCaptureUtility;
-import pickleib.utilities.WebUtilities;
+import pickleib.enums.InteractionType;
+import pickleib.enums.SwipeDirection;
+import pickleib.mobile.driver.PickleibAppiumDriver;
+import pickleib.mobile.utilities.MobileUtilities;
 import records.Bundle;
-
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
-public class DriverInteractions extends WebUtilities {
+public class MobileInteractions extends MobileUtilities {
 
-    private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
+    protected RemoteWebDriver driver;
+    protected WebDriverWait wait;
 
-    /**
-     *
-     * Navigate to url: {url}
-     *
-     * @param url target url
-     */
-    public void getUrl(String url) {
-        url = strUtils.contextCheck(url);
-        driver.get(url);
+    public MobileInteractions(RemoteWebDriver driver, WebDriverWait wait){
+        super(driver);
+        this.driver = driver;
+        this.wait = wait;
     }
 
-    /**
-     *
-     * Go to the {page} page
-     *
-     * @param page target page
-     */
-    public void toPage(String page){
-        String url = driver.getCurrentUrl();
-        String pageUrl = url + page;
-        navigate(pageUrl);
-    }
-
-    /**
-     *
-     * Switch to the next tab
-     *
-     */
-    public void switchToNextTab() {
-        String parentHandle = switchWindowByHandle(null);
-        ContextStore.put("parentHandle", parentHandle);
-    }
-
-    /**
-     *
-     * Switch to a specified parent tab
-     *
-     */
-    public void switchToParentTab() {
-        switchWindowByHandle(ContextStore.get("parentHandle").toString());
-    }
-
-    /**
-     *
-     * Switch to the tab with handle: {handle}
-     * Switches a specified tab by tab handle
-     *
-     * @param handle target tab handle
-     */
-    public void switchToTabByHandle(String handle) {
-        handle = strUtils.contextCheck(handle);
-        String parentHandle = switchWindowByHandle(handle);
-        ContextStore.put("parentHandle", parentHandle);
-    }
-
-    /**
-     *
-     * Switch to the tab number {tab index}
-     * Switches tab by index
-     *
-     * @param handle target tab index
-     */
-    public void switchToTabByIndex(Integer handle) {
-        String parentHandle = switchWindowByIndex(handle);
-        ContextStore.put("parentHandle", parentHandle);
+    public MobileInteractions(){
+        super(PickleibAppiumDriver.driver);
+        this.driver = PickleibAppiumDriver.driver;
+        this.wait = PickleibAppiumDriver.wait;
     }
 
     /**
@@ -104,15 +50,6 @@ public class DriverInteractions extends WebUtilities {
         log.info("Navigating to the email @" + htmlPath);
         driver.get(htmlPath);
     }
-
-    /**
-     *
-     * Set window width and height as {width} and {height}
-     *
-     * @param width target width
-     * @param height target height
-     */
-    public void setFrameSize(Integer width, Integer height) {setWindowSize(width,height);}
 
     /**
      *
@@ -143,42 +80,18 @@ public class DriverInteractions extends WebUtilities {
     }
 
     /**
-     * Refreshes the page
-     */
-    public void refresh() {refreshThePage();}
-
-    /**
      * Deletes all cookies
      */
     public void deleteCookies() {driver.manage().deleteAllCookies();}
 
     /**
      *
-     * Navigate browser in {direction} direction
-     *
-     * @param direction target direction (backwards or forwards)
-     */
-    public void browserNavigate(Navigation direction) {navigateBrowser(direction);}
-
-    /**
-     *
-     * Click button with {text} text
+     * Clicks a button by its {text} text
      *
      * @param text target text
      */
     public void clickByText(String text) {
-        clickButtonByText(text, true);}
-
-    /**
-     *
-     * Click button includes {button text} text with css locator
-     *
-     * @param cssSelector target text
-     */
-    public void clickByCssSelector(String cssSelector) {
-        WebElement element = driver.findElement(By.cssSelector(cssSelector));
-        centerElement(element);
-        clickElement(element, true);
+        clickButtonByText(text, true);
     }
 
     /**
@@ -197,7 +110,7 @@ public class DriverInteractions extends WebUtilities {
      *
      * @param direction target direction (up or down)
      */
-    public void scrollInDirection(Direction direction){scroll(direction);}
+    public void swipeInDirection(SwipeDirection direction){swiper(direction);}
 
     /**
      *
@@ -212,7 +125,23 @@ public class DriverInteractions extends WebUtilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        centerElement(button);
+        clickElement(button);
+    }
+
+    /**
+     *
+     * Click the {button name} on the {page name}
+     *
+     * @param buttonName target button name
+     * @param pageName specified page instance name
+     */
+    public void clickInteraction(WebElement button, String buttonName, String pageName, boolean scroll){
+        log.info("Clicking " +
+                highlighted(BLUE, buttonName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        if (scroll) centerElement(button);
         clickElement(button);
     }
 
@@ -295,23 +224,6 @@ public class DriverInteractions extends WebUtilities {
 
     /**
      *
-     * Perform a JS click on element {element name} on the {page name}
-     *
-     * @param element target element
-     * @param elementName target element name
-     * @param pageName specified page instance name
-     */
-    public void performJSClick(WebElement element, String elementName, String pageName){
-        log.info("Clicking " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY," on the ") +
-                highlighted(BLUE, pageName)
-        );
-        clickWithJS(centerElement(element));
-    }
-
-    /**
-     *
      * If present, click element {element name} on the {page name}
      *
      * @param element target element
@@ -341,6 +253,51 @@ public class DriverInteractions extends WebUtilities {
      * @param input input text
      */
     public void basicFill(WebElement inputElement, String inputName, String pageName, String input){
+        input = strUtils.contextCheck(input);
+        log.info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, input)
+        );
+        elementIs(inputElement, ElementState.displayed);
+        fillInput(inputElement, input);
+    }
+
+    /**
+     *
+     * Fill input element {input name} from {pageName} with text: {input text}
+     *
+     * @param inputElement target input element
+     * @param inputName target input element name
+     * @param pageName specified page instance name
+     * @param input input text
+     */
+    public void basicFill(WebElement inputElement, String inputName, String pageName, String input, boolean verify){
+        input = strUtils.contextCheck(input);
+        log.info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, input)
+        );
+        elementIs(inputElement, ElementState.displayed);
+        inputElement.sendKeys(input);
+        if (verify) Assert.assertEquals(input, inputElement.getAttribute("value"));
+    }
+
+    /**
+     *
+     * Fill input element {input name} from {pageName} with text: {input text}
+     *
+     * @param inputElement target input element
+     * @param inputName target input element name
+     * @param pageName specified page instance name
+     * @param input input text
+     */
+    public void clearFill(WebElement inputElement, String inputName, String pageName, String input){
         input = strUtils.contextCheck(input);
         log.info("Filling " +
                 highlighted(BLUE, inputName) +
@@ -431,7 +388,8 @@ public class DriverInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         driver.switchTo().frame(iframe);
-        click(element);
+        centerElement(element);
+        clickElement(element);
         driver.switchTo().parentFrame();
     }
 
@@ -941,11 +899,4 @@ public class DriverInteractions extends WebUtilities {
         }
     }
     // Sample click configuration: bundleInteraction(List.of(new Bundle< >(elementName, element, Map.of("Interaction Type", "click"))), pageName);
-    /**
-     * An enum representing the different types of interactions that can be performed on a web element.
-     * <p>
-     * The available interaction types are click, fill, center, and verify.
-     */
-    public enum InteractionType {click, fill, center, verify}
-
 }

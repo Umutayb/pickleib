@@ -6,7 +6,7 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>1.7.7</version>
+  <version>1.7.9</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -42,10 +42,11 @@
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.version>3.8.0</maven.compiler.version>
-    <java.utilities.version>1.4.4</java.utilities.version>
-    <gpt.utilities.version>0.1.0</gpt.utilities.version>
+    <java.utilities.version>1.4.6</java.utilities.version>
+    <gpt.utilities.version>0.1.3</gpt.utilities.version>
     <docker-java.version>3.3.0</docker-java.version>
     <selenium.version>4.8.3</selenium.version>
+    <appium.version>8.5.1</appium.version>
     <retrofit.version>2.9.0</retrofit.version>
     <okhttp.version>4.10.0</okhttp.version>
   </properties>
@@ -85,18 +86,19 @@
       <version>${selenium.version}</version>
     </dependency>
 
+    <!-- Appium -->
+    <dependency>
+      <groupId>io.appium</groupId>
+      <artifactId>java-client</artifactId>
+      <version>8.3.0</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Gson -->
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.10.1</version>
-    </dependency>
-
-    <!-- Web Driver Extensions -->
-    <dependency>
-      <groupId>com.github.webdriverextensions</groupId>
-      <artifactId>webdriverextensions</artifactId>
-      <version>3.11.2</version>
     </dependency>
 
     <!-- Web Driver Manager -->
