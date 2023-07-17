@@ -604,7 +604,6 @@ public class WebInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         verifyElementState(element, expectedState);
-        log.success("The element " + elementName + " was verified to be " + expectedState.name());
     }
 
     /**
