@@ -604,7 +604,6 @@ public class WebInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         verifyElementState(element, expectedState);
-        log.success("The element " + elementName + " was verified to be " + expectedState.name());
     }
 
     /**
@@ -633,7 +632,7 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void waitUntilVisible(WebElement element, String elementName, String pageName) {
-        log.info("Waiting for the absence of " +
+        log.info("Waiting visibility of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
