@@ -682,6 +682,10 @@ public class WebInteractions extends WebUtilities {
             String attributeName,
             String attributeValue) {
 
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        int counter = 0;
+
         log.info("Verifying " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
@@ -690,12 +694,30 @@ public class WebInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         attributeValue = strUtils.contextCheck(attributeValue);
-        Assert.assertTrue(
-                "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
-                        "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
-                wait.until(ExpectedConditions.attributeContains(element, attributeName, attributeValue))
-        );
-        log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
+        do {
+            try {
+                Assert.assertTrue(
+                        "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                                "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
+                        wait.until(ExpectedConditions.attributeContains(element, attributeName, attributeValue))
+                );
+                log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
+                return;
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                counter++;
+            }
+        }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
     }
 
     /**
