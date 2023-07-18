@@ -59,6 +59,7 @@ public abstract class Utilities {
      */
     protected String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 
+    //TODO check the warning log in the loop
     /**
      * Clicks an element after waiting for its state to be enabled
      *

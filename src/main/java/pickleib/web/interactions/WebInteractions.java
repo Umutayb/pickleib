@@ -13,6 +13,7 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
+import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
 import pickleib.utilities.element.ElementAcquisition;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
@@ -713,11 +714,14 @@ public class WebInteractions extends WebUtilities {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                 }
+                waitFor(0.5);
                 counter++;
             }
         }
         while (!(System.currentTimeMillis() - initialTime > elementTimeout));
         if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning(caughtException);
+        throw new PickleibException(caughtException);
     }
 
     /**
