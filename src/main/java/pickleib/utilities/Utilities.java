@@ -1,7 +1,14 @@
 package pickleib.utilities;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
@@ -14,6 +21,7 @@ import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.ElementAcquisition;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
+import pickleib.web.driver.PickleibWebDriver;
 import utils.Printer;
 import utils.PropertyUtility;
 import utils.StringUtilities;
@@ -21,6 +29,8 @@ import utils.TextParser;
 import java.time.Duration;
 import java.util.List;
 import java.util.StringJoiner;
+
+import static utils.MappingUtilities.Json.mapper;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
@@ -604,12 +614,30 @@ public abstract class Utilities {
      * @return returns an object with the attributes of a given element
      */
     //This method returns all the attributes of an element as an object
-    protected Object getElementObject(WebElement element){ //TODO: Fix this to return JSONObject
-        return ((JavascriptExecutor) driver).executeScript("var items = {}; for (index = 0;" +
-                        " index < arguments[0].attributes.length; ++index) " +
-                        "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;",
+    protected JsonObject getElementJson(WebElement element){ //TODO: Fix this to return JSONObject
+        String object = ((JavascriptExecutor) driver).executeScript(
+                "var items = {}; " +
+                        "for (index = 0; index < arguments[0].attributes.length; ++index) " +
+                        "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; " +
+                        "return JSON.stringify(items);",
                 element
-        );
+        ).toString();
+        return (JsonObject) JsonParser.parseString(object);
+    }
+
+    protected JSONObject getElementJSON(WebElement element){
+        try {
+            String object = ((JavascriptExecutor) driver).executeScript(
+                    "var items = {}; " +
+                            "for (index = 0; index < arguments[0].attributes.length; ++index) " +
+                            "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; " +
+                            "return JSON.stringify(items);",
+                    element
+            ).toString();
+            JSONParser parser = new JSONParser();
+            return (JSONObject) parser.parse(object);
+        }
+        catch (ParseException e) {throw new RuntimeException(e);}
     }
 
     /**
@@ -618,9 +646,10 @@ public abstract class Utilities {
      * @param element target element
      */
     //This method prints all the attributes of a given element
-    protected void printElementAttributes(WebElement element){//TODO: update this
-        //JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
-        //for (Object attribute : attributeJSON.keySet()) log.info();(attribute +" : "+ attributeJSON.get(attribute));
+    protected void printElementAttributes(WebElement element){
+        JSONObject attributeJSON = getElementJSON(element);
+        for (Object attribute : attributeJSON.keySet())
+            log.info(attribute +" : "+ attributeJSON.get(attribute));
     }
 
     /**
