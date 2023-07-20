@@ -608,13 +608,13 @@ public abstract class Utilities {
     }
 
     /**
-     * Transform a given element to an object using javascript
+     * Transform a given element to a JsonObject using javascript & JsonParser
      *
      * @param element target element
      * @return returns an object with the attributes of a given element
      */
     //This method returns all the attributes of an element as an object
-    protected JsonObject getElementJson(WebElement element){ //TODO: Fix this to return JSONObject
+    protected JsonObject getElementJson(WebElement element){
         String object = ((JavascriptExecutor) driver).executeScript(
                 "var items = {}; " +
                         "for (index = 0; index < arguments[0].attributes.length; ++index) " +
@@ -625,6 +625,12 @@ public abstract class Utilities {
         return (JsonObject) JsonParser.parseString(object);
     }
 
+    /**
+     * Transform a given element to a JSONObject using javascript & JSONParser
+     *
+     * @param element target element
+     * @return returns an object with the attributes of a given element
+     */
     protected JSONObject getElementJSON(WebElement element){
         try {
             String object = ((JavascriptExecutor) driver).executeScript(
@@ -645,7 +651,6 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    //This method prints all the attributes of a given element
     protected void printElementAttributes(WebElement element){
         JSONObject attributeJSON = getElementJSON(element);
         for (Object attribute : attributeJSON.keySet())
