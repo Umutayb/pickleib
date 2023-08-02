@@ -1,7 +1,5 @@
 package pickleib.utilities;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -19,22 +17,18 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
-import pickleib.utilities.element.ElementAcquisition;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
-import pickleib.web.driver.PickleibWebDriver;
-import utils.Printer;
-import utils.PropertyUtility;
-import utils.StringUtilities;
-import utils.TextParser;
+import utils.*;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
-
-import static utils.MappingUtilities.Json.mapper;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
 public abstract class Utilities {
+
+    public static ReflectionUtilities reflectionUtils = new ReflectionUtilities();
     public ScreenCaptureUtility capture = new ScreenCaptureUtility();
     public StringUtilities strUtils = new StringUtilities();
     public ObjectMapper objectMapper = new ObjectMapper();
@@ -609,7 +603,7 @@ public abstract class Utilities {
     }
 
     /**
-     * Transform a given element to a JsonObject using javascript & JsonParser
+     * Transform a given element to a JsonObject using javascript and JsonParser
      *
      * @param element target element
      * @return returns an object with the attributes of a given element
@@ -627,7 +621,7 @@ public abstract class Utilities {
     }
 
     /**
-     * Transform a given element to a JSONObject using javascript & JSONParser
+     * Transform a given element to a JSONObject using javascript and JSONParser
      *
      * @param element target element
      * @return returns an object with the attributes of a given element
@@ -777,8 +771,69 @@ public abstract class Utilities {
         return null;
     }
 
-    public static class InteractionUtilities extends Utilities {
 
+    /**
+     * Acquire listed component by the text of its given child element
+     *
+     * @param items list of components
+     * @param attributeName component element attribute name
+     * @param attributeValue attribute value
+     * @param elementFieldName component elements field name
+     * @return returns the matching component
+     * @param <T> component type
+     */
+    public  <T> T acquireComponentByElementAttributeAmongst(
+            List<T> items,
+            String attributeName,
+            String attributeValue,
+            String elementFieldName
+    ){
+        log.info("Acquiring component by attribute " + strUtils.highlighted(BLUE, attributeName + " -> " + attributeValue));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (T component : items) {
+                Map<String, Object> componentFields = reflectionUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(elementFieldName);
+                String attribute = element.getAttribute(attributeName);
+                if (attribute.equals(attributeValue)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with " + attributeName + " : " + attributeValue + " could be found!");
+    }
+
+    /**
+     * Acquire listed component by the text of its given child element
+     *
+     * @param items list of components
+     * @param elementText text of the component element
+     * @param targetElementFieldName component elements field name
+     * @return returns the matching component
+     * @param <Component> component type
+     */
+    public  <Component extends WebElement> Component acquireExactNamedComponentAmongst(
+            List<Component> items,
+            String elementText,
+            String targetElementFieldName
+    ){
+        log.info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (Component component : items) {
+                Map<String, Object> componentFields = reflectionUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(targetElementFieldName);
+                String text = element.getText();
+                String name = element.getAccessibleName();
+                if (text.equalsIgnoreCase(elementText) || name.equalsIgnoreCase(elementText)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
+    }
+
+    public static class InteractionUtilities extends Utilities {
         public InteractionUtilities(RemoteWebDriver driver){
             super(driver);
         }
@@ -811,8 +866,7 @@ public abstract class Utilities {
                                               String attributeName,
                                               String attributeValue,
                                               String elementFieldName){
-            ElementAcquisition.Reflections reflections = new ElementAcquisition.Reflections(this.driver);
-            return reflections.acquireComponentByElementAttributeAmongst(items, attributeName, attributeValue, elementFieldName);
+            return acquireComponentByElementAttributeAmongst(items, attributeName, attributeValue, elementFieldName);
         }
     }
 }
