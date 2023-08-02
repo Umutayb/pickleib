@@ -22,8 +22,8 @@ jobs:
     - uses: actions/checkout@v3
     - name:  Install Google Chrome 
       run:   |
-              chmod +x ./scripts/InstallChrome.sh
-                          ./scripts/InstallChrome.sh 
+              chmod +x ~/scripts/InstallChrome.sh
+                          ~/scripts/InstallChrome.sh 
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
