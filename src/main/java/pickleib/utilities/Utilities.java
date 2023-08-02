@@ -1,31 +1,34 @@
 package pickleib.utilities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import context.ContextStore;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.openqa.selenium.*;
+import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
+import pickleib.mobile.interactions.MobileInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
+import pickleib.web.interactions.WebInteractions;
+import records.Bundle;
 import utils.*;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import static pickleib.utilities.element.ElementAcquisition.*;
 import static utils.StringUtilities.Color.*;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class Utilities {
 
     public static ReflectionUtilities reflectionUtils = new ReflectionUtilities();
@@ -93,6 +96,45 @@ public abstract class Utilities {
         if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
         log.warning(caughtException.getMessage());
         throw new PickleibException(caughtException);
+    }
+
+    /**
+     *
+     * If present, click element {element name} on the {page name}
+     *
+     * @param element target element
+     */
+    public void clickButtonIfPresent(WebElement element){
+        try {if (elementIs(element, ElementState.displayed)) clickElement(element, true);}
+        catch (WebDriverException ignored){log.warning("The element was not present!");}
+    }
+
+    /**
+     *
+     * Click on a button that contains {button text} text
+     *
+     * @param buttonText target button text
+     * @param scroll scrolls if true
+     */
+    public void clickButtonByItsText(String buttonText, Boolean scroll) {
+        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
+        WebElement element = getElementByText(buttonText);
+        centerElement(element);
+        clickElement(element, scroll);
+    }
+
+    /**
+     *
+     * Press {target key} key on {element name} element of the {}
+     *
+     * @param keys target keys
+     * @param elementName target element name
+     * @param pageName specified page instance name
+     */
+    public void pressKeysOnElement(WebElement element, String elementName, String pageName, Keys... keys){
+        String combination = Keys.chord(keys);
+        log.info("Pressing " + strUtils.markup(BLUE, combination) + " keys on " + strUtils.markup(BLUE, elementName) + " element.");
+        element.sendKeys(combination);
     }
 
     /**
@@ -304,100 +346,6 @@ public abstract class Utilities {
         return element;
     }
 
-    /**
-     * Acquire a component amongst a list of components by its name
-     *
-     * @param items list of components
-     * @param selectionName component name
-     * @return returns the selected component
-     */
-    protected <T> T acquireNamedComponentAmongst(List<T> items, String selectionName){
-        log.info("Acquiring component called " + strUtils.highlighted(BLUE, selectionName));
-        boolean timeout = false;
-        long initialTime = System.currentTimeMillis();
-        WebDriverException caughtException = null;
-        int counter = 0;
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout)){
-            try {
-                for (T selection : items) {
-                    String text = ((WebElement) selection).getText();
-                    if (text.equalsIgnoreCase(selectionName) || text.contains(selectionName)) return selection;
-                }
-            }
-            catch (WebDriverException webDriverException){
-                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-
-                caughtException = webDriverException;
-                counter++;
-            }
-        }
-        throw new NoSuchElementException("No component with text/name '" + selectionName + "' could be found!");
-    }
-
-    /**
-     * Acquire listed element by its name
-     *
-     * @param items list that includes target element
-     * @param selectionName element name
-     * @return returns the selected element
-     */
-    protected WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
-        log.info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
-        boolean timeout = false;
-        long initialTime = System.currentTimeMillis();
-        WebDriverException caughtException = null;
-        int counter = 0;
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout)){
-            try {
-                for (WebElement selection : items) {
-                    String text = selection.getText();
-                    if (text.equalsIgnoreCase(selectionName) || text.contains(selectionName)) return selection;
-                }
-            }
-            catch (WebDriverException webDriverException){
-                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-
-                caughtException = webDriverException;
-                counter++;
-            }
-        }
-        throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
-    }
-
-    /**
-     * Acquire a listed element by its attribute
-     *
-     * @param items list that includes target element
-     * @param attributeName attribute name
-     * @param attributeValue attribute value
-     * @return returns the selected element
-     */
-    protected WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue){
-        log.info("Acquiring element called " + strUtils.markup(BLUE, attributeValue) + " using its " + strUtils.markup(BLUE, attributeName) + " attribute");
-        boolean condition = true;
-        boolean timeout = false;
-        long initialTime = System.currentTimeMillis();
-        WebDriverException caughtException = null;
-        int counter = 0;
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout)){
-            try {
-                for (WebElement selection : items) {
-                    String attribute = selection.getAttribute(attributeName);
-                    if (attribute != null && (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue))) return selection;
-                }
-            }
-            catch (WebDriverException webDriverException){
-                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-
-                caughtException = webDriverException;
-                counter++;
-            }
-        }
-        throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
-    }
 
     /**
      * Clicks an element acquired by text
@@ -577,16 +525,7 @@ public abstract class Utilities {
      * @return returns the targeted element
      */
     //This method scrolls an element to the center of the view
-    protected WebElement centerElement(WebElement element){
-        String scrollScript = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
-                + "var elementTop = arguments[0].getBoundingClientRect().top;"
-                + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
-
-        ((JavascriptExecutor) driver).executeScript(scrollScript, element);
-
-        waitFor(0.3);
-        return element;
-    }
+    protected abstract WebElement centerElement(WebElement element);
 
     /**
      * Scroll in a given direction
@@ -600,56 +539,6 @@ public abstract class Utilities {
             case down -> "window.scrollBy(0,document.body.scrollHeight)";
         };
         ((JavascriptExecutor) driver).executeScript(script);
-    }
-
-    /**
-     * Transform a given element to a JsonObject using javascript and JsonParser
-     *
-     * @param element target element
-     * @return returns an object with the attributes of a given element
-     */
-    //This method returns all the attributes of an element as an object
-    protected JsonObject getElementJson(WebElement element){
-        String object = ((JavascriptExecutor) driver).executeScript(
-                "var items = {}; " +
-                        "for (index = 0; index < arguments[0].attributes.length; ++index) " +
-                        "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; " +
-                        "return JSON.stringify(items);",
-                element
-        ).toString();
-        return (JsonObject) JsonParser.parseString(object);
-    }
-
-    /**
-     * Transform a given element to a JSONObject using javascript and JSONParser
-     *
-     * @param element target element
-     * @return returns an object with the attributes of a given element
-     */
-    protected JSONObject getElementJSON(WebElement element){
-        try {
-            String object = ((JavascriptExecutor) driver).executeScript(
-                    "var items = {}; " +
-                            "for (index = 0; index < arguments[0].attributes.length; ++index) " +
-                            "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; " +
-                            "return JSON.stringify(items);",
-                    element
-            ).toString();
-            JSONParser parser = new JSONParser();
-            return (JSONObject) parser.parse(object);
-        }
-        catch (ParseException e) {throw new RuntimeException(e);}
-    }
-
-    /**
-     * Prints all the attributes of a given element
-     *
-     * @param element target element
-     */
-    protected void printElementAttributes(WebElement element){
-        JSONObject attributeJSON = getElementJSON(element);
-        for (Object attribute : attributeJSON.keySet())
-            log.info(attribute +" : "+ attributeJSON.get(attribute));
     }
 
     /**
@@ -771,71 +660,219 @@ public abstract class Utilities {
         return null;
     }
 
-
     /**
-     * Acquire listed component by the text of its given child element
      *
-     * @param items list of components
-     * @param attributeName component element attribute name
-     * @param attributeValue attribute value
-     * @param elementFieldName component elements field name
-     * @return returns the matching component
-     * @param <T> component type
+     * Adds given values to the local storage
+     *
+     * @param form Map(String, String)
      */
-    public  <T> T acquireComponentByElementAttributeAmongst(
-            List<T> items,
-            String attributeName,
-            String attributeValue,
-            String elementFieldName
-    ){
-        log.info("Acquiring component by attribute " + strUtils.highlighted(BLUE, attributeName + " -> " + attributeValue));
-        boolean timeout = false;
-        long initialTime = System.currentTimeMillis();
-        while (!timeout){
-            for (T component : items) {
-                Map<String, Object> componentFields = reflectionUtils.getFields(component);
-                WebElement element = (WebElement) componentFields.get(elementFieldName);
-                String attribute = element.getAttribute(attributeName);
-                if (attribute.equals(attributeValue)) return component;
-            }
-            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+    public void addValuesToLocalStorage(Map<String, String> form){
+        for (String valueKey: form.keySet()) {
+            RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(driver);
+            RemoteWebStorage webStorage = new RemoteWebStorage(executeMethod);
+            LocalStorage storage = webStorage.getLocalStorage();
+            storage.setItem(valueKey, strUtils.contextCheck(form.get(valueKey)));
         }
-        throw new NoSuchElementException("No component with " + attributeName + " : " + attributeValue + " could be found!");
     }
 
     /**
-     * Acquire listed component by the text of its given child element
      *
-     * @param items list of components
-     * @param elementText text of the component element
-     * @param targetElementFieldName component elements field name
-     * @return returns the matching component
-     * @param <Component> component type
+     * Adds given cookies
+     *
+     * @param cookies Map(String, String)
      */
-    public  <Component extends WebElement> Component acquireExactNamedComponentAmongst(
-            List<Component> items,
-            String elementText,
-            String targetElementFieldName
-    ){
-        log.info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
-        boolean timeout = false;
-        long initialTime = System.currentTimeMillis();
-        while (!timeout){
-            for (Component component : items) {
-                Map<String, Object> componentFields = reflectionUtils.getFields(component);
-                WebElement element = (WebElement) componentFields.get(targetElementFieldName);
-                String text = element.getText();
-                String name = element.getAccessibleName();
-                if (text.equalsIgnoreCase(elementText) || name.equalsIgnoreCase(elementText)) return component;
-            }
-            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+    public void putCookies(Map<String, String> cookies){
+        for (String cookieName: cookies.keySet()) {
+            Cookie cookie = new Cookie(cookieName, strUtils.contextCheck(cookies.get(cookieName)));
+            driver.manage().addCookie(cookie);
         }
-        throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
+    }
+
+    /**
+     * Deletes all cookies
+     */
+    public void deleteAllCookies() {driver.manage().deleteAllCookies();}
+
+    /**
+     *
+     * Acquire attribute {attribute name} from element {element name} on the {page name}
+     * (Use 'innerHTML' attributeName to acquire text on an element)
+     *
+     * @param element target element
+     * @param attributeName acquired attribute name
+     * @param elementName target element name
+     * @param pageName specified page instance name
+     */
+    public void updateContextByElementAttribute(
+            WebElement element,
+            String attributeName,
+            String elementName,
+            String pageName){
+        log.info("Acquiring " +
+                highlighted(BLUE,attributeName) +
+                highlighted(GRAY," attribute of ") +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        String attribute = element.getAttribute(attributeName);
+        log.info("Attribute -> " + highlighted(BLUE, attributeName) + highlighted(GRAY," : ") + highlighted(BLUE, attribute));
+        ContextStore.put(elementName + "-" + attributeName, attribute);
+        log.info("Element attribute saved to the ContextStore as -> '" +
+                highlighted(BLUE, elementName + "-" + attributeName) +
+                highlighted(GRAY, "' : '") +
+                highlighted(BLUE, attribute) +
+                highlighted(GRAY, "'")
+        );
+    }
+
+    /**
+     *
+     * Verify the text of {element name} on the {page name} to be: {expected text}
+     *
+     * @param element target element
+     * @param expectedText expected text
+     */
+    public void verifyElementText(WebElement element, String expectedText){
+        expectedText = strUtils.contextCheck(expectedText);
+        Assert.assertEquals("Element text is not " + expectedText + "!", expectedText, element.getText());
+        log.success("Text of the element " + expectedText + " was verified!");
+    }
+
+    /**
+     *
+     * Verify the text of {element name} on the {page name} to be: {expected text}
+     *
+     * @param element target element
+     * @param expectedText expected text
+     */
+    public void verifyElementContainsText(WebElement element, String expectedText){
+        expectedText = strUtils.contextCheck(expectedText);
+        Assert.assertTrue("Element text does not contain" + expectedText + "!", element.getText().contains(expectedText));
+        log.success("The element text does contain " + expectedText + " text!");
+    }
+
+    /**
+     *
+     * Verify the text of an element from the list on the {page name}
+     *
+     * @param pageName specified page instance name
+     */
+    public void verifyListedElementText(
+            List<Bundle<WebElement, String, String>> bundles,
+            String pageName){
+        for (Bundle<WebElement, String, String> bundle : bundles) {
+            String elementName = bundle.beta();
+            String expectedText = bundle.theta();
+            log.info("Performing text verification for " +
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," on the ") +
+                    highlighted(BLUE, pageName) +
+                    highlighted(GRAY, " with the text: ") +
+                    highlighted(BLUE, expectedText)
+            );
+            Assert.assertEquals("The " + bundle.alpha().getText() + " does not contain text '", expectedText, bundle.alpha().getText());
+            log.success("Text of the element" + bundle.alpha().getText() + " was verified!");
+        }
+    }
+
+    /**
+     *
+     * Fill form input on the {page name}
+     *
+     * @param bundles list of bundles where input element, input name and input texts are stored
+     * @param pageName specified page instance name
+     */
+    public void fillInputForm(List<Bundle<WebElement, String, String>> bundles, String pageName){
+        String inputName;
+        String input;
+        for (Bundle<WebElement, String, String> bundle : bundles) {
+            log.info("Filling " +
+                    highlighted(BLUE, bundle.theta()) +
+                    highlighted(GRAY," on the ") +
+                    highlighted(BLUE, pageName) +
+                    highlighted(GRAY, " with the text: ") +
+                    highlighted(BLUE, bundle.beta())
+            );
+            pageName = strUtils.firstLetterDeCapped(pageName);
+            clearFillInput(bundle.alpha(), //Input Element
+                    bundle.beta(), //Input Text
+                    false,
+                    true
+            );
+        }
+    }
+
+    /**
+     *
+     * Verify that element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
+     *
+     * @param element target element
+     * @param attributeValue expected attribute value
+     * @param attributeName target attribute name
+     */
+    public boolean elementContainsAttribute(
+            WebElement element,
+            String attributeName,
+            String attributeValue) {
+
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        int counter = 0;
+        attributeValue = strUtils.contextCheck(attributeValue);
+        do {
+            try {
+                assert element.getAttribute(attributeName) != null &&
+                        !(element.getAttribute(attributeName).isBlank() || element.getAttribute(attributeName).isEmpty());
+                return element.getAttribute(attributeName).contains(attributeValue);
+            }
+            catch (WebDriverException | AssertionError webDriverException){
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                waitFor(0.5);
+                counter++;
+            }
+        }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning("Element does not contain " +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " -> ") +
+                highlighted(BLUE, attributeValue) +
+                highlighted(GRAY, " attribute pair.")
+        );
+        log.warning(caughtException);
+        return false;
     }
 
     public static class InteractionUtilities extends Utilities {
-        public InteractionUtilities(RemoteWebDriver driver){
+
+        public enum DriverType{
+            Web,
+            Mobile
+        }
+
+        public DriverType driverType;
+
+        public InteractionUtilities(RemoteWebDriver driver, DriverType driverType){
             super(driver);
+            this.driverType = driverType;
+        }
+
+        @Override
+        public WebElement centerElement(WebElement element) {
+            WebInteractions webInteractions = new WebInteractions();
+            MobileInteractions mobileInteractions = new MobileInteractions();
+            return switch (driverType){
+                case Web -> webInteractions.center(element);
+                case Mobile -> mobileInteractions.center(element);
+            };
         }
 
         public void click(WebElement element){
@@ -858,14 +895,14 @@ public abstract class Utilities {
             return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue); //innerHTML for text
         }
 
-        public <T> T acquireComponentFromList(List<T> items, String selectionName){
+        public <Component extends WebElement> Component acquireComponentFromList(List<Component> items, String selectionName){
             return acquireNamedComponentAmongst(items, selectionName);
         }
 
-        public <T> T acquireComponentFromList(List<T> items,
-                                              String attributeName,
-                                              String attributeValue,
-                                              String elementFieldName){
+        public <Component extends WebElement> Component acquireComponentFromList(List<Component> items,
+                                                              String attributeName,
+                                                              String attributeValue,
+                                                              String elementFieldName){
             return acquireComponentByElementAttributeAmongst(items, attributeName, attributeValue, elementFieldName);
         }
     }
