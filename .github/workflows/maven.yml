@@ -20,16 +20,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: nanasess/setup-chromedriver@v2
-    - run: |
-        export DISPLAY=:99
-        chromedriver --url-base=/wd/hub &
-        sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
     - name: Set up JDK 17
       uses: browser-actions/setup-chrome@v1
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - uses: abhi1693/setup-browser@v0.3.4
+      with:
+        browser: chrome
+        version: latest    
     - name: Build with Maven
       run: mvn clean test
