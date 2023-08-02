@@ -1,139 +1,39 @@
-package pickleib.web.interactions;
+package pickleib.utilities;
 
 import context.ContextStore;
 import org.junit.Assert;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Cookie;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
-import pickleib.enums.Navigation;
-import pickleib.utilities.Interactions;
-import pickleib.utilities.screenshot.ScreenCaptureUtility;
-import pickleib.web.driver.PickleibWebDriver;
-import pickleib.web.utilities.WebUtilities;
 import records.Bundle;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static utils.StringUtilities.Color.*;
+
+import static utils.StringUtilities.Color.BLUE;
+import static utils.StringUtilities.Color.GRAY;
 
 @SuppressWarnings("unused")
-public class WebInteractions extends WebUtilities {
+public class Interactions extends Utilities {
 
-    protected RemoteWebDriver driver;
-    private final Interactions interactions;
-    protected WebDriverWait wait;
-
-    public WebInteractions(RemoteWebDriver driver, WebDriverWait wait){
+    public Interactions(RemoteWebDriver driver) {
         super(driver);
-        interactions = new Interactions(driver);
-        this.driver = driver;
-        this.wait = wait;
     }
 
-    public WebInteractions(){
-        super(PickleibWebDriver.driver);
-        interactions = new Interactions(driver);
-        this.driver = PickleibWebDriver.driver;
-        this.wait = PickleibWebDriver.wait;
-    }
-
-    private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
-
-    /**
-     *
-     * Navigate to url: {url}
-     *
-     * @param url target url
-     */
-    public void getUrl(String url) {
-        url = strUtils.contextCheck(url);
-        driver.get(url);
-    }
-
-    /**
-     *
-     * Go to the {page} page
-     *
-     * @param page target page
-     */
-    public void toPage(String page){
-        String url = driver.getCurrentUrl();
-        String pageUrl = url + page;
-        navigate(pageUrl);
-    }
-
-    /**
-     *
-     * Switch to the next tab
-     *
-     */
-    public void switchToNextTab() {
-        String parentHandle = switchWindowByHandle(null);
-        ContextStore.put("parentHandle", parentHandle);
-    }
-
-    /**
-     *
-     * Switch to a specified parent tab
-     *
-     */
-    public void switchToParentTab() {
-        switchWindowByHandle(ContextStore.get("parentHandle").toString());
-    }
-
-    /**
-     *
-     * Switch to the tab with handle: {handle}
-     * Switches a specified tab by tab handle
-     *
-     * @param handle target tab handle
-     */
-    public void switchToTabByHandle(String handle) {
-        handle = strUtils.contextCheck(handle);
-        String parentHandle = switchWindowByHandle(handle);
-        ContextStore.put("parentHandle", parentHandle);
-    }
-
-    /**
-     *
-     * Switch to the tab number {tab index}
-     * Switches tab by index
-     *
-     * @param handle target tab index
-     */
-    public void switchToTabByIndex(Integer handle) {
-        String parentHandle = switchWindowByIndex(handle);
-        ContextStore.put("parentHandle", parentHandle);
-    }
-
-    /**
-     * Get HTML at {htmlPath}
-     * Acquires the HTML from a given directory
-     *
-     * @param htmlPath target directory
-     */
-    public void getHTML(String htmlPath) {
-        htmlPath = strUtils.contextCheck(htmlPath);
-        log.info("Navigating to the email @" + htmlPath);
-        driver.get(htmlPath);
-    }
-
-    /**
-     *
-     * Set window width and height as {width} and {height}
-     *
-     * @param width target width
-     * @param height target height
-     */
-    public void setFrameSize(Integer width, Integer height) {setWindowSize(width,height);}
+    WebDriverWait wait = new WebDriverWait(driver, Duration.of(elementTimeout, ChronoUnit.SECONDS));
 
     /**
      *
@@ -142,7 +42,12 @@ public class WebInteractions extends WebUtilities {
      * @param form Map(String, String)
      */
     public void addLocalStorageValues(Map<String, String> form){
-        interactions.addLocalStorageValues(form);
+        for (String valueKey: form.keySet()) {
+            RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(driver);
+            RemoteWebStorage webStorage = new RemoteWebStorage(executeMethod);
+            LocalStorage storage = webStorage.getLocalStorage();
+            storage.setItem(valueKey, strUtils.contextCheck(form.get(valueKey)));
+        }
     }
 
     /**
@@ -152,26 +57,16 @@ public class WebInteractions extends WebUtilities {
      * @param cookies Map(String, String)
      */
     public void addCookies(Map<String, String> cookies){
-        interactions.addCookies(cookies);
+        for (String cookieName: cookies.keySet()) {
+            Cookie cookie = new Cookie(cookieName, strUtils.contextCheck(cookies.get(cookieName)));
+            driver.manage().addCookie(cookie);
+        }
     }
-
-    /**
-     * Refreshes the page
-     */
-    public void refresh() {refreshThePage();}
 
     /**
      * Deletes all cookies
      */
-    public void deleteCookies() {interactions.deleteCookies();}
-
-    /**
-     *
-     * Navigate browser in {direction} direction
-     *
-     * @param direction target direction (backwards or forwards)
-     */
-    public void browserNavigate(Navigation direction) {navigateBrowser(direction);}
+    public void deleteCookies() {driver.manage().deleteAllCookies();}
 
     /**
      *
@@ -180,20 +75,9 @@ public class WebInteractions extends WebUtilities {
      * @param text target text
      */
     public void clickByText(String text) {
-        interactions.clickByText(text);
+        clickButtonByText(text, true);
     }
 
-    /**
-     *
-     * Click button includes {button text} text with css locator
-     *
-     * @param cssSelector target text
-     */
-    public void clickByCssSelector(String cssSelector) {
-        WebElement element = driver.findElement(By.cssSelector(cssSelector));
-        centerElement(element);
-        clickElement(element, true);
-    }
 
     /**
      *
@@ -202,16 +86,8 @@ public class WebInteractions extends WebUtilities {
      * @param duration desired duration
      */
     public void waitForSeconds(Integer duration) {
-        interactions.waitForSeconds(duration);
+        waitFor(duration);
     }
-
-    /**
-     *
-     * Scroll {direction}
-     *
-     * @param direction target direction (up or down)
-     */
-    public void scrollInDirection(Direction direction){scroll(direction);}
 
     /**
      *
@@ -221,8 +97,12 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickInteraction(WebElement button, String buttonName, String pageName){
-        centerElement(button);
-        interactions.clickInteraction(button, buttonName, pageName);
+        log.info("Clicking " +
+                highlighted(BLUE, buttonName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clickElement(button);
     }
 
     /**
@@ -231,8 +111,7 @@ public class WebInteractions extends WebUtilities {
      *
      */
     public void clickInteraction(WebElement button){
-        centerElement(button);
-        interactions.clickInteraction(button);
+        clickElement(button);
     }
 
     /**
@@ -250,24 +129,22 @@ public class WebInteractions extends WebUtilities {
             String attributeName,
             String elementName,
             String pageName){
-        interactions.saveAttributeValue(element, attributeName, elementName, pageName);
-    }
-
-    /**
-     *
-     * Center the {element name} on the {page name}
-     *
-     * @param element target element
-     * @param elementName target element name
-     * @param pageName specified page instance name
-     */
-    public void center(WebElement element, String elementName, String pageName){
-        log.info("Centering " +
+        log.info("Acquiring " +
+                highlighted(BLUE,attributeName) +
+                highlighted(GRAY," attribute of ") +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," on ") +
+                highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        centerElement(element);
+        String attribute = element.getAttribute(attributeName);
+        log.info("Attribute -> " + highlighted(BLUE, attributeName) + highlighted(GRAY," : ") + highlighted(BLUE, attribute));
+        ContextStore.put(elementName + "-" + attributeName, attribute);
+        log.info("Attribute saved to the ContextStore as -> '" +
+                highlighted(BLUE, elementName + "-" + attributeName) +
+                highlighted(GRAY, "' : '") +
+                highlighted(BLUE, attribute) +
+                highlighted(GRAY, "'")
+        );
     }
 
     /**
@@ -279,24 +156,12 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickTowards(WebElement element, String elementName, String pageName){
-        interactions.clickTowards(element, elementName, pageName);
-    }
-
-    /**
-     *
-     * Perform a JS click on element {element name} on the {page name}
-     *
-     * @param element target element
-     * @param elementName target element name
-     * @param pageName specified page instance name
-     */
-    public void performJSClick(WebElement element, String elementName, String pageName){
         log.info("Clicking " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickWithJS(centerElement(element));
+        clickAtAnOffset(element, 0, 0);
     }
 
     /**
@@ -308,7 +173,16 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickIfPresent(WebElement element, String elementName, String pageName){
-        interactions.clickIfPresent(element, elementName, pageName);
+        log.info("Clicking " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, ", if present...")
+        );
+        try {
+            if (elementIs(element, ElementState.displayed)) clickElement(element, true);
+        }
+        catch (WebDriverException ignored){log.warning("The " + elementName + " was not present");}
     }
 
     /**
@@ -321,7 +195,20 @@ public class WebInteractions extends WebUtilities {
      * @param input input text
      */
     public void basicFill(WebElement inputElement, String inputName, String pageName, String input){
-        interactions.basicFill(inputElement, input, pageName, input);
+        input = strUtils.contextCheck(input);
+        log.info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, input)
+        );
+        clearFillInput(
+                inputElement, //Element
+                input, //Input Text
+                false,
+                true
+        );
     }
 
     /**
@@ -880,33 +767,4 @@ public class WebInteractions extends WebUtilities {
         }
         else throw new RuntimeException("'" + eventName + "' event is not fired!");
     }
-
-    /**
-     * Executes interactions on a list of element bundles, based on the specified interaction type.
-     * <p>
-     * The interaction type is specified in the "Interaction Type" key of the map contained in each element bundle.
-     * <p>
-     * @param bundles A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
-     * @param pageName The name of the page object.
-     * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
-     */
-    public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName){
-        for (Bundle<String, WebElement, Map<String, String>> bundle:bundles) {
-            InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
-            switch (interactionType){
-                case click  -> clickInteraction(bundle.beta(), bundle.alpha(), pageName);
-                case fill   -> basicFill(bundle.beta(), bundle.alpha(), pageName, strUtils.contextCheck(bundle.theta().get("Input")));
-                case center -> center(bundle.beta(), bundle.alpha(), pageName);
-                case verify -> verifyElementContainsAttribute(
-                        bundle.beta(),
-                        bundle.alpha(),
-                        pageName,
-                        bundle.theta().get("Attribute Name"),
-                        strUtils.contextCheck(bundle.theta().get("Attribute Value"))
-                );
-                default -> throw new EnumConstantNotPresentException(InteractionType.class, interactionType.name());
-            }
-        }
-    }
-    // Sample click configuration: bundleInteraction(List.of(new Bundle< >(elementName, element, Map.of("Interaction Type", "click"))), pageName);
 }
