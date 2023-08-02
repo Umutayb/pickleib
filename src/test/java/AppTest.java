@@ -9,6 +9,8 @@ import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
 
+import java.time.Duration;
+
 import static pickleib.enums.Navigation.backwards;
 import static pickleib.web.driver.PickleibWebDriver.driver;
 import static pickleib.web.driver.PickleibWebDriver.log;
@@ -24,6 +26,8 @@ public class AppTest {
         WebDriverFactory.setHeadless(true);
         WebDriverFactory.setDriverTimeout(120);
         PickleibWebDriver.initialize();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(120));
         interactions = new ElementInteractions(driver, DriverFactory.DriverType.Web);
         webInteractions = new WebInteractions();
         page = new PageClass();
