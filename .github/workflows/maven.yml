@@ -23,7 +23,7 @@ jobs:
     - name: Set up Chrome
       uses: actions/setup-java@v3
       with:
-          chrome-version: latest
+          chrome-version: stable
     - run: chrome --version
     - name: Set up JDK 17
       uses: browser-actions/setup-chrome@v1
