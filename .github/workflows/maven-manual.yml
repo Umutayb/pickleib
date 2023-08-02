@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Manual Test Run With Maven
 
 on: workflow_dispatch
 
