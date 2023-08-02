@@ -32,7 +32,6 @@ public class ElementAcquisition {
     static long elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
     static Printer log = new Printer(ElementAcquisition.class);
 
-
     /**
      * Acquire listed component by the text of its given child element
      *
@@ -826,21 +825,21 @@ public class ElementAcquisition {
         }
     }
 
-    public static class Reflections <ObjectRepository extends PageRepository> {
-        private final Class<ObjectRepository> pageRepository;
+    public static class Reflections<ObjectRepository extends PageRepository> {
+        private final Class<ObjectRepository> pageRepositoryClass;
 
         public Reflections(RemoteWebDriver driver, Class<ObjectRepository> pageRepository) {
-            this.pageRepository = pageRepository;
+            this.pageRepositoryClass = pageRepository;
         }
 
         protected ObjectRepository getObjectRepository(){
             try {
-                return pageRepository.getConstructor().newInstance();
+                return pageRepositoryClass.getConstructor().newInstance();
             }
             catch (
                     InstantiationException |
                     IllegalAccessException |
-                    NoSuchMethodException |
+                    NoSuchMethodException  |
                     InvocationTargetException e
             ) {
                 throw new RuntimeException(e);
