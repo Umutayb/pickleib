@@ -23,6 +23,88 @@ import static utils.StringUtilities.Color.*;
 
 public class WebDriverFactory implements DriverFactory {
 
+
+    /**
+     * determines frameWidth value
+     */
+    static int frameWidth = Integer.parseInt(PropertyUtility.getProperty("frame-width","1920"));
+
+    /**
+     * determines frameHeight value
+     */
+    static int frameHeight = Integer.parseInt(PropertyUtility.getProperty("frame-height","1080"));
+
+    /**
+     * session runs headless if true
+     */
+    static boolean headless = Boolean.parseBoolean(PropertyUtility.getProperty("headless", "false"));
+
+    /**
+     * maximizes a session window if true
+     */
+    static boolean maximise = Boolean.parseBoolean(PropertyUtility.getProperty("driver-maximize", "false"));
+
+    /**
+     * determines driverTimeout duration
+     */
+    static long driverTimeout = Long.parseLong(PropertyUtility.getProperty("driver-timeout", "15000"))/1000;
+
+    /**
+     * cookies are deleted if true
+     */
+    static boolean deleteCookies = Boolean.parseBoolean(PropertyUtility.getProperty("delete-cookies", "false"));
+
+    /**
+     * Selenium Grid is used if true
+     */
+    static boolean useSeleniumGrid = Boolean.parseBoolean(PropertyUtility.getProperty("selenium-grid", "false"));
+
+    /**
+     * enables insecure local host if true
+     */
+    static boolean insecureLocalHost = Boolean.parseBoolean(PropertyUtility.getProperty("insecure-localhost", "false"));
+
+    /**
+     * disables browser notifications if true
+     */
+    static boolean disableNotifications = Boolean.parseBoolean(PropertyUtility.getProperty("disable-notifications", "true"));
+
+    /**
+     * determines page load strategy
+     */
+    static PageLoadStrategy loadStrategy = PageLoadStrategy.fromString(PropertyUtility.getProperty("load-strategy", "normal"));
+
+    /**
+     * determines usage of web driver manager
+     */
+    static Boolean useWDM = Boolean.parseBoolean(PropertyUtility.getProperty("web-driver-manager", "false"));
+
+    /**
+     * determines usage of web driver manager
+     */
+    static Boolean allowRemoteOrigin = Boolean.parseBoolean(PropertyUtility.getProperty("allow-remote-origin", "true"));;
+
+    /**
+     * The logging level used by Pickleib.
+     * This value can be set in the properties file with the key "selenium-log-level".
+     * If not specified in the properties file, the default value is "off".
+     */
+    static String logLevel = PropertyUtility.getProperty("selenium-log-level", "off");;
+
+    /**
+     * The URL of the Selenium Grid hub.
+     * This value can be set in the properties file with the key "hub-url".
+     * If not specified in the properties file, the default value is an empty string.
+     */
+    static String hubUrl = PropertyUtility.getProperty("hub-url","");
+
+    /**
+     * The browser used for tests.
+     * This value can be set in the properties file with the key "browser".
+     * If not specified in the properties file, the default value is "chrome".
+     */
+    static String browser = PropertyUtility.getProperty("browser", "chrome");
+
     /**
      * DriverFactory Logger.
      */
@@ -40,15 +122,14 @@ public class WebDriverFactory implements DriverFactory {
 
     /*
       Static initializer block.
-
       <p>
       This block performs the following operations:
       1. Initializes a new PropertyUtility instance.
-      2. Retrieves the 'pickleib.properties' file.
+      2. Retrieve the 'pickleib.properties' file.
       3. If the static properties are not empty, it adds new properties from the 'pickleib.properties'
          file only for keys that do not already exist in the static properties.
       4. If the static properties are empty, it sets them to the properties from the 'pickleib.properties' file.
-      5. Sets the updated static properties in the PropertyUtility class.
+      5. Set the updated static properties in the PropertyUtility class.
       </p>
      */
     static {
@@ -65,120 +146,11 @@ public class WebDriverFactory implements DriverFactory {
     }
 
     /**
-     * determines frameWidth value
-     */
-    static int frameWidth;
-
-    /**
-     * determines frameHeight value
-     */
-    static int frameHeight;
-
-    /**
-     * session runs headless if true
-     */
-    static boolean headless;
-
-    /**
-     * maximises a session window if true
-     */
-    static boolean maximise;
-
-    /**
-     * determines driverTimeout duration
-     */
-    static long driverTimeout;
-
-    /**
-     * cookies are deleted if true
-     */
-    static boolean deleteCookies;
-
-    /**
-     * Selenium Grid is used if true
-     */
-    static boolean useSeleniumGrid;
-
-    /**
-     * enables insecure local host if true
-     */
-    static boolean insecureLocalHost;
-
-    /**
-     * disables browser notifications if true
-     */
-    static boolean disableNotifications;
-
-    /**
-     * determines page load strategy
-     */
-    static PageLoadStrategy loadStrategy;
-
-    /**
-     * determines usage of web driver manager
-     */
-    static Boolean useWDM;
-
-    /**
-     * determines usage of web driver manager
-     */
-    static Boolean allowRemoteOrigin;
-
-    /**
-     * The logging level used by Pickleib.
-     * This value can be set in the properties file with the key "selenium-log-level".
-     * If not specified in the properties file, the default value is "off".
-     */
-    static String logLevel;
-
-    /**
-     * The URL of the Selenium Grid hub.
-     * This value can be set in the properties file with the key "hub-url".
-     * If not specified in the properties file, the default value is an empty string.
-     */
-    static String hubUrl;
-
-    /**
-     * The browser used for tests.
-     * This value can be set in the properties file with the key "browser".
-     * If not specified in the properties file, the default value is "chrome".
-     */
-    static String browser;
-
-    /**
-     * Loads and sets up the properties from a properties file.
-     * This method initializes various settings such as Selenium Grid usage, frame dimensions,
-     * driver timeout, headless mode, cookie handling, maximization settings, security options,
-     * page load strategy, notification settings, remote origin allowance, web driver manager usage,
-     * log level, hub URL, and browser type based on the specified properties file.
-     * For each property, a default value is used if the property is not specified in the file.
-     */
-    public static void loadProperties() {
-        useSeleniumGrid = Boolean.parseBoolean(properties.getProperty("selenium-grid", "false"));
-        frameWidth = Integer.parseInt(properties.getProperty("frame-width","1920"));
-        frameHeight = Integer.parseInt(properties.getProperty("frame-height","1080"));
-        driverTimeout = Long.parseLong(properties.getProperty("driver-timeout", "15000"))/1000;
-        headless = Boolean.parseBoolean(properties.getProperty("headless", "false"));
-        deleteCookies = Boolean.parseBoolean(properties.getProperty("delete-cookies", "false"));
-        maximise = Boolean.parseBoolean(properties.getProperty("driver-maximize", "false"));
-        insecureLocalHost = Boolean.parseBoolean(properties.getProperty("insecure-localhost", "false"));
-        loadStrategy = PageLoadStrategy.fromString(properties.getProperty("load-strategy", "normal"));
-        disableNotifications = Boolean.parseBoolean(properties.getProperty("disable-notifications", "true"));
-        allowRemoteOrigin = Boolean.parseBoolean(properties.getProperty("allow-remote-origin", "true"));
-        useWDM = Boolean.parseBoolean(properties.getProperty("web-driver-manager", "false"));
-        logLevel = properties.getProperty("selenium-log-level", "off");
-        hubUrl = properties.getProperty("hub-url","");
-        browser = properties.getProperty("browser", "chrome");
-    }
-
-    /**
      * Initializes and returns a driver of specified type
      * @param driverType driver type
      * @return returns driver
      */
     public static RemoteWebDriver getDriver(DriverType driverType){
-
-        loadProperties();
         RemoteWebDriver driver;
 
         try {
@@ -301,9 +273,9 @@ public class WebDriverFactory implements DriverFactory {
         }
 
         /**
-         * Returns driver type matching a given text (Non-case-sensitive)
+         * Returns a driver type matching a given text (Non-case-sensitive)
          * @param text desired driver
-         * @return returns matching driver type
+         * @return returns matching a driver type
          */
         public static DriverType fromString(String text) {
             if (text != null)
@@ -312,5 +284,66 @@ public class WebDriverFactory implements DriverFactory {
                         return driverType;
             return null;
         }
+    }
+
+
+    public static void setFrameWidth(int frameWidth) {
+        WebDriverFactory.frameWidth = frameWidth;
+    }
+
+    public static void setFrameHeight(int frameHeight) {
+        WebDriverFactory.frameHeight = frameHeight;
+    }
+
+    public static void setHeadless(boolean headless) {
+        WebDriverFactory.headless = headless;
+    }
+
+    public static void setMaximise(boolean maximise) {
+        WebDriverFactory.maximise = maximise;
+    }
+
+    public static void setDriverTimeout(long driverTimeout) {
+        WebDriverFactory.driverTimeout = driverTimeout;
+    }
+
+    public static void setDeleteCookies(boolean deleteCookies) {
+        WebDriverFactory.deleteCookies = deleteCookies;
+    }
+
+    public static void setUseSeleniumGrid(boolean useSeleniumGrid) {
+        WebDriverFactory.useSeleniumGrid = useSeleniumGrid;
+    }
+
+    public static void setInsecureLocalHost(boolean insecureLocalHost) {
+        WebDriverFactory.insecureLocalHost = insecureLocalHost;
+    }
+
+    public static void setDisableNotifications(boolean disableNotifications) {
+        WebDriverFactory.disableNotifications = disableNotifications;
+    }
+
+    public static void setLoadStrategy(PageLoadStrategy loadStrategy) {
+        WebDriverFactory.loadStrategy = loadStrategy;
+    }
+
+    public static void setUseWDM(Boolean useWDM) {
+        WebDriverFactory.useWDM = useWDM;
+    }
+
+    public static void setAllowRemoteOrigin(Boolean allowRemoteOrigin) {
+        WebDriverFactory.allowRemoteOrigin = allowRemoteOrigin;
+    }
+
+    public static void setLogLevel(String logLevel) {
+        WebDriverFactory.logLevel = logLevel;
+    }
+
+    public static void setHubUrl(String hubUrl) {
+        WebDriverFactory.hubUrl = hubUrl;
+    }
+
+    public static void setBrowser(String browser) {
+        WebDriverFactory.browser = browser;
     }
 }
