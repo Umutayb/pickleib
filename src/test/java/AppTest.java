@@ -118,8 +118,8 @@ public class AppTest {
     public void verifyCurrentUrlTest(){
         log.info("interactions.verifyCurrentUrl(page.baseUrl) test");
         webInteractions.getUrl(page.baseUrl + "links");
-        interactions.verifyCurrentUrl(page.baseUrl);
-        Assert.assertEquals("interactions.verifyCurrentUrl(page.baseUrl) test failed!", driver.getCurrentUrl(),page.baseUrl);
+        interactions.verifyCurrentUrl(page.baseUrl + "links");
+        Assert.assertEquals("interactions.verifyCurrentUrl(page.baseUrl) test failed!", driver.getCurrentUrl(),page.baseUrl + "links");
         log.success("interactions.verifyCurrentUrl(page.baseUrl) test pass!");
     }
 
