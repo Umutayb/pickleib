@@ -12,7 +12,6 @@ import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
 import pickleib.exceptions.PickleibException;
-import pickleib.utilities.Utilities;
 import pickleib.utilities.page.repository.PageRepository;
 import records.Bundle;
 import records.Pair;
@@ -828,7 +827,6 @@ public class ElementAcquisition {
     }
 
     public static class Reflections <ObjectRepository extends PageRepository> {
-
         private final Class<ObjectRepository> pageRepository;
 
         public Reflections(RemoteWebDriver driver, Class<ObjectRepository> pageRepository) {

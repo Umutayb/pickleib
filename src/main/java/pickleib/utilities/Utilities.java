@@ -20,12 +20,12 @@ import pickleib.mobile.interactions.MobileInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.interactions.WebInteractions;
 import records.Bundle;
+import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import utils.*;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
-
 import static pickleib.utilities.element.ElementAcquisition.*;
 import static utils.StringUtilities.Color.*;
 
