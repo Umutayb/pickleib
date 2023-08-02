@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.pagefactory.ByAll;
@@ -12,11 +11,13 @@ import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.page.repository.PageRepository;
 import records.Bundle;
 import records.Pair;
 import utils.Printer;
 import utils.PropertyUtility;
 import utils.ReflectionUtilities;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static utils.StringUtilities.Color.*;
@@ -34,12 +35,12 @@ public class ElementAcquisition {
         elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
     }
 
-    public static class PageObjectModel extends Utilities {
-        Reflections reflections;
+    public static class PageObjectModel <ObjectRepository extends PageRepository> extends Utilities  {
+        Reflections<ObjectRepository> reflections;
 
-        public PageObjectModel(RemoteWebDriver driver) {
+        public PageObjectModel(RemoteWebDriver driver, Class<ObjectRepository> pageRepository) {
             super(driver);
-            reflections = new Reflections(driver);
+            reflections = new Reflections<>(driver, pageRepository);
         }
 
         /**
@@ -48,9 +49,8 @@ public class ElementAcquisition {
          *
          * @param elementName target button name
          * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
          */
-        public WebElement acquireElementFromPage(String elementName, String pageName, Object objectRepository){
+        public WebElement acquireElementFromPage(String elementName, String pageName){
             logger.info("Acquiring element " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," from the ") +
@@ -58,7 +58,7 @@ public class ElementAcquisition {
             );
             pageName = strUtils.firstLetterDeCapped(pageName);
             elementName = strUtils.contextCheck(elementName);
-            return reflections.getElementFromPage(elementName, pageName, objectRepository);
+            return reflections.getElementFromPage(elementName, pageName);
         }
 
         /**
@@ -68,9 +68,8 @@ public class ElementAcquisition {
          * @param elementName target button name
          * @param componentFieldName specified component field name
          * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
          */
-        public WebElement acquireElementFromComponent(String elementName, String componentFieldName, String pageName, Object objectRepository) {
+        public WebElement acquireElementFromComponent(String elementName, String componentFieldName, String pageName) {
             logger.info("Acquiring element " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY," from the ") +
@@ -79,23 +78,21 @@ public class ElementAcquisition {
             pageName = strUtils.firstLetterDeCapped(pageName);
             componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
             elementName = strUtils.contextCheck(elementName);
-            return reflections.getElementFromComponent(elementName, componentFieldName, pageName, objectRepository);
+            return reflections.getElementFromComponent(elementName, componentFieldName, pageName);
         }
 
         /**
          *
-         * Acquire listed element {element name} from {list name} list on the {page name}
+         * Acquire a listed element {element name} from {list name} list on the {page name}
          *
          * @param elementName target button name
          * @param listName specified component list name
          * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
          */
         public WebElement acquireListedElementFromPage(
                 String elementName,
                 String listName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ) {
             logger.info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
@@ -110,8 +107,7 @@ public class ElementAcquisition {
             elementName = strUtils.contextCheck(elementName);
             List<WebElement> elements = reflections.getElementsFromPage(
                     listName,
-                    pageName,
-                    objectRepository
+                    pageName
             );
             return acquireNamedElementAmongst(elements, elementName);
         }
@@ -124,14 +120,12 @@ public class ElementAcquisition {
          * @param componentFieldName specified component field name
          * @param listFieldName specified component list name
          * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
          */
         public WebElement acquireListedElementFromComponent(
                 String elementName,
                 String componentFieldName,
                 String listFieldName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ) {
             logger.info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
@@ -150,8 +144,7 @@ public class ElementAcquisition {
             List<WebElement> elements = reflections.getElementsFromComponent(
                     listFieldName,
                     componentFieldName,
-                    pageName,
-                    objectRepository
+                    pageName
             );
             return acquireNamedElementAmongst(elements, elementName);
         }
@@ -164,14 +157,12 @@ public class ElementAcquisition {
          * @param componentListName specified component list name
          * @param pageName specified page instance name
          * @param elementName target button name
-         * @param objectRepository instance that includes specified page instance
          */
         public <Component extends WebElement> WebElement acquireListedComponentElement(
                 String elementName,
                 String componentName,
                 String componentListName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ) {
             logger.info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
@@ -185,7 +176,7 @@ public class ElementAcquisition {
             pageName = strUtils.firstLetterDeCapped(pageName);
             componentListName = strUtils.firstLetterDeCapped(componentListName);
             elementName = strUtils.contextCheck(elementName);
-            List<Component> componentList = reflections.getComponentsFromPage(componentListName, pageName, objectRepository);
+            List<Component> componentList = reflections.getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, componentName);
             return reflections.getElementFromComponent(elementName, component);
         }
@@ -198,14 +189,12 @@ public class ElementAcquisition {
          * @param elementText specified element text
          * @param componentListName specified component list name
          * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
          */
         public WebElement acquireExactNamedListedComponentElement(
                 String elementFieldName,
                 String elementText,
                 String componentListName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ) {
             logger.info("Acquiring exact listed element named " +
                     highlighted(BLUE, elementFieldName) +
@@ -214,7 +203,7 @@ public class ElementAcquisition {
                     highlighted(GRAY," component list on the ") +
                     highlighted(BLUE, pageName)
             );
-            Object component = acquireExactNamedListedComponent(elementFieldName, elementText, componentListName, pageName, objectRepository);
+            Object component = acquireExactNamedListedComponent(elementFieldName, elementText, componentListName, pageName);
             return reflections.getElementFromComponent(elementFieldName, component);
         }
 
@@ -226,14 +215,12 @@ public class ElementAcquisition {
          * @param componentListName specified component list name
          * @param pageName specified page instance name
          * @param elementFieldName target element name
-         * @param objectRepository instance that includes specified page instance
          */
         public <Component extends WebElement> Component acquireExactNamedListedComponent(
                 String elementFieldName,
                 String elementText,
                 String componentListName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ) {
             logger.info("Acquiring exact listed component by element named " +
                     highlighted(BLUE, elementFieldName) +
@@ -245,7 +232,7 @@ public class ElementAcquisition {
             pageName = strUtils.firstLetterDeCapped(pageName);
             componentListName = strUtils.firstLetterDeCapped(componentListName);
             elementFieldName = strUtils.contextCheck(elementFieldName);
-            List<Component> components = reflections.getComponentsFromPage(componentListName, pageName, objectRepository);
+            List<Component> components = reflections.getComponentsFromPage(componentListName, pageName);
             return reflections.acquireExactNamedComponentAmongst(components, elementText, elementFieldName);
         }
 
@@ -258,15 +245,13 @@ public class ElementAcquisition {
          * @param pageName specified page instance name
          * @param elementName target button name
          * @param elementListName target element list name
-         * @param objectRepository instance that includes specified page instance
          */
         public <Component extends WebElement> WebElement acquireListedElementAmongstListedComponents(
                 String elementName,
                 String elementListName,
                 String componentName,
                 String componentListName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ) {
             logger.info("Acquiring listed element named " +
                     highlighted(BLUE, elementName) +
@@ -279,7 +264,7 @@ public class ElementAcquisition {
             componentName = strUtils.contextCheck(componentName);
             pageName = strUtils.firstLetterDeCapped(pageName);
             componentListName = strUtils.firstLetterDeCapped(componentListName);
-            List<Component> components = reflections.getComponentsFromPage(componentListName, pageName, objectRepository);
+            List<Component> components = reflections.getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(components, componentName);
             List<WebElement> elements = reflections.getElementsFromComponent(elementListName, component);
             return acquireNamedElementAmongst(elements, elementName);
@@ -293,14 +278,12 @@ public class ElementAcquisition {
          * @param attributeValue expected attribute value
          * @param listName target list name
          * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
          */
         public WebElement acquireListedElementByAttribute(
                 String attributeName,
                 String attributeValue,
                 String listName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ) {
             logger.info("Acquiring element by " +
                     highlighted(BLUE, attributeName) +
@@ -313,8 +296,7 @@ public class ElementAcquisition {
             pageName = strUtils.firstLetterDeCapped(pageName);
             List<WebElement> elements = reflections.getElementsFromPage(
                     listName,
-                    strUtils.firstLetterDeCapped(pageName),
-                    objectRepository
+                    strUtils.firstLetterDeCapped(pageName)
             );
             return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue);
         }
@@ -328,15 +310,13 @@ public class ElementAcquisition {
          * @param attributeName target attribute name
          * @param listName target list name
          * @param pageName specified page instance name
-         * @param objectRepository instance that includes specified page instance
          */
         public WebElement acquireListedComponentElementByAttribute(
                 String componentName,
                 String attributeValue,
                 String attributeName,
                 String listName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ) {
             logger.info("Acquiring element by " +
                     highlighted(BLUE, attributeName) +
@@ -351,8 +331,7 @@ public class ElementAcquisition {
             List<WebElement> elements = reflections.getElementsFromComponent(
                     listName,
                     componentName,
-                    pageName,
-                    objectRepository
+                    pageName
             );
             return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue);
         }
@@ -362,9 +341,8 @@ public class ElementAcquisition {
          *
          * @param pageName         specified page instance name
          * @param signForms        table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-         * @param objectRepository instance that includes specified page instance
          */
-        public List<Bundle<WebElement, String, String>> acquireElementList(List<Map<String, String>> signForms, String pageName, Object objectRepository) {
+        public List<Bundle<WebElement, String, String>> acquireElementList(List<Map<String, String>> signForms, String pageName) {
             logger.info("Acquiring element list from " + highlighted(BLUE, pageName));
             pageName = strUtils.firstLetterDeCapped(pageName);
             List<Bundle<WebElement, String, String>> bundles = new ArrayList<>();
@@ -372,7 +350,7 @@ public class ElementAcquisition {
                 String inputName = form.get("Input Element");
                 String input = strUtils.contextCheck(form.get("Input"));
                 Bundle<WebElement, String, String> bundle = new Bundle<>(
-                        reflections.getElementFromPage(inputName, pageName, objectRepository),
+                        reflections.getElementFromPage(inputName, pageName),
                         input,
                         inputName
                 );
@@ -386,9 +364,8 @@ public class ElementAcquisition {
          *
          * @param pageName         specified page instance name
          * @param signForms        table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
-         * @param objectRepository instance that includes specified page instance
          */
-        public List<Bundle<WebElement, String, String>> acquireComponentElementList(List<Map<String, String>> signForms, String componentName, String pageName, Object objectRepository) {
+        public List<Bundle<WebElement, String, String>> acquireComponentElementList(List<Map<String, String>> signForms, String componentName, String pageName) {
             logger.info("Acquiring element list from " + highlighted(BLUE, pageName));
             pageName = strUtils.firstLetterDeCapped(pageName);
             List<Bundle<WebElement, String, String>> bundles = new ArrayList<>();
@@ -397,7 +374,7 @@ public class ElementAcquisition {
                 String input = strUtils.contextCheck(form.get("Input"));
                 componentName = strUtils.firstLetterDeCapped(componentName);
                 Bundle<WebElement, String, String> bundle = new Bundle<>(
-                        reflections.getElementFromComponent(inputName, componentName, pageName, objectRepository),
+                        reflections.getElementFromComponent(inputName, componentName, pageName),
                         input,
                         inputName
                 );
@@ -409,20 +386,18 @@ public class ElementAcquisition {
         /**
          * Returns an element bundle from a page object, based on provided specifications.
          *
-         * @param elementFieldName The name of the element field in the page object.
+         * @param elementFieldName The name of the element fields in the page object.
          * @param pageName The name of the page object.
          * @param specifications A map containing the specifications for the element to be retrieved from the page object, including the element name.
-         * @param objectRepository The object repository containing the page object.
          * @return An element bundle containing the element name, the matching element, and a map of the element's attributes.
          */
         public Bundle<String, WebElement, Map<String, String>> acquireElementBundleFromPage(
                 String elementFieldName,
                 String pageName,
-                Map<String, String> specifications,
-                Object objectRepository
+                Map<String, String> specifications
         ){
             logger.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
-            return new Bundle<>(elementFieldName, acquireElementFromPage(elementFieldName, pageName, objectRepository), specifications);
+            return new Bundle<>(elementFieldName, acquireElementFromPage(elementFieldName, pageName), specifications);
         }
 
         /**
@@ -430,18 +405,16 @@ public class ElementAcquisition {
          *
          * @param pageName The name of the page object.
          * @param specifications A list of maps containing the specifications for each element to be retrieved from the page object, including the element name.
-         * @param objectRepository The object repository containing the page object.
          * @return A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
          */
         public List<Bundle<String, WebElement, Map<String, String>>> acquireElementBundlesFromPage(
                 String pageName,
-                List<Map<String, String>> specifications,
-                Object objectRepository
+                List<Map<String, String>> specifications
         ){
             logger.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> bundles = new ArrayList<>();
             for (Map<String, String> specification:specifications) {
-                bundles.add(acquireElementBundleFromPage(specification.get("Element Name"), pageName, specification, objectRepository));
+                bundles.add(acquireElementBundleFromPage(specification.get("Element Name"), pageName, specification));
             }
             return bundles;
         }
@@ -452,21 +425,18 @@ public class ElementAcquisition {
          * @param componentFieldName The name of the component field in the page object.
          * @param pageName The name of the page object.
          * @param specifications A map containing the specifications for the element to be retrieved from the component, including the element name.
-         * @param objectRepository The object repository containing the page object.
          * @return An element bundle containing the element name, the matching element, and a map of the element's attributes.
          */
         public Bundle<String, WebElement, Map<String, String>> acquireElementBundleFromComponent(
                 String componentFieldName,
                 String pageName,
-                Map<String, String> specifications,
-                Object objectRepository
+                Map<String, String> specifications
         ){
             logger.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             return new Bundle<>(specifications.get("Element Name"), acquireElementFromComponent(
                     specifications.get("Element Name"),
                     componentFieldName,
-                    pageName,
-                    objectRepository
+                    pageName
             ), specifications);
         }
 
@@ -476,14 +446,12 @@ public class ElementAcquisition {
          * @param componentFieldName The name of the component field in the page object.
          * @param pageName The name of the page object.
          * @param specifications A list of maps containing the specifications for each element to be retrieved from the component, including the element name.
-         * @param objectRepository The object repository containing the page object.
          * @return A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
          */
         public List<Bundle<String, WebElement, Map<String, String>>> acquireElementBundlesFromComponent(
                 String componentFieldName,
                 String pageName,
-                List<Map<String, String>> specifications,
-                Object objectRepository
+                List<Map<String, String>> specifications
         ){
             logger.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> bundles = new ArrayList<>();
@@ -493,8 +461,7 @@ public class ElementAcquisition {
                                 acquireElementFromComponent(
                                         specification.get("Element Name"),
                                         componentFieldName,
-                                        pageName,
-                                        objectRepository
+                                        pageName
                                 ),
                                 specification
                         )
@@ -509,21 +476,19 @@ public class ElementAcquisition {
          * @param specifications A map containing the specifications for the second child element's text, including the selector text, selector element name, and target element name.
          * @param componentListName The name of the component list in the page object.
          * @param pageName The name of the page object.
-         * @param objectRepository The object repository containing the page object.
          * @return An element bundle containing the target element name, the matching element, and a map of the element's attributes.
          */
         public <Component extends WebElement> Bundle<String, WebElement, Map<String, String>> selectChildElementFromComponentsBySecondChildText(
                 Map<String, String> specifications,
                 String componentListName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ){
             logger.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             String selectorElementText = strUtils.contextCheck(specifications.get("Selector Text"));
             String selectorElementName = strUtils.contextCheck(specifications.get("Selector Element"));
             String targetElementName = strUtils.contextCheck(specifications.get("Target Element"));
             pageName = strUtils.firstLetterDeCapped(pageName);
-            List<Component> components = reflections.getComponentsFromPage(componentListName, pageName, objectRepository);
+            List<Component> components = reflections.getComponentsFromPage(componentListName, pageName);
             Component component = reflections.acquireExactNamedComponentAmongst(components, selectorElementText, selectorElementName);
             return new Bundle<>(targetElementName, reflections.getElementFromComponent(targetElementName, component), specifications);
         }
@@ -534,19 +499,17 @@ public class ElementAcquisition {
          * @param specifications A list of maps containing the specifications for the second child element's text.
          * @param componentListName The name of the component list in the page object.
          * @param pageName The name of the page object.
-         * @param objectRepository The object repository containing the page object.
          * @return A list of element bundles containing the component name, the matching element, and a map of the element's attributes.
          */
         public List<Bundle<String, WebElement, Map<String, String>>> selectChildElementsFromComponentsBySecondChildText(
                 List<Map<String, String>> specifications,
                 String componentListName,
-                String pageName,
-                Object objectRepository
+                String pageName
         ){
             logger.info("Acquiring element bundles from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> pairs = new ArrayList<>();
             for (Map<String, String> map:specifications) {
-                pairs.add(selectChildElementFromComponentsBySecondChildText(map, componentListName, pageName, objectRepository));
+                pairs.add(selectChildElementFromComponentsBySecondChildText(map, componentListName, pageName));
             }
             return pairs;
         }
@@ -734,10 +697,27 @@ public class ElementAcquisition {
         }
     }
 
-    public static class Reflections extends Utilities {
+    public static class Reflections <ObjectRepository extends PageRepository> extends Utilities {
 
-        public Reflections(RemoteWebDriver driver) {
+        private final Class<ObjectRepository> pageRepository;
+
+        public Reflections(RemoteWebDriver driver, Class<ObjectRepository> pageRepository) {
             super(driver);
+            this.pageRepository = pageRepository;
+        }
+
+        protected ObjectRepository getObjectRepository(){
+            try {
+                return pageRepository.getConstructor().newInstance();
+            }
+            catch (
+                    InstantiationException |
+                    IllegalAccessException |
+                    NoSuchMethodException |
+                    InvocationTargetException e
+            ) {
+                throw new RuntimeException(e);
+            }
         }
 
         /**
@@ -745,12 +725,11 @@ public class ElementAcquisition {
          *
          * @param elementFieldName element field name
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the element
          */
-        public WebElement getElementFromPage(String elementFieldName, String pageName, Object objectRepository){
+        public WebElement getElementFromPage(String elementFieldName, String pageName){
             Map<String, Object> pageFields;
-            Object pageObject = reflectionUtils.getFields(objectRepository).get(pageName);
+            Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
             if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             return (WebElement) pageFields.get(elementFieldName);
@@ -761,13 +740,12 @@ public class ElementAcquisition {
          *
          * @param elementFieldName element field name
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the list of elements
          */
         @SuppressWarnings("unchecked")
-        public List<WebElement> getElementsFromPage(String elementFieldName, String pageName, Object objectRepository){
+        public List<WebElement> getElementsFromPage(String elementFieldName, String pageName){
             Map<String, Object> pageFields;
-            Object pageObject = reflectionUtils.getFields(objectRepository).get(pageName);
+            Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
             if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             return (List<WebElement>) pageFields.get(elementFieldName);
@@ -779,16 +757,14 @@ public class ElementAcquisition {
          * @param elementFieldName element field name
          * @param selectionName element text
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the element
          */
         public <Component extends WebElement> WebElement getElementAmongstComponentsFromPage(
                 String elementFieldName,
                 String selectionName,
                 String componentListName,
-                String pageName,
-                Object objectRepository){
-            List<Component> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+                String pageName){
+            List<Component> componentList = getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, selectionName);
             Map<String, Object> componentFields = reflectionUtils.getFields(component);
             return (WebElement) componentFields.get(elementFieldName);
@@ -800,7 +776,6 @@ public class ElementAcquisition {
          * @param elementFieldName element field name
          * @param selectionName element text
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the list of elements
          */
         @SuppressWarnings("unchecked")
@@ -808,9 +783,8 @@ public class ElementAcquisition {
                 String elementFieldName,
                 String selectionName,
                 String componentListName,
-                String pageName,
-                Object objectRepository){
-            List<Component> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+                String pageName){
+            List<Component> componentList = getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, selectionName);
             Map<String, Object> componentFields = reflectionUtils.getFields(component);
             return (List<WebElement>) componentFields.get(elementFieldName);
@@ -822,16 +796,14 @@ public class ElementAcquisition {
          * @param elementFieldName element field name
          * @param selectionName element text
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the element
          */
         public <Component extends WebElement> WebElement getElementAmongstNamedComponentsFromPage(
                 String elementFieldName,
                 String selectionName,
                 String componentListName,
-                String pageName,
-                Object objectRepository){
-            List<Component> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+                String pageName){
+            List<Component> componentList = getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, selectionName);
             Map<String, Object> componentFields = reflectionUtils.getFields(component);
             return (WebElement) componentFields.get(elementFieldName);
@@ -843,7 +815,6 @@ public class ElementAcquisition {
          * @param listFieldName list field name
          * @param selectionName element text
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the list of elements
          */
         @SuppressWarnings("unchecked")
@@ -851,9 +822,8 @@ public class ElementAcquisition {
                 String listFieldName,
                 String selectionName,
                 String componentListName,
-                String pageName,
-                Object objectRepository){
-            List<Component> componentList = getComponentsFromPage(componentListName, pageName, objectRepository);
+                String pageName){
+            List<Component> componentList = getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, selectionName);
             Map<String, Object> componentFields = reflectionUtils.getFields(component);
             return (List<WebElement>) componentFields.get(listFieldName);
@@ -864,12 +834,11 @@ public class ElementAcquisition {
          *
          * @param componentName component name
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns map of fields
          */
-        public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName, Object objectRepository){
+        public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName){
             Map<String, Object> componentFields;
-            Object pageObject = reflectionUtils.getFields(objectRepository).get(pageName);
+            Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
             if (pageObject != null) componentFields = reflectionUtils.getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             return reflectionUtils.getFields(componentFields.get(componentName));
@@ -880,14 +849,13 @@ public class ElementAcquisition {
          *
          * @param componentListName component list name
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the list of components
          */
         @SuppressWarnings("unchecked")
-        public <Component extends WebElement> List<Component> getComponentsFromPage(String componentListName, String pageName, Object objectRepository){
+        public <Component extends WebElement> List<Component> getComponentsFromPage(String componentListName, String pageName){
             Map<String, Object> pageFields;
             Map<String, Object> componentFields;
-            Object pageObject = reflectionUtils.getFields(objectRepository).get(pageName);
+            Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
             if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             return (List<Component>) pageFields.get(componentListName);
@@ -904,74 +872,13 @@ public class ElementAcquisition {
         }
 
         /**
-         * Acquire listed component by the text of its given child element
-         *
-         * @param items list of components
-         * @param attributeName component element attribute name
-         * @param attributeValue attribute value
-         * @param elementFieldName component elements field name
-         * @return returns the matching component
-         * @param <T> component type
-         */
-        public  <T> T acquireComponentByElementAttributeAmongst(
-                List<T> items,
-                String attributeName,
-                String attributeValue,
-                String elementFieldName
-        ){
-            logger.info("Acquiring component by attribute " + strUtils.highlighted(BLUE, attributeName + " -> " + attributeValue));
-            boolean timeout = false;
-            long initialTime = System.currentTimeMillis();
-            while (!timeout){
-                for (T component : items) {
-                    Map<String, Object> componentFields = reflectionUtils.getFields(component);
-                    WebElement element = (WebElement) componentFields.get(elementFieldName);
-                    String attribute = element.getAttribute(attributeName);
-                    if (attribute.equals(attributeValue)) return component;
-                }
-                if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
-            }
-            throw new NoSuchElementException("No component with " + attributeName + " : " + attributeValue + " could be found!");
-        }
-
-        /**
-         * Acquire listed component by the text of its given child element
-         *
-         * @param items list of components
-         * @param elementText text of the component element
-         * @param targetElementFieldName component elements field name
-         * @return returns the matching component
-         * @param <Component> component type
-         */
-        public  <Component extends WebElement> Component acquireExactNamedComponentAmongst(
-                List<Component> items,
-                String elementText,
-                String targetElementFieldName
-        ){
-            logger.info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
-            boolean timeout = false;
-            long initialTime = System.currentTimeMillis();
-            while (!timeout){
-                for (Component component : items) {
-                    Map<String, Object> componentFields = reflectionUtils.getFields(component);
-                    WebElement element = (WebElement) componentFields.get(targetElementFieldName);
-                    String text = element.getText();
-                    String name = element.getAccessibleName();
-                    if (text.equalsIgnoreCase(elementText) || name.equalsIgnoreCase(elementText)) return component;
-                }
-                if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
-            }
-            throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
-        }
-
-        /**
-         * Acquires web element from a page object by using Java reflections
+         * Acquires a web element from a page object by using Java reflections
          *
          * @param fieldName field name of the element, in the page object
          * @param inputClass instance of the page object that the WebElement resides in
          * @return corresponding WebElement from the given page object
          */
-        public  <T> WebElement getElement(String fieldName, Class<T> inputClass){
+        public  <PageObject> WebElement getElement(String fieldName, Class<PageObject> inputClass){
             return (WebElement) reflectionUtils.getFieldValue(fieldName, inputClass);
         }
 
@@ -981,11 +888,10 @@ public class ElementAcquisition {
          * @param elementFieldName element field name
          * @param componentName target component
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the element
          */
-        public WebElement getElementFromComponent(String elementFieldName, String componentName, String pageName, Object objectRepository){
-            return (WebElement) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(elementFieldName);
+        public WebElement getElementFromComponent(String elementFieldName, String componentName, String pageName){
+            return (WebElement) getComponentFieldsFromPage(componentName, pageName).get(elementFieldName);
         }
 
         /**
@@ -1005,18 +911,17 @@ public class ElementAcquisition {
          * @param listFieldName element field
          * @param componentName target component name
          * @param pageName name of the page instance
-         * @param objectRepository instance of an object that contains instances of every page
          * @return returns the list of elements
          */
         @SuppressWarnings("unchecked")
-        public List<WebElement> getElementsFromComponent(String listFieldName, String componentName, String pageName, Object objectRepository){
-            return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName, objectRepository).get(listFieldName);
+        public List<WebElement> getElementsFromComponent(String listFieldName, String componentName, String pageName){
+            return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName).get(listFieldName);
         }
 
         /**
          * Acquires a list elements from a given component
          *
-         * @param elementListFieldName elements list field
+         * @param elementListFieldName element list field
          * @param component target component
          * @return returns the list of elements
          */
