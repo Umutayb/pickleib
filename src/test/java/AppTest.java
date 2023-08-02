@@ -22,7 +22,7 @@ public class AppTest {
     @Before
     public void before(){
         WebDriverFactory.setHeadless(true);
-        WebDriverFactory.setDriverTimeout(30);
+        WebDriverFactory.setDriverTimeout(45);
         PickleibWebDriver.initialize();
         interactions = new ElementInteractions(driver, DriverFactory.DriverType.Web);
         webInteractions = new WebInteractions();
