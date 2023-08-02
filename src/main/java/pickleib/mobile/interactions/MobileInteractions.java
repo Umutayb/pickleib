@@ -12,7 +12,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.SwipeDirection;
-import pickleib.exceptions.PickleibException;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
 import records.Bundle;
@@ -203,7 +202,18 @@ public class MobileInteractions extends MobileUtilities {
                 highlighted(GRAY," on ") +
                 highlighted(BLUE, pageName)
         );
+        center(element);
+    }
+
+    /**
+     * Center a given element
+     *
+     * @param element target element
+     * @return the given element
+     */
+    public WebElement center(WebElement element){
         centerElement(element);
+        return element;
     }
 
     /**
@@ -581,7 +591,7 @@ public class MobileInteractions extends MobileUtilities {
 
     /**
      *
-     * Wait until element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
+     * Wait until an element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
      *
      * @param element target element
      * @param elementName target element name
@@ -595,13 +605,16 @@ public class MobileInteractions extends MobileUtilities {
             String pageName,
             String attributeName,
             String attributeValue) {
-        log.info("Waiting for the absence of " +
+        log.info("Waiting until element " +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," on the ") +
-                highlighted(BLUE, pageName)
+                highlighted(GRAY," contains ") +
+                highlighted(BLUE, attributeValue) +
+                highlighted(GRAY," in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY," attribute.")
         );
-        try {wait.until((ExpectedConditions.attributeContains(element, attributeName, attributeValue)));}
-        catch (WebDriverException ignored) {}
+        boolean attributeFound = elementContainsAttribute(element, attributeName, attributeValue);
+        log.info("Attribute match ? " + highlighted(BLUE, String.valueOf(attributeFound)));
     }
 
     /**

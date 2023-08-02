@@ -15,7 +15,7 @@ import java.time.Duration;
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 
-public class MobileUtilities extends Utilities {
+public abstract class MobileUtilities extends Utilities {
 
     /**
      * MobileUtilities for frameworks that use the Pickleib drivers

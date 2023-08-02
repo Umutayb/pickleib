@@ -4,14 +4,11 @@ import context.ContextStore;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
-import pickleib.utilities.Interactions;
-import pickleib.exceptions.PickleibException;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.utilities.WebUtilities;
@@ -26,19 +23,16 @@ import static utils.StringUtilities.Color.*;
 public class WebInteractions extends WebUtilities {
 
     protected RemoteWebDriver driver;
-    private final Interactions interactions;
     protected WebDriverWait wait;
 
     public WebInteractions(RemoteWebDriver driver, WebDriverWait wait){
         super(driver);
-        interactions = new Interactions(driver);
         this.driver = driver;
         this.wait = wait;
     }
 
     public WebInteractions(){
         super(PickleibWebDriver.driver);
-        interactions = new Interactions(driver);
         this.driver = PickleibWebDriver.driver;
         this.wait = PickleibWebDriver.wait;
     }
@@ -92,7 +86,7 @@ public class WebInteractions extends WebUtilities {
      * Switch to the tab with handle: {handle}
      * Switches a specified tab by tab handle
      *
-     * @param handle target tab handle
+     * @param handle target a tab handle
      */
     public void switchToTabByHandle(String handle) {
         handle = strUtils.contextCheck(handle);
@@ -140,7 +134,7 @@ public class WebInteractions extends WebUtilities {
      * @param form Map(String, String)
      */
     public void addLocalStorageValues(Map<String, String> form){
-        interactions.addLocalStorageValues(form);
+        addValuesToLocalStorage(form);
     }
 
     /**
@@ -150,7 +144,7 @@ public class WebInteractions extends WebUtilities {
      * @param cookies Map(String, String)
      */
     public void addCookies(Map<String, String> cookies){
-        interactions.addCookies(cookies);
+        putCookies(cookies);
     }
 
     /**
@@ -161,7 +155,7 @@ public class WebInteractions extends WebUtilities {
     /**
      * Deletes all cookies
      */
-    public void deleteCookies() {interactions.deleteCookies();}
+    public void deleteCookies() {deleteAllCookies();}
 
     /**
      *
@@ -178,7 +172,7 @@ public class WebInteractions extends WebUtilities {
      * @param text target text
      */
     public void clickByText(String text) {
-        interactions.clickByText(text);
+        clickButtonWithText(text, true);
     }
 
     /**
@@ -188,9 +182,7 @@ public class WebInteractions extends WebUtilities {
      * @param cssSelector target text
      */
     public void clickByCssSelector(String cssSelector) {
-        WebElement element = driver.findElement(By.cssSelector(cssSelector));
-        centerElement(element);
-        clickElement(element, true);
+        clickButtonByCssSelector(cssSelector);
     }
 
     /**
@@ -200,7 +192,7 @@ public class WebInteractions extends WebUtilities {
      * @param duration desired duration
      */
     public void waitForSeconds(Integer duration) {
-        interactions.waitForSeconds(duration);
+        waitFor(duration);
     }
 
     /**
@@ -219,18 +211,21 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickInteraction(WebElement button, String buttonName, String pageName){
-        centerElement(button);
-        interactions.clickInteraction(button, buttonName, pageName);
+        log.info("Clicking " +
+                highlighted(BLUE, buttonName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clickElement(button);
     }
 
     /**
      *
-     * Click a button after centering it
+     * Click the {button name} on the {page name}
      *
      */
     public void clickInteraction(WebElement button){
-        centerElement(button);
-        interactions.clickInteraction(button);
+        clickElement(button);
     }
 
     /**
@@ -248,7 +243,7 @@ public class WebInteractions extends WebUtilities {
             String attributeName,
             String elementName,
             String pageName){
-        interactions.saveAttributeValue(element, attributeName, elementName, pageName);
+        updateContextByElementAttribute(element, attributeName, elementName, pageName);
     }
 
     /**
@@ -265,7 +260,18 @@ public class WebInteractions extends WebUtilities {
                 highlighted(GRAY," on ") +
                 highlighted(BLUE, pageName)
         );
+        center(element);
+    }
+
+    /**
+     * Center a given element
+     *
+     * @param element target element
+     * @return the given element
+     */
+    public WebElement center(WebElement element){
         centerElement(element);
+        return element;
     }
 
     /**
@@ -277,12 +283,17 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickTowards(WebElement element, String elementName, String pageName){
-        interactions.clickTowards(element, elementName, pageName);
+        log.info("Clicking " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clickAtAnOffset(element, 0, 0);
     }
 
     /**
      *
-     * Perform a JS click on element {element name} on the {page name}
+     * Perform a JS click on an element {element name} on the {page name}
      *
      * @param element target element
      * @param elementName target element name
@@ -306,7 +317,13 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void clickIfPresent(WebElement element, String elementName, String pageName){
-        interactions.clickIfPresent(element, elementName, pageName);
+        log.info("Clicking " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, ", if it is present...")
+        );
+        clickButtonIfPresent(element);
     }
 
     /**
@@ -319,7 +336,20 @@ public class WebInteractions extends WebUtilities {
      * @param input input text
      */
     public void basicFill(WebElement inputElement, String inputName, String pageName, String input){
-        interactions.basicFill(inputElement, input, pageName, input);
+        input = strUtils.contextCheck(input);
+        log.info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, input)
+        );
+        clearFillInput(
+                inputElement, //Element
+                input, //Input Text
+                false,
+                true
+        );
     }
 
     /**
@@ -330,23 +360,7 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void fillForm(List<Bundle<WebElement, String, String>> bundles, String pageName){
-        String inputName;
-        String input;
-        for (Bundle<WebElement, String, String> bundle : bundles) {
-            log.info("Filling " +
-                    highlighted(BLUE, bundle.theta()) +
-                    highlighted(GRAY," on the ") +
-                    highlighted(BLUE, pageName) +
-                    highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, bundle.beta())
-            );
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            clearFillInput(bundle.alpha(), //Input Element
-                    bundle.beta(), //Input Text
-                    false,
-                    true
-            );
-        }
+        fillInputForm(bundles, pageName);
     }
 
     /**
@@ -365,7 +379,6 @@ public class WebInteractions extends WebUtilities {
             String inputName,
             String pageName,
             String inputText){
-        inputText = strUtils.contextCheck(inputText);
         log.info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," i-frame element input on the ") +
@@ -373,10 +386,7 @@ public class WebInteractions extends WebUtilities {
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        elementIs(iframe, ElementState.displayed);
-        driver.switchTo().frame(iframe);
-        clearFillInput(element, inputText,true,true);
-        driver.switchTo().parentFrame();
+        fillIframeInputElement(iframe, element, inputText);
     }
 
     /**
@@ -395,10 +405,7 @@ public class WebInteractions extends WebUtilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        driver.switchTo().frame(iframe);
-        centerElement(element);
-        clickElement(element);
-        driver.switchTo().parentFrame();
+        clickIframeButton(iframe, element);
     }
 
     /**
@@ -415,27 +422,12 @@ public class WebInteractions extends WebUtilities {
             WebElement iFrame,
             String iframeName,
             String pageName){
-        String inputName;
-        String input;
-        for (Bundle<WebElement, String, String> bundle : bundles) {
-            log.info("Filling " +
-                    highlighted(BLUE, bundle.theta()) +
-                    highlighted(GRAY," on the ") +
-                    highlighted(BLUE, pageName) +
-                    highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, bundle.beta())
-            );
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            driver.switchTo().frame(iFrame);
-
-            clearFillInput(
-                    bundle.alpha(),
-                    bundle.beta(),
-                    false,
-                    true
-            );
-        }
-        driver.switchTo().parentFrame();
+        fillIframeForm(
+                bundles,
+                iFrame,
+                iframeName,
+                pageName
+        );
     }
 
     /**
@@ -448,14 +440,12 @@ public class WebInteractions extends WebUtilities {
      * @param expectedText expected text
      */
     public void verifyText(WebElement element, String elementName, String pageName, String expectedText){
-        expectedText = strUtils.contextCheck(expectedText);
         log.info("Performing text verification for " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        Assert.assertEquals(expectedText, element.getText());
-        log.success("Text of the element " + elementName + " was verified!");
+        verifyElementText(element, expectedText);
     }
 
     /**
@@ -468,44 +458,29 @@ public class WebInteractions extends WebUtilities {
      * @param expectedText expected text
      */
     public void verifyContainsText(WebElement element, String elementName, String pageName, String expectedText){
-        expectedText = strUtils.contextCheck(expectedText);
         log.info("Performing text verification for " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        Assert.assertTrue(element.getText().contains(expectedText));
-        log.success("Text of the element " + elementName + " was verified!");
+        verifyElementContainsText(element, expectedText);
     }
 
     /**
      *
-     * Verify text of element from list on the {page name}
+     * Verify the text of an element from the list on the {page name}
      *
      * @param pageName specified page instance name
      */
     public void verifyListedText(
             List<Bundle<WebElement, String, String>> bundles,
             String pageName){
-        for (Bundle<WebElement, String, String> bundle : bundles) {
-            String elementName = bundle.beta();
-            String expectedText = bundle.theta();
-            log.info("Performing text verification for " +
-                    highlighted(BLUE, elementName) +
-                    highlighted(GRAY," on the ") +
-                    highlighted(BLUE, pageName) +
-                    highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, expectedText)
-            );
-            Assert.assertEquals("The " + bundle.alpha().getText() + " does not contain text '", expectedText, bundle.alpha().getText());
-            log.success("Text of the element" + bundle.alpha().getText() + " was verified!");
-
-        }
+        verifyListedElementText(bundles, pageName);
     }
 
     /**
      *
-     * Verify presence of element {element name} on the {page name}
+     * Verify the presence of an element {element name} on the {page name}
      *
      * @param element target element
      * @param elementName target element name
@@ -602,13 +577,16 @@ public class WebInteractions extends WebUtilities {
             String pageName,
             String attributeName,
             String attributeValue) {
-        log.info("Waiting for the absence of " +
+        log.info("Waiting until element " +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," on the ") +
-                highlighted(BLUE, pageName)
+                highlighted(GRAY," contains ") +
+                highlighted(BLUE, attributeValue) +
+                highlighted(GRAY," in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY," attribute.")
         );
-        try {wait.until((ExpectedConditions.attributeContains(element, attributeName, attributeValue)));}
-        catch (WebDriverException ignored) {}
+        boolean attributeFound = elementContainsAttribute(element, attributeName, attributeValue);
+        log.info("Attribute match ? " + highlighted(BLUE, String.valueOf(attributeFound)));
     }
 
     /**
@@ -627,51 +605,25 @@ public class WebInteractions extends WebUtilities {
             String pageName,
             String attributeName,
             String attributeValue) {
-
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        int counter = 0;
-
-        log.info("Verifying " +
-                highlighted(BLUE, attributeName) +
-                highlighted(GRAY, " attribute of ") +
+        log.info("Verifying that " +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," on the ") +
-                highlighted(BLUE, pageName)
+                highlighted(GRAY," contains ") +
+                highlighted(BLUE, attributeValue) +
+                highlighted(GRAY," in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY," attribute.")
         );
-        attributeValue = strUtils.contextCheck(attributeValue);
-        do {
-            try {
-                Assert.assertTrue(
-                        "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
-                                "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
-                        wait.until(ExpectedConditions.attributeContains(element, attributeName, attributeValue))
-                );
-                log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
-                return;
-            }
-            catch (WebDriverException webDriverException){
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException)){
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                waitFor(0.5);
-                counter++;
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning(caughtException);
-        throw new PickleibException(caughtException);
+
+        Assert.assertTrue(
+                "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                        "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
+                elementContainsAttribute(element, attributeName, attributeValue)
+        );
     }
 
     /**
      *
-     * Verify {attribute name} css attribute of element {element name} on the {page name} is {attribute value}
+     * Verify {attribute name} css attribute of an element {element name} on the {page name} is {attribute value}
      *
      * @param element target element
      * @param attributeName target attribute name
@@ -685,7 +637,6 @@ public class WebInteractions extends WebUtilities {
             String elementName,
             String pageName,
             String attributeValue) {
-
         log.info("Verifying " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
@@ -755,10 +706,7 @@ public class WebInteractions extends WebUtilities {
      * @param scroll scrolls if true
      */
     public void clickButtonByText(String buttonText, Boolean scroll) {
-        log.info("Clicking button by its text " + buttonText);
-        WebElement element = getElementByText(buttonText);
-        centerElement(element);
-        clickElement(element, scroll);
+        clickButtonByItsText(buttonText, scroll);
     }
 
     /**
@@ -783,13 +731,12 @@ public class WebInteractions extends WebUtilities {
      *
      * Press {target key} key on {element name} element of the {}
      *
-     * @param key target key
+     * @param keys target key
      * @param elementName target element name
      * @param pageName specified page instance name
      */
-    public void pressKey(WebElement element, Keys key, String elementName, String pageName){
-        log.info("Filling the giving input " + elementName + " with " + key );
-        element.sendKeys(key);
+    public void pressKey(WebElement element, String elementName, String pageName, Keys... keys){
+        pressKeysOnElement(element, elementName, pageName, keys);
     }
 
     /**
@@ -798,7 +745,6 @@ public class WebInteractions extends WebUtilities {
      *
      * @param script JS script
      */
-    //@Given("Execute JS command: {}")
     public void executeJSCommand(String script) {
         executeScript(script);
     }
