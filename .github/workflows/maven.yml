@@ -17,18 +17,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
+    - uses: abhi1693/setup-browser@v0.3.4
+      with:
+        browser: chrome
+        version: latest  
     - uses: actions/checkout@v3
     - name: Set up JDK 17
       uses: browser-actions/setup-chrome@v1
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: maven
-    - uses: abhi1693/setup-browser@v0.3.4
-      with:
-        browser: chrome
-        version: latest    
+        cache: maven  
     - name: Build with Maven
       run: mvn clean test
