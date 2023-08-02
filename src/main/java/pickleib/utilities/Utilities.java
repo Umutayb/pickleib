@@ -1,7 +1,12 @@
 package pickleib.utilities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
@@ -12,19 +17,18 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
-import pickleib.utilities.element.ElementAcquisition;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
-import utils.Printer;
-import utils.PropertyUtility;
-import utils.StringUtilities;
-import utils.TextParser;
+import utils.*;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
 public abstract class Utilities {
+
+    public static ReflectionUtilities reflectionUtils = new ReflectionUtilities();
     public ScreenCaptureUtility capture = new ScreenCaptureUtility();
     public StringUtilities strUtils = new StringUtilities();
     public ObjectMapper objectMapper = new ObjectMapper();
@@ -59,6 +63,7 @@ public abstract class Utilities {
      */
     protected String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 
+    //TODO check the warning log in the loop
     /**
      * Clicks an element after waiting for its state to be enabled
      *
@@ -598,18 +603,42 @@ public abstract class Utilities {
     }
 
     /**
-     * Transform a given element to an object using javascript
+     * Transform a given element to a JsonObject using javascript and JsonParser
      *
      * @param element target element
      * @return returns an object with the attributes of a given element
      */
     //This method returns all the attributes of an element as an object
-    protected Object getElementObject(WebElement element){ //TODO: Fix this to return JSONObject
-        return ((JavascriptExecutor) driver).executeScript("var items = {}; for (index = 0;" +
-                        " index < arguments[0].attributes.length; ++index) " +
-                        "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; return items;",
+    protected JsonObject getElementJson(WebElement element){
+        String object = ((JavascriptExecutor) driver).executeScript(
+                "var items = {}; " +
+                        "for (index = 0; index < arguments[0].attributes.length; ++index) " +
+                        "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; " +
+                        "return JSON.stringify(items);",
                 element
-        );
+        ).toString();
+        return (JsonObject) JsonParser.parseString(object);
+    }
+
+    /**
+     * Transform a given element to a JSONObject using javascript and JSONParser
+     *
+     * @param element target element
+     * @return returns an object with the attributes of a given element
+     */
+    protected JSONObject getElementJSON(WebElement element){
+        try {
+            String object = ((JavascriptExecutor) driver).executeScript(
+                    "var items = {}; " +
+                            "for (index = 0; index < arguments[0].attributes.length; ++index) " +
+                            "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; " +
+                            "return JSON.stringify(items);",
+                    element
+            ).toString();
+            JSONParser parser = new JSONParser();
+            return (JSONObject) parser.parse(object);
+        }
+        catch (ParseException e) {throw new RuntimeException(e);}
     }
 
     /**
@@ -617,10 +646,10 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    //This method prints all the attributes of a given element
-    protected void printElementAttributes(WebElement element){//TODO: update this
-        //JSONObject attributeJSON = new JSONObject(strUtils.str2Map(getElementObject(element).toString()));
-        //for (Object attribute : attributeJSON.keySet()) log.info();(attribute +" : "+ attributeJSON.get(attribute));
+    protected void printElementAttributes(WebElement element){
+        JSONObject attributeJSON = getElementJSON(element);
+        for (Object attribute : attributeJSON.keySet())
+            log.info(attribute +" : "+ attributeJSON.get(attribute));
     }
 
     /**
@@ -742,8 +771,69 @@ public abstract class Utilities {
         return null;
     }
 
-    public static class InteractionUtilities extends Utilities {
 
+    /**
+     * Acquire listed component by the text of its given child element
+     *
+     * @param items list of components
+     * @param attributeName component element attribute name
+     * @param attributeValue attribute value
+     * @param elementFieldName component elements field name
+     * @return returns the matching component
+     * @param <T> component type
+     */
+    public  <T> T acquireComponentByElementAttributeAmongst(
+            List<T> items,
+            String attributeName,
+            String attributeValue,
+            String elementFieldName
+    ){
+        log.info("Acquiring component by attribute " + strUtils.highlighted(BLUE, attributeName + " -> " + attributeValue));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (T component : items) {
+                Map<String, Object> componentFields = reflectionUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(elementFieldName);
+                String attribute = element.getAttribute(attributeName);
+                if (attribute.equals(attributeValue)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with " + attributeName + " : " + attributeValue + " could be found!");
+    }
+
+    /**
+     * Acquire listed component by the text of its given child element
+     *
+     * @param items list of components
+     * @param elementText text of the component element
+     * @param targetElementFieldName component elements field name
+     * @return returns the matching component
+     * @param <Component> component type
+     */
+    public  <Component extends WebElement> Component acquireExactNamedComponentAmongst(
+            List<Component> items,
+            String elementText,
+            String targetElementFieldName
+    ){
+        log.info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
+        boolean timeout = false;
+        long initialTime = System.currentTimeMillis();
+        while (!timeout){
+            for (Component component : items) {
+                Map<String, Object> componentFields = reflectionUtils.getFields(component);
+                WebElement element = (WebElement) componentFields.get(targetElementFieldName);
+                String text = element.getText();
+                String name = element.getAccessibleName();
+                if (text.equalsIgnoreCase(elementText) || name.equalsIgnoreCase(elementText)) return component;
+            }
+            if (System.currentTimeMillis() - initialTime > elementTimeout) timeout = true;
+        }
+        throw new NoSuchElementException("No component with text/name '" + elementText + "' could be found!");
+    }
+
+    public static class InteractionUtilities extends Utilities {
         public InteractionUtilities(RemoteWebDriver driver){
             super(driver);
         }
@@ -776,8 +866,7 @@ public abstract class Utilities {
                                               String attributeName,
                                               String attributeValue,
                                               String elementFieldName){
-            ElementAcquisition.Reflections reflections = new ElementAcquisition.Reflections(this.driver);
-            return reflections.acquireComponentByElementAttributeAmongst(items, attributeName, attributeValue, elementFieldName);
+            return acquireComponentByElementAttributeAmongst(items, attributeName, attributeValue, elementFieldName);
         }
     }
 }

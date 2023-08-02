@@ -3,10 +3,7 @@ package pickleib.web.interactions;
 import context.ContextStore;
 import org.junit.Assert;
 import org.openqa.selenium.*;
-import org.openqa.selenium.html5.LocalStorage;
-import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
@@ -14,6 +11,7 @@ import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
 import pickleib.utilities.Interactions;
+import pickleib.exceptions.PickleibException;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.utilities.WebUtilities;
@@ -552,7 +550,6 @@ public class WebInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         verifyElementState(element, expectedState);
-        log.success("The element " + elementName + " was verified to be " + expectedState.name());
     }
 
     /**
@@ -581,7 +578,7 @@ public class WebInteractions extends WebUtilities {
      * @param pageName specified page instance name
      */
     public void waitUntilVisible(WebElement element, String elementName, String pageName) {
-        log.info("Waiting for the absence of " +
+        log.info("Waiting visibility of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -631,6 +628,10 @@ public class WebInteractions extends WebUtilities {
             String attributeName,
             String attributeValue) {
 
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        int counter = 0;
+
         log.info("Verifying " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
@@ -639,12 +640,33 @@ public class WebInteractions extends WebUtilities {
                 highlighted(BLUE, pageName)
         );
         attributeValue = strUtils.contextCheck(attributeValue);
-        Assert.assertTrue(
-                "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
-                        "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
-                wait.until(ExpectedConditions.attributeContains(element, attributeName, attributeValue))
-        );
-        log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
+        do {
+            try {
+                Assert.assertTrue(
+                        "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                                "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
+                        wait.until(ExpectedConditions.attributeContains(element, attributeName, attributeValue))
+                );
+                log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
+                return;
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                waitFor(0.5);
+                counter++;
+            }
+        }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning(caughtException);
+        throw new PickleibException(caughtException);
     }
 
     /**
