@@ -20,7 +20,6 @@ import pickleib.mobile.interactions.MobileInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.interactions.WebInteractions;
 import records.Bundle;
-import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import utils.*;
 import java.time.Duration;
 import java.util.List;

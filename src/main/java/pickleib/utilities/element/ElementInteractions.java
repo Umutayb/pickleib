@@ -22,20 +22,17 @@ public class ElementInteractions extends Utilities {
 
     public DriverFactory.DriverType driverType;
 
-    protected RemoteWebDriver driver;
     protected WebDriverWait wait;
 
     public ElementInteractions(RemoteWebDriver driver, WebDriverWait wait, DriverFactory.DriverType driverType){
         super(driver);
         this.driverType = driverType;
-        this.driver = driver;
         this.wait = wait;
     }
 
     public ElementInteractions(RemoteWebDriver driver, DriverFactory.DriverType driverType){
         super(driver);
         this.driverType = driverType;
-        this.driver = driver;
     }
 
     /**
