@@ -360,33 +360,4 @@ public class WebInteractions extends WebUtilities {
         }
         else throw new RuntimeException("'" + eventName + "' event is not fired!");
     }
-
-    /**
-     * Executes interactions on a list of element bundles, based on the specified interaction type.
-     * <p>
-     * The interaction type is specified in the "Interaction Type" key of the map contained in each element bundle.
-     * <p>
-     * @param bundles A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
-     * @param pageName The name of the page object.
-     * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
-     */
-    public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName){
-        for (Bundle<String, WebElement, Map<String, String>> bundle:bundles) {
-            InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
-            switch (interactionType){
-                case click  -> interact.clickInteraction(bundle.beta(), bundle.alpha(), pageName);
-                case fill   -> interact.basicFill(bundle.beta(), bundle.alpha(), pageName, strUtils.contextCheck(bundle.theta().get("Input")));
-                case center -> interact.center(bundle.beta(), bundle.alpha(), pageName);
-                case verify -> interact.verifyElementContainsAttribute(
-                        bundle.beta(),
-                        bundle.alpha(),
-                        pageName,
-                        bundle.theta().get("Attribute Name"),
-                        strUtils.contextCheck(bundle.theta().get("Attribute Value"))
-                );
-                default -> throw new EnumConstantNotPresentException(InteractionType.class, interactionType.name());
-            }
-        }
-    }
-    // Sample click configuration: bundleInteraction(List.of(new Bundle< >(elementName, element, Map.of("Interaction Type", "click"))), pageName);
 }
