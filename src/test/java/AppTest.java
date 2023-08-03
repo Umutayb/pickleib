@@ -27,6 +27,7 @@ public class AppTest {
         WebDriverFactory.setDriverTimeout(120);
         WebDriverFactory.setUseWDM(true);
         PickleibWebDriver.initialize();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
         interactions = new ElementInteractions(driver, DriverFactory.DriverType.Web);
         webInteractions = new WebInteractions();
         page = new PageClass();
