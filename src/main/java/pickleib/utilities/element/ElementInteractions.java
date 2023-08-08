@@ -24,6 +24,16 @@ public class ElementInteractions extends Utilities {
 
     protected WebDriverWait wait;
 
+    public boolean isScrolling() {
+        return scroll;
+    }
+
+    public void setScroll(boolean scroll) {
+        this.scroll = scroll;
+    }
+
+    boolean scroll = false;
+
     public ElementInteractions(RemoteWebDriver driver, WebDriverWait wait, DriverFactory.DriverType driverType){
         super(driver);
         this.driverType = driverType;
@@ -67,7 +77,7 @@ public class ElementInteractions extends Utilities {
      * @param text target text
      */
     public void clickByText(String text) {
-        clickButtonWithText(text, true);
+        clickButtonWithText(text, scroll);
     }
 
     /**
@@ -93,7 +103,7 @@ public class ElementInteractions extends Utilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickElement(button);
+        clickElement(button, scroll);
     }
 
     /**
@@ -102,7 +112,7 @@ public class ElementInteractions extends Utilities {
      *
      */
     public void clickInteraction(WebElement button){
-        clickElement(button);
+        clickElement(button, scroll);
     }
 
     /**
@@ -207,7 +217,7 @@ public class ElementInteractions extends Utilities {
         clearFillInput(
                 inputElement, //Element
                 input, //Input Text
-                false,
+                scroll,
                 true
         );
     }
@@ -557,7 +567,7 @@ public class ElementInteractions extends Utilities {
         clearFillInput(
                 inputElement,
                 absoluteFilePath,
-                false,
+                scroll,
                 false
         );
     }
