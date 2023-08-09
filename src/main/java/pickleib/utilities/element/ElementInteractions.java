@@ -422,6 +422,7 @@ public class ElementInteractions extends Utilities {
                         "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
                 elementContainsAttribute(element, attributeName, attributeValue)
         );
+        log.success("The " + attributeName + " attribute of element " + elementName + " is verified!" );
     }
 
     /**
