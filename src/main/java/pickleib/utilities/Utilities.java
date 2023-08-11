@@ -24,6 +24,7 @@ import utils.*;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringJoiner;
 import static pickleib.utilities.element.ElementAcquisition.*;
 import static utils.StringUtilities.Color.*;
@@ -822,11 +823,10 @@ public abstract class Utilities {
         attributeValue = strUtils.contextCheck(attributeValue);
         do {
             try {
-                assert element.getAttribute(attributeName) != null &&
-                        !(element.getAttribute(attributeName).isBlank() || element.getAttribute(attributeName).isEmpty());
-                return element.getAttribute(attributeName).contains(attributeValue);
+                if (Objects.equals(element.getAttribute(attributeName), attributeValue))
+                    return element.getAttribute(attributeName).contains(attributeValue);
             }
-            catch (WebDriverException | AssertionError webDriverException){
+            catch (WebDriverException webDriverException){
                 if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
