@@ -361,7 +361,8 @@ public class ElementInteractions extends Utilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        elementIs(element, ElementState.displayed);
+        boolean visible = elementIs(element, ElementState.displayed);
+        log.info("Element is visible ? " + highlighted(BLUE, String.valueOf(visible)));
     }
 
     /**
