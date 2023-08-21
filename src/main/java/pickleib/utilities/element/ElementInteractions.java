@@ -10,6 +10,7 @@ import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.mobile.interactions.MobileInteractions;
+import pickleib.utilities.Interactions;
 import pickleib.utilities.Utilities;
 import pickleib.web.interactions.WebInteractions;
 import records.Bundle;
@@ -32,19 +33,11 @@ import static utils.StringUtilities.Color.*;
  * @since 1.8.0
  */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class ElementInteractions extends Utilities {
+public class ElementInteractions extends Utilities implements Interactions {
 
     public DriverFactory.DriverType driverType;
 
     protected WebDriverWait wait;
-
-    public boolean isScrolling() {
-        return scroll;
-    }
-
-    public void setScroll(boolean scroll) {
-        this.scroll = scroll;
-    }
 
     boolean scroll = false;
 
@@ -57,6 +50,14 @@ public class ElementInteractions extends Utilities {
     public ElementInteractions(RemoteWebDriver driver, DriverFactory.DriverType driverType){
         super(driver);
         this.driverType = driverType;
+    }
+
+    public boolean isScrolling() {
+        return scroll;
+    }
+
+    public void setScroll(boolean scroll) {
+        this.scroll = scroll;
     }
 
     /**
@@ -219,7 +220,7 @@ public class ElementInteractions extends Utilities {
      * @param pageName specified page instance name
      * @param input input text
      */
-    public void basicFill(WebElement inputElement, String inputName, String pageName, String input){
+    public void basicFill(WebElement inputElement, String inputName, String pageName, String input, boolean verify){
         input = strUtils.contextCheck(input);
         log.info("Filling " +
                 highlighted(BLUE, inputName) +
@@ -232,8 +233,21 @@ public class ElementInteractions extends Utilities {
                 inputElement, //Element
                 input, //Input Text
                 scroll,
-                true
+                verify
         );
+    }
+
+    /**
+     *
+     * Fill input element {input name} from {pageName} with text: {input text}
+     *
+     * @param inputElement target input element
+     * @param inputName target input element name
+     * @param pageName specified page instance name
+     * @param input input text
+     */
+    public void basicFill(WebElement inputElement, String inputName, String pageName, String input){
+        basicFill(inputElement, inputName, pageName, input, true);
     }
 
     /**

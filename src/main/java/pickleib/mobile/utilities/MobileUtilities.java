@@ -1,12 +1,16 @@
 package pickleib.mobile.utilities;
 
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
+import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
+import pickleib.enums.ElementState;
 import pickleib.enums.SwipeDirection;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
@@ -25,11 +29,11 @@ public abstract class MobileUtilities extends Utilities {
         super(PickleibAppiumDriver.driver);
         PageFactory.initElements(
                 new AppiumFieldDecorator(
-                        driver,
+                        PickleibAppiumDriver.driver,
                         Duration.ofSeconds(Long.parseLong(PropertyUtility.getProperty(
                                 "element-timeout",
                                 "15000"
-                        )))
+                        ))/1000)
                 ),
                 this
         );
@@ -47,7 +51,7 @@ public abstract class MobileUtilities extends Utilities {
                         Duration.ofSeconds(Long.parseLong(PropertyUtility.getProperty(
                                 "element-timeout",
                                 "15000"
-                        )))
+                        ))/1000)
                 ),
                 this
         );
@@ -170,5 +174,68 @@ public abstract class MobileUtilities extends Utilities {
         Point to = new Point(destinationElement.getLocation().x, destinationElement.getLocation().y);
         swipe(from, to);
         return element;
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     * @param scroll scrolls if true
+     * @param verify verifies the input text value equals to an expected text if true
+     */
+    protected void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
+        fillInputElement(inputElement, inputText, scroll, verify);
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     */
+    protected void fillInput(WebElement inputElement, String inputText){
+        // This method clears the input field before filling it
+        fillInputElement(inputElement, inputText, false, false);
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     */
+    protected void fillAndVerifyInput(WebElement inputElement, String inputText){
+        // This method clears the input field before filling it
+        fillInputElement(inputElement, inputText, false, true);
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     */
+    protected void fillAndVerifyInput(WebElement inputElement, String inputText, Boolean scroll){
+        // This method clears the input field before filling it
+        fillInputElement(inputElement, inputText, scroll, true);
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     * @param scroll scrolls if true
+     * @param verify verifies the input text value equals to an expected text if true
+     */
+    protected void fillInputElement(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
+        // This method clears the input field before filling it
+        elementIs(inputElement, ElementState.displayed);
+        if (scroll) centerElement(inputElement).sendKeys(inputText);
+        else centerElement(inputElement).sendKeys(inputText);
+        log.warning(inputElement.getText());
+
+        if (verify) Assert.assertEquals(inputText, inputElement.getAttribute("value"));
     }
 }

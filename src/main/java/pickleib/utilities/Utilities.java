@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
+
+import static pickleib.enums.ElementState.absent;
 import static pickleib.utilities.element.ElementAcquisition.*;
 import static utils.StringUtilities.Color.*;
 
@@ -230,7 +232,7 @@ public abstract class Utilities {
         // This method clears the input field before filling it
         elementIs(inputElement, ElementState.displayed);
         if (scroll) centerElement(inputElement).sendKeys(inputText);
-        else centerElement(inputElement).sendKeys(inputText);
+        else inputElement.sendKeys(inputText);
         if (verify) Assert.assertEquals(inputText, inputElement.getAttribute("value"));
     }
 
@@ -302,6 +304,8 @@ public abstract class Utilities {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                 }
+                else if (state.equals(absent) && webDriverException.getClass().getName().equals("StaleElementReferenceException"))
+                    return true;
                 counter++;
             }
         }

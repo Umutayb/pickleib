@@ -4,7 +4,6 @@ import pickleib.driver.DriverFactory;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.interactions.MobileInteractions;
 import pickleib.utilities.element.ElementAcquisition;
-import pickleib.utilities.element.ElementInteractions;
 import pickleib.utilities.page.repository.PageRepository;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.interactions.WebInteractions;
@@ -28,13 +27,10 @@ import utils.StringUtilities;
 public class CommonStepUtilities<ObjectRepository extends PageRepository> {
 
     public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.Web;
-    public MobileInteractions mobileInteraction = new MobileInteractions();
-    public WebInteractions webInteraction = new WebInteractions();
     public StringUtilities strUtils = new StringUtilities();
     public Printer log = new Printer(this.getClass());
-
-    ElementInteractions webInteractions;
-    ElementInteractions mobileInteractions;
+    public WebInteractions webInteractions = new WebInteractions();
+    public MobileInteractions mobileInteractions = new MobileInteractions();
     ElementAcquisition.PageObjectModel<ObjectRepository> webObjectModel;
     ElementAcquisition.PageObjectModel<ObjectRepository> mobileObjectModel;
     ElementAcquisition.Reflections<ObjectRepository> webReflections;
@@ -47,14 +43,7 @@ public class CommonStepUtilities<ObjectRepository extends PageRepository> {
      *                              the page object model, element interactions, and reflections.
      */
     public CommonStepUtilities(Class<ObjectRepository> objectRepositoryClass) {
-        webInteractions = new ElementInteractions(
-                PickleibWebDriver.driver,
-                DriverFactory.DriverType.Web
-        );
-        mobileInteractions = new ElementInteractions(
-                PickleibAppiumDriver.driver,
-                DriverFactory.DriverType.Mobile
-        );
+
         webObjectModel = new ElementAcquisition.PageObjectModel<>(
                 PickleibWebDriver.driver,
                 objectRepositoryClass
@@ -79,16 +68,18 @@ public class CommonStepUtilities<ObjectRepository extends PageRepository> {
      * @param driverType The type of the driver (Web or Mobile).
      * @return The element interactions for the specified driver type.
      */
-    public ElementInteractions getInteractions(DriverFactory.DriverType driverType) {
-        switch (driverType) {
-            case Web -> {
-                return webInteractions;
+    public Interactions getInteractions(DriverFactory.DriverType driverType) {
+        if (!StringUtilities.isBlank(driverType))
+            switch (driverType) {
+                case Web -> {
+                    return webInteractions;
+                }
+                case Mobile -> {
+                    return mobileInteractions;
+                }
             }
-            case Mobile -> {
-                return mobileInteractions;
-            }
-        }
-        return webInteractions;
+        else return getInteractions(defaultPlatform);
+        return null;
     }
 
     /**
@@ -98,15 +89,17 @@ public class CommonStepUtilities<ObjectRepository extends PageRepository> {
      * @return The page object acquisition for the specified driver type.
      */
     public ElementAcquisition.PageObjectModel<ObjectRepository> getAcquisition(DriverFactory.DriverType driverType) {
-        switch (driverType) {
-            case Web -> {
-                return webObjectModel;
+        if (!StringUtilities.isBlank(driverType))
+            switch (driverType) {
+                case Web -> {
+                    return webObjectModel;
+                }
+                case Mobile -> {
+                    return mobileObjectModel;
+                }
             }
-            case Mobile -> {
-                return mobileObjectModel;
-            }
-        }
-        return webObjectModel;
+        else return getAcquisition(defaultPlatform);
+        return null;
     }
 
     /**
@@ -117,14 +110,17 @@ public class CommonStepUtilities<ObjectRepository extends PageRepository> {
      * @return The reflections for the specified driver type.
      */
     public ElementAcquisition.Reflections<ObjectRepository> getReflections(DriverFactory.DriverType driverType) {
-        switch (driverType) {
-            case Web -> {
-                return webReflections;
+        if (!StringUtilities.isBlank(driverType))
+            switch (driverType) {
+                case Web -> {
+                    return webReflections;
+                }
+                case Mobile -> {
+                    return mobileReflections;
+                }
             }
-            case Mobile -> {
-                return mobileReflections;
-            }
-        }
-        return webReflections;
+        else return getReflections(defaultPlatform);
+        return null;
     }
+
 }
