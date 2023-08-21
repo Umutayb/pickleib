@@ -23,6 +23,7 @@ public class AppiumDriverFactory implements DriverFactory {
 
     public static AppiumDriver getDriver(String deviceName, JSONObject capabilities){
         DesiredCapabilities desiredCapabilities = getConfig(capabilities);
+        desiredCapabilities.setCapability("app", strUtils.contextCheck("UPLOAD-" + capabilities.get("app")));
         try {
             URL url;
             if (service == null) {
@@ -34,15 +35,15 @@ public class AppiumDriverFactory implements DriverFactory {
 
             AppiumDriver driver = new AppiumDriver(url, desiredCapabilities);
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
-            log.important(deviceName + new StringUtilities().markup(GRAY, " was selected"));
+            log.important(deviceName + strUtils.markup(GRAY, " was selected"));
             return driver;
         }
         catch (Exception gamma) {
             if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){
                 log.info("Please make sure " + strUtils.markup(PURPLE, "Appium ") + "is on & verify the port that its running on at 'resources/test.properties'.");
-                throw new RuntimeException(YELLOW+gamma.getMessage()+RESET);
+                throw new RuntimeException(strUtils.markup(YELLOW, gamma.getMessage()));
             }
-            else throw new RuntimeException(YELLOW+"Something went wrong while selecting a driver "+"\n\t"+RED+gamma+RESET);
+            else throw new RuntimeException(strUtils.markup(YELLOW, "Something went wrong while selecting a driver") + "\n" + strUtils.markup(RED, gamma.getMessage()));
         }
     }
 
