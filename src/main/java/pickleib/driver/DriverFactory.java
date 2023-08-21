@@ -16,8 +16,7 @@ public interface DriverFactory {
         }
 
         public static DriverType getType(@Nullable String text) {
-            if (text != null) return fromString(text);
-            else return Web;
+            return fromString(text);
         }
     }
 }
