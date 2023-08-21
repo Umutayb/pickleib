@@ -263,8 +263,7 @@ public abstract class Utilities {
         boolean negativeCheck = false;
         int counter = 0;
         do {
-            if (condition) return true;
-            else if (counter > 1 && negativeCheck) return true;
+            if (condition || (counter > 1 && negativeCheck)) return true;
             try {
                 switch (state) {
                     case enabled -> {

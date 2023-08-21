@@ -7,7 +7,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.Direction;
-import pickleib.enums.InteractionType;
+import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.utilities.element.ElementInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
