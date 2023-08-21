@@ -17,7 +17,21 @@ import java.util.List;
 import java.util.Map;
 import static utils.StringUtilities.Color.*;
 
-@SuppressWarnings("unused")
+/**
+ * A utility class that provides common interaction methods for web and mobile steps in the context of Pickleib.
+ *
+ * <p>
+ * This class houses the utilities and common functionality for both web and mobile platforms.
+ * </p>
+ *
+ *
+ * @author Umut Ay Bora
+ * @author Egecan Şen
+ * @author Inna Drapii
+ *
+ * @since 1.8.0
+ */
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ElementInteractions extends Utilities {
 
     public DriverFactory.DriverType driverType;
@@ -331,8 +345,43 @@ public class ElementInteractions extends Utilities {
     }
 
     /**
+     * Logs and verifies the state of a given web element on a specific page.
+     * <p>
+     * This method logs the expected state of the element and then checks if the element's current state
+     * matches the expected state. If it does, a success message is logged. If not, a warning message is logged.
+     * </p>
      *
-     * Wait for absence of element {element name} on the {page name}
+     * @param element        The WebElement to be checked.
+     * @param elementName    A human-readable name or description for the web element.
+     * @param pageName       A human-readable name or description for the page on which the element resides.
+     * @param expectedState  The expected {@link ElementState} of the web element.
+     *
+     * <p><strong>Usage Example:</strong></p>
+     * <pre>{@code
+     * WebElement myButton = driver.findElement(By.id("myButton"));
+     * elementIs(myButton, "myButton", "MainPage", ElementState.displayed);
+     * }</pre>
+     *
+     */
+    public boolean elementIs(WebElement element, String elementName, String pageName, ElementState expectedState){
+        log.info("Waiting for " +
+                highlighted(BLUE, expectedState.name()) +
+                highlighted(GRAY," state of ")+
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        boolean inExpectedState  = elementIs(element, expectedState);
+        if (inExpectedState)
+            log.success(elementName + " element is in " + expectedState + " state!");
+        else
+            log.warning(elementName + " element is not in " + expectedState + " state!");
+        return inExpectedState;
+    }
+
+    /**
+     *
+     * Wait for absence of an element {element name} on the {page name}
      *
      * @param element target element
      * @param elementName target element name
