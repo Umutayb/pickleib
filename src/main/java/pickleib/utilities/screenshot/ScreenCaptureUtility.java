@@ -6,6 +6,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import utils.NumericUtilities;
 import utils.Printer;
+import utils.StringUtilities;
 
 import java.io.File;
 
@@ -14,6 +15,7 @@ import static utils.StringUtilities.Color.*;
 @SuppressWarnings("unused")
 public class ScreenCaptureUtility {
     Printer log = new Printer(ScreenCaptureUtility.class);
+    StringUtilities strUtils = new StringUtilities();
     NumericUtilities numeric = new NumericUtilities();
 
     /**
@@ -35,7 +37,7 @@ public class ScreenCaptureUtility {
             return fileDestination;
         }
         catch (Exception gamma){
-            log.error(YELLOW+"Could not capture screen"+RED+"\n\t"+gamma+RESET,gamma);
+            log.error(strUtils.highlighted(YELLOW, "Could not capture screen")+strUtils.highlighted(RED, "\n\t"+gamma), gamma);
             return null;
         }
     }
