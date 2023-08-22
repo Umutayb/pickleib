@@ -14,6 +14,8 @@ import pickleib.driver.DriverFactory;
 import utils.LogUtilities;
 import utils.Printer;
 import utils.PropertyUtility;
+import utils.StringUtilities;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
@@ -23,6 +25,7 @@ import static utils.StringUtilities.Color.*;
 
 public class WebDriverFactory implements DriverFactory {
 
+    static StringUtilities strUtils = new StringUtilities();
 
     /**
      * determines frameWidth value
@@ -178,7 +181,7 @@ public class WebDriverFactory implements DriverFactory {
                 throw new RuntimeException(gamma);
             }
             else
-            {throw new RuntimeException(YELLOW+"Something went wrong while selecting a driver "+"\n\t"+RED+gamma+RESET);}
+                throw new RuntimeException(strUtils.highlighted(YELLOW, "Something went wrong while selecting a driver ")+strUtils.highlighted(RED, "\n\t"+gamma), gamma);
         }
     }
 
