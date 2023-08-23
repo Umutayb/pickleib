@@ -119,36 +119,6 @@ public class WebDriverFactory implements DriverFactory {
     private static final LogUtilities logUtils = new LogUtilities();
 
     /**
-     * Static properties object, initialized from the PropertyUtility class.
-     */
-    private static Properties properties = PropertyUtility.getProperties();
-
-    /*
-      Static initializer block.
-      <p>
-      This block performs the following operations:
-      1. Initializes a new PropertyUtility instance.
-      2. Retrieve the 'pickleib.properties' file.
-      3. If the static properties are not empty, it adds new properties from the 'pickleib.properties'
-         file only for keys that do not already exist in the static properties.
-      4. If the static properties are empty, it sets them to the properties from the 'pickleib.properties' file.
-      5. Set the updated static properties in the PropertyUtility class.
-      </p>
-     */
-    static {
-        PropertyUtility propertyUtility = new PropertyUtility();
-        Properties pickleibProperties = propertyUtility.getProperties("pickleib.properties");
-
-        if (!properties.isEmpty()){
-            for (Object key:pickleibProperties.keySet())
-                properties.putIfAbsent(key, pickleibProperties.get(key));
-        }
-        else properties = pickleibProperties;
-
-        PropertyUtility.setProperties(properties);
-    }
-
-    /**
      * Initializes and returns a driver of specified type
      * @param browserType driver type
      * @return returns driver
@@ -410,9 +380,5 @@ public class WebDriverFactory implements DriverFactory {
 
     public static String getBrowser() {
         return browser;
-    }
-
-    public static Properties getProperties() {
-        return properties;
     }
 }

@@ -2,6 +2,7 @@ package pickleib.support;
 
 import api_assured.Caller;
 import gpt.api.GPT;
+import pickleib.utilities.PropertyLoader;
 import utils.PropertyUtility;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class ChatSupport {
+    static {PropertyLoader.load();}
 
     public static void main(String[] args) {
         try {

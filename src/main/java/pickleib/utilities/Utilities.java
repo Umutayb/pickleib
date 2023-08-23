@@ -34,6 +34,8 @@ import static utils.StringUtilities.Color.*;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class Utilities {
 
+    static {PropertyLoader.load();}
+
     public static ReflectionUtilities reflectionUtils = new ReflectionUtilities();
     public ScreenCaptureUtility capture = new ScreenCaptureUtility();
     public StringUtilities strUtils = new StringUtilities();
