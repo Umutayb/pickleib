@@ -205,10 +205,11 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         Assert.assertTrue("acquire.acquireListedElementFromPage(elementName, listName, pageName) test failed!", header.getText().contains("Forms"));
         log.success("The acquire.acquireListedElementFromPage(elementName, listName, pageName) test pass!");
     }
+
     @Test
     public void acquireNamedElementAmongstNegativeTest(){
         log.info("acquire.acquireListedElementFromPage(elementName, listName, pageName) negative test");
-        webInteractions.getUrl(page.baseUrl);
+        webInteractions.getUrl(baseUrl);
         try {
             WebElement wrongElement = acquire.acquireListedElementFromPage("anythingElse", "toolCards", "pageClass");
             interactions.clickInteraction(wrongElement);
