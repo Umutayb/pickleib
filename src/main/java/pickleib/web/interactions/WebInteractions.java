@@ -1,7 +1,6 @@
 package pickleib.web.interactions;
 
 import context.ContextStore;
-import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -9,6 +8,7 @@ import pickleib.driver.DriverFactory;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
+import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Interactions;
 import pickleib.utilities.element.ElementInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
@@ -458,7 +458,8 @@ public class WebInteractions extends WebUtilities implements Interactions {
             Pattern sourcePattern = Pattern.compile(expectedValue);
             Matcher nodeValueMatcher = sourcePattern.matcher(object.toString());
 
-            Assert.assertTrue("Node values do not match! Expected: " + expectedValue + ", Found: " + object, nodeValueMatcher.find());
+            if (!nodeValueMatcher.find())
+                throw new PickleibException("Node values do not match! Expected: " + expectedValue + ", Found: " + object);
             log.success("Value of '" + nodeSource + "' is verified to be '" + object + "'");
         }
         else log.warning("'" + eventName + "' event is not fired!");
@@ -485,7 +486,8 @@ public class WebInteractions extends WebUtilities implements Interactions {
                 Pattern sourcePattern = Pattern.compile(nodeValue);
                 Matcher nodeValueMatcher = sourcePattern.matcher(object.toString());
 
-                Assert.assertTrue("Node values do not match! Expected: " + nodeValue + ", Found: " + object, nodeValueMatcher.find());
+                if (!nodeValueMatcher.find())
+                    throw new PickleibException("Node values do not match! Expected: " + nodeValue + ", Found: " + object);
                 log.success("Value of '" + nodeSource + "' is verified to be '" + object + "'");
             }
         }

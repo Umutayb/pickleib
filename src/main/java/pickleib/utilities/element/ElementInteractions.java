@@ -1,7 +1,6 @@
 package pickleib.utilities.element;
 
 import context.ContextStore;
-import org.junit.Assert;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -9,6 +8,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
+import pickleib.exceptions.PickleibException;
 import pickleib.mobile.interactions.MobileInteractions;
 import pickleib.utilities.Interactions;
 import pickleib.utilities.Utilities;
@@ -484,12 +484,11 @@ public class ElementInteractions extends Utilities implements Interactions {
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY," attribute.")
         );
-
-        Assert.assertTrue(
+        if (!elementContainsAttribute(element, attributeName, attributeValue))
+            throw new PickleibException(
                 "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
-                        "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName),
-                elementContainsAttribute(element, attributeName, attributeValue)
-        );
+                        "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName)
+            );
         log.success("The " + attributeName + " attribute of element " + elementName + " is verified!" );
     }
 
@@ -516,11 +515,11 @@ public class ElementInteractions extends Utilities implements Interactions {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        Assert.assertEquals(
-                "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
-                        "\nExpected value: " + attributeValue + "\nActual value: " + element.getCssValue(attributeName),
-                attributeValue
-        );
+        if (!attributeValue.equals(element.getCssValue(attributeName)))
+            throw new PickleibException(
+                    "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                            "\nExpected value: " + attributeValue + "\nActual value: " + element.getCssValue(attributeName)
+            );
         log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
     }
 
@@ -550,10 +549,8 @@ public class ElementInteractions extends Utilities implements Interactions {
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, expectedText)
             );
-            Assert.assertTrue(
-                    "The " + elementName + " does not contain text '" + expectedText + "' ",
-                    element.getText().contains(expectedText)
-            );
+            if (!element.getText().contains(expectedText))
+                throw new PickleibException("The " + elementName + " does not contain text '" + expectedText + "' ");
             log.success("Text of '" + elementName + "' verified as '" + expectedText + "'!");
         }
     }
@@ -567,7 +564,8 @@ public class ElementInteractions extends Utilities implements Interactions {
     public void verifyCurrentUrl(String url) {
         url = strUtils.contextCheck(url);
         log.info("The url contains " + url);
-        Assert.assertTrue("Current url does not contain the expected url!", driver.getCurrentUrl().contains(url));
+        if (!driver.getCurrentUrl().contains(url))
+            throw new PickleibException("Current url does not contain the expected url!");
     }
 
     /**

@@ -865,23 +865,27 @@ public class ElementAcquisition {
             Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
             if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
+            if (pageFields.get(elementFieldName) == null)
+                throw new PickleibException("The " + strUtils.highlighted(YELLOW, pageName) + " page object does not contain " + strUtils.highlighted(YELLOW, elementFieldName) + " element!");
             return (WebElement) pageFields.get(elementFieldName);
         }
 
         /**
          * Acquires a list of elements from a given page
          *
-         * @param elementFieldName element field name
+         * @param elementListFieldName element list field name
          * @param pageName name of the page instance
          * @return returns the list of elements
          */
         @SuppressWarnings("unchecked")
-        public List<WebElement> getElementsFromPage(String elementFieldName, String pageName){
+        public List<WebElement> getElementsFromPage(String elementListFieldName, String pageName){
             Map<String, Object> pageFields;
             Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
             if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
-            return (List<WebElement>) pageFields.get(elementFieldName);
+            if (pageFields.get(elementListFieldName) == null)
+                throw new PickleibException("The " + strUtils.highlighted(YELLOW, pageName) + " page object does not contain " + strUtils.highlighted(YELLOW, elementListFieldName) + " element list!");
+            return (List<WebElement>) pageFields.get(elementListFieldName);
         }
 
         /**

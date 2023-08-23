@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -16,6 +15,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
+import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
 import records.Bundle;
@@ -80,8 +80,8 @@ public abstract class WebUtilities extends Utilities {
             driver.get(url);
         }
         catch (Exception gamma){
-            Assert.fail("Unable to navigate to the \""+strUtils.highlighted(YELLOW, url)+"\"");
             driver.quit();
+            throw new PickleibException("Unable to navigate to the \""+strUtils.highlighted(YELLOW, url)+"\"");
         }
         return url;
     }
@@ -112,7 +112,7 @@ public abstract class WebUtilities extends Utilities {
             }
         }
         catch (Exception e){
-            Assert.fail("Unable to navigate browser \"" + strUtils.highlighted(YELLOW, direction.name())+"\" due to: " + e);
+            throw new PickleibException("Unable to navigate browser \"" + strUtils.highlighted(YELLOW, direction.name())+"\" due to: " + e);
         }
     }
 
@@ -169,7 +169,7 @@ public abstract class WebUtilities extends Utilities {
      * @param url target url
      */
     public void verifyUrlContains(String url){
-        Assert.assertTrue(driver.getCurrentUrl().contains(url));
+        assert driver.getCurrentUrl().contains(url);
     }
 
     /**
@@ -178,7 +178,7 @@ public abstract class WebUtilities extends Utilities {
      * @param url target url
      */
     public void verifyCurrentUrl(String url){
-        Assert.assertTrue(driver.getCurrentUrl().equalsIgnoreCase(url));
+        assert driver.getCurrentUrl().equalsIgnoreCase(url);
     }
 
     /**
@@ -188,9 +188,8 @@ public abstract class WebUtilities extends Utilities {
      */
     //This method verifies the page title
     public void verifyPageTitle(String pageTitle){
-        Assert.assertTrue(driver.getTitle().contains(pageTitle));
+        assert driver.getTitle().contains(pageTitle);
     }
-
 
     /**
      * Click an element into view by using javascript

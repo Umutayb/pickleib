@@ -6,9 +6,6 @@ import java.util.List;
 
 public class PageClass extends WebUtilities {
 
-    String trainingUrl = "https://www.toolsqa.com/selenium-training/";
-    String baseUrl = "https://demoqa.com/";
-
     @FindBy(css = ".col-md-6 div:nth-child(3) button")
     WebElement clickMeButton;
     @FindBy(css = "meaninglessLocater")

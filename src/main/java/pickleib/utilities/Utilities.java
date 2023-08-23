@@ -3,7 +3,6 @@ package pickleib.utilities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.interactions.Actions;
@@ -40,8 +39,6 @@ public abstract class Utilities {
     public StringUtilities strUtils = new StringUtilities();
     public ObjectMapper objectMapper = new ObjectMapper();
     public Printer log = new Printer(this.getClass());
-    public TextParser parser = new TextParser();
-
     public RemoteWebDriver driver;
 
     public long elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
@@ -242,7 +239,7 @@ public abstract class Utilities {
         elementIs(inputElement, ElementState.displayed);
         if (scroll) centerElement(inputElement).sendKeys(inputText);
         else inputElement.sendKeys(inputText);
-        if (verify) Assert.assertEquals(inputText, inputElement.getAttribute("value"));
+        assert !verify || inputText.equals(inputElement.getAttribute("value"));
     }
 
     /**
@@ -253,7 +250,7 @@ public abstract class Utilities {
      * @return returns the element if its in expected state
      */
     protected WebElement verifyElementState(WebElement element, ElementState state){
-        Assert.assertTrue("Element is not in " + state.name() + " state!", elementIs(element, state));
+        if (!elementIs(element, state)) throw new PickleibException("Element is not in " + state.name() + " state!");
         log.success("Element state is verified to be: " + state.name());
         return element;
     }
@@ -531,7 +528,9 @@ public abstract class Utilities {
     protected void waitFor(double seconds){
         if (seconds > 1) log.info("Waiting for " + strUtils.markup(BLUE, String.valueOf(seconds)) + " seconds");
         try {Thread.sleep((long) (seconds* 1000L));}
-        catch (InterruptedException exception){Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);}
+        catch (InterruptedException exception){
+            throw new PickleibException(strUtils.highlighted(GRAY, exception.getLocalizedMessage()));
+        }
     }
 
     /**
@@ -751,8 +750,9 @@ public abstract class Utilities {
      */
     public void verifyElementText(WebElement element, String expectedText){
         expectedText = strUtils.contextCheck(expectedText);
-        Assert.assertEquals("Element text is not " + expectedText + "!", expectedText, element.getText());
-        log.success("Text of the element " + expectedText + " was verified!");
+        if (!expectedText.equals(element.getText()))
+            throw new PickleibException("Element text is not \"" + strUtils.highlighted(BLUE, expectedText) + "\"!");
+        log.success("Text of the element \"" + expectedText + "\" was verified!");
     }
 
     /**
@@ -764,8 +764,9 @@ public abstract class Utilities {
      */
     public void verifyElementContainsText(WebElement element, String expectedText){
         expectedText = strUtils.contextCheck(expectedText);
-        Assert.assertTrue("Element text does not contain" + expectedText + "!", element.getText().contains(expectedText));
-        log.success("The element text does contain " + expectedText + " text!");
+        if (!element.getText().contains(expectedText))
+            throw new PickleibException("Element text does not contain \"" + strUtils.highlighted(BLUE, expectedText) + "\"!");
+        log.success("The element text does contain \"" + expectedText + "\" text!");
     }
 
     /**
@@ -787,7 +788,8 @@ public abstract class Utilities {
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, expectedText)
             );
-            Assert.assertEquals("The " + bundle.alpha().getText() + " does not contain text '", expectedText, bundle.alpha().getText());
+            if (!expectedText.equals(bundle.alpha().getText()))
+                throw new PickleibException("The " + bundle.alpha().getText() + " does not contain text '");
             log.success("Text of the element" + bundle.alpha().getText() + " was verified!");
         }
     }
