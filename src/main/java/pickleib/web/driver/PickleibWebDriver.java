@@ -7,19 +7,19 @@ import org.openqa.selenium.devtools.v85.network.Network;
 import org.openqa.selenium.devtools.v85.network.model.Headers;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pickleib.utilities.PropertyLoader;
 import utils.Printer;
 import utils.PropertiesReader;
 import utils.PropertyUtility;
 import utils.StringUtilities;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class PickleibWebDriver {
+
+	static {PropertyLoader.load();}
 
 	/**
 	 * RemoteWebDriver instance

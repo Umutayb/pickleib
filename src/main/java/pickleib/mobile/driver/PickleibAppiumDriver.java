@@ -3,12 +3,15 @@ package pickleib.mobile.driver;
 import io.appium.java_client.AppiumDriver;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pickleib.utilities.PropertyLoader;
 import utils.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 
 @SuppressWarnings("unused")
 public class PickleibAppiumDriver {
+
+	static {PropertyLoader.load();}
 
 	public static AppiumDriver driver;
 	public static WebDriverWait wait;
