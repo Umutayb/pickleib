@@ -20,8 +20,11 @@ import utils.PropertyUtility;
 import utils.ReflectionUtilities;
 import utils.StringUtilities;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.*;
 
+import static pickleib.utilities.element.ElementAcquisition.PageObjectJson.driver;
+import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
@@ -104,12 +107,11 @@ public class ElementAcquisition {
      * @return returns the selected element
      */
     public static WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
-        log.info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
         int counter = 0;
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout)){
+        do {
             try {
                 for (WebElement selection : items) {
                     String text = selection.getText();
@@ -117,13 +119,18 @@ public class ElementAcquisition {
                 }
             }
             catch (WebDriverException webDriverException){
-                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
+                if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-
-                caughtException = webDriverException;
+                    caughtException = webDriverException;
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException;
+                }
                 counter++;
             }
         }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
         throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
     }
 
@@ -858,23 +865,27 @@ public class ElementAcquisition {
             Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
             if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
+            if (pageFields.get(elementFieldName) == null)
+                throw new PickleibException("The " + strUtils.highlighted(YELLOW, pageName) + " page object does not contain " + strUtils.highlighted(YELLOW, elementFieldName) + " element!");
             return (WebElement) pageFields.get(elementFieldName);
         }
 
         /**
          * Acquires a list of elements from a given page
          *
-         * @param elementFieldName element field name
+         * @param elementListFieldName element list field name
          * @param pageName name of the page instance
          * @return returns the list of elements
          */
         @SuppressWarnings("unchecked")
-        public List<WebElement> getElementsFromPage(String elementFieldName, String pageName){
+        public List<WebElement> getElementsFromPage(String elementListFieldName, String pageName){
             Map<String, Object> pageFields;
             Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
             if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
-            return (List<WebElement>) pageFields.get(elementFieldName);
+            if (pageFields.get(elementListFieldName) == null)
+                throw new PickleibException("The " + strUtils.highlighted(YELLOW, pageName) + " page object does not contain " + strUtils.highlighted(YELLOW, elementListFieldName) + " element list!");
+            return (List<WebElement>) pageFields.get(elementListFieldName);
         }
 
         /**

@@ -1,7 +1,6 @@
 package pickleib.web.driver;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -11,11 +10,11 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import pickleib.driver.DriverFactory;
+import pickleib.exceptions.PickleibException;
 import utils.LogUtilities;
 import utils.Printer;
 import utils.PropertyUtility;
 import utils.StringUtilities;
-
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
@@ -23,6 +22,7 @@ import java.util.Properties;
 
 import static utils.StringUtilities.Color.*;
 
+@SuppressWarnings("unused")
 public class WebDriverFactory implements DriverFactory {
 
     static StringUtilities strUtils = new StringUtilities();
@@ -150,20 +150,20 @@ public class WebDriverFactory implements DriverFactory {
 
     /**
      * Initializes and returns a driver of specified type
-     * @param driverType driver type
+     * @param browserType driver type
      * @return returns driver
      */
-    public static RemoteWebDriver getDriver(DriverType driverType){
+    public static RemoteWebDriver getDriver(BrowserType browserType){
         RemoteWebDriver driver;
 
         try {
-            if (driverType == null) driverType = DriverType.fromString(browser);
+            if (browserType == null) browserType = BrowserType.fromString(browser);
 
             if (useSeleniumGrid){
-                ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", driverType.getDriverKey());
+                ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", browserType.getDriverKey());
                 driver = new RemoteWebDriver(new URL(hubUrl), capabilities);
             }
-            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);}
+            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, browserType);}
 
             assert driver != null;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
@@ -171,7 +171,7 @@ public class WebDriverFactory implements DriverFactory {
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.setLogLevel(logUtils.getLevel(logLevel));
-            log.important(driverType.getDriverName() + GRAY.getValue() + " was selected");
+            log.important(browserType.getDriverName() + GRAY.getValue() + " was selected");
             return driver;
         }
         catch (IOException malformedURLException) {throw new RuntimeException(malformedURLException);}
@@ -193,7 +193,7 @@ public class WebDriverFactory implements DriverFactory {
      * @param insecureLocalHost enables insecure local host if true
      * @param disableNotifications disables browser notifications if true
      * @param loadStrategy determines page load strategy
-     * @param driverType driver type
+     * @param browserType driver type
      * @return returns the configured driver
      */
     static RemoteWebDriver driverSwitch(
@@ -203,10 +203,10 @@ public class WebDriverFactory implements DriverFactory {
             Boolean disableNotifications,
             Boolean allowRemoteOrigin,
             PageLoadStrategy loadStrategy,
-            DriverType driverType){
+            BrowserType browserType){
         if (useWDM) log.warning("Using WebDriverManager...");
         try {
-            switch (driverType) {
+            switch (browserType) {
                 case CHROME -> {
                     ChromeOptions chromeOptions = new ChromeOptions();
                     if (disableNotifications) chromeOptions.addArguments("disable-notifications");
@@ -241,22 +241,21 @@ public class WebDriverFactory implements DriverFactory {
                     return new SafariDriver(safariOptions);
                 }
                 default -> {
-                    Assert.fail("No such driver was defined.");
-                    return null;
+                    throw new PickleibException("No such driver was defined.");
                 }
             }
         }
         catch (SessionNotCreatedException sessionException){
             log.warning(sessionException.getLocalizedMessage());
-            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, driverType);
+            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, browserType);
             else return null;
         }
     }
 
     /**
-     * available driver types
+     * Available driver types
      */
-    public enum DriverType {
+    public enum BrowserType {
         CHROME("Chrome"),
         FIREFOX("Firefox"),
         SAFARI("Safari"),
@@ -264,7 +263,7 @@ public class WebDriverFactory implements DriverFactory {
 
         final String driverName;
 
-        DriverType(String driverName){
+        BrowserType(String driverName){
             this.driverName = driverName;
         }
 
@@ -280,15 +279,14 @@ public class WebDriverFactory implements DriverFactory {
          * @param text desired driver
          * @return returns matching a driver type
          */
-        public static DriverType fromString(String text) {
+        public static BrowserType fromString(String text) {
             if (text != null)
-                for (DriverType driverType:values())
-                    if (driverType.name().equalsIgnoreCase(text))
-                        return driverType;
+                for (BrowserType browserType :values())
+                    if (browserType.name().equalsIgnoreCase(text))
+                        return browserType;
             return null;
         }
     }
-
 
     public static void setFrameWidth(int frameWidth) {
         WebDriverFactory.frameWidth = frameWidth;
@@ -348,5 +346,73 @@ public class WebDriverFactory implements DriverFactory {
 
     public static void setBrowser(String browser) {
         WebDriverFactory.browser = browser;
+    }
+
+    public static StringUtilities getStrUtils() {
+        return strUtils;
+    }
+
+    public static int getFrameWidth() {
+        return frameWidth;
+    }
+
+    public static int getFrameHeight() {
+        return frameHeight;
+    }
+
+    public static boolean isHeadless() {
+        return headless;
+    }
+
+    public static boolean isMaximise() {
+        return maximise;
+    }
+
+    public static long getDriverTimeout() {
+        return driverTimeout;
+    }
+
+    public static boolean isDeleteCookies() {
+        return deleteCookies;
+    }
+
+    public static boolean isUseSeleniumGrid() {
+        return useSeleniumGrid;
+    }
+
+    public static boolean isInsecureLocalHost() {
+        return insecureLocalHost;
+    }
+
+    public static boolean isDisableNotifications() {
+        return disableNotifications;
+    }
+
+    public static PageLoadStrategy getLoadStrategy() {
+        return loadStrategy;
+    }
+
+    public static Boolean getUseWDM() {
+        return useWDM;
+    }
+
+    public static Boolean getAllowRemoteOrigin() {
+        return allowRemoteOrigin;
+    }
+
+    public static String getLogLevel() {
+        return logLevel;
+    }
+
+    public static String getHubUrl() {
+        return hubUrl;
+    }
+
+    public static String getBrowser() {
+        return browser;
+    }
+
+    public static Properties getProperties() {
+        return properties;
     }
 }

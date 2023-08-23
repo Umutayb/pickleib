@@ -1,9 +1,7 @@
 package pickleib.mobile.utilities;
 
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
@@ -236,6 +234,6 @@ public abstract class MobileUtilities extends Utilities {
         else centerElement(inputElement).sendKeys(inputText);
         log.warning(inputElement.getText());
 
-        if (verify) Assert.assertEquals(inputText, inputElement.getAttribute("value"));
+        assert !verify || inputText.equals(inputElement.getAttribute("value"));
     }
 }

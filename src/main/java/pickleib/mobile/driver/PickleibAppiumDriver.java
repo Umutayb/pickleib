@@ -1,5 +1,6 @@
 package pickleib.mobile.driver;
 
+import io.appium.java_client.AppiumDriver;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.*;
@@ -9,7 +10,7 @@ import java.net.ServerSocket;
 @SuppressWarnings("unused")
 public class PickleibAppiumDriver {
 
-	public static io.appium.java_client.AppiumDriver driver;
+	public static AppiumDriver driver;
 	public static WebDriverWait wait;
 
 	private static final PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");

@@ -6,17 +6,18 @@ import java.util.List;
 
 public class PageClass extends WebUtilities {
 
-    String trainingUrl = "https://www.toolsqa.com/selenium-training/";
-    String baseUrl = "https://demoqa.com/";
-
-    @FindBy(css = ".card")
-    List<WebElement> toolCards;
     @FindBy(css = ".col-md-6 div:nth-child(3) button")
     WebElement clickMeButton;
+    @FindBy(css = "meaninglessLocater")
+    WebElement unClickableButton;
     @FindBy(css = "#dynamicClickMessage")
     WebElement dynamicClickMessage;
     @FindBy(css = ".element-group")
     List<WebElement> accordionLeftPanel;
     @FindBy(css = ".accordion div:nth-child(5)")
     WebElement interactionsAccordionBar;
+    @FindBy(css = "[class='card mt-4 top-card']")
+    List<WebElement> toolCards;
+    @FindBy(css = "[class='pattern-backgound playgound-header']")
+    WebElement headerTitle;
 }
