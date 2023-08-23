@@ -854,6 +854,49 @@ public abstract class Utilities {
         return false;
     }
 
+    /**
+     * Verify that an attribute {attribute name} of element {element name} contains a specific {value}.
+     *
+     * @param elementName   the name of the element to be verified
+     * @param attributeName the name of the attribute to be verified
+     * @param value         the expected part of value of the attribute
+     */
+    public boolean elementAttributeContainsValue(
+            WebElement elementName,
+            String attributeName,
+            String value) {
+
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        int counter = 0;
+        value = strUtils.contextCheck(value);
+        do {
+            try {
+                return elementName.getAttribute(attributeName).contains(value);
+            } catch (WebDriverException webDriverException) {
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                waitFor(0.5);
+                counter++;
+            }
+        }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning("Element attribute does not contain " +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " -> ") +
+                highlighted(BLUE, value) +
+                highlighted(GRAY, " value.")
+        );
+        log.warning(caughtException);
+        return false;
+    }
+
     public static class InteractionUtilities extends Utilities {
 
         public enum DriverType{

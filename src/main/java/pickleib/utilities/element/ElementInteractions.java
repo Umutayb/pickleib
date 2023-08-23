@@ -490,6 +490,38 @@ public class ElementInteractions extends Utilities implements Interactions {
     }
 
     /**
+     * Verify that an attribute {attribute name} of element {element name} on the {page name} contains a specific {value}.
+     *
+     * @param attributeName  the name of the attribute to be verified
+     * @param elementName    the name of the element to be verified
+     * @param pageName       the name of the page containing the element
+     * @param value the expected part of value of the attribute
+     *
+     */
+    public void verifyElementAttributeContainsValue(
+            WebElement element,
+            String elementName,
+            String pageName,
+            String attributeName,
+            String value) {
+        log.info("Verifying that " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," contains ") +
+                highlighted(BLUE, value) +
+                highlighted(GRAY," in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY," attribute.")
+        );
+
+        Assert.assertTrue(
+                "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                        "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName),
+                elementAttributeContainsValue(element, attributeName, value)
+        );
+        log.success("The " + attributeName + " attribute of element " + elementName + " is verified!" );
+    }
+
+    /**
      *
      * Verify {attribute name} css attribute of an element {element name} on the {page name} is {attribute value}
      *

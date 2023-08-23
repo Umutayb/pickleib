@@ -151,6 +151,10 @@ public class WebInteractions extends WebUtilities implements Interactions {
         interact.verifyElementContainsAttribute(element, elementName, pageName, attributeName, attributeValue);
     }
 
+    public void verifyElementAttributeContainsValue(WebElement element, String attributeName, String elementName, String pageName, String value) {
+        interact.verifyElementAttributeContainsValue(element, attributeName, elementName, pageName, value);
+    }
+
     public void verifyElementColor(WebElement element, String attributeName, String elementName, String pageName, String attributeValue) {
         interact.verifyElementColor(element, attributeName, elementName, pageName, attributeValue);
     }
