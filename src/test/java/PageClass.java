@@ -13,6 +13,8 @@ public class PageClass extends WebUtilities {
     List<WebElement> toolCards;
     @FindBy(css = ".col-md-6 div:nth-child(3) button")
     WebElement clickMeButton;
+    @FindBy(css = "meaninglessLocater")
+    WebElement unClickableButton;
     @FindBy(css = "#dynamicClickMessage")
     WebElement dynamicClickMessage;
     @FindBy(css = ".element-group")

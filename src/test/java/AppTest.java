@@ -3,7 +3,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 import pickleib.driver.DriverFactory;
+import pickleib.enums.ElementState;
+import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.ElementInteractions;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
@@ -63,6 +66,20 @@ public class AppTest {
         interactions.clickInteraction(page.clickMeButton);
         Assert.assertEquals("interactions.clickInteraction(page.clickMeButton) test failed!","You have done a dynamic click", page.dynamicClickMessage.getText());
         log.success("interactions.clickInteraction(page.clickMeButton) test pass!");
+    }
+
+    @Test
+    public void negativeClickTest(){
+        log.info("interactions.clickInteraction(page.clickMeButton) test");
+        webInteractions.getUrl(page.baseUrl + "buttons");
+        try {
+            interactions.clickInteraction(page.unClickableButton);
+        }
+        catch (WebDriverException | PickleibException ignored) {}
+        finally {
+            Assert.assertTrue("Successful click message element is unexpectedly found!", interactions.elementStateIs(page.dynamicClickMessage, ElementState.absent));
+            log.success("interactions.clickInteraction(page.clickMeButton) test pass!");
+        }
     }
 
     @Test

@@ -289,7 +289,6 @@ public class WebDriverFactory implements DriverFactory {
         }
     }
 
-
     public static void setFrameWidth(int frameWidth) {
         WebDriverFactory.frameWidth = frameWidth;
     }
@@ -348,5 +347,73 @@ public class WebDriverFactory implements DriverFactory {
 
     public static void setBrowser(String browser) {
         WebDriverFactory.browser = browser;
+    }
+
+    public static StringUtilities getStrUtils() {
+        return strUtils;
+    }
+
+    public static int getFrameWidth() {
+        return frameWidth;
+    }
+
+    public static int getFrameHeight() {
+        return frameHeight;
+    }
+
+    public static boolean isHeadless() {
+        return headless;
+    }
+
+    public static boolean isMaximise() {
+        return maximise;
+    }
+
+    public static long getDriverTimeout() {
+        return driverTimeout;
+    }
+
+    public static boolean isDeleteCookies() {
+        return deleteCookies;
+    }
+
+    public static boolean isUseSeleniumGrid() {
+        return useSeleniumGrid;
+    }
+
+    public static boolean isInsecureLocalHost() {
+        return insecureLocalHost;
+    }
+
+    public static boolean isDisableNotifications() {
+        return disableNotifications;
+    }
+
+    public static PageLoadStrategy getLoadStrategy() {
+        return loadStrategy;
+    }
+
+    public static Boolean getUseWDM() {
+        return useWDM;
+    }
+
+    public static Boolean getAllowRemoteOrigin() {
+        return allowRemoteOrigin;
+    }
+
+    public static String getLogLevel() {
+        return logLevel;
+    }
+
+    public static String getHubUrl() {
+        return hubUrl;
+    }
+
+    public static String getBrowser() {
+        return browser;
+    }
+
+    public static Properties getProperties() {
+        return properties;
     }
 }

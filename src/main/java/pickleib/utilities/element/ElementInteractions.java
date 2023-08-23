@@ -393,6 +393,10 @@ public class ElementInteractions extends Utilities implements Interactions {
         return inExpectedState;
     }
 
+    public boolean elementStateIs(WebElement element, ElementState expectedState){
+        return elementIs(element, expectedState);
+    }
+
     /**
      *
      * Wait for absence of an element {element name} on the {page name}
