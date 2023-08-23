@@ -3,6 +3,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import pickleib.driver.DriverFactory;
@@ -193,5 +194,23 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         WebElement header = this.getAcquisition(Web).acquireElementFromPage("headerTitle", "PageClass");
         Assert.assertTrue("acquire.acquireListedElementFromPage(elementName, listName, pageName) test failed!", header.getText().contains("Forms"));
         log.success("The acquire.acquireListedElementFromPage(elementName, listName, pageName) test pass!");
+    }
+    @Test
+    public void acquireNamedElementAmongstNegativeTest(){
+        log.info("acquire.acquireListedElementFromPage(elementName, listName, pageName) negative test");
+        webInteractions.getUrl(page.baseUrl);
+        try {
+            WebElement wrongElement = acquire.acquireListedElementFromPage("anythingElse", "toolCards", "pageClass");
+            interactions.clickInteraction(wrongElement);
+
+        }
+        catch (NoSuchElementException ignored) {
+            log.success("Element is expectedly not found!");
+        }
+        finally {
+            WebElement element = acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass");
+            Assert.assertTrue("acquire.acquireListedElementFromPage(elementName, listName, pageName) test failed!", element.getText().contains("Forms"));
+            log.success("The acquire.acquireListedElementFromPage(elementName, listName, pageName) negative test pass!");
+        }
     }
 }
