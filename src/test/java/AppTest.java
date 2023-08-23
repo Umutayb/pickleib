@@ -213,11 +213,8 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         try {
             WebElement wrongElement = acquire.acquireListedElementFromPage("anythingElse", "toolCards", "pageClass");
             interactions.clickInteraction(wrongElement);
-
         }
-        catch (NoSuchElementException ignored) {
-            log.success("Element is expectedly not found!");
-        }
+        catch (NoSuchElementException ignored) {log.success("Element is expectedly not found!");}
         finally {
             WebElement element = acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass");
             Assert.assertTrue("acquire.acquireListedElementFromPage(elementName, listName, pageName) test failed!", element.getText().contains("Forms"));
