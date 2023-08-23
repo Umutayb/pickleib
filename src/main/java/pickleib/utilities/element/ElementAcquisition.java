@@ -107,12 +107,11 @@ public class ElementAcquisition {
      * @return returns the selected element
      */
     public static WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
-        log.info("Acquiring element called " + strUtils.highlighted(BLUE, selectionName));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
         int counter = 0;
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout)){
+        do {
             try {
                 for (WebElement selection : items) {
                     String text = selection.getText();
@@ -130,10 +129,8 @@ public class ElementAcquisition {
                 }
                 counter++;
             }
-            finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getDriverTimeout()));
-            }
         }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
         throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
     }
 
