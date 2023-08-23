@@ -6,7 +6,7 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>1.8.9</version>
+  <version>1.9.0</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
@@ -181,26 +181,12 @@
       <version>1.15.4</version>
     </dependency>
 
-    <!-- Docker -->
+    <!-- JUnit -->
     <dependency>
-      <groupId>com.github.docker-java</groupId>
-      <artifactId>docker-java</artifactId>
-      <version>${docker-java.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.github.docker-java</groupId>
-          <artifactId>docker-java-transport-jersey</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.github.docker-java</groupId>
-          <artifactId>docker-java-transport-netty</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.github.docker-java</groupId>
-      <artifactId>docker-java-transport-httpclient5</artifactId>
-      <version>${docker-java.version}</version>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

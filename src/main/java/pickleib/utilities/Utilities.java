@@ -3,7 +3,6 @@ package pickleib.utilities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.interactions.Actions;
@@ -29,18 +28,19 @@ import java.util.StringJoiner;
 
 import static pickleib.enums.ElementState.absent;
 import static pickleib.utilities.element.ElementAcquisition.*;
+import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class Utilities {
+
+    static {PropertyLoader.load();}
 
     public static ReflectionUtilities reflectionUtils = new ReflectionUtilities();
     public ScreenCaptureUtility capture = new ScreenCaptureUtility();
     public StringUtilities strUtils = new StringUtilities();
     public ObjectMapper objectMapper = new ObjectMapper();
     public Printer log = new Printer(this.getClass());
-    public TextParser parser = new TextParser();
-
     public RemoteWebDriver driver;
 
     public long elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
@@ -80,19 +80,27 @@ public abstract class Utilities {
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
         int counter = 0;
-        elementIs(element, ElementState.enabled);
         do {
             try {
-                if (scroll) clickTowards(centerElement(element));
+                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+                if (counter > 0 && scroll) clickTowards(centerElement(element));
+                else if (scroll) centerElement(element).click();
                 else element.click();
                 return;
             }
             catch (WebDriverException webDriverException){
-                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
+                if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-
-                caughtException = webDriverException;
+                    caughtException = webDriverException;
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException;
+                }
                 counter++;
+            }
+            finally {
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getDriverTimeout()));
             }
         }
         while (!(System.currentTimeMillis() - initialTime > elementTimeout));
@@ -233,7 +241,7 @@ public abstract class Utilities {
         elementIs(inputElement, ElementState.displayed);
         if (scroll) centerElement(inputElement).sendKeys(inputText);
         else inputElement.sendKeys(inputText);
-        if (verify) Assert.assertEquals(inputText, inputElement.getAttribute("value"));
+        assert !verify || inputText.equals(inputElement.getAttribute("value"));
     }
 
     /**
@@ -244,7 +252,7 @@ public abstract class Utilities {
      * @return returns the element if its in expected state
      */
     protected WebElement verifyElementState(WebElement element, ElementState state){
-        Assert.assertTrue("Element is not in " + state.name() + " state!", elementIs(element, state));
+        if (!elementIs(element, state)) throw new PickleibException("Element is not in " + state.name() + " state!");
         log.success("Element state is verified to be: " + state.name());
         return element;
     }
@@ -257,7 +265,6 @@ public abstract class Utilities {
      * @return returns true if an element is in the expected state
      */
     protected Boolean elementIs(WebElement element, @NotNull ElementState state){
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
         boolean timeout;
@@ -267,6 +274,7 @@ public abstract class Utilities {
         do {
             if (condition || (counter > 1 && negativeCheck)) return true;
             try {
+                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
                 switch (state) {
                     case enabled -> {
                         negativeCheck = false;
@@ -307,6 +315,9 @@ public abstract class Utilities {
                 else if (state.equals(absent) && webDriverException.getClass().getName().equals("StaleElementReferenceException"))
                     return true;
                 counter++;
+            }
+            finally {
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getDriverTimeout()));
             }
         }
         while (!(System.currentTimeMillis() - initialTime > elementTimeout));
@@ -519,7 +530,9 @@ public abstract class Utilities {
     protected void waitFor(double seconds){
         if (seconds > 1) log.info("Waiting for " + strUtils.markup(BLUE, String.valueOf(seconds)) + " seconds");
         try {Thread.sleep((long) (seconds* 1000L));}
-        catch (InterruptedException exception){Assert.fail(GRAY+exception.getLocalizedMessage()+RESET);}
+        catch (InterruptedException exception){
+            throw new PickleibException(strUtils.highlighted(GRAY, exception.getLocalizedMessage()));
+        }
     }
 
     /**
@@ -739,8 +752,9 @@ public abstract class Utilities {
      */
     public void verifyElementText(WebElement element, String expectedText){
         expectedText = strUtils.contextCheck(expectedText);
-        Assert.assertEquals("Element text is not " + expectedText + "!", expectedText, element.getText());
-        log.success("Text of the element " + expectedText + " was verified!");
+        if (!expectedText.equals(element.getText()))
+            throw new PickleibException("Element text is not \"" + strUtils.highlighted(BLUE, expectedText) + "\"!");
+        log.success("Text of the element \"" + expectedText + "\" was verified!");
     }
 
     /**
@@ -752,8 +766,9 @@ public abstract class Utilities {
      */
     public void verifyElementContainsText(WebElement element, String expectedText){
         expectedText = strUtils.contextCheck(expectedText);
-        Assert.assertTrue("Element text does not contain" + expectedText + "!", element.getText().contains(expectedText));
-        log.success("The element text does contain " + expectedText + " text!");
+        if (!element.getText().contains(expectedText))
+            throw new PickleibException("Element text does not contain \"" + strUtils.highlighted(BLUE, expectedText) + "\"!");
+        log.success("The element text does contain \"" + expectedText + "\" text!");
     }
 
     /**
@@ -775,7 +790,8 @@ public abstract class Utilities {
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, expectedText)
             );
-            Assert.assertEquals("The " + bundle.alpha().getText() + " does not contain text '", expectedText, bundle.alpha().getText());
+            if (!expectedText.equals(bundle.alpha().getText()))
+                throw new PickleibException("The " + bundle.alpha().getText() + " does not contain text '");
             log.success("Text of the element" + bundle.alpha().getText() + " was verified!");
         }
     }
@@ -849,6 +865,49 @@ public abstract class Utilities {
                 highlighted(GRAY, " -> ") +
                 highlighted(BLUE, attributeValue) +
                 highlighted(GRAY, " attribute pair.")
+        );
+        log.warning(caughtException);
+        return false;
+    }
+
+    /**
+     * Verify that an attribute {attribute name} of element {element name} contains a specific {value}.
+     *
+     * @param elementName   the name of the element to be verified
+     * @param attributeName the name of the attribute to be verified
+     * @param value         the expected part of value of the attribute
+     */
+    public boolean elementAttributeContainsValue(
+            WebElement elementName,
+            String attributeName,
+            String value) {
+
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        int counter = 0;
+        value = strUtils.contextCheck(value);
+        do {
+            try {
+                return elementName.getAttribute(attributeName).contains(value);
+            } catch (WebDriverException webDriverException) {
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                waitFor(0.5);
+                counter++;
+            }
+        }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning("Element attribute does not contain " +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " -> ") +
+                highlighted(BLUE, value) +
+                highlighted(GRAY, " value.")
         );
         log.warning(caughtException);
         return false;

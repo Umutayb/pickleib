@@ -20,7 +20,6 @@ import static utils.StringUtilities.Color.*;
 public class MobileInteractions extends MobileUtilities implements Interactions {
 
     public ElementInteractions interact;
-    protected RemoteWebDriver driver;
     protected WebDriverWait wait;
     boolean scroll = false;
 
@@ -181,6 +180,10 @@ public class MobileInteractions extends MobileUtilities implements Interactions 
 
     public void verifyElementContainsAttribute(WebElement element, String elementName, String pageName, String attributeName, String attributeValue) {
         interact.verifyElementContainsAttribute(element, elementName, pageName, attributeName, attributeValue);
+    }
+
+    public void verifyElementAttributeContainsValue(WebElement element, String attributeName, String elementName, String pageName, String value) {
+        interact.verifyElementAttributeContainsValue(element, attributeName, elementName, pageName, value);
     }
 
     public void verifyElementColor(WebElement element, String attributeName, String elementName, String pageName, String attributeValue) {

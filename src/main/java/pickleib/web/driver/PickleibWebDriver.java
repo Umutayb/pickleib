@@ -7,19 +7,19 @@ import org.openqa.selenium.devtools.v85.network.Network;
 import org.openqa.selenium.devtools.v85.network.model.Headers;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pickleib.utilities.PropertyLoader;
 import utils.Printer;
 import utils.PropertiesReader;
 import utils.PropertyUtility;
 import utils.StringUtilities;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class PickleibWebDriver {
+
+	static {PropertyLoader.load();}
 
 	/**
 	 * RemoteWebDriver instance
@@ -38,11 +38,11 @@ public class PickleibWebDriver {
 	/**
 	 * Initializes a specified type of driver
 	 *
-	 * @param driverType driver type
+	 * @param browserType driver type
 	 */
-	public static void initialize(WebDriverFactory.DriverType driverType){
-		log.info("Initializing " + strUtils.markup(StringUtilities.Color.PURPLE, driverType.getDriverName()) + " driver...");
-		driver = WebDriverFactory.getDriver(driverType);
+	public static void initialize(WebDriverFactory.BrowserType browserType){
+		log.info("Initializing " + strUtils.markup(StringUtilities.Color.PURPLE, browserType.getDriverName()) + " driver...");
+		driver = WebDriverFactory.getDriver(browserType);
 		wait = new WebDriverWait(driver, Duration.of(WebDriverFactory.driverTimeout, ChronoUnit.SECONDS));
 	}
 
@@ -52,17 +52,17 @@ public class PickleibWebDriver {
 	public static void initialize(){
 		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
 		String driverProperty = strUtils.firstLetterCapped(PropertyUtility.getProperty("browser"));
-		if (driverName!=null) initialize(WebDriverFactory.DriverType.fromString(driverName));
-		else if (driverProperty != null) initialize(WebDriverFactory.DriverType.fromString(driverProperty));
-		else initialize(WebDriverFactory.DriverType.CHROME);
+		if (driverName!=null) initialize(WebDriverFactory.BrowserType.fromString(driverName));
+		else if (driverProperty != null) initialize(WebDriverFactory.BrowserType.fromString(driverProperty));
+		else initialize(WebDriverFactory.BrowserType.CHROME);
 	}
 
 	/**
 	 * @deprecated This method is no longer maintained
 	 */
 	@Deprecated(since = "1.5.6")
-	public static void initialize(String id, String password, WebDriverFactory.DriverType driverType){ //Only works with chrome!
-		initialize(driverType);
+	public static void initialize(String id, String password, WebDriverFactory.BrowserType browserType){ //Only works with chrome!
+		initialize(browserType);
 		DevTools dev = ((ChromeDriver) driver).getDevTools();
 		dev.createSession();
 		dev.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
