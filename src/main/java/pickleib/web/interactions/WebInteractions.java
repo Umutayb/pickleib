@@ -1,6 +1,7 @@
 package pickleib.web.interactions;
 
 import context.ContextStore;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -182,6 +183,9 @@ public class WebInteractions extends WebUtilities implements Interactions {
         interact.bundleInteraction(bundles, pageName);
     }
 
+    public void scrollOrSwipeInDirection(Direction direction) {
+        scroll(direction);
+    }
 
     /**
      *
@@ -325,12 +329,20 @@ public class WebInteractions extends WebUtilities implements Interactions {
     }
 
     /**
+     * Scroll in a given direction
      *
-     * Scroll {direction}
-     *
-     * @param direction target direction (up or down)
+     * @param direction target direction (UP or DOWN)
      */
-    public void scrollInDirection(Direction direction){scroll(direction);}
+    protected void scroll(@NotNull Direction direction){
+        log.info("Scrolling " + strUtils.highlighted(BLUE, direction.name().toLowerCase()));
+        String script = switch (direction) {
+            case up -> "window.scrollBy(0,-document.body.scrollHeight)";
+            case down -> "window.scrollBy(0,document.body.scrollHeight)";
+            case left -> null;
+            case right -> null;
+        };
+        ((JavascriptExecutor) driver).executeScript(script);
+    }
 
     /**
      *

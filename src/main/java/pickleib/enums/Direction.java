@@ -7,5 +7,5 @@ import lombok.Getter;
  */
 @Getter
 public enum Direction {
-    up, down
+    up, down, left, right
 }

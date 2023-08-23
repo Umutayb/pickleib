@@ -545,20 +545,6 @@ public abstract class Utilities {
     protected abstract WebElement centerElement(WebElement element);
 
     /**
-     * Scroll in a given direction
-     *
-     * @param direction target direction (UP or DOWN)
-     */
-    protected void scroll(@NotNull Direction direction){
-        log.info("Scrolling " + strUtils.highlighted(BLUE, direction.name().toLowerCase()));
-        String script = switch (direction) {
-            case up -> "window.scrollBy(0,-document.body.scrollHeight)";
-            case down -> "window.scrollBy(0,document.body.scrollHeight)";
-        };
-        ((JavascriptExecutor) driver).executeScript(script);
-    }
-
-    /**
      * Gets the parent class from a child element using a selector class
      *
      * @param childElement element that generates the parent class

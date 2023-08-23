@@ -8,8 +8,8 @@ import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
+import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
-import pickleib.enums.SwipeDirection;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
 import utils.PropertyUtility;
@@ -91,7 +91,7 @@ public abstract class MobileUtilities extends Utilities {
         return element;
     }
 
-    public void swiper(SwipeDirection direction){
+    public void swiper(Direction direction){
         Point center = new Point(
                 driver.manage().window().getSize().getWidth()/2,
                 driver.manage().window().getSize().getHeight()/2
