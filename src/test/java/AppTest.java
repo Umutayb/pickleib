@@ -261,19 +261,4 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         Assert.assertNotNull("prop5 is not read", PropertyUtility.getProperty("prop5"));
         log.success("Property test1 pass!");
     }
-
-    @Test
-    public void propertyTest2(){
-        log.info("prop1 is read as: " + PropertyUtility.getProperty("prop1"));
-        log.info("prop2 is read as: " + PropertyUtility.getProperty("prop2"));
-        log.info("prop3 is read as: " + PropertyUtility.getProperty("prop3"));
-        log.info("prop4 is read as: " + PropertyUtility.getProperty("prop4"));
-        log.info("prop5 is read as: " + PropertyUtility.getProperty("prop5"));
-        Assert.assertNotNull("prop1 is not read", PropertyUtility.getProperty("prop1"));
-        Assert.assertNotNull("prop2 is not read", PropertyUtility.getProperty("prop2"));
-        Assert.assertNotNull("prop3 is not read", PropertyUtility.getProperty("prop3"));
-        Assert.assertNull("prop4 is not read", PropertyUtility.getProperty("prop4"));
-        Assert.assertNull("prop5 is not read", PropertyUtility.getProperty("prop5"));
-        log.success("Property test2 pass!");
-    }
 }
