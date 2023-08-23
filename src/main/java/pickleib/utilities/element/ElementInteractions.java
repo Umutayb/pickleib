@@ -9,6 +9,7 @@ import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.exceptions.PickleibException;
+import pickleib.exceptions.PickleibVerificationException;
 import pickleib.mobile.interactions.MobileInteractions;
 import pickleib.utilities.Interactions;
 import pickleib.utilities.Utilities;
@@ -517,7 +518,7 @@ public class ElementInteractions extends Utilities implements Interactions {
         );
 
         if (!elementAttributeContainsValue(element, attributeName, value))
-            throw new PickleibException(
+            throw new PickleibVerificationException(
                     "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
                             "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName)
             );
