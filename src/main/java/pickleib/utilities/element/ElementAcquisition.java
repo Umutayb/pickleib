@@ -20,8 +20,11 @@ import utils.PropertyUtility;
 import utils.ReflectionUtilities;
 import utils.StringUtilities;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.*;
 
+import static pickleib.utilities.element.ElementAcquisition.PageObjectJson.driver;
+import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
@@ -117,11 +120,18 @@ public class ElementAcquisition {
                 }
             }
             catch (WebDriverException webDriverException){
-                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
+                if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-
-                caughtException = webDriverException;
+                    caughtException = webDriverException;
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException;
+                }
                 counter++;
+            }
+            finally {
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getDriverTimeout()));
             }
         }
         throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");

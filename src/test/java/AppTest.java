@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriverException;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
+import pickleib.utilities.element.ElementAcquisition;
 import pickleib.utilities.element.ElementInteractions;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
@@ -20,9 +21,11 @@ import static pickleib.web.driver.PickleibWebDriver.log;
 
 public class AppTest {
 
-    ElementInteractions interactions;
-    WebInteractions webInteractions;
-    PageClass page;
+    PageClass page = new PageClass();
+    public ElementAcquisition.PageObjectModel<ObjectRepository> acquire;
+    public ElementAcquisition.Reflections<ObjectRepository> reflections;
+    public ElementInteractions interactions;
+    public WebInteractions webInteractions;
 
     @Before
     public void before(){
@@ -31,9 +34,10 @@ public class AppTest {
         WebDriverFactory.setUseWDM(true);
         PickleibWebDriver.initialize();
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
-        interactions = new ElementInteractions(driver, DriverFactory.DriverType.Web);
+        acquire = new ElementAcquisition.PageObjectModel<>(PickleibWebDriver.driver, ObjectRepository.class);
+        reflections = new ElementAcquisition.Reflections<>(PickleibWebDriver.driver, ObjectRepository.class);
+        interactions = new ElementInteractions(PickleibWebDriver.driver, DriverFactory.DriverType.Web);
         webInteractions = new WebInteractions();
-        page = new PageClass();
     }
 
     @After
@@ -167,5 +171,14 @@ public class AppTest {
         webInteractions.scrollWithJS(page.interactionsAccordionBar);
         Assert.assertTrue("webInteractions.scrollWithJS(page.interactionsAccordionBar) test failed!", page.interactionsAccordionBar.isDisplayed());
         log.success("webInteractions.scrollWithJS(page.interactionsAccordionBar) test pass!");
+    }
+
+    @Test
+    public void acquireNamedElementAmongstTest(){
+        log.info("acquire.acquireListedElementFromPage(elementName, listName, pageName) test");
+        webInteractions.getUrl(page.baseUrl + "elements");
+        interactions.clickInteraction(acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass"));
+        Assert.assertTrue("acquire.acquireListedElementFromPage(elementName, listName, pageName) test failed!", page.headerTitle.getText().contains("Forms"));
+        log.success("acquire.acquireListedElementFromPage(elementName, listName, pageName) test pass!");
     }
 }
