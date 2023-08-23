@@ -516,11 +516,11 @@ public class ElementInteractions extends Utilities implements Interactions {
                 highlighted(GRAY," attribute.")
         );
 
-        Assert.assertTrue(
-                "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
-                        "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName),
-                elementAttributeContainsValue(element, attributeName, value)
-        );
+        if (!elementAttributeContainsValue(element, attributeName, value))
+            throw new PickleibException(
+                    "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                            "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName)
+            );
         log.success("The " + attributeName + " attribute of element " + elementName + " is verified!" );
     }
 
