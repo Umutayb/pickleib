@@ -281,6 +281,24 @@ public interface Interactions {
 
     /**
      *
+     * Verify that an attribute {attribute name} of element {element name} on the {page name} contains a specific {value}
+     *
+     * @param attributeName target attribute name
+     * @param elementName target element name
+     * @param pageName specified page instance name
+     * @param value expected part of value of the attribute
+
+     */
+    void verifyElementAttributeContainsValue(
+            WebElement element,
+            String attributeName,
+            String elementName,
+            String pageName,
+            String value
+    );
+
+    /**
+     *
      * Verify {attribute name} css attribute of an element {element name} on the {page name} is {attribute value}
      *
      * @param element target element
