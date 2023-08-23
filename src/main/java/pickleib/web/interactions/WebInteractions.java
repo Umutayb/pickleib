@@ -25,7 +25,6 @@ import static utils.StringUtilities.Color.*;
 public class WebInteractions extends WebUtilities implements Interactions {
 
     public ElementInteractions interact;
-    protected RemoteWebDriver driver;
     protected WebDriverWait wait;
     boolean scroll = false;
 

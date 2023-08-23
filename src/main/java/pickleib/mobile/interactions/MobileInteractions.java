@@ -20,7 +20,6 @@ import static utils.StringUtilities.Color.*;
 public class MobileInteractions extends MobileUtilities implements Interactions {
 
     public ElementInteractions interact;
-    protected RemoteWebDriver driver;
     protected WebDriverWait wait;
     boolean scroll = false;
 
