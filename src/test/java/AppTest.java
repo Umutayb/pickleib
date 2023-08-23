@@ -12,6 +12,7 @@ import pickleib.utilities.element.ElementInteractions;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
+import utils.PropertyUtility;
 
 import java.time.Duration;
 
@@ -224,7 +225,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
 
     @Test
     public void verifyElementAttributeContainsValueTest() {
-        log.info("verifyElementAttributeContainsValue(element, elementName,pageName, attributeName, value) test");
+        log.info("verifyElementAttributeContainsValue(element, elementName, pageName, attributeName, value) test");
         webInteractions.getUrl(baseUrl);
         WebElement element = acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass");
         interactions.verifyElementAttributeContainsValue(element, "card", "pageName", "innerHTML", "Form");
@@ -233,7 +234,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
 
     @Test
     public void verifyElementAttributeContainsValueNegativeTest() {
-        log.info("verifyElementAttributeContainsValue(element, elementName,pageName, attributeName, value) negative test");
+        log.info("verifyElementAttributeContainsValue(element, elementName, pageName, attributeName, value) negative test");
         webInteractions.getUrl(baseUrl);
         try {
             WebElement element = acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass");
@@ -243,5 +244,36 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
             return;
         }
         throw new PickleibVerificationException("Attribute verification failed!");
+    }
+
+    @Test
+    public void propertyTest1(){
+        PropertyUtility.loadProperties("src/test/resources/test.properties");
+        log.info("prop1 is read as: " + PropertyUtility.getProperty("prop1"));
+        log.info("prop2 is read as: " + PropertyUtility.getProperty("prop2"));
+        log.info("prop3 is read as: " + PropertyUtility.getProperty("prop3"));
+        log.info("prop4 is read as: " + PropertyUtility.getProperty("prop4"));
+        log.info("prop5 is read as: " + PropertyUtility.getProperty("prop5"));
+        Assert.assertNotNull("prop1 is not read", PropertyUtility.getProperty("prop1"));
+        Assert.assertNotNull("prop2 is not read", PropertyUtility.getProperty("prop2"));
+        Assert.assertNotNull("prop3 is not read", PropertyUtility.getProperty("prop3"));
+        Assert.assertNotNull("prop4 is not read", PropertyUtility.getProperty("prop4"));
+        Assert.assertNotNull("prop5 is not read", PropertyUtility.getProperty("prop5"));
+        log.success("Property test1 pass!");
+    }
+
+    @Test
+    public void propertyTest2(){
+        log.info("prop1 is read as: " + PropertyUtility.getProperty("prop1"));
+        log.info("prop2 is read as: " + PropertyUtility.getProperty("prop2"));
+        log.info("prop3 is read as: " + PropertyUtility.getProperty("prop3"));
+        log.info("prop4 is read as: " + PropertyUtility.getProperty("prop4"));
+        log.info("prop5 is read as: " + PropertyUtility.getProperty("prop5"));
+        Assert.assertNotNull("prop1 is not read", PropertyUtility.getProperty("prop1"));
+        Assert.assertNotNull("prop2 is not read", PropertyUtility.getProperty("prop2"));
+        Assert.assertNotNull("prop3 is not read", PropertyUtility.getProperty("prop3"));
+        Assert.assertNull("prop4 is not read", PropertyUtility.getProperty("prop4"));
+        Assert.assertNull("prop5 is not read", PropertyUtility.getProperty("prop5"));
+        log.success("Property test2 pass!");
     }
 }
