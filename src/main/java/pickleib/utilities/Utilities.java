@@ -239,6 +239,7 @@ public abstract class Utilities {
     protected void fillInputElement(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
         // This method clears the input field before filling it
         elementIs(inputElement, ElementState.displayed);
+        inputText = strUtils.contextCheck(inputText);
         if (scroll) centerElement(inputElement).sendKeys(inputText);
         else inputElement.sendKeys(inputText);
         assert !verify || inputText.equals(inputElement.getAttribute("value"));
