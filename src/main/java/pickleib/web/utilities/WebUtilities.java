@@ -162,7 +162,6 @@ public abstract class WebUtilities extends Utilities {
         return parentWindowHandle;
     }
 
-
     /**
      * Verifies the current url contains the given url
      *

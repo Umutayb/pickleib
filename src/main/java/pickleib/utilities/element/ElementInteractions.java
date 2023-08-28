@@ -222,7 +222,6 @@ public class ElementInteractions extends Utilities implements Interactions {
      * @param input input text
      */
     public void basicFill(WebElement inputElement, String inputName, String pageName, String input, boolean verify){
-        input = strUtils.contextCheck(input);
         log.info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
@@ -686,7 +685,7 @@ public class ElementInteractions extends Utilities implements Interactions {
             InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
             switch (interactionType){
                 case click  -> clickInteraction(bundle.beta(), bundle.alpha(), pageName);
-                case fill   -> basicFill(bundle.beta(), bundle.alpha(), pageName, strUtils.contextCheck(bundle.theta().get("Input")));
+                case fill   -> basicFill(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"));
                 case center -> center(bundle.beta(), bundle.alpha(), pageName);
                 case verify -> verifyElementContainsAttribute(
                         bundle.beta(),
