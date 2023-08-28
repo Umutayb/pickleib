@@ -4,8 +4,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.driver.DriverFactory;
+import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
-import pickleib.enums.SwipeDirection;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
 import pickleib.utilities.Interactions;
@@ -52,14 +52,6 @@ public class MobileInteractions extends MobileUtilities implements Interactions 
     public void setScroll(boolean scroll) {
         this.scroll = scroll;
     }
-
-    /**
-     *
-     * Scroll {direction}
-     *
-     * @param direction target direction (up or down)
-     */
-    public void swipeInDirection(SwipeDirection direction){swiper(direction);}
 
     /**
      *
@@ -192,6 +184,10 @@ public class MobileInteractions extends MobileUtilities implements Interactions 
 
     public void verifyPresenceOfListedElements(List<Bundle<WebElement, String, String>> bundles, WebElement element, List<WebElement> elements, String pageName, List<Map<String, String>> signForms) {
         interact.verifyPresenceOfListedElements(bundles, element, elements, pageName, signForms);
+    }
+
+    public void scrollOrSwipeInDirection(Direction direction) {
+        swiper(direction);
     }
 
     public void clickButtonByText(String buttonText, Boolean scroll) {

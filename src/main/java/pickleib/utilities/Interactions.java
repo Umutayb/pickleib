@@ -2,6 +2,7 @@ package pickleib.utilities;
 
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import records.Bundle;
 import java.util.List;
@@ -330,6 +331,14 @@ public interface Interactions {
             String pageName,
             List<Map<String, String>> signForms
     );
+
+    /**
+     *
+     * Scrolls or swipes on a given direction
+     *
+     * @param direction target direction (up, down, left, right)
+     */
+    void scrollOrSwipeInDirection(Direction direction);
 
     /**
      *

@@ -20,4 +20,7 @@ public class PageClass extends WebUtilities {
     List<WebElement> toolCards;
     @FindBy(css = "[class='pattern-backgound playgound-header']")
     WebElement headerTitle;
+    @FindBy(css = "[class='group-header']")
+    List<WebElement> toolElements;
+
 }

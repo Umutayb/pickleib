@@ -1,8 +1,6 @@
 import org.junit.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
@@ -228,7 +226,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         log.info("verifyElementAttributeContainsValue(element, elementName, pageName, attributeName, value) test");
         webInteractions.getUrl(baseUrl);
         WebElement element = acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass");
-        interactions.verifyElementAttributeContainsValue(element, "card", "pageName", "innerHTML", "Form");
+        interactions.verifyElementAttributeContainsValue(element, "card", "pageClass", "innerHTML", "Form");
         log.success("The verifyElementAttributeContainsValue(element, elementName, pageName, attributeName, value) test pass!");
     }
 
@@ -238,7 +236,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         webInteractions.getUrl(baseUrl);
         try {
             WebElement element = acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass");
-            interactions.verifyElementAttributeContainsValue(element, "card", "pageName", "innerHTML", "Test");
+            interactions.verifyElementAttributeContainsValue(element, "card", "pageClass", "innerHTML", "Test");
         } catch (PickleibVerificationException ignored) {
             log.success("Attribute verification is (un)successful!");
             return;
@@ -262,5 +260,26 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         Assert.assertNotNull("prop4 is not read", PropertyUtility.getProperty("prop4"));
         Assert.assertNotNull("prop5 is not read", PropertyUtility.getProperty("prop5"));
         log.success("Property test1 pass!");
+    }
+
+    @Test
+    public void scrollOrSwipeInDirectionScrollTest() {
+        log.info("webInteractions.scrollOrSwipeInDirection(direction) test");
+        webInteractions.getUrl(baseUrl + "elements");
+        webInteractions.scrollOrSwipeInDirection(Direction.down);
+        WebElement element = acquire.acquireListedElementFromPage("Interactions", "toolElements", "pageClass");
+        webInteractions.clickInteraction(element);
+        log.success("The webInteractions.scrollOrSwipeInDirection(direction) test pass!");
+    }
+
+    @Test
+    public void scrollOrSwipeInDirectionNegativeScrollTest() {
+        log.info("webInteractions.scrollOrSwipeInDirection(direction) test");
+        webInteractions.getUrl(baseUrl + "elements");
+        try {
+            webInteractions.scrollOrSwipeInDirection(Direction.right);
+        }
+        catch (NullPointerException ignored) {}
+        log.success("The webInteractions.scrollOrSwipeInDirection(direction) negative test pass!");
     }
 }

@@ -34,7 +34,7 @@ import static utils.StringUtilities.Color.*;
  * @since 1.8.0
  */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class ElementInteractions extends Utilities implements Interactions {
+public class ElementInteractions extends Utilities {
 
     public DriverFactory.DriverType driverType;
 
