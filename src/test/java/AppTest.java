@@ -1,5 +1,11 @@
-import org.junit.*;
-import org.openqa.selenium.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
@@ -245,7 +251,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
     }
 
     @Test
-    public void propertyReaderTest(){
+    public void propertyReaderTest() {
         Assert.assertNull("prop4 is not read", PropertyUtility.getProperty("prop4"));
         Assert.assertNull("prop5 is not read", PropertyUtility.getProperty("prop5"));
         PropertyUtility.loadProperties("src/test/resources/test.properties");
@@ -278,8 +284,8 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         webInteractions.getUrl(baseUrl + "elements");
         try {
             webInteractions.scrollOrSwipeInDirection(Direction.right);
+        } catch (NullPointerException ignored) {
         }
-        catch (NullPointerException ignored) {}
         log.success("The webInteractions.scrollOrSwipeInDirection(direction) negative test pass!");
     }
 }
