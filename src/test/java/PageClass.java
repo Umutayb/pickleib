@@ -22,4 +22,5 @@ public class PageClass extends WebUtilities {
     WebElement headerTitle;
     @FindBy(css = "[class='group-header']")
     List<WebElement> toolElements;
+
 }
