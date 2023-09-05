@@ -19,12 +19,10 @@ import utils.Printer;
 import utils.PropertyUtility;
 import utils.ReflectionUtilities;
 import utils.StringUtilities;
+
 import java.lang.reflect.InvocationTargetException;
-import java.time.Duration;
 import java.util.*;
 
-import static pickleib.utilities.element.ElementAcquisition.PageObjectJson.driver;
-import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
@@ -645,6 +643,29 @@ public class ElementAcquisition {
                 pairs.add(selectChildElementFromComponentsBySecondChildText(map, componentListName, pageName));
             }
             return pairs;
+        }
+
+        /**
+         * Returns boolean value about containing element with text in the component list.
+         *
+         * @param elementName The name of element.
+         * @param elementText The text of element.
+         * @param componentListName The name of the component list in the page object.
+         * @param pageName The name of the page object.
+         * @return Boolean value.
+         */
+        public <Component extends WebElement> boolean listedComponentContainsElementText(String elementName, String elementText, String componentListName, String pageName) {
+            pageName = strUtils.firstLetterDeCapped(pageName);
+            componentListName = strUtils.firstLetterDeCapped(componentListName);
+            elementText = strUtils.contextCheck(elementText);
+            List<Component> componentList = reflections.getComponentsFromPage(componentListName, pageName);
+            boolean textMatch = false;
+            for (Component component : componentList) {
+                WebElement element = reflections.getElementFromComponent(elementName, component);
+                textMatch = element.getText().equals(elementText);
+                if(textMatch) break;
+            }
+            return textMatch;
         }
     }
 

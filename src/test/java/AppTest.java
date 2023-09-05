@@ -278,8 +278,8 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         webInteractions.getUrl(baseUrl + "elements");
         try {
             webInteractions.scrollOrSwipeInDirection(Direction.right);
+        } catch (NullPointerException ignored) {
         }
-        catch (NullPointerException ignored) {}
         log.success("The webInteractions.scrollOrSwipeInDirection(direction) negative test pass!");
     }
 }
