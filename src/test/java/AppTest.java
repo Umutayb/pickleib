@@ -245,7 +245,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
     }
 
     @Test
-    public void propertyReaderTest() {
+    public void propertyReaderTest(){
         Assert.assertNull("prop4 is not read", PropertyUtility.getProperty("prop4"));
         Assert.assertNull("prop5 is not read", PropertyUtility.getProperty("prop5"));
         PropertyUtility.loadProperties("src/test/resources/test.properties");
