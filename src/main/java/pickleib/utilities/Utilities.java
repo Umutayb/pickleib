@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import static pickleib.enums.ElementState.absent;
+import static pickleib.enums.ElementState.displayed;
 import static pickleib.utilities.element.ElementAcquisition.*;
 import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
@@ -753,6 +754,7 @@ public abstract class Utilities {
      */
     public void verifyElementContainsText(WebElement element, String expectedText){
         expectedText = strUtils.contextCheck(expectedText);
+        elementIs(element, displayed);
         if (!element.getText().contains(expectedText))
             throw new PickleibException("Element text does not contain \"" + strUtils.highlighted(BLUE, expectedText) + "\"!");
         log.success("The element text does contain \"" + expectedText + "\" text!");
