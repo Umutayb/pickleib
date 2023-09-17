@@ -20,8 +20,8 @@ Some features and benefits of using Pickleib are:
 To use Pickleib in your Maven project, add the following dependency to your pom.xml file:
 ```xml
 <dependency>
-    <groupId>com.github.umutayb</groupId>
-    <artifactId>pickleib</artifactId>
+    <groupId>io.github.umutayb</groupId>
+    <artifactId>Pickleib</artifactId>
     <version>1.x.x</version>
 </dependency>
 ```
