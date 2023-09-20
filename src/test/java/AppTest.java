@@ -41,7 +41,6 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         WebDriverFactory.setHeadless(true);
         WebDriverFactory.setDriverTimeout(120);
         WebDriverFactory.setUseWDM(true);
-        WebDriverFactory.setLoadStrategy(EAGER);
         PickleibWebDriver.initialize();
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
         acquire = new ElementAcquisition.PageObjectModel<>(PickleibWebDriver.driver, ObjectRepository.class);
