@@ -14,6 +14,7 @@ import utils.PropertyUtility;
 
 import java.time.Duration;
 
+import static org.openqa.selenium.PageLoadStrategy.EAGER;
 import static pickleib.driver.DriverFactory.DriverType.Web;
 import static pickleib.enums.Navigation.backwards;
 import static pickleib.web.driver.PickleibWebDriver.driver;
@@ -37,9 +38,10 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
 
     @Before
     public void before() {
-        WebDriverFactory.setHeadless(true);
+        WebDriverFactory.setHeadless(false);
         WebDriverFactory.setDriverTimeout(120);
         WebDriverFactory.setUseWDM(true);
+        WebDriverFactory.setLoadStrategy(EAGER);
         PickleibWebDriver.initialize();
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
         acquire = new ElementAcquisition.PageObjectModel<>(PickleibWebDriver.driver, ObjectRepository.class);
