@@ -11,10 +11,8 @@ import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
 import utils.PropertyUtility;
-
 import java.time.Duration;
 
-import static org.openqa.selenium.PageLoadStrategy.EAGER;
 import static pickleib.driver.DriverFactory.DriverType.Web;
 import static pickleib.enums.Navigation.backwards;
 import static pickleib.web.driver.PickleibWebDriver.driver;
