@@ -38,7 +38,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
 
     @Before
     public void before() {
-        WebDriverFactory.setHeadless(false);
+        WebDriverFactory.setHeadless(true);
         WebDriverFactory.setDriverTimeout(120);
         WebDriverFactory.setUseWDM(true);
         WebDriverFactory.setLoadStrategy(EAGER);
