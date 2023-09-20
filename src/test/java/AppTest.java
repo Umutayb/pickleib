@@ -27,12 +27,12 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
  //   String trainingUrl = "https://www.toolsqa.com/selenium-training/";
  //   String baseUrl = "https://demoqa.com/";
 //
- //   /**
- //    * Constructs an instance of the CommonStepUtilities class with the specific object repository.
- //    */
- //   public AppTest() {
- //       super(ObjectRepository.class);
- //   }
+   /**
+    * Constructs an instance of the CommonStepUtilities class with the specific object repository.
+    */
+   public AppTest() {
+       super(ObjectRepository.class);
+   }
 //
  //   @Before
  //   public void before() {
