@@ -18,7 +18,6 @@ import utils.StringUtilities;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
-import java.util.Properties;
 
 import static utils.StringUtilities.Color.*;
 
@@ -66,6 +65,11 @@ public class WebDriverFactory implements DriverFactory {
      * enables insecure local host if true
      */
     static boolean insecureLocalHost = Boolean.parseBoolean(PropertyUtility.getProperty("insecure-localhost", "false"));
+
+    /**
+     * enables insecure local host if true
+     */
+    static boolean noSandbox = Boolean.parseBoolean(PropertyUtility.getProperty("driver-no-sandbox", "false"));
 
     /**
      * disables browser notifications if true
@@ -133,7 +137,7 @@ public class WebDriverFactory implements DriverFactory {
                 ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", browserType.getDriverKey());
                 driver = new RemoteWebDriver(new URL(hubUrl), capabilities);
             }
-            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, browserType);}
+            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType);}
 
             assert driver != null;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
@@ -170,6 +174,7 @@ public class WebDriverFactory implements DriverFactory {
             Boolean headless,
             Boolean useWDM,
             Boolean insecureLocalHost, 
+            Boolean noSandbox,
             Boolean disableNotifications,
             Boolean allowRemoteOrigin,
             PageLoadStrategy loadStrategy,
@@ -178,37 +183,39 @@ public class WebDriverFactory implements DriverFactory {
         try {
             switch (browserType) {
                 case CHROME -> {
-                    ChromeOptions chromeOptions = new ChromeOptions();
-                    if (disableNotifications) chromeOptions.addArguments("disable-notifications");
+                    ChromeOptions options = new ChromeOptions();
+                    if (disableNotifications) options.addArguments("disable-notifications");
                     if (insecureLocalHost){
-                        chromeOptions.addArguments("--allow-insecure-localhost");
-                        chromeOptions.addArguments("--ignore-certificate-errors");
+                        options.addArguments("--allow-insecure-localhost");
+                        options.addArguments("--ignore-certificate-errors");
                     }
-                    chromeOptions.setPageLoadStrategy(loadStrategy);
-                    chromeOptions.setAcceptInsecureCerts(insecureLocalHost);
-                    if (allowRemoteOrigin) chromeOptions.addArguments("--remote-allow-origins=*");
-                    if (headless) chromeOptions.addArguments("--headless=new");
+                    if (noSandbox) options.addArguments("--no-sandbox");
+                    options.setPageLoadStrategy(loadStrategy);
+                    options.setAcceptInsecureCerts(insecureLocalHost);
+                    if (allowRemoteOrigin) options.addArguments("--remote-allow-origins=*");
+                    if (headless) options.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
-                    return new ChromeDriver(chromeOptions);
+                    return new ChromeDriver(options);
                 }
                 case FIREFOX -> {
-                    FirefoxOptions firefoxOptions = new FirefoxOptions();
+                    FirefoxOptions options = new FirefoxOptions();
                     if (insecureLocalHost){
-                        firefoxOptions.addArguments("--allow-insecure-localhost");
-                        firefoxOptions.addArguments("--ignore-certificate-errors");
+                        options.addArguments("--allow-insecure-localhost");
+                        options.addArguments("--ignore-certificate-errors");
                     }
-                    firefoxOptions.setPageLoadStrategy(loadStrategy);
-                    firefoxOptions.setAcceptInsecureCerts(insecureLocalHost);
-                    if (allowRemoteOrigin) firefoxOptions.addArguments("--remote-allow-origins=*");
-                    if (disableNotifications) firefoxOptions.addArguments("disable-notifications");
-                    if (headless) firefoxOptions.addArguments("--headless=new");
+                    if (noSandbox) options.addArguments("--no-sandbox");
+                    options.setPageLoadStrategy(loadStrategy);
+                    options.setAcceptInsecureCerts(insecureLocalHost);
+                    if (allowRemoteOrigin) options.addArguments("--remote-allow-origins=*");
+                    if (disableNotifications) options.addArguments("disable-notifications");
+                    if (headless) options.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.firefoxdriver().setup();
-                    return new FirefoxDriver(firefoxOptions);
+                    return new FirefoxDriver(options);
                 }
                 case SAFARI -> {
-                    SafariOptions safariOptions = new SafariOptions();
+                    SafariOptions options = new SafariOptions();
                     if (useWDM) WebDriverManager.safaridriver().setup();
-                    return new SafariDriver(safariOptions);
+                    return new SafariDriver(options);
                 }
                 default -> {
                     throw new PickleibException("No such driver was defined.");
@@ -217,7 +224,7 @@ public class WebDriverFactory implements DriverFactory {
         }
         catch (SessionNotCreatedException sessionException){
             log.warning(sessionException.getLocalizedMessage());
-            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, disableNotifications, allowRemoteOrigin, loadStrategy, browserType);
+            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType);
             else return null;
         }
     }
@@ -318,6 +325,8 @@ public class WebDriverFactory implements DriverFactory {
         WebDriverFactory.browser = browser;
     }
 
+    public static void setNoSandbox(boolean noSandbox) {WebDriverFactory.noSandbox = noSandbox;}
+
     public static StringUtilities getStrUtils() {
         return strUtils;
     }
@@ -381,4 +390,7 @@ public class WebDriverFactory implements DriverFactory {
     public static String getBrowser() {
         return browser;
     }
+
+    public static boolean isNoSandbox() {return noSandbox;}
+
 }
