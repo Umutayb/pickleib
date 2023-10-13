@@ -265,6 +265,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
     public void waitUntilPageLoadsTest() {
         webInteractions.getUrl(baseUrl);
         interactions.clickByText("Forms");
-        webInteractions.waitUntilPageLoads();
+        webInteractions.waitUntilPageLoads(10);
+        log.success("waitUntilPageLoadsTest passed!");
     }
 }
