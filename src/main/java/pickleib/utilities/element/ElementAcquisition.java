@@ -17,18 +17,18 @@ import records.Bundle;
 import records.Pair;
 import utils.Printer;
 import utils.PropertyUtility;
-import utils.ReflectionUtilities;
 import utils.StringUtilities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static utils.ReflectionUtilities.getFieldValue;
+import static utils.ReflectionUtilities.getFields;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
 public class ElementAcquisition {
 
-    public static ReflectionUtilities reflectionUtils = new ReflectionUtilities();
     public static StringUtilities strUtils = new StringUtilities();
     static long elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
     static Printer log = new Printer(ElementAcquisition.class);
@@ -54,7 +54,7 @@ public class ElementAcquisition {
         long initialTime = System.currentTimeMillis();
         while (!timeout){
             for (Component component : items) {
-                Map<String, Object> componentFields = reflectionUtils.getFields(component);
+                Map<String, Object> componentFields = getFields(component);
                 WebElement element = (WebElement) componentFields.get(elementFieldName);
                 String attribute = element.getAttribute(attributeName);
                 if (attribute.equals(attributeValue)) return component;
@@ -883,8 +883,8 @@ public class ElementAcquisition {
          */
         public WebElement getElementFromPage(String elementFieldName, String pageName){
             Map<String, Object> pageFields;
-            Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
-            if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
+            Object pageObject = getFields(getObjectRepository()).get(pageName);
+            if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             if (pageFields.get(elementFieldName) == null)
                 throw new PickleibException("The " + strUtils.highlighted(YELLOW, pageName) + " page object does not contain " + strUtils.highlighted(YELLOW, elementFieldName) + " element!");
@@ -901,8 +901,8 @@ public class ElementAcquisition {
         @SuppressWarnings("unchecked")
         public List<WebElement> getElementsFromPage(String elementListFieldName, String pageName){
             Map<String, Object> pageFields;
-            Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
-            if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
+            Object pageObject = getFields(getObjectRepository()).get(pageName);
+            if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             if (pageFields.get(elementListFieldName) == null)
                 throw new PickleibException("The " + strUtils.highlighted(YELLOW, pageName) + " page object does not contain " + strUtils.highlighted(YELLOW, elementListFieldName) + " element list!");
@@ -924,7 +924,7 @@ public class ElementAcquisition {
                 String pageName){
             List<Component> componentList = getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, selectionName);
-            Map<String, Object> componentFields = reflectionUtils.getFields(component);
+            Map<String, Object> componentFields = getFields(component);
             return (WebElement) componentFields.get(elementFieldName);
         }
 
@@ -944,7 +944,7 @@ public class ElementAcquisition {
                 String pageName){
             List<Component> componentList = getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, selectionName);
-            Map<String, Object> componentFields = reflectionUtils.getFields(component);
+            Map<String, Object> componentFields = getFields(component);
             return (List<WebElement>) componentFields.get(elementFieldName);
         }
 
@@ -963,7 +963,7 @@ public class ElementAcquisition {
                 String pageName){
             List<Component> componentList = getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, selectionName);
-            Map<String, Object> componentFields = reflectionUtils.getFields(component);
+            Map<String, Object> componentFields = getFields(component);
             return (WebElement) componentFields.get(elementFieldName);
         }
 
@@ -983,7 +983,7 @@ public class ElementAcquisition {
                 String pageName){
             List<Component> componentList = getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, selectionName);
-            Map<String, Object> componentFields = reflectionUtils.getFields(component);
+            Map<String, Object> componentFields = getFields(component);
             return (List<WebElement>) componentFields.get(listFieldName);
         }
 
@@ -996,10 +996,10 @@ public class ElementAcquisition {
          */
         public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName){
             Map<String, Object> componentFields;
-            Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
-            if (pageObject != null) componentFields = reflectionUtils.getFields(pageObject);
+            Object pageObject = getFields(getObjectRepository()).get(pageName);
+            if (pageObject != null) componentFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
-            return reflectionUtils.getFields(componentFields.get(componentName));
+            return getFields(componentFields.get(componentName));
         }
 
         /**
@@ -1013,8 +1013,8 @@ public class ElementAcquisition {
         public <Component extends WebElement> List<Component> getComponentsFromPage(String componentListName, String pageName){
             Map<String, Object> pageFields;
             Map<String, Object> componentFields;
-            Object pageObject = reflectionUtils.getFields(getObjectRepository()).get(pageName);
-            if (pageObject != null) pageFields = reflectionUtils.getFields(pageObject);
+            Object pageObject = getFields(getObjectRepository()).get(pageName);
+            if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             return (List<Component>) pageFields.get(componentListName);
         }
@@ -1026,7 +1026,7 @@ public class ElementAcquisition {
          * @return returns the map of fields
          */
         public Map<String, Object> getComponentFields(Object componentName){
-            return  reflectionUtils.getFields(componentName);
+            return  getFields(componentName);
         }
 
         /**
@@ -1037,7 +1037,7 @@ public class ElementAcquisition {
          * @return corresponding WebElement from the given page object
          */
         public  <PageObject> WebElement getElement(String fieldName, Class<PageObject> inputClass){
-            return (WebElement) reflectionUtils.getFieldValue(fieldName, inputClass);
+            return (WebElement) getFieldValue(fieldName, inputClass);
         }
 
         /**
@@ -1108,7 +1108,7 @@ public class ElementAcquisition {
             long initialTime = System.currentTimeMillis();
             while (!timeout){
                 for (Component component : items) {
-                    Map<String, Object> componentFields = reflectionUtils.getFields(component);
+                    Map<String, Object> componentFields = getFields(component);
                     WebElement element = (WebElement) componentFields.get(targetElementFieldName);
                     String text = element.getText();
                     String name = element.getAccessibleName();
