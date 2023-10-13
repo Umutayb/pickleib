@@ -546,7 +546,7 @@ public abstract class Utilities {
         long startTime = System.currentTimeMillis();
         String url = driver.getCurrentUrl();
         log.info("Waiting for page to be loaded -> " + strUtils.markup(BLUE, url));
-        
+
         ExpectedCondition<Boolean> pageLoadCondition = driverLoad ->
         {
             assert driverLoad != null;
@@ -555,8 +555,7 @@ public abstract class Utilities {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(waitingTime));
         wait.until(pageLoadCondition);
-        long endTime = System.currentTimeMillis();
-        long elapsedTime = endTime - startTime;
+        long elapsedTime = System.currentTimeMillis() - startTime;
         int elapsedTimeSeconds = (int) ((double) elapsedTime / 1000);
         log.info("The page is loaded in " + elapsedTimeSeconds + " second(s)");
     }
