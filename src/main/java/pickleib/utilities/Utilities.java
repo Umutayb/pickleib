@@ -546,6 +546,7 @@ public abstract class Utilities {
         long startTime = System.currentTimeMillis();
         String url = driver.getCurrentUrl();
         log.info("Waiting for page to be loaded -> " + strUtils.markup(BLUE, url));
+        
         ExpectedCondition<Boolean> pageLoadCondition = driverLoad ->
         {
             assert driverLoad != null;
