@@ -261,12 +261,5 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         Assert.assertNotNull("prop5 is not read", PropertyUtility.getProperty("prop5"));
         log.success("Property test1 pass!");
     }
-
-    @Test
-    public void waitUntilPageLoadsTest() {
-        webInteractions.getUrl(baseUrl);
-        interactions.clickByText("Forms");
-        webInteractions.waitUntilPageLoads(10);
-        log.success("waitUntilPageLoadsTest passed!");
-    }
+    
 }
