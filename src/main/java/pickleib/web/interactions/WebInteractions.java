@@ -344,6 +344,10 @@ public class WebInteractions extends WebUtilities implements Interactions {
         ((JavascriptExecutor) driver).executeScript(script);
     }
 
+    public void waitUntilPageLoads(int waitingTime) {
+        waitUntilLoads(waitingTime);
+    }
+
     /**
      *
      * Perform a JS click on an element {element name} on the {page name}

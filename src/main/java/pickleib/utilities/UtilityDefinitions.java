@@ -212,6 +212,7 @@ public interface UtilityDefinitions {
     //This method makes the thread wait for a certain while
     void waitFor(double seconds);
 
+    void waitUntilPageLoads();
     /**
      * Scrolls an element to the center of the view
      *

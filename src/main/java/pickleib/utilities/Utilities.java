@@ -2,6 +2,7 @@ package pickleib.utilities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
+import io.appium.java_client.functions.ExpectedCondition;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.html5.LocalStorage;
@@ -12,6 +13,7 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
@@ -535,6 +537,27 @@ public abstract class Utilities {
         catch (InterruptedException exception){
             throw new PickleibException(strUtils.highlighted(GRAY, exception.getLocalizedMessage()));
         }
+    }
+
+    /**
+     * Waits actively for the page to load up to 10 seconds
+     */
+    protected void waitUntilLoads(int waitingTime) {
+        long startTime = System.currentTimeMillis();
+        String url = driver.getCurrentUrl();
+        log.info("Waiting for page to be loaded -> " + strUtils.markup(BLUE, url));
+
+        ExpectedCondition<Boolean> pageLoadCondition = driverLoad ->
+        {
+            assert driverLoad != null;
+            return ((JavascriptExecutor) driverLoad).executeScript("return document.readyState").equals("complete");
+        };
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(waitingTime));
+        wait.until(pageLoadCondition);
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        int elapsedTimeSeconds = (int) ((double) elapsedTime / 1000);
+        log.info("The page is loaded in " + elapsedTimeSeconds + " second(s)");
     }
 
     /**
