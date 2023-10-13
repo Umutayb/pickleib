@@ -543,10 +543,9 @@ public abstract class Utilities {
      * Waits actively for the page to load up to 10 seconds
      */
     protected void waitUntilLoads(int waitingTime) {
+        long startTime = System.currentTimeMillis();
         String url = driver.getCurrentUrl();
         log.info("Waiting for page to be loaded -> " + strUtils.markup(BLUE, url));
-        long startTime = System.currentTimeMillis();
-
         ExpectedCondition<Boolean> pageLoadCondition = driverLoad ->
         {
             assert driverLoad != null;
