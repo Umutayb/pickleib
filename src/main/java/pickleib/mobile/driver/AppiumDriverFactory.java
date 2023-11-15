@@ -1,14 +1,13 @@
 package pickleib.mobile.driver;
 
+import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import pickleib.driver.DriverFactory;
 import utils.FileUtilities;
 import utils.Printer;
-import utils.PropertyUtility;
 import utils.StringUtilities;
-
 import java.net.URL;
 import java.time.Duration;
 
@@ -27,8 +26,8 @@ public class AppiumDriverFactory implements DriverFactory {
         try {
             URL url;
             if (service == null) {
-                String address = PropertyUtility.getProperty("address", "0.0.0.0");
-                String port = PropertyUtility.getProperty("port", "4723");
+                String address = ContextStore.get("address", "0.0.0.0");
+                String port = ContextStore.get("port", "4723");
                 url = new URL("http://" + address + ":" + port + "/wd/hub");
             }
             else url = service.getUrl();

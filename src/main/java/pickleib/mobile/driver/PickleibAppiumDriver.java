@@ -1,9 +1,11 @@
 package pickleib.mobile.driver;
 
+import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.utilities.PropertyLoader;
+import properties.PropertiesReader;
 import utils.*;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -23,8 +25,8 @@ public class PickleibAppiumDriver {
 	public static void startService(){
 		new Printer(PickleibAppiumDriver.class).info("Initializing appium service");
 
-		String address = PropertyUtility.getProperty("address");
-		int port = Integer.parseInt(PropertyUtility.getProperty("port"));
+		String address = ContextStore.get("address");
+		int port = Integer.parseInt(ContextStore.get("port"));
 
 		if (!new SystemUtilities().portIsAvailable(port)){
 			try (ServerSocket socket = new ServerSocket(0)) {
@@ -39,9 +41,9 @@ public class PickleibAppiumDriver {
 	public static void initialize() {
 		log.info("Initializing appium driver");
 		String device = reader.getProperty("device");
-		if (device==null) device = PropertyUtility.getProperty("device");
+		if (device==null) device = ContextStore.get("device");
 
-		String directory = PropertyUtility.getProperty("config", "src/test/resources/configurations");
+		String directory = ContextStore.get("config", "src/test/resources/configurations");
 
 		JSONObject json = AppiumDriverFactory.jsonUtils.parseJSONFile(directory+"/"+device+".json");
 		driver = AppiumDriverFactory.getDriver(strUtils.firstLetterCapped(device), json);

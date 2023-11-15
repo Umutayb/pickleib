@@ -1,5 +1,6 @@
 package pickleib.web.driver;
 
+import context.ContextStore;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -13,7 +14,6 @@ import pickleib.driver.DriverFactory;
 import pickleib.exceptions.PickleibException;
 import utils.LogUtilities;
 import utils.Printer;
-import utils.PropertyUtility;
 import utils.StringUtilities;
 import java.io.IOException;
 import java.net.URL;
@@ -29,88 +29,88 @@ public class WebDriverFactory implements DriverFactory {
     /**
      * determines frameWidth value
      */
-    static int frameWidth = Integer.parseInt(PropertyUtility.getProperty("frame-width","1920"));
+    static int frameWidth = Integer.parseInt(ContextStore.get("frame-width","1920"));
 
     /**
      * determines frameHeight value
      */
-    static int frameHeight = Integer.parseInt(PropertyUtility.getProperty("frame-height","1080"));
+    static int frameHeight = Integer.parseInt(ContextStore.get("frame-height","1080"));
 
     /**
      * session runs headless if true
      */
-    static boolean headless = Boolean.parseBoolean(PropertyUtility.getProperty("headless", "false"));
+    static boolean headless = Boolean.parseBoolean(ContextStore.get("headless", "false"));
 
     /**
      * maximizes a session window if true
      */
-    static boolean maximise = Boolean.parseBoolean(PropertyUtility.getProperty("driver-maximize", "false"));
+    static boolean maximise = Boolean.parseBoolean(ContextStore.get("driver-maximize", "false"));
 
     /**
      * determines driverTimeout duration
      */
-    static long driverTimeout = Long.parseLong(PropertyUtility.getProperty("driver-timeout", "15000"))/1000;
+    static long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
 
     /**
      * cookies are deleted if true
      */
-    static boolean deleteCookies = Boolean.parseBoolean(PropertyUtility.getProperty("delete-cookies", "false"));
+    static boolean deleteCookies = Boolean.parseBoolean(ContextStore.get("delete-cookies", "false"));
 
     /**
      * Selenium Grid is used if true
      */
-    static boolean useSeleniumGrid = Boolean.parseBoolean(PropertyUtility.getProperty("selenium-grid", "false"));
+    static boolean useSeleniumGrid = Boolean.parseBoolean(ContextStore.get("selenium-grid", "false"));
 
     /**
      * enables insecure local host if true
      */
-    static boolean insecureLocalHost = Boolean.parseBoolean(PropertyUtility.getProperty("insecure-localhost", "false"));
+    static boolean insecureLocalHost = Boolean.parseBoolean(ContextStore.get("insecure-localhost", "false"));
 
     /**
      * enables insecure local host if true
      */
-    static boolean noSandbox = Boolean.parseBoolean(PropertyUtility.getProperty("driver-no-sandbox", "false"));
+    static boolean noSandbox = Boolean.parseBoolean(ContextStore.get("driver-no-sandbox", "false"));
 
     /**
      * disables browser notifications if true
      */
-    static boolean disableNotifications = Boolean.parseBoolean(PropertyUtility.getProperty("disable-notifications", "true"));
+    static boolean disableNotifications = Boolean.parseBoolean(ContextStore.get("disable-notifications", "true"));
 
     /**
      * determines page load strategy
      */
-    static PageLoadStrategy loadStrategy = PageLoadStrategy.fromString(PropertyUtility.getProperty("load-strategy", "normal"));
+    static PageLoadStrategy loadStrategy = PageLoadStrategy.fromString(ContextStore.get("load-strategy", "normal"));
 
     /**
      * determines usage of web driver manager
      */
-    static Boolean useWDM = Boolean.parseBoolean(PropertyUtility.getProperty("web-driver-manager", "false"));
+    static Boolean useWDM = Boolean.parseBoolean(ContextStore.get("web-driver-manager", "false"));
 
     /**
      * determines usage of web driver manager
      */
-    static Boolean allowRemoteOrigin = Boolean.parseBoolean(PropertyUtility.getProperty("allow-remote-origin", "true"));;
+    static Boolean allowRemoteOrigin = Boolean.parseBoolean(ContextStore.get("allow-remote-origin", "true"));;
 
     /**
      * The logging level used by Pickleib.
      * This value can be set in the properties file with the key "selenium-log-level".
      * If not specified in the properties file, the default value is "off".
      */
-    static String logLevel = PropertyUtility.getProperty("selenium-log-level", "off");;
+    static String logLevel = ContextStore.get("selenium-log-level", "off");;
 
     /**
      * The URL of the Selenium Grid hub.
      * This value can be set in the properties file with the key "hub-url".
      * If not specified in the properties file, the default value is an empty string.
      */
-    static String hubUrl = PropertyUtility.getProperty("hub-url","");
+    static String hubUrl = ContextStore.get("hub-url","");
 
     /**
      * The browser used for tests.
      * This value can be set in the properties file with the key "browser".
      * If not specified in the properties file, the default value is "chrome".
      */
-    static String browser = PropertyUtility.getProperty("browser", "chrome");
+    static String browser = ContextStore.get("browser", "chrome");
 
     /**
      * DriverFactory Logger.

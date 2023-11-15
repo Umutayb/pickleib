@@ -39,14 +39,13 @@ public abstract class Utilities {
 
     static {PropertyLoader.load();}
 
-    public static ReflectionUtilities reflectionUtils = new ReflectionUtilities();
     public ScreenCaptureUtility capture = new ScreenCaptureUtility();
     public StringUtilities strUtils = new StringUtilities();
     public ObjectMapper objectMapper = new ObjectMapper();
     public Printer log = new Printer(this.getClass());
     public RemoteWebDriver driver;
 
-    public long elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
+    public long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
 
     protected Utilities(RemoteWebDriver driver){
         this.driver = driver;

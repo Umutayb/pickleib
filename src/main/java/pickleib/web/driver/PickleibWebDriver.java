@@ -1,5 +1,6 @@
 package pickleib.web.driver;
 
+import context.ContextStore;
 import org.bouncycastle.util.encoders.Base64;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
@@ -8,9 +9,8 @@ import org.openqa.selenium.devtools.v85.network.model.Headers;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.utilities.PropertyLoader;
+import properties.PropertiesReader;
 import utils.Printer;
-import utils.PropertiesReader;
-import utils.PropertyUtility;
 import utils.StringUtilities;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -51,7 +51,7 @@ public class PickleibWebDriver {
 	 */
 	public static void initialize(){
 		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
-		String driverProperty = strUtils.firstLetterCapped(PropertyUtility.getProperty("browser"));
+		String driverProperty = strUtils.firstLetterCapped(ContextStore.get("browser"));
 		if (driverName!=null) initialize(WebDriverFactory.BrowserType.fromString(driverName));
 		else if (driverProperty != null) initialize(WebDriverFactory.BrowserType.fromString(driverProperty));
 		else initialize(WebDriverFactory.BrowserType.CHROME);
