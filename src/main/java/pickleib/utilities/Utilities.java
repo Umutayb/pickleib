@@ -5,6 +5,7 @@ import context.ContextStore;
 import io.appium.java_client.functions.ExpectedCondition;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
@@ -23,10 +24,7 @@ import pickleib.web.interactions.WebInteractions;
 import records.Bundle;
 import utils.*;
 import java.time.Duration;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 
 import static pickleib.enums.ElementState.absent;
 import static pickleib.enums.ElementState.displayed;
@@ -833,6 +831,50 @@ public abstract class Utilities {
                     true
             );
         }
+    }
+
+
+    /**
+     *
+     * Verify that element {element name} on the {page name} has {attribute name} attribute
+     *
+     * @param element target element
+     * @param attributeName target attribute name
+     */
+    public boolean attributePresent(
+            WebElement element,
+            String attributeName) {
+
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        int counter = 0;
+        do {
+            try {
+                JavascriptExecutor executor = driver;
+                String script = "return arguments[0].getAttributeNames();";
+                var attributes = executor.executeScript(script, element);
+                return ((ArrayList<?>) attributes).contains(attributeName);
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                waitFor(0.5);
+                counter++;
+            }
+        }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning("Element does not contain " +
+                highlighted(BLUE, attributeName)
+        );
+        log.warning(caughtException);
+        return false;
     }
 
     /**

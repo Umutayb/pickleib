@@ -1,6 +1,7 @@
 package pickleib.utilities.element;
 
 import context.ContextStore;
+import dev.failsafe.internal.util.Assert;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -462,6 +463,30 @@ public class ElementInteractions extends Utilities {
 
     /**
      *
+     * Verify that element {element name} on the {page name} has {attribute name} attribute
+     *
+     * @param element target element
+     * @param elementName target element name
+     * @param pageName specified page instance name
+     * @param attributeName target attribute name
+     */
+    public void verifyAttributePresent(
+            WebElement element,
+            String elementName,
+            String pageName,
+            String attributeName) {
+        log.info("Verifying that attribute " +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY," is present in ") +
+                highlighted(BLUE, elementName) + " element"
+        );
+        if (!attributePresent(element, attributeName))
+            throw new PickleibVerificationException("The " + strUtils.markup(YELLOW, attributeName) + " attribute of element " + strUtils.markup(YELLOW, elementName) + " could not be found.");
+        log.success("The " + strUtils.markup(BLUE, attributeName) + " attribute of element " + strUtils.markup(BLUE, elementName) + " is present!" );
+    }
+
+    /**
+     *
      * Verify that element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
      *
      * @param element target element
@@ -683,17 +708,26 @@ public class ElementInteractions extends Utilities {
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName){
         for (Bundle<String, WebElement, Map<String, String>> bundle:bundles) {
             InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
-            switch (interactionType){
-                case click  -> clickInteraction(bundle.beta(), bundle.alpha(), pageName);
-                case fill   -> basicFill(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"));
+            switch (interactionType) {
+                case click -> clickInteraction(bundle.beta(), bundle.alpha(), pageName);
+                case fill -> basicFill(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"));
                 case center -> center(bundle.beta(), bundle.alpha(), pageName);
-                case verify -> verifyElementContainsAttribute(
-                        bundle.beta(),
-                        bundle.alpha(),
-                        pageName,
-                        bundle.theta().get("Attribute Name"),
-                        strUtils.contextCheck(bundle.theta().get("Attribute Value"))
-                );
+                case verify -> {
+                    if (bundle.theta().get("Attribute Value") == null)
+                        verifyAttributePresent(
+                                bundle.beta(),
+                                bundle.alpha(),
+                                pageName,
+                                bundle.theta().get("Attribute Name")
+                        );
+                    else verifyElementContainsAttribute(
+                            bundle.beta(),
+                            bundle.alpha(),
+                            pageName,
+                            bundle.theta().get("Attribute Name"),
+                            strUtils.contextCheck(bundle.theta().get("Attribute Value"))
+                    );
+            }
                 default -> throw new EnumConstantNotPresentException(InteractionType.class, interactionType.name());
             }
         }
