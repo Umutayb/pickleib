@@ -21,6 +21,7 @@ import pickleib.exceptions.PickleibException;
 import pickleib.mobile.interactions.MobileInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.interactions.WebInteractions;
+import pickleib.web.utilities.WebUtilities;
 import records.Bundle;
 import utils.*;
 import java.time.Duration;
@@ -831,50 +832,6 @@ public abstract class Utilities {
                     true
             );
         }
-    }
-
-
-    /**
-     *
-     * Verify that element {element name} on the {page name} has {attribute name} attribute
-     *
-     * @param element target element
-     * @param attributeName target attribute name
-     */
-    public boolean attributePresent(
-            WebElement element,
-            String attributeName) {
-
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        int counter = 0;
-        do {
-            try {
-                JavascriptExecutor executor = driver;
-                String script = "return arguments[0].getAttributeNames();";
-                var attributes = executor.executeScript(script, element);
-                return ((ArrayList<?>) attributes).contains(attributeName);
-            }
-            catch (WebDriverException webDriverException){
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException)){
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                waitFor(0.5);
-                counter++;
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning("Element does not contain " +
-                highlighted(BLUE, attributeName)
-        );
-        log.warning(caughtException);
-        return false;
     }
 
     /**

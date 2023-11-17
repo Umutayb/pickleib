@@ -6,10 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
@@ -19,8 +16,8 @@ import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
 import records.Bundle;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 
 import static utils.StringUtilities.Color.*;
 
@@ -356,5 +353,48 @@ public abstract class WebUtilities extends Utilities {
             );
         }
         driver.switchTo().parentFrame();
+    }
+
+
+    /**
+     *
+     * Verify that the attribute {attribute name} present for the {element name}
+     *
+     * @param element target element
+     * @param attributeName target attribute name
+     */
+    public boolean attributeNamePresent(
+            String attributeName,
+            WebElement element) {
+
+
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        int counter = 0;
+        do {
+            try {
+                Set<String> elementAttributes = getElementJson(element).getAsJsonObject().asMap().keySet();
+                return elementAttributes.contains(attributeName);
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                }
+                waitFor(0.5);
+                counter++;
+            }
+        }
+        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning("Element does not contain " +
+                highlighted(BLUE, attributeName)
+        );
+        log.warning(caughtException);
+        return false;
     }
 }

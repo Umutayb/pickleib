@@ -264,7 +264,7 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
          log.info("Testing verifyAttributePresentText()");
          webInteractions.getUrl(baseUrl);
          WebElement element = acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass");
-         interactions.verifyAttributePresent(element, "card", "pageName", "class");
+         webInteractions.verifyAttributePresent(element, "card", "pageName", "class");
          log.success("verifyAttributePresentTest() test passed!");
     }
 
@@ -274,13 +274,12 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
         webInteractions.getUrl(baseUrl);
         try {
             WebElement element = acquire.acquireListedElementFromPage("Forms", "toolCards", "pageClass");
-            interactions.verifyAttributePresent(element, "card", "pageName", "nonExistingAttribute");
+            webInteractions.verifyAttributePresent(element, "card", "pageName", "nonExistingAttribute");
         } catch (PickleibVerificationException ignored) {
             log.success("verifyAttributePresentTest() negative test passed!");
             return;
         }
         throw new PickleibVerificationException("verifyAttributePresent() negative test is failed!");
-
     }
 
 }

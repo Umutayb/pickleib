@@ -10,6 +10,7 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
+import pickleib.exceptions.PickleibVerificationException;
 import pickleib.utilities.Interactions;
 import pickleib.utilities.element.ElementInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
@@ -512,5 +513,29 @@ public class WebInteractions extends WebUtilities implements Interactions {
             }
         }
         else throw new RuntimeException("'" + eventName + "' event is not fired!");
+    }
+
+    /**
+     *
+     * Verify that the attribute {attribute name} present for the {element name} on the {page name}
+     *
+     * @param element target element
+     * @param elementName target element name
+     * @param pageName specified page instance name
+     * @param attributeName target attribute name
+     */
+    public void verifyAttributePresent(
+            WebElement element,
+            String elementName,
+            String pageName,
+            String attributeName) {
+        log.info("Verifying that " +
+                strUtils.markup(BLUE, attributeName) +
+                strUtils.markup(GRAY," attribute of ") +
+                strUtils.markup(BLUE, elementName) + " element is present"
+        );
+        if (!attributeNamePresent(attributeName, element))
+            throw new PickleibVerificationException("The " + strUtils.markup(YELLOW, attributeName) + " attribute of element " + strUtils.markup(YELLOW, elementName) + " could not be found.");
+        log.success("The attribute is present!");
     }
 }
