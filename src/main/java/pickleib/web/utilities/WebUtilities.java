@@ -365,11 +365,16 @@ public abstract class WebUtilities extends Utilities {
     public boolean verifyAttributeName(String attributeName, WebElement element) {
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
+        boolean condition = false;
         int counter = 0;
         do {
+            if (condition || counter > 1 ) return true;
             try {
                 Set<String> elementAttributes = getElementJson(element).getAsJsonObject().asMap().keySet();
-                for (String attribute : elementAttributes) return attribute.equals(attributeName);
+                for (String attribute : elementAttributes) {
+                    condition = attribute.equals(attributeName);
+                        return condition;
+                }
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
@@ -390,4 +395,5 @@ public abstract class WebUtilities extends Utilities {
         log.warning(caughtException);
         return false;
     }
+
 }
