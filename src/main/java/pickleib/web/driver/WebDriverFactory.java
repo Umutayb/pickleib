@@ -89,14 +89,14 @@ public class WebDriverFactory implements DriverFactory {
     /**
      * determines usage of web driver manager
      */
-    static Boolean allowRemoteOrigin = Boolean.parseBoolean(ContextStore.get("allow-remote-origin", "true"));;
+    static Boolean allowRemoteOrigin = Boolean.parseBoolean(ContextStore.get("allow-remote-origin", "true"));
 
     /**
      * The logging level used by Pickleib.
      * This value can be set in the properties file with the key "selenium-log-level".
      * If not specified in the properties file, the default value is "off".
      */
-    static String logLevel = ContextStore.get("selenium-log-level", "off");;
+    static String logLevel = ContextStore.get("selenium-log-level", "off");
 
     /**
      * The URL of the Selenium Grid hub.
