@@ -18,17 +18,17 @@ import static pickleib.web.driver.PickleibWebDriver.driver;
 
 public class AppTest extends CommonStepUtilities<ObjectRepository> {
 
-//    public ElementAcquisition.PageObjectModel<ObjectRepository> acquire;
-//    public ElementAcquisition.Reflections<ObjectRepository> reflections;
-//    public ElementInteractions interactions;
-//    public WebInteractions webInteractions;
-//
-//    String trainingUrl = "https://www.toolsqa.com/selenium-training/";
-//    String baseUrl = "https://demoqa.com/";
-//
-//    /**
-//     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
-//     */public AppTest() {super(ObjectRepository.class);}
+    public ElementAcquisition.PageObjectModel<ObjectRepository> acquire;
+    public ElementAcquisition.Reflections<ObjectRepository> reflections;
+    public ElementInteractions interactions;
+    public WebInteractions webInteractions;
+
+    String trainingUrl = "https://www.toolsqa.com/selenium-training/";
+    String baseUrl = "https://demoqa.com/";
+
+    /**
+     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
+     */public AppTest() {super(ObjectRepository.class);}
 //
 //    @Before
 //    public void before() {
