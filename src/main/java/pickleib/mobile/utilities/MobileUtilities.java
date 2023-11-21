@@ -1,5 +1,6 @@
 package pickleib.mobile.utilities;
 
+import context.ContextStore;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
@@ -12,8 +13,8 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
-import utils.PropertyUtility;
 import java.time.Duration;
+
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 
@@ -28,7 +29,7 @@ public abstract class MobileUtilities extends Utilities {
         PageFactory.initElements(
                 new AppiumFieldDecorator(
                         PickleibAppiumDriver.driver,
-                        Duration.ofSeconds(Long.parseLong(PropertyUtility.getProperty(
+                        Duration.ofSeconds(Long.parseLong(ContextStore.get(
                                 "element-timeout",
                                 "15000"
                         ))/1000)
@@ -46,7 +47,7 @@ public abstract class MobileUtilities extends Utilities {
         PageFactory.initElements(
                 new AppiumFieldDecorator(
                         driver,
-                        Duration.ofSeconds(Long.parseLong(PropertyUtility.getProperty(
+                        Duration.ofSeconds(Long.parseLong(ContextStore.get(
                                 "element-timeout",
                                 "15000"
                         ))/1000)

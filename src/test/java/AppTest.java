@@ -10,7 +10,6 @@ import pickleib.utilities.element.ElementInteractions;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
-import utils.PropertyUtility;
 import java.time.Duration;
 
 import static pickleib.driver.DriverFactory.DriverType.Web;

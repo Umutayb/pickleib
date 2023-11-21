@@ -3,6 +3,7 @@ package pickleib.utilities.element;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import context.ContextStore;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
@@ -16,9 +17,7 @@ import pickleib.utilities.page.repository.PageRepository;
 import records.Bundle;
 import records.Pair;
 import utils.Printer;
-import utils.PropertyUtility;
 import utils.StringUtilities;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -30,7 +29,7 @@ import static utils.StringUtilities.Color.*;
 public class ElementAcquisition {
 
     public static StringUtilities strUtils = new StringUtilities();
-    static long elementTimeout = Long.parseLong(PropertyUtility.getProperty("element-timeout", "15000"));
+    static long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
     static Printer log = new Printer(ElementAcquisition.class);
 
     /**
