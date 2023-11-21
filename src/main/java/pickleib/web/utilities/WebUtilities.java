@@ -370,7 +370,7 @@ public abstract class WebUtilities extends Utilities {
         do {
             try {
                 Set<String> elementAttributes = getElementJson(element).getAsJsonObject().asMap().keySet();
-                for (String attribute: elementAttributes) return attribute.equals(attributeName);
+                for (String attribute : elementAttributes) return attribute.equals(attributeName);
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
