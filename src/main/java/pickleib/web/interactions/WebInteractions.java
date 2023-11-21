@@ -534,7 +534,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
                 strUtils.markup(GRAY," attribute of ") +
                 strUtils.markup(BLUE, elementName) + " element is present"
         );
-        if (!attributeNamePresent(attributeName, element))
+        if (!verifyAttributeName(attributeName, element))
             throw new PickleibVerificationException("The " + strUtils.markup(YELLOW, attributeName) + " attribute of element " + strUtils.markup(YELLOW, elementName) + " could not be found.");
         log.success("The attribute is present!");
     }

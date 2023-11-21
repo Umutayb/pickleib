@@ -355,7 +355,6 @@ public abstract class WebUtilities extends Utilities {
         driver.switchTo().parentFrame();
     }
 
-
     /**
      *
      * Verify that the attribute {attribute name} present for the {element name}
@@ -363,7 +362,7 @@ public abstract class WebUtilities extends Utilities {
      * @param element target element
      * @param attributeName target attribute name
      */
-    public boolean attributeNamePresent(String attributeName, WebElement element) {
+    public boolean verifyAttributeName(String attributeName, WebElement element) {
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
         int counter = 0;
