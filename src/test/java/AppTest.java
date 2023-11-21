@@ -28,7 +28,8 @@ public class AppTest extends CommonStepUtilities<ObjectRepository> {
 
     /**
      * Constructs an instance of the CommonStepUtilities class with the specific object repository.
-     */public AppTest() {super(ObjectRepository.class);}
+     */
+    public AppTest() {super(ObjectRepository.class);}
 //
 //    @Before
 //    public void before() {
