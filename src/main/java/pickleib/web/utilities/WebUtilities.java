@@ -363,18 +363,14 @@ public abstract class WebUtilities extends Utilities {
      * @param element target element
      * @param attributeName target attribute name
      */
-    public boolean attributeNamePresent(
-            String attributeName,
-            WebElement element) {
-
-
+    public boolean attributeNamePresent(String attributeName, WebElement element) {
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
         int counter = 0;
         do {
             try {
                 Set<String> elementAttributes = getElementJson(element).getAsJsonObject().asMap().keySet();
-                return elementAttributes.contains(attributeName);
+                for (String attribute: elementAttributes) return attribute.equals(attributeName);
             }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
@@ -391,9 +387,7 @@ public abstract class WebUtilities extends Utilities {
         }
         while (!(System.currentTimeMillis() - initialTime > elementTimeout));
         if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning("Element does not contain " +
-                highlighted(BLUE, attributeName)
-        );
+        log.warning("Element does not contain " + highlighted(BLUE, attributeName));
         log.warning(caughtException);
         return false;
     }
