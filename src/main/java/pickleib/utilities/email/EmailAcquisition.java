@@ -1,5 +1,6 @@
 package pickleib.utilities.email;
 
+import context.ContextStore;
 import utils.EmailUtilities;
 import utils.StringUtilities;
 import java.io.File;
@@ -20,13 +21,37 @@ public class EmailAcquisition {
         this.emailInbox = emailInbox;
     }
 
+    static long emailAcquisitionTimeout = Long.parseLong(ContextStore.get("email-acquisition-timeout", "45000"));
+
     public String acquireEmail(EmailUtilities.Inbox.EmailField filterType, String filterKey) {
         emailInbox.log.info("Acquiring & saving email(s) by " +
                 strUtils.highlighted(BLUE, filterType.name()) +
                 strUtils.highlighted(GRAY, " -> ") +
                 strUtils.highlighted(BLUE, filterKey)
         );
-        emailInbox.getEmail(filterType, filterKey, false, true, true);
+        emailInbox.getEmail(filterType, filterKey, emailAcquisitionTimeout, false, true, true);
+        File dir = new File("inbox");
+        String absolutePath = null;
+        for (File email : Objects.requireNonNull(dir.listFiles()))
+            try {
+                boolean nullCheck = Files.probeContentType(email.toPath()) != null;
+                if (nullCheck && Files.probeContentType(email.toPath()).equals("text/html")) {
+                    absolutePath = "file://" + email.getAbsolutePath().replaceAll("#", "%23");
+                    break;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        return absolutePath;
+    }
+
+    public String acquireEmail(EmailUtilities.Inbox.EmailField filterType, String filterKey, long timeout) {
+        emailInbox.log.info("Acquiring & saving email(s) by " +
+                strUtils.highlighted(BLUE, filterType.name()) +
+                strUtils.highlighted(GRAY, " -> ") +
+                strUtils.highlighted(BLUE, filterKey)
+        );
+        emailInbox.getEmail(filterType, filterKey, timeout, false, true, true);
         File dir = new File("inbox");
         String absolutePath = null;
         for (File email : Objects.requireNonNull(dir.listFiles()))

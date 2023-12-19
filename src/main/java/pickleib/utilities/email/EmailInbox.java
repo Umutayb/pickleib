@@ -1,5 +1,6 @@
 package pickleib.utilities.email;
 
+import context.ContextStore;
 import lombok.*;
 import org.openqa.selenium.TimeoutException;
 import utils.EmailUtilities;
@@ -28,6 +29,7 @@ public class EmailInbox {
     String secureCon;
     String email;
     String emailApplicationPassword;
+    static long emailAcquisitionTimeout = Long.parseLong(ContextStore.get("email-acquisition-timeout", "45000"));
 
     public EmailInbox(String host, String port,  String email, String emailApplicationPassword, String secureCon) {
         this.host = host;
@@ -45,6 +47,7 @@ public class EmailInbox {
             String secureCon,
             EmailUtilities.Inbox.EmailField filter,
             String filterKey,
+            long timeout,
             Boolean print,
             Boolean save,
             Boolean saveAttachments){
@@ -56,6 +59,7 @@ public class EmailInbox {
                 secureCon,
                 filter,
                 filterKey,
+                timeout,
                 print,
                 save,
                 saveAttachments
@@ -72,6 +76,7 @@ public class EmailInbox {
                 secureCon,
                 filter,
                 filterKey,
+                emailAcquisitionTimeout,
                 print,
                 save,
                 saveAttachments
@@ -82,6 +87,7 @@ public class EmailInbox {
     public String getEmail(
             EmailUtilities.Inbox.EmailField filter,
             String filterKey,
+            long timeout,
             Boolean print,
             Boolean save,
             Boolean saveAttachments){
@@ -93,6 +99,7 @@ public class EmailInbox {
                 secureCon,
                 filter,
                 filterKey,
+                timeout,
                 print,
                 save,
                 saveAttachments
@@ -142,6 +149,7 @@ public class EmailInbox {
             String secureCon,
             EmailUtilities.Inbox.EmailField filter,
             String filterKey,
+            long timeout,
             Boolean print,
             Boolean save,
             Boolean saveAttachments
@@ -165,7 +173,7 @@ public class EmailInbox {
             );
             try {TimeUnit.SECONDS.sleep(3);}
             catch (InterruptedException e) {throw new RuntimeException(e);}
-            if (System.currentTimeMillis() - initialTime > 45000) throw new TimeoutException("Verification email did not arrive!");
+            if (System.currentTimeMillis() - initialTime > timeout) throw new TimeoutException("Verification email did not arrive!");
         }
         while (inbox.messages.size() == 0);
         log.success("Email(s) acquired!");
