@@ -29,7 +29,7 @@ public class EmailInbox {
     String secureCon;
     String email;
     String emailApplicationPassword;
-    static long emailAcquisitionTimeout = Long.parseLong(ContextStore.get("email-acquisition-timeout", "45000"));
+    public long emailAcquisitionTimeout = Long.parseLong(ContextStore.get("email-acquisition-timeout", "45000"));
 
     public EmailInbox(String host, String port,  String email, String emailApplicationPassword, String secureCon) {
         this.host = host;

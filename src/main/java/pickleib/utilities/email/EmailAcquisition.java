@@ -27,7 +27,7 @@ public class EmailAcquisition {
                 strUtils.highlighted(GRAY, " -> ") +
                 strUtils.highlighted(BLUE, filterKey)
         );
-        emailInbox.getEmail(filterType, filterKey, EmailInbox.emailAcquisitionTimeout, false, true, true);
+        emailInbox.getEmail(filterType, filterKey, emailInbox.emailAcquisitionTimeout, false, true, true);
         File dir = new File("inbox");
         String absolutePath = null;
         for (File email : Objects.requireNonNull(dir.listFiles()))
