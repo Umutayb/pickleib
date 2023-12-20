@@ -36,6 +36,14 @@
           <organization>Bora</organization>
           <organizationUrl>https://github.com/egecansen</organizationUrl>
       </developer>
+
+    <!-- Inna -->
+    <developer>
+      <name>Inna Drapii</name>
+      <email>i.drapii@gmail.com</email>
+      <organization>Bora</organization>
+      <organizationUrl>https://github.com/InnaDrapii</organizationUrl>
+    </developer>
   </developers>
 
   <properties>
