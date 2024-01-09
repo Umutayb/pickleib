@@ -2,6 +2,7 @@ package pickleib.web.utilities;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import dev.failsafe.internal.util.Assert;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,6 +23,7 @@ import records.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
+import static pickleib.web.driver.PickleibWebDriver.driver;
 import static utils.StringUtilities.Color.*;
 
 public abstract class WebUtilities extends Utilities {
@@ -168,7 +170,9 @@ public abstract class WebUtilities extends Utilities {
      * @param url target url
      */
     public void verifyUrlContains(String url){
-        assert driver.getCurrentUrl().contains(url);
+        Assert.isTrue(driver.getCurrentUrl().contains(url),
+                "The url does not contains '" + url + "'! -> " + driver.getCurrentUrl()
+        );
     }
 
     /**
@@ -177,7 +181,9 @@ public abstract class WebUtilities extends Utilities {
      * @param url target url
      */
     public void verifyCurrentUrl(String url){
-        assert driver.getCurrentUrl().equalsIgnoreCase(url);
+        Assert.isTrue(driver.getCurrentUrl().equalsIgnoreCase(url),
+                "The url does not match with '" + url + "'! -> " + driver.getCurrentUrl()
+        );
     }
 
     /**
@@ -187,7 +193,9 @@ public abstract class WebUtilities extends Utilities {
      */
     //This method verifies the page title
     public void verifyPageTitle(String pageTitle){
-        assert driver.getTitle().contains(pageTitle);
+        Assert.isTrue(driver.getTitle().contains(pageTitle),
+                "The page title does not contains '" + pageTitle + "'! -> " + driver.getTitle()
+        );
     }
 
     /**
