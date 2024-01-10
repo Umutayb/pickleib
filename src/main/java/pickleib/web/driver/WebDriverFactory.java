@@ -50,7 +50,7 @@ public class WebDriverFactory implements DriverFactory {
     /**
      * session runs in mobile-like height and width view if true
      */
-    static boolean mobileView = Boolean.parseBoolean(ContextStore.get("mobile-view", "true"));
+    static boolean mobileView = Boolean.parseBoolean(ContextStore.get("mobile-view", "false"));
 
     /**
      * maximizes a session window if true
