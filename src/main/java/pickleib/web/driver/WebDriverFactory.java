@@ -53,6 +53,11 @@ public class WebDriverFactory implements DriverFactory {
     static boolean mobileView = Boolean.parseBoolean(ContextStore.get("mobile-view", "false"));
 
     /**
+     * session runs in tablet mode if true
+     */
+    static boolean tabletMode = Boolean.parseBoolean(ContextStore.get("tablet-mode", "false"));
+
+    /**
      * maximizes a session window if true
      */
     static boolean maximise = Boolean.parseBoolean(ContextStore.get("driver-maximize", "false"));
@@ -148,14 +153,14 @@ public class WebDriverFactory implements DriverFactory {
                 ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", browserType.getDriverKey());
                 driver = new RemoteWebDriver(new URL(hubUrl), capabilities);
             }
-            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileView, mobileMode);}
+            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileView, mobileMode, tabletMode);}
 
             assert driver != null;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             if (mobileView) driver.manage().window().setSize(
-                    new Dimension(EmulatedDevice.iphone11.getWidthAndHeight().get("width"), EmulatedDevice.iphone11.getWidthAndHeight().get("height"))
+                    new Dimension(EmulatedDevice.iphone12Pro.getWidthAndHeight().get("width"), EmulatedDevice.iphone12Pro.getWidthAndHeight().get("height"))
             );
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.setLogLevel(logUtils.getLevel(logLevel));
@@ -194,7 +199,8 @@ public class WebDriverFactory implements DriverFactory {
             PageLoadStrategy loadStrategy,
             BrowserType browserType,
             Boolean mobileView,
-            Boolean mobileMode){
+            Boolean mobileMode,
+            Boolean tabletMode){
         if (useWDM) log.warning("Using WebDriverManager...");
         try {
             switch (browserType) {
@@ -211,7 +217,8 @@ public class WebDriverFactory implements DriverFactory {
                     if (allowRemoteOrigin) options.addArguments("--remote-allow-origins=*");
                     if (headless) options.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
-                    if (mobileMode) options.setExperimentalOption("mobileEmulation", EmulatedDevice.iphone11.emulate());
+                    if (mobileMode) options.setExperimentalOption("mobileEmulation", EmulatedDevice.iphone12Pro.emulate());
+                    if (tabletMode) options.setExperimentalOption("mobileEmulation", EmulatedDevice.ipadAir.emulate());
                     return new ChromeDriver(options);
                 }
                 case FIREFOX -> {
@@ -241,7 +248,7 @@ public class WebDriverFactory implements DriverFactory {
         }
         catch (SessionNotCreatedException sessionException){
             log.warning(sessionException.getLocalizedMessage());
-            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileView, mobileMode);
+            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileView, mobileMode, tabletMode);
             else return null;
         }
     }

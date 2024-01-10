@@ -17,48 +17,46 @@ import static pickleib.enums.Navigation.backwards;
 import static pickleib.web.driver.PickleibWebDriver.driver;
 
 public class AppTest extends CommonStepUtilities<ObjectRepository> {
-//
-//    public ElementAcquisition.PageObjectModel<ObjectRepository> acquire;
-//    public ElementAcquisition.Reflections<ObjectRepository> reflections;
-//    public ElementInteractions interactions;
-//    public WebInteractions webInteractions;
-//
-//    String trainingUrl = "https://www.toolsqa.com/selenium-training/";
-//    String baseUrl = "https://demoqa.com/";
-//
-//    /**
-//     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
-//     */
-    public AppTest() {
-        super(ObjectRepository.class);
+
+    public ElementAcquisition.PageObjectModel<ObjectRepository> acquire;
+    public ElementAcquisition.Reflections<ObjectRepository> reflections;
+    public ElementInteractions interactions;
+    public WebInteractions webInteractions;
+
+    String trainingUrl = "https://www.citizenm.com/";
+    String baseUrl = "https://demoqa.com/";
+
+    /**
+     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
+     */public AppTest() {super(ObjectRepository.class);}
+
+    @Before
+    public void before() {
+        WebDriverFactory.setHeadless(false);
+        WebDriverFactory.setDriverTimeout(120);
+        WebDriverFactory.setUseWDM(true);
+        WebDriverFactory.setLoadStrategy(PageLoadStrategy.NONE);
+        PickleibWebDriver.initialize();
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
+        acquire = new ElementAcquisition.PageObjectModel<>(PickleibWebDriver.driver, ObjectRepository.class);
+        reflections = new ElementAcquisition.Reflections<>(PickleibWebDriver.driver, ObjectRepository.class);
+        interactions = new ElementInteractions(PickleibWebDriver.driver, Web);
+        webInteractions = new WebInteractions();
     }
-//
-//    @Before
-//    public void before() {
-//        WebDriverFactory.setHeadless(true);
-//        WebDriverFactory.setDriverTimeout(120);
-//        WebDriverFactory.setUseWDM(true);
-//        WebDriverFactory.setLoadStrategy(PageLoadStrategy.NONE);
-//        PickleibWebDriver.initialize();
-//        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
-//        acquire = new ElementAcquisition.PageObjectModel<>(PickleibWebDriver.driver, ObjectRepository.class);
-//        reflections = new ElementAcquisition.Reflections<>(PickleibWebDriver.driver, ObjectRepository.class);
-//        interactions = new ElementInteractions(PickleibWebDriver.driver, Web);
-//        webInteractions = new WebInteractions();
-//    }
-//
-//    @After
-//    public void after() {
-//        PickleibWebDriver.terminate();
-//    }
-//
-//    @Test
-//    public void navigateTest() {
-//        log.info("webInteractions.navigate(page.trainingUrl) test");
-//        webInteractions.navigate(trainingUrl);
-//        Assert.assertEquals("\"webInteractions.navigate(page.trainingUrl) test failed!", driver.getCurrentUrl(), trainingUrl);
-//        log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
-//    }
+
+    @After
+    public void after() {
+        PickleibWebDriver.terminate();
+    }
+
+    @Test
+    public void navigateTest() {
+        log.info("webInteractions.navigate(page.trainingUrl) test");
+        webInteractions.navigate(trainingUrl);
+        webInteractions.waitForSeconds(60);
+        Assert.assertEquals("\"webInteractions.navigate(page.trainingUrl) test failed!", driver.getCurrentUrl(), trainingUrl);
+        log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
+    }
 //
 //    @Test
 //    public void navigateBrowserTest() {
