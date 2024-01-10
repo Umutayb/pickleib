@@ -7,7 +7,7 @@ public enum EmulatedDevice {
 
     iphone11 {
         @Override
-        public Map<String, Object> display() {
+        public Map<String, Object> emulate() {
             Map<String, Object> deviceMetrics = new HashMap<>();
             deviceMetrics.put("width", 375);
             deviceMetrics.put("height", 667);
@@ -26,6 +26,6 @@ public enum EmulatedDevice {
         }
     };
 
-    public abstract Map<String, Object> display();
+    public abstract Map<String, Object> emulate();
     public abstract Map<String, Integer> getWidthAndHeight();
 }

@@ -211,7 +211,7 @@ public class WebDriverFactory implements DriverFactory {
                     if (allowRemoteOrigin) options.addArguments("--remote-allow-origins=*");
                     if (headless) options.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
-                    if (mobileMode) options.setExperimentalOption("mobileEmulation", EmulatedDevice.iphone11.display());
+                    if (mobileMode) options.setExperimentalOption("mobileEmulation", EmulatedDevice.iphone11.emulate());
 
                     return new ChromeDriver(options);
                 }
