@@ -7,8 +7,8 @@ public enum EmulatedDevice {
 
     iphone12Pro {
         @Override
-        public Map<String, Object> emulate() {
-            Map<String, Object> deviceMetrics = new HashMap<>();
+        public Map<String, String> emulate() {
+            Map<String, String> deviceMetrics = new HashMap<>();
             deviceMetrics.put("deviceName", "iPhone 12 Pro");
             return deviceMetrics;
         }
@@ -22,8 +22,8 @@ public enum EmulatedDevice {
     },
     ipadAir {
         @Override
-        public Map<String, Object> emulate() {
-            Map<String, Object> deviceMetrics = new HashMap<>();
+        public Map<String, String> emulate() {
+            Map<String, String> deviceMetrics = new HashMap<>();
             deviceMetrics.put("deviceName", "iPad Air");
             return deviceMetrics;
         }
@@ -36,6 +36,6 @@ public enum EmulatedDevice {
         }
     };
 
-    public abstract Map<String, Object> emulate();
+    public abstract Map<String, String> emulate();
     public abstract Map<String, Integer> getWidthAndHeight();
 }
