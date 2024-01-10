@@ -212,7 +212,6 @@ public class WebDriverFactory implements DriverFactory {
                     if (headless) options.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
                     if (mobileMode) options.setExperimentalOption("mobileEmulation", EmulatedDevice.iphone11.emulate());
-
                     return new ChromeDriver(options);
                 }
                 case FIREFOX -> {
