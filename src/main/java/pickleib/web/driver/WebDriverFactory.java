@@ -5,12 +5,14 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 import pickleib.driver.DriverFactory;
+import pickleib.enums.EmulatedDevice;
 import pickleib.exceptions.PickleibException;
 import utils.LogUtilities;
 import utils.Printer;
@@ -40,6 +42,21 @@ public class WebDriverFactory implements DriverFactory {
      * session runs headless if true
      */
     static boolean headless = Boolean.parseBoolean(ContextStore.get("headless", "false"));
+
+    /**
+     * session runs in mobile mode if true
+     */
+    static boolean mobileMode = Boolean.parseBoolean(ContextStore.get("mobile-mode", "false"));
+
+    /**
+     * Preferred EmulatedDevice
+     */
+    static EmulatedDevice preferredDevice = EmulatedDevice.getType(ContextStore.get("emulated-device", "iPhone12Pro"));
+
+    /**
+     * session runs in tablet mode if true
+     */
+    static boolean tabletMode = Boolean.parseBoolean(ContextStore.get("tablet-mode", "false"));
 
     /**
      * maximizes a session window if true
@@ -137,7 +154,7 @@ public class WebDriverFactory implements DriverFactory {
                 ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", browserType.getDriverKey());
                 driver = new RemoteWebDriver(new URL(hubUrl), capabilities);
             }
-            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType);}
+            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileMode, preferredDevice);}
 
             assert driver != null;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
@@ -173,12 +190,14 @@ public class WebDriverFactory implements DriverFactory {
     static RemoteWebDriver driverSwitch(
             Boolean headless,
             Boolean useWDM,
-            Boolean insecureLocalHost, 
+            Boolean insecureLocalHost,
             Boolean noSandbox,
             Boolean disableNotifications,
             Boolean allowRemoteOrigin,
             PageLoadStrategy loadStrategy,
-            BrowserType browserType){
+            BrowserType browserType,
+            Boolean mobileMode,
+            EmulatedDevice preferredDevice){
         if (useWDM) log.warning("Using WebDriverManager...");
         try {
             switch (browserType) {
@@ -191,10 +210,11 @@ public class WebDriverFactory implements DriverFactory {
                     }
                     if (noSandbox) options.addArguments("--no-sandbox");
                     options.setPageLoadStrategy(loadStrategy);
-                    options.setAcceptInsecureCerts(insecureLocalHost);
+
                     if (allowRemoteOrigin) options.addArguments("--remote-allow-origins=*");
                     if (headless) options.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
+                    if (mobileMode) options.setExperimentalOption("mobileEmulation", preferredDevice.emulate());
                     return new ChromeDriver(options);
                 }
                 case FIREFOX -> {
@@ -224,7 +244,7 @@ public class WebDriverFactory implements DriverFactory {
         }
         catch (SessionNotCreatedException sessionException){
             log.warning(sessionException.getLocalizedMessage());
-            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType);
+            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileMode, preferredDevice);
             else return null;
         }
     }
