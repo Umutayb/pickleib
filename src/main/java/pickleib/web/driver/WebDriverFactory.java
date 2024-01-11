@@ -5,6 +5,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.chromium.ChromiumDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -48,9 +49,9 @@ public class WebDriverFactory implements DriverFactory {
     static boolean mobileMode = Boolean.parseBoolean(ContextStore.get("mobile-mode", "false"));
 
     /**
-     * session runs in mobile-like height and width view if true
+     * Preferred EmulatedDevice
      */
-    static boolean mobileView = Boolean.parseBoolean(ContextStore.get("mobile-view", "false"));
+    static EmulatedDevice preferredDevice = EmulatedDevice.getType(ContextStore.get("emulated-device", "iPhone12Pro"));
 
     /**
      * session runs in tablet mode if true
@@ -153,15 +154,12 @@ public class WebDriverFactory implements DriverFactory {
                 ImmutableCapabilities capabilities = new ImmutableCapabilities("browserName", browserType.getDriverKey());
                 driver = new RemoteWebDriver(new URL(hubUrl), capabilities);
             }
-            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileView, mobileMode, tabletMode);}
+            else {driver = driverSwitch(headless, useWDM, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileMode, preferredDevice);}
 
             assert driver != null;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
-            if (mobileView) driver.manage().window().setSize(
-                    new Dimension(EmulatedDevice.iphone12Pro.getWidthAndHeight().get("width"), EmulatedDevice.iphone12Pro.getWidthAndHeight().get("height"))
-            );
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.setLogLevel(logUtils.getLevel(logLevel));
             log.important(browserType.getDriverName() + GRAY.getValue() + " was selected");
@@ -198,9 +196,8 @@ public class WebDriverFactory implements DriverFactory {
             Boolean allowRemoteOrigin,
             PageLoadStrategy loadStrategy,
             BrowserType browserType,
-            Boolean mobileView,
             Boolean mobileMode,
-            Boolean tabletMode){
+            EmulatedDevice preferredDevice){
         if (useWDM) log.warning("Using WebDriverManager...");
         try {
             switch (browserType) {
@@ -213,12 +210,11 @@ public class WebDriverFactory implements DriverFactory {
                     }
                     if (noSandbox) options.addArguments("--no-sandbox");
                     options.setPageLoadStrategy(loadStrategy);
-                    options.setAcceptInsecureCerts(insecureLocalHost);
+
                     if (allowRemoteOrigin) options.addArguments("--remote-allow-origins=*");
                     if (headless) options.addArguments("--headless=new");
                     if (useWDM) WebDriverManager.chromedriver().setup();
-                    if (mobileMode) options.setExperimentalOption("mobileEmulation", EmulatedDevice.iphone12Pro.emulate());
-                    if (tabletMode) options.setExperimentalOption("mobileEmulation", EmulatedDevice.ipadAir.emulate());
+                    if (mobileMode) options.setExperimentalOption("mobileEmulation", preferredDevice.emulate());
                     return new ChromeDriver(options);
                 }
                 case FIREFOX -> {
@@ -248,7 +244,7 @@ public class WebDriverFactory implements DriverFactory {
         }
         catch (SessionNotCreatedException sessionException){
             log.warning(sessionException.getLocalizedMessage());
-            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileView, mobileMode, tabletMode);
+            if (!useWDM) return driverSwitch(headless, true, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileMode, preferredDevice);
             else return null;
         }
     }
