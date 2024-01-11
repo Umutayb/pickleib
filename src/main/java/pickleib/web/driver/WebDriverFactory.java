@@ -54,11 +54,6 @@ public class WebDriverFactory implements DriverFactory {
     static EmulatedDevice preferredDevice = EmulatedDevice.getType(ContextStore.get("emulated-device", "iPhone12Pro"));
 
     /**
-     * session runs in tablet mode if true
-     */
-    static boolean tabletMode = Boolean.parseBoolean(ContextStore.get("tablet-mode", "false"));
-
-    /**
      * maximizes a session window if true
      */
     static boolean maximise = Boolean.parseBoolean(ContextStore.get("driver-maximize", "false"));
