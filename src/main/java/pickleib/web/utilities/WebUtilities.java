@@ -171,7 +171,7 @@ public abstract class WebUtilities extends Utilities {
      */
     public void verifyUrlContains(String url){
         Assert.isTrue(driver.getCurrentUrl().contains(url),
-                "The url does not contains '" + url + "'! -> " + driver.getCurrentUrl()
+                "The url does not contain '" + url + "'! -> " + driver.getCurrentUrl()
         );
     }
 
@@ -194,7 +194,7 @@ public abstract class WebUtilities extends Utilities {
     //This method verifies the page title
     public void verifyPageTitle(String pageTitle){
         Assert.isTrue(driver.getTitle().contains(pageTitle),
-                "The page title does not contains '" + pageTitle + "'! -> " + driver.getTitle()
+                "The page title does not contain '" + pageTitle + "'! -> " + driver.getTitle()
         );
     }
 
