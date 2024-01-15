@@ -15,11 +15,12 @@ import pickleib.utilities.element.ElementInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.utilities.WebUtilities;
-import records.Bundle;
+import collections.Bundle;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
@@ -338,8 +339,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
         String script = switch (direction) {
             case up -> "window.scrollBy(0,-document.body.scrollHeight)";
             case down -> "window.scrollBy(0,document.body.scrollHeight)";
-            case left -> null;
-            case right -> null;
+            case left, right -> null;
         };
         ((JavascriptExecutor) driver).executeScript(script);
     }
@@ -427,7 +427,6 @@ public class WebInteractions extends WebUtilities implements Interactions {
         fillIframeForm(
                 bundles,
                 iFrame,
-                iframeName,
                 pageName
         );
     }

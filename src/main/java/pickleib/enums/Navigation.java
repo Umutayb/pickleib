@@ -7,5 +7,6 @@ import lombok.Getter;
  */
 @Getter
 public enum Navigation {
-    backwards, forwards
+    backwards,
+    forwards
 }
