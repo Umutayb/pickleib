@@ -19,11 +19,10 @@ import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
-import records.Bundle;
+import collections.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pickleib.web.driver.PickleibWebDriver.driver;
 import static utils.StringUtilities.Color.*;
 
 public abstract class WebUtilities extends Utilities {
@@ -267,8 +266,7 @@ public abstract class WebUtilities extends Utilities {
                             "return JSON.stringify(items);",
                     element
             ).toString();
-            JSONParser parser = new JSONParser();
-            return (JSONObject) parser.parse(object);
+            return (JSONObject) new JSONParser().parse(object);
         }
         catch (ParseException e) {throw new RuntimeException(e);}
     }
@@ -335,16 +333,12 @@ public abstract class WebUtilities extends Utilities {
      *
      * @param bundles list of bundles where input element, input name and input texts are stored
      * @param iFrame target element
-     * @param iframeName target iframe name
      * @param pageName specified page instance name
      */
     public void fillIframeForm(
             List<Bundle<WebElement, String, String>> bundles,
             WebElement iFrame,
-            String iframeName,
             String pageName){
-        String inputName;
-        String input;
         for (Bundle<WebElement, String, String> bundle : bundles) {
             log.info("Filling " +
                     highlighted(BLUE, bundle.theta()) +

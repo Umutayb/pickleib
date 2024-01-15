@@ -4,7 +4,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
-import records.Bundle;
+import collections.Bundle;
 import java.util.List;
 import java.util.Map;
 

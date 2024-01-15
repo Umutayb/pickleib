@@ -10,7 +10,7 @@ import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
 import pickleib.utilities.Interactions;
 import pickleib.utilities.element.ElementInteractions;
-import records.Bundle;
+import collections.Bundle;
 import java.util.List;
 import java.util.Map;
 

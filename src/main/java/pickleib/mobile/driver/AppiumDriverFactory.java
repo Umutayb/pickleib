@@ -7,18 +7,17 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import pickleib.driver.DriverFactory;
 import utils.FileUtilities;
 import utils.Printer;
-import utils.StringUtilities;
 import java.net.URL;
 import java.time.Duration;
 
 import static pickleib.mobile.driver.ServiceFactory.service;
+import static pickleib.utilities.element.ElementAcquisition.strUtils;
 import static utils.StringUtilities.Color.*;
 
 public class AppiumDriverFactory implements DriverFactory {
 
     static Printer log = new Printer(AppiumDriverFactory.class);
     static FileUtilities.Json jsonUtils = new FileUtilities.Json();
-    static StringUtilities strUtils = new StringUtilities();
 
     public static AppiumDriver getDriver(String deviceName, JSONObject capabilities){
         DesiredCapabilities desiredCapabilities = getConfig(capabilities);

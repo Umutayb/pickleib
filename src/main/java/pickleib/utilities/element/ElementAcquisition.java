@@ -14,15 +14,15 @@ import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.page.repository.PageRepository;
-import records.Bundle;
-import records.Pair;
+import collections.Bundle;
+import collections.Pair;
 import utils.Printer;
 import utils.StringUtilities;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-import static utils.ReflectionUtilities.getFieldValue;
-import static utils.ReflectionUtilities.getFields;
+import static utils.reflection.ReflectionUtilities.getFieldValue;
+import static utils.reflection.ReflectionUtilities.getFields;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")

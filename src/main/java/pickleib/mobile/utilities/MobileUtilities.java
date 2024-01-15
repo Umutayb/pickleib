@@ -29,10 +29,9 @@ public abstract class MobileUtilities extends Utilities {
         PageFactory.initElements(
                 new AppiumFieldDecorator(
                         PickleibAppiumDriver.driver,
-                        Duration.ofSeconds(Long.parseLong(ContextStore.get(
-                                "element-timeout",
-                                "15000"
-                        ))/1000)
+                        Duration.ofSeconds(
+                                Long.parseLong(ContextStore.get("element-timeout", "15000"))/1000
+                        )
                 ),
                 this
         );
@@ -47,10 +46,9 @@ public abstract class MobileUtilities extends Utilities {
         PageFactory.initElements(
                 new AppiumFieldDecorator(
                         driver,
-                        Duration.ofSeconds(Long.parseLong(ContextStore.get(
-                                "element-timeout",
-                                "15000"
-                        ))/1000)
+                        Duration.ofSeconds(
+                                Long.parseLong(ContextStore.get("element-timeout", "15000"))/1000
+                        )
                 ),
                 this
         );

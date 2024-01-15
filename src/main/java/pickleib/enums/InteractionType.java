@@ -5,4 +5,9 @@ package pickleib.enums;
  * <p>
  * The available interaction types are click, fill, center, and verify.
  */
-public enum InteractionType {click, fill, center, verify}
+public enum InteractionType {
+    click,
+    fill,
+    center,
+    verify
+}
