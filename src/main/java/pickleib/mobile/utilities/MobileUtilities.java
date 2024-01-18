@@ -55,6 +55,11 @@ public abstract class MobileUtilities extends Utilities {
     }
 
     @Override
+    public void clickElement(WebElement element, Boolean scroll){
+        clickElement(element, (target)->centerElement(target), scroll);
+    }
+
+    @Override
     public WebElement centerElement(WebElement element){
 
         Point center = new Point(

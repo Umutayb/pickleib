@@ -66,6 +66,11 @@ public abstract class WebUtilities extends Utilities {
         PageFactory.initElements(fieldDecorator, this);
     }
 
+    @Override
+    public void clickElement(WebElement element, Boolean scroll){
+        clickElement(element, (target)->centerElement(target), scroll);
+    }
+
     /**
      * Navigates to a given url
      *

@@ -79,14 +79,18 @@ public abstract class Utilities {
      * @param scroll scrolls if true
      */
     protected void clickElement(WebElement element, Boolean scroll){
+       clickElement(element,(target)-> centerElement(target),scroll);
+    }
+
+    protected void clickElement(WebElement element, ScrollFunction scroller ,Boolean scroll){
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
         int counter = 0;
         do {
             try {
                 driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-                if (counter > 0 && scroll) clickTowards(centerElement(element));
-                else if (scroll) centerElement(element).click();
+                if (counter > 0 && scroll) clickTowards(scroller.scroll(element));
+                else if (scroll) scroller.scroll(element).click();
                 else element.click();
                 return;
             }
