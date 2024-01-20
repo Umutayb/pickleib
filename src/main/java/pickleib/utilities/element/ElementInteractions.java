@@ -5,18 +5,18 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
-import pickleib.mobile.interactions.MobileInteractions;
+import pickleib.utilities.ScrollFunction;
 import pickleib.utilities.Utilities;
-import pickleib.web.interactions.WebInteractions;
 import collections.Bundle;
 import java.util.List;
 import java.util.Map;
+
 import static utils.StringUtilities.Color.*;
+import static utils.StringUtilities.*;
 
 /**
  * A utility class that provides common interaction methods for web and mobile steps in the context of Pickleib.
@@ -35,29 +35,15 @@ import static utils.StringUtilities.Color.*;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ElementInteractions extends Utilities {
 
-    public DriverFactory.DriverType driverType;
+    WebDriverWait wait;
 
-    protected WebDriverWait wait;
-
-    boolean scroll = false;
-
-    public ElementInteractions(RemoteWebDriver driver, WebDriverWait wait, DriverFactory.DriverType driverType){
+    public ElementInteractions(RemoteWebDriver driver, WebDriverWait wait){
         super(driver);
-        this.driverType = driverType;
         this.wait = wait;
     }
 
-    public ElementInteractions(RemoteWebDriver driver, DriverFactory.DriverType driverType){
+    public ElementInteractions(RemoteWebDriver driver){
         super(driver);
-        this.driverType = driverType;
-    }
-
-    public boolean isScrolling() {
-        return scroll;
-    }
-
-    public void setScroll(boolean scroll) {
-        this.scroll = scroll;
     }
 
     /**
@@ -91,8 +77,12 @@ public class ElementInteractions extends Utilities {
      *
      * @param text target text
      */
+    public void clickByText(String text, ScrollFunction scroller) {
+        clickButtonWithText(text, scroller);
+    }
+
     public void clickByText(String text) {
-        clickButtonWithText(text, scroll);
+        clickButtonWithText(text, null);
     }
 
     /**
@@ -112,13 +102,38 @@ public class ElementInteractions extends Utilities {
      * @param buttonName target button name
      * @param pageName specified page instance name
      */
+    public void clickInteraction(WebElement button, String buttonName, String pageName, ScrollFunction scroller){
+        log.info("Clicking " +
+                highlighted(BLUE, buttonName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clickElement(button, scroller);
+    }
+
+    /**
+     *
+     * Click the {button name} on the {page name}
+     *
+     * @param buttonName target button name
+     * @param pageName specified page instance name
+     */
     public void clickInteraction(WebElement button, String buttonName, String pageName){
         log.info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickElement(button, scroll);
+        clickElement(button, null);
+    }
+
+    /**
+     *
+     * Click the {button name} on the {page name}
+     *
+     */
+    public void clickInteraction(WebElement button, ScrollFunction scroller){
+        clickElement(button, scroller);
     }
 
     /**
@@ -127,7 +142,7 @@ public class ElementInteractions extends Utilities {
      *
      */
     public void clickInteraction(WebElement button){
-        clickElement(button, scroll);
+        clickElement(button, null);
     }
 
     /**
@@ -155,25 +170,15 @@ public class ElementInteractions extends Utilities {
      * @param element target element
      * @param elementName target element name
      * @param pageName specified page instance name
+     * @param scroller  The {@code ScrollFunction} for scrolling before clicking. If {@code null}, no scrolling is performed.
      */
-    public void center(WebElement element, String elementName, String pageName){
+    public WebElement center(WebElement element, String elementName, String pageName, ScrollFunction scroller){
         log.info("Centering " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on ") +
                 highlighted(BLUE, pageName)
         );
-        center(element);
-    }
-
-    /**
-     * Center a given element
-     *
-     * @param element target element
-     * @return the given element
-     */
-    public WebElement center(WebElement element){
-        centerElement(element);
-        return element;
+        return scroller.scroll(element);
     }
 
     /**
@@ -220,7 +225,13 @@ public class ElementInteractions extends Utilities {
      * @param pageName specified page instance name
      * @param input input text
      */
-    public void basicFill(WebElement inputElement, String inputName, String pageName, String input, boolean verify){
+    public void basicFill(
+            WebElement inputElement,
+            String inputName,
+            String pageName,
+            String input,
+            boolean verify,
+            ScrollFunction scroller){
         log.info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
@@ -231,9 +242,22 @@ public class ElementInteractions extends Utilities {
         clearFillInput(
                 inputElement, //Element
                 input, //Input Text
-                scroll,
+                scroller,
                 verify
         );
+    }
+
+    /**
+     *
+     * Fill input element {input name} from {pageName} with text: {input text}
+     *
+     * @param inputElement target input element
+     * @param inputName target input element name
+     * @param pageName specified page instance name
+     * @param input input text
+     */
+    public void basicFill(WebElement inputElement, String inputName, String pageName, String input, boolean verify){
+        basicFill(inputElement, inputName, pageName, input, verify, null);
     }
 
     /**
@@ -571,7 +595,7 @@ public class ElementInteractions extends Utilities {
 
         for (Bundle<WebElement, String, String> bundle : bundles) {
             String elementName = bundle.beta();
-            String expectedText = strUtils.contextCheck(bundle.theta());
+            String expectedText = contextCheck(bundle.theta());
 
             log.info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
@@ -593,7 +617,7 @@ public class ElementInteractions extends Utilities {
      * @param url target url
      */
     public void verifyCurrentUrl(String url) {
-        url = strUtils.contextCheck(url);
+        url = contextCheck(url);
         log.info("The url contains " + url);
         if (!driver.getCurrentUrl().contains(url))
             throw new PickleibException("Current url does not contain the expected url!");
@@ -604,10 +628,20 @@ public class ElementInteractions extends Utilities {
      * Click on a button that contains {button text} text
      *
      * @param buttonText target button text
-     * @param scroll scrolls if true
      */
-    public void clickButtonByText(String buttonText, Boolean scroll) {
-        clickButtonByItsText(buttonText, scroll);
+    public void clickButtonByText(String buttonText) {
+        clickButtonByItsText(buttonText);
+    }
+
+    /**
+     *
+     * Click on a button that contains {button text} text
+     *
+     * @param buttonText target button text
+     * @param scroller  The {@code ScrollFunction} for scrolling before clicking. If {@code null}, no scrolling is performed.
+     */
+    public void clickButtonByText(String buttonText, ScrollFunction scroller) {
+        clickButtonByItsText(buttonText, scroller);
     }
 
     /**
@@ -618,7 +652,7 @@ public class ElementInteractions extends Utilities {
      * @param value Context value
      */
     public void updateContext(String key, String value){
-        value = strUtils.contextCheck(value);
+        value = contextCheck(value);
         log.info(
                 "Updating context: " +
                         highlighted(BLUE, key) +
@@ -641,20 +675,25 @@ public class ElementInteractions extends Utilities {
     }
 
     /**
+     * Fills the specified input element with the content of a file.
      *
-     * Upload file on input {input element field name} on the {page name} with file: {target file path}
+     * <p>
+     * This method fills the provided {@code inputElement} with the content of a file specified by {@code absoluteFilePath}.
+     * The method logs information about the input name, page name, and the absolute file path being used.
+     * Before filling the input, it clears the existing content if specified.
+     * </p>
      *
-     * @param inputElement target input element
-     * @param inputName input element field name
-     * @param pageName specified page instance name
-     * @param absoluteFilePath target file path
+     * @param inputElement      The {@code WebElement} representing the input field to be filled.
+     * @param inputName         The name of the input field for logging purposes.
+     * @param pageName          The name of the page where the interaction is performed for logging purposes.
+     * @param absoluteFilePath  The absolute file path to the file whose content will be used to fill the input.
      */
     public void fillInputWithFile(
             WebElement inputElement,
             String inputName,
             String pageName,
             String absoluteFilePath){
-        absoluteFilePath = strUtils.contextCheck(absoluteFilePath);
+        absoluteFilePath = contextCheck(absoluteFilePath);
         log.info("Filling " +
                 highlighted(BLUE, inputName) +
                 highlighted(GRAY," on the ") +
@@ -665,9 +704,91 @@ public class ElementInteractions extends Utilities {
         clearFillInput(
                 inputElement,
                 absoluteFilePath,
-                scroll,
+                null,
                 false
         );
+    }
+
+    /**
+     * Fills the specified input element with the content of a file.
+     *
+     * <p>
+     * This method fills the provided {@code inputElement} with the content of a file specified by {@code absoluteFilePath}.
+     * The method logs information about the input name, page name, and the absolute file path being used.
+     * Before filling the input, it clears the existing content if specified.
+     * </p>
+     *
+     * @param inputElement      The {@code WebElement} representing the input field to be filled.
+     * @param inputName         The name of the input field for logging purposes.
+     * @param pageName          The name of the page where the interaction is performed for logging purposes.
+     * @param absoluteFilePath  The absolute file path to the file whose content will be used to fill the input.
+     * @param scroller          The {@code ScrollFunction} used for scrolling elements into view. If {@code null}, no scrolling is performed.
+     */
+    public void fillInputWithFile(
+            WebElement inputElement,
+            String inputName,
+            String pageName,
+            String absoluteFilePath,
+            ScrollFunction scroller){
+        absoluteFilePath = contextCheck(absoluteFilePath);
+        log.info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, absoluteFilePath)
+        );
+        clearFillInput(
+                inputElement,
+                absoluteFilePath,
+                scroller,
+                false
+        );
+    }
+
+    /**
+     * Performs a series of interactions based on the provided list of bundles.
+     *
+     * <p>
+     * This method iterates through the given list of bundles, where each bundle contains information for a specific interaction.
+     * The interaction type is determined by the "Interaction Type" value in the bundle.
+     * The supported interaction types include:
+     * </p>
+     *
+     * <ul>
+     *     <li><b>Click:</b> Executes a click interaction on the specified element.</li>
+     *     <li><b>Fill:</b> Fills the specified input value into the specified input field.</li>
+     *     <li><b>Center:</b> Centers the specified element on the page using the provided {@code scroller} for scrolling.</li>
+     *     <li><b>Verify:</b> Verifies that the specified element contains the expected attribute value.</li>
+     * </ul>
+     *
+     * <p>
+     * For 'fill' interactions, an additional boolean parameter is added to specify whether to clear the input field before filling.
+     * </p>
+     *
+     * @param bundles   The list of bundles, where each bundle contains information for a specific interaction.
+     * @param pageName  The name of the page where the interactions are performed.
+     * @param scroller  The {@code ScrollFunction} used for centering elements. It is applicable for 'click' and 'center' interactions.
+     *
+     * @throws EnumConstantNotPresentException If an unsupported interaction type is encountered in the bundle.
+     */
+    public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName, ScrollFunction scroller){
+        for (Bundle<String, WebElement, Map<String, String>> bundle:bundles) {
+            InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
+            switch (interactionType){
+                case click  -> clickInteraction(bundle.beta(), bundle.alpha(), pageName, scroller);
+                case fill   -> basicFill(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), false, scroller);
+                case center -> center(bundle.beta(), bundle.alpha(), pageName, scroller);
+                case verify -> verifyElementContainsAttribute(
+                        bundle.beta(),
+                        bundle.alpha(),
+                        pageName,
+                        bundle.theta().get("Attribute Name"),
+                        contextCheck(bundle.theta().get("Attribute Value"))
+                );
+                default -> throw new EnumConstantNotPresentException(InteractionType.class, interactionType.name());
+            }
+        }
     }
 
     /**
@@ -680,31 +801,6 @@ public class ElementInteractions extends Utilities {
      * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
      */
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName){
-        for (Bundle<String, WebElement, Map<String, String>> bundle:bundles) {
-            InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
-            switch (interactionType){
-                case click  -> clickInteraction(bundle.beta(), bundle.alpha(), pageName);
-                case fill   -> basicFill(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"));
-                case center -> center(bundle.beta(), bundle.alpha(), pageName);
-                case verify -> verifyElementContainsAttribute(
-                        bundle.beta(),
-                        bundle.alpha(),
-                        pageName,
-                        bundle.theta().get("Attribute Name"),
-                        strUtils.contextCheck(bundle.theta().get("Attribute Value"))
-                );
-                default -> throw new EnumConstantNotPresentException(InteractionType.class, interactionType.name());
-            }
-        }
-    }
-
-    @Override
-    protected WebElement centerElement(WebElement element) {
-        WebInteractions webInteractions = new WebInteractions();
-        MobileInteractions mobileInteractions = new MobileInteractions();
-        return switch (driverType){
-            case Web -> webInteractions.center(element);
-            case Mobile -> mobileInteractions.center(element);
-        };
+        bundleInteraction(bundles, pageName, null);
     }
 }

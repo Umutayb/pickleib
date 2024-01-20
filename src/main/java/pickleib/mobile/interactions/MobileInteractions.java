@@ -3,7 +3,6 @@ package pickleib.mobile.interactions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pickleib.driver.DriverFactory;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.mobile.driver.PickleibAppiumDriver;
@@ -29,8 +28,7 @@ public class MobileInteractions extends MobileUtilities implements Interactions 
         this.wait = wait;
         interact = new ElementInteractions(
                 driver,
-                wait,
-                DriverFactory.DriverType.Mobile
+                wait
         );
     }
 
@@ -40,8 +38,7 @@ public class MobileInteractions extends MobileUtilities implements Interactions 
         this.wait = PickleibAppiumDriver.wait;
         interact = new ElementInteractions(
                 driver,
-                wait,
-                DriverFactory.DriverType.Mobile
+                wait
         );
     }
 
@@ -190,8 +187,13 @@ public class MobileInteractions extends MobileUtilities implements Interactions 
         swiper(direction);
     }
 
-    public void clickButtonByText(String buttonText, Boolean scroll) {
-        interact.clickButtonByText(buttonText, scroll);
+    public void clickButtonByText(String buttonText, boolean scroll) {
+        if (scroll) interact.clickButtonByText(buttonText, this::centerElement);
+        else interact.clickButtonByText(buttonText);
+    }
+
+    public void clickButtonByText(String buttonText) {
+        interact.clickButtonByText(buttonText);
     }
 
     public void updateContext(String key, String value) {

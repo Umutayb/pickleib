@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pickleib.driver.DriverFactory;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
@@ -22,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static utils.StringUtilities.Color.*;
+import static utils.StringUtilities.contextCheck;
 
 @SuppressWarnings("unused")
 public class WebInteractions extends WebUtilities implements Interactions {
@@ -36,8 +36,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
         this.wait = wait;
         interact = new ElementInteractions(
                 driver,
-                wait,
-                DriverFactory.DriverType.Web
+                wait
         );
     }
 
@@ -46,8 +45,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
         this.driver = PickleibWebDriver.driver;
         this.wait = PickleibWebDriver.wait;
         interact = new ElementInteractions(
-                driver,
-                DriverFactory.DriverType.Web
+                driver
         );
     }
 
@@ -164,8 +162,13 @@ public class WebInteractions extends WebUtilities implements Interactions {
         interact.verifyPresenceOfListedElements(bundles, element, elements, pageName, signForms);
     }
 
-    public void clickButtonByText(String buttonText, Boolean scroll) {
-        interact.clickButtonByText(buttonText, scroll);
+    public void clickButtonByText(String buttonText, boolean scroll) {
+        if (scroll) interact.clickButtonByText(buttonText, this::centerElement);
+        else interact.clickButtonByText(buttonText);
+    }
+
+    public void clickButtonByText(String buttonText) {
+        interact.clickButtonByText(buttonText);
     }
 
     public void updateContext(String key, String value) {
@@ -225,7 +228,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
      * @param url target url
      */
     public void getUrl(String url) {
-        url = strUtils.contextCheck(url);
+        url = contextCheck(url);
         driver.get(url);
     }
 
@@ -268,7 +271,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
      * @param handle target a tab handle
      */
     public void switchToTabByHandle(String handle) {
-        handle = strUtils.contextCheck(handle);
+        handle = contextCheck(handle);
         String parentHandle = switchWindowByHandle(handle);
         ContextStore.put("parentHandle", parentHandle);
     }
@@ -292,7 +295,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
      * @param htmlPath target directory
      */
     public void getHTML(String htmlPath) {
-        htmlPath = strUtils.contextCheck(htmlPath);
+        htmlPath = contextCheck(htmlPath);
         log.info("Navigating to the email @" + htmlPath);
         driver.get(htmlPath);
     }
@@ -335,7 +338,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
      * @param direction target direction (UP or DOWN)
      */
     protected void scroll(@NotNull Direction direction){
-        log.info("Scrolling " + strUtils.highlighted(BLUE, direction.name().toLowerCase()));
+        log.info("Scrolling " + highlighted(BLUE, direction.name().toLowerCase()));
         String script = switch (direction) {
             case up -> "window.scrollBy(0,-document.body.scrollHeight)";
             case down -> "window.scrollBy(0,document.body.scrollHeight)";
