@@ -103,6 +103,7 @@ public abstract class MobileUtilities extends Utilities {
         else fillInputElement(inputElement, inputText, null, verify);
     }
 
+    //TODO: Implement iterative scroll that will swipe or center depending on if the element can be found in view.
     protected WebElement centerElement(WebElement element){
         Point center = new Point(
                 driver.manage().window().getSize().getWidth()/2,
