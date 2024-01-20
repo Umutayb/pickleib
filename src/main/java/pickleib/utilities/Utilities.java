@@ -96,7 +96,7 @@ public abstract class Utilities {
      * @param scroller  The {@code ScrollFunction} for scrolling before clicking. If {@code null}, no scrolling is performed.
      * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
      *                          with the last caught WebDriver exception.
-     */
+     */ //TODO: clickElement should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
     protected void clickElement(WebElement element, ScrollFunction scroller){
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
@@ -341,7 +341,7 @@ public abstract class Utilities {
      * @param element target element
      * @param state expected state
      * @return returns true if an element is in the expected state
-     */
+     */ //TODO: elementIs should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
     protected Boolean elementIs(WebElement element, @NotNull ElementState state){
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
