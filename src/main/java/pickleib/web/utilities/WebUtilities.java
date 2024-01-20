@@ -88,7 +88,7 @@ public abstract class WebUtilities extends Utilities {
      * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
      *                          with the last caught WebDriver exception.
      */
-    public void clickElement(WebElement element, Boolean scroll){
+    public void clickElement(WebElement element, boolean scroll){
         if (scroll) clickElement(element, this::centerElement);
         else clickElement(element);
     }
