@@ -1,7 +1,7 @@
 package pickleib.utilities;
 
 import context.ContextStore;
-import properties.PropertyUtility;
+import properties.PropertyUtilities;
 import java.util.Properties;
 
 public class PropertyLoader {
@@ -11,8 +11,8 @@ public class PropertyLoader {
 
     public static void load(){
         if (!loaded){
-            Properties properties = PropertyUtility.getProperties();
-            Properties pickleibProperties = PropertyUtility.loadPropertyFile("pickleib.properties");
+            Properties properties = PropertyUtilities.getProperties();
+            Properties pickleibProperties = PropertyUtilities.loadPropertyFile("pickleib.properties");
             ContextStore.loadProperties("pickleib.properties");
 
             if (!properties.isEmpty()){
@@ -21,7 +21,7 @@ public class PropertyLoader {
             }
             else properties = pickleibProperties;
 
-            PropertyUtility.properties.putAll(properties);
+            PropertyUtilities.properties.putAll(properties);
         }
         loaded = true;
     }

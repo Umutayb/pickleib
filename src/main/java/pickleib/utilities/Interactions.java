@@ -345,9 +345,21 @@ public interface Interactions {
      * Click on a button that contains {button text} text
      *
      * @param buttonText target button text
-     * @param scroll scrolls if true
      */
-    void clickButtonByText(String buttonText, Boolean scroll);
+    void clickButtonByText(String buttonText);
+
+    /**
+     * Clicks on a button with the specified text.
+     *
+     * <p>
+     * This method clicks on a button that contains the provided {@code buttonText} text.
+     * Optionally, it scrolls towards the button if {@code scroll} is set to true.
+     * </p>
+     *
+     * @param buttonText The text content of the target button.
+     * @param scroll     If true, scrolls towards the button before clicking; otherwise, clicks directly.
+     */
+    void clickButtonByText(String buttonText, boolean scroll);
 
     /**
      *

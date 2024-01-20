@@ -11,6 +11,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
+import pickleib.exceptions.PickleibException;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
 import java.time.Duration;
@@ -54,14 +55,55 @@ public abstract class MobileUtilities extends Utilities {
         );
     }
 
-    @Override
-    public void clickElement(WebElement element, Boolean scroll){
-        clickElement(element, (target)->centerElement(target), scroll);
+    /**
+     * Clicks the specified {@code element} with retry mechanism and optional scrolling.
+     *
+     * <p>
+     * This method attempts to click the given {@code element} with a retry mechanism.
+     * It uses an implicit wait of 500 milliseconds during the retry attempts.
+     * The method supports an optional {@code scroller} for scrolling before clicking the element.
+     * If the {@code scroller} is provided, it scrolls towards the specified location before clicking.
+     * </p>
+     *
+     * <p>
+     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
+     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
+     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
+     * </p>
+     *
+     * @param element   The target {@code WebElement} to be clicked with retry mechanism.
+     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
+     *                          with the last caught WebDriver exception.
+     */
+    public void clickElement(WebElement element, boolean scroll){
+        if (scroll) clickElement(element, this::centerElement);
+        else clickElement(element);
     }
 
-    @Override
-    public WebElement centerElement(WebElement element){
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     * @param verify verifies the input text value equals to an expected text if true
+     */
+    protected void clearFillInput(WebElement inputElement, String inputText, boolean verify){
+        fillInputElement(inputElement, inputText, null, verify);
+    }
 
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     * @param verify verifies the input text value equals to an expected text if true
+     */
+    protected void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify){
+        if (scroll) fillInputElement(inputElement, inputText, this::centerElement, verify);
+        else fillInputElement(inputElement, inputText, null, verify);
+    }
+
+    protected WebElement centerElement(WebElement element){
         Point center = new Point(
                 driver.manage().window().getSize().getWidth()/2,
                 driver.manage().window().getSize().getHeight()/2

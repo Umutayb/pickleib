@@ -4,13 +4,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.failsafe.internal.util.Assert;
 import org.jetbrains.annotations.Nullable;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
@@ -20,9 +15,16 @@ import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
 import collections.Bundle;
+import utils.StringUtilities;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import static utils.StringUtilities.Color.*;
 
 public abstract class WebUtilities extends Utilities {
@@ -66,9 +68,52 @@ public abstract class WebUtilities extends Utilities {
         PageFactory.initElements(fieldDecorator, this);
     }
 
-    @Override
+    /**
+     * Clicks the specified {@code element} with retry mechanism and optional scrolling.
+     *
+     * <p>
+     * This method attempts to click the given {@code element} with a retry mechanism.
+     * It uses an implicit wait of 500 milliseconds during the retry attempts.
+     * The method supports an optional {@code scroller} for scrolling before clicking the element.
+     * If the {@code scroller} is provided, it scrolls towards the specified location before clicking.
+     * </p>
+     *
+     * <p>
+     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
+     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
+     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
+     * </p>
+     *
+     * @param element   The target {@code WebElement} to be clicked with retry mechanism.
+     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
+     *                          with the last caught WebDriver exception.
+     */
     public void clickElement(WebElement element, Boolean scroll){
-        clickElement(element, (target)->centerElement(target), scroll);
+        if (scroll) clickElement(element, this::centerElement);
+        else clickElement(element);
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     * @param verify verifies the input text value equals to an expected text if true
+     */
+    protected void clearFillInput(WebElement inputElement, String inputText, boolean verify){
+        fillInputElement(inputElement, inputText, null, verify);
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText input text
+     * @param verify verifies the input text value equals to an expected text if true
+     */
+    protected void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify){
+        if (scroll) fillInputElement(inputElement, inputText, this::centerElement, verify);
+        else fillInputElement(inputElement, inputText, null, verify);
     }
 
     /**
@@ -87,7 +132,7 @@ public abstract class WebUtilities extends Utilities {
         }
         catch (Exception gamma){
             driver.quit();
-            throw new PickleibException("Unable to navigate to the \""+strUtils.highlighted(YELLOW, url)+"\"");
+            throw new PickleibException("Unable to navigate to the \"" + StringUtilities.highlighted(YELLOW, url) + "\"");
         }
         return url;
     }
@@ -109,7 +154,7 @@ public abstract class WebUtilities extends Utilities {
      */
     public void navigateBrowser(Navigation direction){
         try {
-            log.info("Navigating " + strUtils.highlighted(BLUE, direction.name()));
+            log.info("Navigating " + StringUtilities.highlighted(BLUE, direction.name()));
 
             switch (direction) {
                 case forwards -> driver.navigate().forward();
@@ -118,7 +163,7 @@ public abstract class WebUtilities extends Utilities {
             }
         }
         catch (Exception e){
-            throw new PickleibException("Unable to navigate browser \"" + strUtils.highlighted(YELLOW, direction.name())+"\" due to: " + e);
+            throw new PickleibException("Unable to navigate browser \"" + StringUtilities.highlighted(YELLOW, direction.name())+"\" due to: " + e);
         }
     }
 
@@ -174,7 +219,7 @@ public abstract class WebUtilities extends Utilities {
      * @param url target url
      */
     public void verifyUrlContains(String url){
-        Assert.isTrue(driver.getCurrentUrl().contains(url),
+        Assert.isTrue(driver.getCurrentUrl().contains(StringUtilities.contextCheck(url)),
                 "The url does not contain '" + url + "'! -> " + driver.getCurrentUrl()
         );
     }
@@ -185,7 +230,7 @@ public abstract class WebUtilities extends Utilities {
      * @param url target url
      */
     public void verifyCurrentUrl(String url){
-        Assert.isTrue(driver.getCurrentUrl().equalsIgnoreCase(url),
+        Assert.isTrue(driver.getCurrentUrl().equalsIgnoreCase(StringUtilities.contextCheck(url)),
                 "The url does not match with '" + url + "'! -> " + driver.getCurrentUrl()
         );
     }
@@ -197,7 +242,7 @@ public abstract class WebUtilities extends Utilities {
      */
     //This method verifies the page title
     public void verifyPageTitle(String pageTitle){
-        Assert.isTrue(driver.getTitle().contains(pageTitle),
+        Assert.isTrue(driver.getTitle().contains(StringUtilities.contextCheck(pageTitle)),
                 "The page title does not contain '" + pageTitle + "'! -> " + driver.getTitle()
         );
     }
@@ -325,10 +370,10 @@ public abstract class WebUtilities extends Utilities {
             WebElement iframe,
             WebElement element,
             String inputText){
-        inputText = strUtils.contextCheck(inputText);
+        inputText = StringUtilities.contextCheck(inputText);
         elementIs(iframe, ElementState.displayed);
         driver.switchTo().frame(iframe);
-        clearFillInput(element, inputText,true,true);
+        clearFillInput(element, inputText, this::centerElement,true);
         driver.switchTo().parentFrame();
     }
 
@@ -352,16 +397,52 @@ public abstract class WebUtilities extends Utilities {
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, bundle.beta())
             );
-            pageName = strUtils.firstLetterDeCapped(pageName);
+            pageName = StringUtilities.firstLetterDeCapped(pageName);
             driver.switchTo().frame(iFrame);
 
             clearFillInput(
                     bundle.alpha(),
                     bundle.beta(),
-                    false,
+                    this::centerElement,
                     true
             );
         }
         driver.switchTo().parentFrame();
+    }
+
+    /**
+     * Hovers cursor over of a given element
+     *
+     * @param element target element
+     * @return returns the selected element
+     */
+    protected WebElement hoverOver(WebElement element){
+        long initialTime = System.currentTimeMillis();
+        Actions actions = new Actions(driver);
+        String caughtException = null;
+        boolean timeout;
+        int counter = 0;
+        do {
+            try {
+                centerElement(element);
+                actions.moveToElement(element).build().perform();
+                break;
+            }
+            catch (WebDriverException webDriverException){
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                    counter++;
+                }
+                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException.getClass().getName();
+                    counter++;
+                }
+            }
+            timeout = System.currentTimeMillis() - initialTime > elementTimeout;
+        }
+        while (timeout);
+        return element;
     }
 }
