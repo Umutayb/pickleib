@@ -17,10 +17,10 @@ import pickleib.utilities.page.repository.PageRepository;
 import collections.Bundle;
 import collections.Pair;
 import utils.Printer;
-import utils.StringUtilities;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static utils.StringUtilities.*;
 import static utils.reflection.ReflectionUtilities.getFieldValue;
 import static utils.reflection.ReflectionUtilities.getFields;
 import static utils.StringUtilities.Color.*;
@@ -28,7 +28,6 @@ import static utils.StringUtilities.Color.*;
 @SuppressWarnings("unused")
 public class ElementAcquisition {
 
-    public static StringUtilities strUtils = new StringUtilities();
     static long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
     static Printer log = new Printer(ElementAcquisition.class);
 
@@ -48,7 +47,7 @@ public class ElementAcquisition {
             String attributeValue,
             String elementFieldName
     ){
-        log.info("Acquiring component by attribute " + strUtils.highlighted(BLUE, attributeName + " -> " + attributeValue));
+        log.info("Acquiring component by attribute " + highlighted(BLUE, attributeName + " -> " + attributeValue));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         while (!timeout){
@@ -72,7 +71,7 @@ public class ElementAcquisition {
      * @return returns the selected element
      */
     public static WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue){
-        log.info("Acquiring element called " + strUtils.markup(BLUE, attributeValue) + " using its " + strUtils.markup(BLUE, attributeName) + " attribute");
+        log.info("Acquiring element called " + markup(BLUE, attributeValue) + " using its " + markup(BLUE, attributeName) + " attribute");
         boolean condition = true;
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
@@ -142,7 +141,7 @@ public class ElementAcquisition {
             List<Component> items,
             String selectionName
     ){
-        log.info("Acquiring component called " + strUtils.highlighted(BLUE, selectionName));
+        log.info("Acquiring component called " + highlighted(BLUE, selectionName));
         boolean timeout = false;
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
@@ -182,12 +181,12 @@ public class ElementAcquisition {
          */
         public WebElement acquireElementFromPage(String elementName, String pageName){
             log.info("Acquiring element " +
-                    strUtils.highlighted(BLUE, elementName) +
-                    strUtils.highlighted(GRAY," from the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," from the ") +
+                    highlighted(BLUE, pageName)
             );
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            elementName = strUtils.contextCheck(elementName);
+            pageName = firstLetterDeCapped(pageName);
+            elementName = contextCheck(elementName);
             return reflections.getElementFromPage(elementName, pageName);
         }
 
@@ -201,13 +200,13 @@ public class ElementAcquisition {
          */
         public WebElement acquireElementFromComponent(String elementName, String componentFieldName, String pageName) {
             log.info("Acquiring element " +
-                    strUtils.highlighted(BLUE, elementName) +
-                    strUtils.highlighted(GRAY," from the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," from the ") +
+                    highlighted(BLUE, pageName)
             );
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
-            elementName = strUtils.contextCheck(elementName);
+            pageName = firstLetterDeCapped(pageName);
+            componentFieldName = firstLetterDeCapped(componentFieldName);
+            elementName = contextCheck(elementName);
             return reflections.getElementFromComponent(elementName, componentFieldName, pageName);
         }
 
@@ -225,16 +224,16 @@ public class ElementAcquisition {
                 String pageName
         ) {
             log.info("Acquiring listed element named " +
-                    strUtils.highlighted(BLUE, elementName) +
-                    strUtils.highlighted(GRAY," selected from ") +
-                    strUtils.highlighted(BLUE, listName) +
-                    strUtils.highlighted(GRAY," on  ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," selected from ") +
+                    highlighted(BLUE, listName) +
+                    highlighted(GRAY," on  ") +
+                    highlighted(BLUE, pageName)
             );
 
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            listName = strUtils.firstLetterDeCapped(listName);
-            elementName = strUtils.contextCheck(elementName);
+            pageName = firstLetterDeCapped(pageName);
+            listName = firstLetterDeCapped(listName);
+            elementName = contextCheck(elementName);
             List<WebElement> elements = reflections.getElementsFromPage(
                     listName,
                     pageName
@@ -258,19 +257,19 @@ public class ElementAcquisition {
                 String pageName
         ) {
             log.info("Acquiring listed element named " +
-                    strUtils.highlighted(BLUE, elementName) +
-                    strUtils.highlighted(GRAY," selected from ") +
-                    strUtils.highlighted(BLUE, listFieldName) +
-                    strUtils.highlighted(GRAY," of ") +
-                    strUtils.highlighted(BLUE, componentFieldName) +
-                    strUtils.highlighted(GRAY," component on the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," selected from ") +
+                    highlighted(BLUE, listFieldName) +
+                    highlighted(GRAY," of ") +
+                    highlighted(BLUE, componentFieldName) +
+                    highlighted(GRAY," component on the ") +
+                    highlighted(BLUE, pageName)
             );
 
-            componentFieldName = strUtils.firstLetterDeCapped(componentFieldName);
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            listFieldName = strUtils.firstLetterDeCapped(listFieldName);
-            elementName = strUtils.contextCheck(elementName);
+            componentFieldName = firstLetterDeCapped(componentFieldName);
+            pageName = firstLetterDeCapped(pageName);
+            listFieldName = firstLetterDeCapped(listFieldName);
+            elementName = contextCheck(elementName);
             List<WebElement> elements = reflections.getElementsFromComponent(
                     listFieldName,
                     componentFieldName,
@@ -295,17 +294,17 @@ public class ElementAcquisition {
                 String pageName
         ) {
             log.info("Acquiring listed element named " +
-                    strUtils.highlighted(BLUE, elementName) +
-                    strUtils.highlighted(GRAY," selected from ") +
-                    strUtils.highlighted(BLUE, componentListName) +
-                    strUtils.highlighted(GRAY," on the ") +
-                    strUtils.highlighted(BLUE, componentName) +
-                    strUtils.highlighted(GRAY," component on the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," selected from ") +
+                    highlighted(BLUE, componentListName) +
+                    highlighted(GRAY," on the ") +
+                    highlighted(BLUE, componentName) +
+                    highlighted(GRAY," component on the ") +
+                    highlighted(BLUE, pageName)
             );
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            componentListName = strUtils.firstLetterDeCapped(componentListName);
-            elementName = strUtils.contextCheck(elementName);
+            pageName = firstLetterDeCapped(pageName);
+            componentListName = firstLetterDeCapped(componentListName);
+            elementName = contextCheck(elementName);
             List<Component> componentList = reflections.getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(componentList, componentName);
             return reflections.getElementFromComponent(elementName, component);
@@ -327,11 +326,11 @@ public class ElementAcquisition {
                 String pageName
         ) {
             log.info("Acquiring exact listed element named " +
-                    strUtils.highlighted(BLUE, elementFieldName) +
-                    strUtils.highlighted(GRAY," selected from ") +
-                    strUtils.highlighted(BLUE, componentListName) +
-                    strUtils.highlighted(GRAY," component list on the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementFieldName) +
+                    highlighted(GRAY," selected from ") +
+                    highlighted(BLUE, componentListName) +
+                    highlighted(GRAY," component list on the ") +
+                    highlighted(BLUE, pageName)
             );
             Object component = acquireExactNamedListedComponent(elementFieldName, elementText, componentListName, pageName);
             return reflections.getElementFromComponent(elementFieldName, component);
@@ -353,15 +352,15 @@ public class ElementAcquisition {
                 String pageName
         ) {
             log.info("Acquiring exact listed component by element named " +
-                    strUtils.highlighted(BLUE, elementFieldName) +
-                    strUtils.highlighted(GRAY," selected from ") +
-                    strUtils.highlighted(BLUE, componentListName) +
-                    strUtils.highlighted(GRAY," component list on the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementFieldName) +
+                    highlighted(GRAY," selected from ") +
+                    highlighted(BLUE, componentListName) +
+                    highlighted(GRAY," component list on the ") +
+                    highlighted(BLUE, pageName)
             );
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            componentListName = strUtils.firstLetterDeCapped(componentListName);
-            elementFieldName = strUtils.contextCheck(elementFieldName);
+            pageName = firstLetterDeCapped(pageName);
+            componentListName = firstLetterDeCapped(componentListName);
+            elementFieldName = contextCheck(elementFieldName);
             List<Component> components = reflections.getComponentsFromPage(componentListName, pageName);
             return reflections.acquireExactNamedComponentAmongst(components, elementText, elementFieldName);
         }
@@ -384,16 +383,16 @@ public class ElementAcquisition {
                 String pageName
         ) {
             log.info("Acquiring listed element named " +
-                    strUtils.highlighted(BLUE, elementName) +
-                    strUtils.highlighted(GRAY," selected from ") +
-                    strUtils.highlighted(BLUE, componentListName) +
-                    strUtils.highlighted(GRAY," component list on the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," selected from ") +
+                    highlighted(BLUE, componentListName) +
+                    highlighted(GRAY," component list on the ") +
+                    highlighted(BLUE, pageName)
             );
-            elementName = strUtils.contextCheck(elementName);
-            componentName = strUtils.contextCheck(componentName);
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            componentListName = strUtils.firstLetterDeCapped(componentListName);
+            elementName = contextCheck(elementName);
+            componentName = contextCheck(componentName);
+            pageName = firstLetterDeCapped(pageName);
+            componentListName = firstLetterDeCapped(componentListName);
             List<Component> components = reflections.getComponentsFromPage(componentListName, pageName);
             Component component = acquireNamedComponentAmongst(components, componentName);
             List<WebElement> elements = reflections.getElementsFromComponent(elementListName, component);
@@ -416,17 +415,17 @@ public class ElementAcquisition {
                 String pageName
         ) {
             log.info("Acquiring element by " +
-                    strUtils.highlighted(BLUE, attributeName) +
-                    strUtils.highlighted(GRAY," attribute selected from ") +
-                    strUtils.highlighted(BLUE, listName) +
-                    strUtils.highlighted(GRAY, " list on the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, attributeName) +
+                    highlighted(GRAY," attribute selected from ") +
+                    highlighted(BLUE, listName) +
+                    highlighted(GRAY, " list on the ") +
+                    highlighted(BLUE, pageName)
             );
-            attributeName = strUtils.contextCheck(attributeName);
-            pageName = strUtils.firstLetterDeCapped(pageName);
+            attributeName = contextCheck(attributeName);
+            pageName = firstLetterDeCapped(pageName);
             List<WebElement> elements = reflections.getElementsFromPage(
                     listName,
-                    strUtils.firstLetterDeCapped(pageName)
+                    firstLetterDeCapped(pageName)
             );
             return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue);
         }
@@ -449,15 +448,15 @@ public class ElementAcquisition {
                 String pageName
         ) {
             log.info("Acquiring element by " +
-                    strUtils.highlighted(BLUE, attributeName) +
-                    strUtils.highlighted(GRAY," attribute selected from ") +
-                    strUtils.highlighted(BLUE, listName) +
-                    strUtils.highlighted(GRAY, " list on the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, attributeName) +
+                    highlighted(GRAY," attribute selected from ") +
+                    highlighted(BLUE, listName) +
+                    highlighted(GRAY, " list on the ") +
+                    highlighted(BLUE, pageName)
             );
-            attributeName = strUtils.contextCheck(attributeName);
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            componentName = strUtils.firstLetterDeCapped(componentName);
+            attributeName = contextCheck(attributeName);
+            pageName = firstLetterDeCapped(pageName);
+            componentName = firstLetterDeCapped(componentName);
             List<WebElement> elements = reflections.getElementsFromComponent(
                     listName,
                     componentName,
@@ -473,12 +472,12 @@ public class ElementAcquisition {
          * @param signForms        table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
          */
         public List<Bundle<WebElement, String, String>> acquireElementList(List<Map<String, String>> signForms, String pageName) {
-            log.info("Acquiring element list from " + strUtils.highlighted(BLUE, pageName));
-            pageName = strUtils.firstLetterDeCapped(pageName);
+            log.info("Acquiring element list from " + highlighted(BLUE, pageName));
+            pageName = firstLetterDeCapped(pageName);
             List<Bundle<WebElement, String, String>> bundles = new ArrayList<>();
             for (Map<String, String> form : signForms) {
                 String inputName = form.get("Input Element");
-                String input = strUtils.contextCheck(form.get("Input"));
+                String input = contextCheck(form.get("Input"));
                 Bundle<WebElement, String, String> bundle = new Bundle<>(
                         reflections.getElementFromPage(inputName, pageName),
                         input,
@@ -496,13 +495,13 @@ public class ElementAcquisition {
          * @param signForms        table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
          */
         public List<Bundle<WebElement, String, String>> acquireComponentElementList(List<Map<String, String>> signForms, String componentName, String pageName) {
-            log.info("Acquiring element list from " + strUtils.highlighted(BLUE, pageName));
-            pageName = strUtils.firstLetterDeCapped(pageName);
+            log.info("Acquiring element list from " + highlighted(BLUE, pageName));
+            pageName = firstLetterDeCapped(pageName);
             List<Bundle<WebElement, String, String>> bundles = new ArrayList<>();
             for (Map<String, String> form : signForms) {
                 String inputName = form.get("Input Element");
-                String input = strUtils.contextCheck(form.get("Input"));
-                componentName = strUtils.firstLetterDeCapped(componentName);
+                String input = contextCheck(form.get("Input"));
+                componentName = firstLetterDeCapped(componentName);
                 Bundle<WebElement, String, String> bundle = new Bundle<>(
                         reflections.getElementFromComponent(inputName, componentName, pageName),
                         input,
@@ -526,7 +525,7 @@ public class ElementAcquisition {
                 String pageName,
                 Map<String, String> specifications
         ){
-            log.info("Acquiring element bundle from " + strUtils.highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             return new Bundle<>(elementFieldName, acquireElementFromPage(elementFieldName, pageName), specifications);
         }
 
@@ -541,7 +540,7 @@ public class ElementAcquisition {
                 String pageName,
                 List<Map<String, String>> specifications
         ){
-            log.info("Acquiring element bundle from " + strUtils.highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> bundles = new ArrayList<>();
             for (Map<String, String> specification:specifications) {
                 bundles.add(acquireElementBundleFromPage(specification.get("Element Name"), pageName, specification));
@@ -562,7 +561,7 @@ public class ElementAcquisition {
                 String pageName,
                 Map<String, String> specifications
         ){
-            log.info("Acquiring element bundle from " + strUtils.highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             return new Bundle<>(specifications.get("Element Name"), acquireElementFromComponent(
                     specifications.get("Element Name"),
                     componentFieldName,
@@ -583,7 +582,7 @@ public class ElementAcquisition {
                 String pageName,
                 List<Map<String, String>> specifications
         ){
-            log.info("Acquiring element bundle from " + strUtils.highlighted(BLUE, pageName));
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> bundles = new ArrayList<>();
             for (Map<String, String> specification:specifications) {
                 bundles.add(
@@ -613,11 +612,11 @@ public class ElementAcquisition {
                 String componentListName,
                 String pageName
         ){
-            log.info("Acquiring element bundle from " + strUtils.highlighted(BLUE, pageName));
-            String selectorElementText = strUtils.contextCheck(specifications.get("Selector Text"));
-            String selectorElementName = strUtils.contextCheck(specifications.get("Selector Element"));
-            String targetElementName = strUtils.contextCheck(specifications.get("Target Element"));
-            pageName = strUtils.firstLetterDeCapped(pageName);
+            log.info("Acquiring element bundle from " + highlighted(BLUE, pageName));
+            String selectorElementText = contextCheck(specifications.get("Selector Text"));
+            String selectorElementName = contextCheck(specifications.get("Selector Element"));
+            String targetElementName = contextCheck(specifications.get("Target Element"));
+            pageName = firstLetterDeCapped(pageName);
             List<Component> components = reflections.getComponentsFromPage(componentListName, pageName);
             Component component = reflections.acquireExactNamedComponentAmongst(components, selectorElementText, selectorElementName);
             return new Bundle<>(targetElementName, reflections.getElementFromComponent(targetElementName, component), specifications);
@@ -636,7 +635,7 @@ public class ElementAcquisition {
                 String componentListName,
                 String pageName
         ){
-            log.info("Acquiring element bundles from " + strUtils.highlighted(BLUE, pageName));
+            log.info("Acquiring element bundles from " + highlighted(BLUE, pageName));
             List<Bundle<String, WebElement, Map<String, String>>> pairs = new ArrayList<>();
             for (Map<String, String> map:specifications) {
                 pairs.add(selectChildElementFromComponentsBySecondChildText(map, componentListName, pageName));
@@ -654,9 +653,9 @@ public class ElementAcquisition {
          * @return Boolean value.
          */
         public <Component extends WebElement> boolean listedComponentContainsElementText(String elementName, String elementText, String componentListName, String pageName) {
-            pageName = strUtils.firstLetterDeCapped(pageName);
-            componentListName = strUtils.firstLetterDeCapped(componentListName);
-            elementText = strUtils.contextCheck(elementText);
+            pageName = firstLetterDeCapped(pageName);
+            componentListName = firstLetterDeCapped(componentListName);
+            elementText = contextCheck(elementText);
             List<Component> componentList = reflections.getComponentsFromPage(componentListName, pageName);
             boolean textMatch = false;
             for (Component component : componentList) {
@@ -671,9 +670,11 @@ public class ElementAcquisition {
     public static class PageObjectJson {
 
         static RemoteWebDriver driver;
+        static JsonObject objectRepository;
 
-        public PageObjectJson(RemoteWebDriver driver) {
+        public PageObjectJson(RemoteWebDriver driver, JsonObject objectRepository) {
             PageObjectJson.driver = driver;
+            PageObjectJson.objectRepository = objectRepository;
         }
 
         /**
@@ -682,15 +683,14 @@ public class ElementAcquisition {
          *
          * @param elementName target element name
          * @param pageName page name that includes target element selectors
-         * @param objectRepository target json file directory
          * @param selectorTypes desired selector types
          * @return target element
          */
-        public WebElement elementFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
+        public WebElement elementFromPage(String elementName, String pageName, SelectorType... selectorTypes){
             log.info("Acquiring element " +
-                    strUtils.highlighted(BLUE, elementName) +
-                    strUtils.highlighted(GRAY," from the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," from the ") +
+                    highlighted(BLUE, pageName)
             );
             JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
             assert elementJson != null;
@@ -704,15 +704,14 @@ public class ElementAcquisition {
          *
          * @param elementName target element name
          * @param pageName page name that includes target element selectors
-         * @param objectRepository target json file directory
          * @param selectorTypes desired selector types
          * @return target element list
          */
-        public List<WebElement> elementsFromPage(String elementName, String pageName, JsonObject objectRepository, SelectorType... selectorTypes){
+        public List<WebElement> elementsFromPage(String elementName, String pageName, SelectorType... selectorTypes){
             log.info("Acquiring element " +
-                    strUtils.highlighted(BLUE, elementName) +
-                    strUtils.highlighted(GRAY," from the ") +
-                    strUtils.highlighted(BLUE, pageName)
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY," from the ") +
+                    highlighted(BLUE, pageName)
             );
             JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
             assert elementJson != null;
@@ -720,6 +719,18 @@ public class ElementAcquisition {
             return driver.findElements(byAll);
         }
 
+        /**
+         * Constructs a compound {@link org.openqa.selenium.By} object based on the provided JSON representation
+         * of a web element and one or more {@link SelectorType}s. Each provided SelectorType is used to generate
+         * a corresponding Selenium {@link org.openqa.selenium.By} locator for the specified type within the element's JSON.
+         *
+         * @param elementJson The JSON representation of the web element containing various locator information.
+         * @param selectorTypes One or more SelectorType enums specifying the types of locators to be generated.
+         * @return A compound By object, formed by combining individual locators based on the specified SelectorTypes.
+         * @throws EnumConstantNotPresentException If an unsupported SelectorType is provided.
+         * @see org.openqa.selenium.By
+         * @see SelectorType
+         */
         public ByAll getByAll(JsonObject elementJson, SelectorType... selectorTypes){
             List<By> locators = new ArrayList<>();
             for (SelectorType selectorType:selectorTypes) {
@@ -886,7 +897,7 @@ public class ElementAcquisition {
             if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             if (pageFields.get(elementFieldName) == null)
-                throw new PickleibException("The " + strUtils.highlighted(YELLOW, pageName) + " page object does not contain " + strUtils.highlighted(YELLOW, elementFieldName) + " element!");
+                throw new PickleibException("The " + highlighted(YELLOW, pageName) + " page object does not contain " + highlighted(YELLOW, elementFieldName) + " element!");
             return (WebElement) pageFields.get(elementFieldName);
         }
 
@@ -904,7 +915,7 @@ public class ElementAcquisition {
             if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             if (pageFields.get(elementListFieldName) == null)
-                throw new PickleibException("The " + strUtils.highlighted(YELLOW, pageName) + " page object does not contain " + strUtils.highlighted(YELLOW, elementListFieldName) + " element list!");
+                throw new PickleibException("The " + highlighted(YELLOW, pageName) + " page object does not contain " + highlighted(YELLOW, elementListFieldName) + " element list!");
             return (List<WebElement>) pageFields.get(elementListFieldName);
         }
 
@@ -1102,7 +1113,7 @@ public class ElementAcquisition {
                 String elementText,
                 String targetElementFieldName
         ){
-            log.info("Acquiring component called " + strUtils.highlighted(BLUE, elementText));
+            log.info("Acquiring component called " + highlighted(BLUE, elementText));
             boolean timeout = false;
             long initialTime = System.currentTimeMillis();
             while (!timeout){

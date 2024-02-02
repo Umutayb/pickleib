@@ -10,31 +10,6 @@ import java.util.Map;
 
 public interface Interactions {
 
-    boolean isScrolling();
-
-    void setScroll(boolean scroll);
-
-    /**
-     *
-     * Adds given values to the local storage
-     *
-     * @param form Map(String, String)
-     */
-    void addLocalStorageValues(Map<String, String> form);
-
-    /**
-     *
-     * Adds given cookies
-     *
-     * @param cookies Map(String, String)
-     */
-    void addCookies(Map<String, String> cookies);
-
-    /**
-     * Deletes all cookies
-     */
-    void deleteCookies();
-
     /**
      *
      * Clicks a button by its {text} text
@@ -92,7 +67,7 @@ public interface Interactions {
      * @param elementName target element name
      * @param pageName specified page instance name
      */
-    void center(WebElement element, String elementName, String pageName);
+    WebElement center(WebElement element, String elementName, String pageName);
 
     /**
      * Center a given element

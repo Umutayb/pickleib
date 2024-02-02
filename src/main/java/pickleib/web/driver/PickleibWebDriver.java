@@ -1,6 +1,7 @@
 package pickleib.web.driver;
 
 import context.ContextStore;
+import io.appium.java_client.AppiumDriver;
 import org.bouncycastle.util.encoders.Base64;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
@@ -16,6 +17,8 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import static utils.StringUtilities.*;
+
 @SuppressWarnings("unused")
 public class PickleibWebDriver {
 
@@ -24,15 +27,22 @@ public class PickleibWebDriver {
 	/**
 	 * RemoteWebDriver instance
 	 */
-	public static RemoteWebDriver driver;
+	private static RemoteWebDriver driver;
 
 	/**
 	 * WebDriverWait instance
 	 */
-	public static WebDriverWait wait;
+	private static WebDriverWait wait;
+
+	public static RemoteWebDriver get(){
+		return driver;
+	}
+
+	public static WebDriverWait driverWait(){
+		return wait;
+	}
 
 	static PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
-	static StringUtilities strUtils = new StringUtilities();
 	public static Printer log = new Printer(PickleibWebDriver.class);
 
 	/**
@@ -41,7 +51,7 @@ public class PickleibWebDriver {
 	 * @param browserType driver type
 	 */
 	public static void initialize(WebDriverFactory.BrowserType browserType){
-		log.info("Initializing " + strUtils.markup(StringUtilities.Color.PURPLE, browserType.getDriverName()) + " driver...");
+		log.info("Initializing " + markup(StringUtilities.Color.PURPLE, browserType.getDriverName()) + " driver...");
 		driver = WebDriverFactory.getDriver(browserType);
 		wait = new WebDriverWait(driver, Duration.of(WebDriverFactory.driverTimeout, ChronoUnit.SECONDS));
 	}
@@ -50,8 +60,8 @@ public class PickleibWebDriver {
 	 * Initializes a driver according to the browser property
 	 */
 	public static void initialize(){
-		String driverName = strUtils.firstLetterCapped(reader.getProperty("browser"));
-		String driverProperty = strUtils.firstLetterCapped(ContextStore.get("browser"));
+		String driverName = firstLetterCapped(reader.getProperty("browser"));
+		String driverProperty = firstLetterCapped(ContextStore.get("browser"));
 		if (driverName!=null) initialize(WebDriverFactory.BrowserType.fromString(driverName));
 		else if (driverProperty != null) initialize(WebDriverFactory.BrowserType.fromString(driverProperty));
 		else initialize(WebDriverFactory.BrowserType.CHROME);

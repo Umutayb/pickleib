@@ -1,14 +1,22 @@
-package pickleib.utilities;
+package pickleib.utilities.steps;
 
+import org.openqa.selenium.WebElement;
 import pickleib.driver.DriverFactory;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.interactions.MobileInteractions;
+import pickleib.mobile.utilities.MobileUtilities;
+import pickleib.utilities.Interactions;
+import pickleib.utilities.PolymorphicUtilities;
 import pickleib.utilities.element.ElementAcquisition;
+import pickleib.utilities.element.ElementInteractions;
 import pickleib.utilities.page.repository.PageRepository;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.interactions.WebInteractions;
+import pickleib.web.utilities.WebUtilities;
 import utils.Printer;
 import utils.StringUtilities;
+
+import static pickleib.utilities.Utilities.getElementDriverType;
 
 /**
  * A utility class that provides common methods and interactions for web and mobile steps in the context of Pickleib.
@@ -24,13 +32,13 @@ import utils.StringUtilities;
  * @author Umut Ay Bora
  * @since 1.8.7
  */
-public class CommonStepUtilities<ObjectRepository extends PageRepository> {
+public class PageObjectStepUtilities<ObjectRepository extends PageRepository> {
 
     public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.Web;
-    public StringUtilities strUtils = new StringUtilities();
     public Printer log = new Printer(this.getClass());
-    public WebInteractions webInteractions = new WebInteractions();
-    public MobileInteractions mobileInteractions = new MobileInteractions();
+    PolymorphicUtilities webInteractions = new WebInteractions();
+    PolymorphicUtilities mobileInteractions = new MobileInteractions();
+
     ElementAcquisition.PageObjectModel<ObjectRepository> webObjectModel;
     ElementAcquisition.PageObjectModel<ObjectRepository> mobileObjectModel;
     ElementAcquisition.Reflections<ObjectRepository> webReflections;
@@ -42,22 +50,22 @@ public class CommonStepUtilities<ObjectRepository extends PageRepository> {
      * @param objectRepositoryClass The class of the object repository which will be used to initialize
      *                              the page object model, element interactions, and reflections.
      */
-    public CommonStepUtilities(Class<ObjectRepository> objectRepositoryClass) {
+    public PageObjectStepUtilities(Class<ObjectRepository> objectRepositoryClass) {
 
         webObjectModel = new ElementAcquisition.PageObjectModel<>(
-                PickleibWebDriver.driver,
+                PickleibWebDriver.get(),
                 objectRepositoryClass
         );
         mobileObjectModel = new ElementAcquisition.PageObjectModel<>(
-                PickleibAppiumDriver.driver,
+                PickleibAppiumDriver.get(),
                 objectRepositoryClass
         );
         webReflections = new ElementAcquisition.Reflections<>(
-                PickleibWebDriver.driver,
+                PickleibWebDriver.get(),
                 objectRepositoryClass
         );
         mobileReflections = new ElementAcquisition.Reflections<>(
-                PickleibAppiumDriver.driver,
+                PickleibAppiumDriver.get(),
                 objectRepositoryClass
         );
     }
@@ -68,7 +76,7 @@ public class CommonStepUtilities<ObjectRepository extends PageRepository> {
      * @param driverType The type of the driver (Web or Mobile).
      * @return The element interactions for the specified driver type.
      */
-    public Interactions getInteractions(DriverFactory.DriverType driverType) {
+    public PolymorphicUtilities getInteractions(DriverFactory.DriverType driverType) {
         if (!StringUtilities.isBlank(driverType))
             switch (driverType) {
                 case Web -> {
@@ -80,6 +88,22 @@ public class CommonStepUtilities<ObjectRepository extends PageRepository> {
             }
         else return getInteractions(defaultPlatform);
         return null;
+    }
+
+    /**
+     * Retrieves the appropriate element interactions based on the given driver type.
+     *
+     * @return The element interactions for the specified driver type.
+     */
+    public PolymorphicUtilities getInteractions(WebElement element) {
+        switch (getElementDriverType(element)) {
+            case Web -> {
+                return webInteractions;
+            }
+            case Mobile -> {
+                return mobileInteractions;
+            }
+        }
     }
 
     /**

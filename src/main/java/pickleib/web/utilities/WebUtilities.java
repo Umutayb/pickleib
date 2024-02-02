@@ -3,21 +3,31 @@ package pickleib.web.utilities;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.failsafe.internal.util.Assert;
+import io.appium.java_client.functions.ExpectedCondition;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.*;
+import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
+import org.openqa.selenium.remote.html5.RemoteWebStorage;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
+import pickleib.utilities.PolymorphicUtilities;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
 import collections.Bundle;
 import utils.StringUtilities;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -25,47 +35,35 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+
+import static utils.StringUtilities.*;
 import static utils.StringUtilities.Color.*;
 
-public abstract class WebUtilities extends Utilities {
+public class WebUtilities extends Utilities implements PolymorphicUtilities {
 
     /**
      * WebUtilities for frameworks that use the Pickleib driver
      *
      */
-    protected WebUtilities(){
-        super(PickleibWebDriver.driver);
-        PageFactory.initElements(driver, this);
+    public WebUtilities(){
+        super(PickleibWebDriver.get());
+        this.driver = PickleibWebDriver.get();
     }
 
     /**
      * WebUtilities for frameworks that do not use the Pickleib driver
      *
      */
-    protected WebUtilities(RemoteWebDriver driver){
+    public WebUtilities(RemoteWebDriver driver){
         super(driver);
-        PageFactory.initElements(driver, this);
     }
 
-    /**
-     * WebUtilities for frameworks with custom field decorator that use the Pickleib driver
-     *
-     */
-    protected <CustomFieldDecorator extends DefaultFieldDecorator> WebUtilities(CustomFieldDecorator fieldDecorator){
-        super(PickleibWebDriver.driver);
-        PageFactory.initElements(fieldDecorator, this);
+    public RemoteWebDriver driver(){
+        return this.driver;
     }
 
-    /**
-     * WebUtilities for frameworks with custom field decorator that do not use the Pickleib driver
-     *
-     */
-    protected <CustomFieldDecorator extends DefaultFieldDecorator> WebUtilities(
-            CustomFieldDecorator fieldDecorator,
-            RemoteWebDriver driver
-    ){
-        super(driver);
-        PageFactory.initElements(fieldDecorator, this);
+    public WebDriverWait driverWait(){
+        return PickleibWebDriver.driverWait();
     }
 
     /**
@@ -89,8 +87,15 @@ public abstract class WebUtilities extends Utilities {
      *                          with the last caught WebDriver exception.
      */
     public void clickElement(WebElement element, boolean scroll){
-        if (scroll) clickElement(element, this::centerElement);
-        else clickElement(element);
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        super.clickElement(
+                element,
+                (targetElement) -> {
+                    if (scroll) this.centerElement(targetElement).click();
+                    else targetElement.click();
+                }
+        );
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
     }
 
     /**
@@ -100,7 +105,7 @@ public abstract class WebUtilities extends Utilities {
      * @param inputText input text
      * @param verify verifies the input text value equals to an expected text if true
      */
-    protected void clearFillInput(WebElement inputElement, String inputText, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, boolean verify){
         fillInputElement(inputElement, inputText, null, verify);
     }
 
@@ -111,7 +116,7 @@ public abstract class WebUtilities extends Utilities {
      * @param inputText input text
      * @param verify verifies the input text value equals to an expected text if true
      */
-    protected void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify){
         if (scroll) fillInputElement(inputElement, inputText, this::centerElement, verify);
         else fillInputElement(inputElement, inputText, null, verify);
     }
@@ -272,7 +277,7 @@ public abstract class WebUtilities extends Utilities {
      * @return returns the targeted element
      */
     //This method scrolls an element to the center of the view
-    protected WebElement centerElement(WebElement element){
+    public WebElement centerElement(WebElement element){
         String scrollScript = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
                 + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
@@ -290,7 +295,7 @@ public abstract class WebUtilities extends Utilities {
      * @return returns an object with the attributes of a given element
      */
     //This method returns all the attributes of an element as an object
-    protected JsonObject getElementJson(WebElement element){
+    public JsonObject getElementJson(WebElement element){
         String object = ((JavascriptExecutor) driver).executeScript(
                 "var items = {}; " +
                         "for (index = 0; index < arguments[0].attributes.length; ++index) " +
@@ -307,7 +312,7 @@ public abstract class WebUtilities extends Utilities {
      * @param element target element
      * @return returns an object with the attributes of a given element
      */
-    protected JSONObject getElementJSON(WebElement element){
+    public JSONObject getElementJSON(WebElement element){
         try {
             String object = ((JavascriptExecutor) driver).executeScript(
                     "var items = {}; " +
@@ -326,7 +331,7 @@ public abstract class WebUtilities extends Utilities {
      *
      * @param element target element
      */
-    protected void printElementAttributes(WebElement element){
+    public void printElementAttributes(WebElement element){
         JSONObject attributeJSON = getElementJSON(element);
         for (Object attribute : attributeJSON.keySet())
             log.info(attribute +" : "+ attributeJSON.get(attribute));
@@ -342,6 +347,19 @@ public abstract class WebUtilities extends Utilities {
         WebElement element = driver.findElement(By.cssSelector(cssSelector));
         centerElement(element);
         clickElement(element, true);
+    }
+
+    /**
+     *
+     * Click on a button that contains {button text} text
+     * It does not scroll by default.
+     *
+     * @param buttonText target button text
+     */
+    public void clickButtonByItsText(String buttonText) {
+        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
+        WebElement element = getElementByText(buttonText);
+        clickElement(element, this::centerElement);
     }
 
     /**
@@ -416,7 +434,7 @@ public abstract class WebUtilities extends Utilities {
      * @param element target element
      * @return returns the selected element
      */
-    protected WebElement hoverOver(WebElement element){
+    public WebElement hoverOver(WebElement element){
         long initialTime = System.currentTimeMillis();
         Actions actions = new Actions(driver);
         String caughtException = null;
@@ -445,4 +463,135 @@ public abstract class WebUtilities extends Utilities {
         while (timeout);
         return element;
     }
+
+    /**
+     * Waits actively for the page to load up to 10 seconds
+     */
+    public void waitUntilPageLoads(int waitingTime) {
+        long startTime = System.currentTimeMillis();
+        String url = driver.getCurrentUrl();
+        log.info("Waiting for page to be loaded -> " + markup(BLUE, url));
+
+        ExpectedCondition<Boolean> pageLoadCondition = driverLoad ->
+        {
+            assert driverLoad != null;
+            return ((JavascriptExecutor) driverLoad).executeScript("return document.readyState").equals("complete");
+        };
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(waitingTime));
+        wait.until(pageLoadCondition);
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        int elapsedTimeSeconds = (int) ((double) elapsedTime / 1000);
+        log.info("The page is loaded in " + elapsedTimeSeconds + " second(s)");
+    }
+
+    /**
+     *
+     * Navigate to url: {url}
+     *
+     * @param url target url
+     */
+    public void getUrl(String url) {
+        url = contextCheck(url);
+        driver.get(url);
+    }
+
+    /**
+     * Checks if an event was fired
+     * Create a custom script to listen for an event by generating a unique event key and catches this key in the console
+     * Ex: "dataLayerObject.listen(eventName, function(){console.warn(eventKey)});"
+     *
+     * @param eventName event name of the event that is expected to be fired
+     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen( eventName );"
+     * @return true if the specified event was fired.
+     */
+    public boolean isEventFired(String eventName, String listenerScript){
+        log.info("Listening to '" + eventName + "' event");
+        String eventKey = generateRandomString(eventName + "#", 6, false, true);
+        listenerScript = listenerScript.replace(eventName, "'" + eventName + "', function(){console.warn('" + eventKey +"')}");
+        executeScript(listenerScript);
+        LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
+        for (LogEntry entry: logs.getAll())
+            if (entry.toString().contains(eventKey)) {
+                log.success("'" + eventName + "' event is fired!");
+                return true;
+            }
+        log.warning(eventName + " event is not fired!");
+        return false;
+    }
+
+    /**
+     * Checks if an event was fired
+     *
+     * @param eventKey key that is meant to be caught from the console in case the event fires
+     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen('page.info', function(){console.warn(eventKey)});"
+     * @return true if the specified event was fired.
+     */
+    public boolean isEventFiredByScript(String eventKey, String listenerScript){
+        log.info("Listening to '" + markup(BLUE, eventKey) + "' event");
+        executeScript(listenerScript);
+        LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
+        for (LogEntry entry: logs.getAll()) if (entry.toString().contains(eventKey)) return true;
+        return false;
+    }
+
+    /**
+     * Executes a JS script and returns the responding object
+     *
+     * @param script script that is to be executed
+     * @return object if the scripts yield one
+     */
+    public Object executeScript(String script){
+        log.info("Executing script: " + highlighted(BLUE, script));
+        return ((JavascriptExecutor) driver).executeScript(script);
+    }
+
+    /**
+     *
+     * Adds given values to the local storage
+     *
+     * @param form Map(String, String)
+     */
+    public void addValuesToLocalStorage(Map<String, String> form){
+        for (String valueKey: form.keySet()) {
+            RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(driver);
+            RemoteWebStorage webStorage = new RemoteWebStorage(executeMethod);
+            LocalStorage storage = webStorage.getLocalStorage();
+            storage.setItem(valueKey, contextCheck(form.get(valueKey)));
+        }
+    }
+
+    /**
+     *
+     * Adds given cookies
+     *
+     * @param cookies Map(String, String)
+     */
+    public void putCookies(Map<String, String> cookies){
+        for (String cookieName: cookies.keySet()) {
+            Cookie cookie = new Cookie(cookieName, contextCheck(cookies.get(cookieName)));
+            driver.manage().addCookie(cookie);
+        }
+    }
+
+    /**
+     * Deletes all cookies
+     */
+    public void deleteAllCookies() {driver.manage().deleteAllCookies();}
+
+    /**
+     * Switches to present alert
+     *
+     * @return returns the alert
+     */
+    public Alert getAlert(){return driver.switchTo().alert();}
+
+    /**
+     * Uploads a given file
+     *
+     * @param fileUploadInput upload element
+     * @param directory absolute file directory (excluding the file name)
+     * @param fileName file name (including a file extension)
+     */
+    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
 }

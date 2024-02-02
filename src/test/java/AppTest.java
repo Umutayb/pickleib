@@ -1,22 +1,6 @@
-import org.junit.*;
-import org.openqa.selenium.*;
-import pickleib.enums.Direction;
-import pickleib.enums.ElementState;
-import pickleib.exceptions.PickleibException;
-import pickleib.exceptions.PickleibVerificationException;
-import pickleib.utilities.CommonStepUtilities;
-import pickleib.utilities.element.ElementAcquisition;
-import pickleib.utilities.element.ElementInteractions;
-import pickleib.web.driver.PickleibWebDriver;
-import pickleib.web.driver.WebDriverFactory;
-import pickleib.web.interactions.WebInteractions;
-import java.time.Duration;
+import pickleib.utilities.steps.PageObjectStepUtilities;
 
-import static pickleib.driver.DriverFactory.DriverType.Web;
-import static pickleib.enums.Navigation.backwards;
-import static pickleib.web.driver.PickleibWebDriver.driver;
-
-public class AppTest extends CommonStepUtilities<ObjectRepository> {
+public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
 //
 //    public ElementAcquisition.PageObjectModel<ObjectRepository> acquire;
 //    public ElementAcquisition.Reflections<ObjectRepository> reflections;

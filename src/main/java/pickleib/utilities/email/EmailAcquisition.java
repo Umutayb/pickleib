@@ -10,6 +10,7 @@ import java.util.Objects;
 
 import static utils.StringUtilities.Color.BLUE;
 import static utils.StringUtilities.Color.GRAY;
+import static utils.StringUtilities.highlighted;
 
 @SuppressWarnings("unused")
 public class EmailAcquisition {
@@ -23,9 +24,9 @@ public class EmailAcquisition {
 
     public String acquireEmail(EmailUtilities.Inbox.EmailField filterType, String filterKey) {
         emailInbox.log.info("Acquiring & saving email(s) by " +
-                strUtils.highlighted(BLUE, filterType.name()) +
-                strUtils.highlighted(GRAY, " -> ") +
-                strUtils.highlighted(BLUE, filterKey)
+                highlighted(BLUE, filterType.name()) +
+                highlighted(GRAY, " -> ") +
+                highlighted(BLUE, filterKey)
         );
         emailInbox.getEmail(filterType, filterKey, emailInbox.emailAcquisitionTimeout, false, true, true);
         File dir = new File("inbox");
@@ -45,9 +46,9 @@ public class EmailAcquisition {
 
     public String acquireEmail(EmailUtilities.Inbox.EmailField filterType, String filterKey, long timeout) {
         emailInbox.log.info("Acquiring & saving email(s) by " +
-                strUtils.highlighted(BLUE, filterType.name()) +
-                strUtils.highlighted(GRAY, " -> ") +
-                strUtils.highlighted(BLUE, filterKey)
+                highlighted(BLUE, filterType.name()) +
+                highlighted(GRAY, " -> ") +
+                highlighted(BLUE, filterKey)
         );
         emailInbox.getEmail(filterType, filterKey, timeout, false, true, true);
         File dir = new File("inbox");

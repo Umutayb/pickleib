@@ -1,58 +1,42 @@
 package pickleib.mobile.utilities;
 
-import context.ContextStore;
-import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
-import pickleib.mobile.driver.PickleibAppiumDriver;
+import pickleib.utilities.PolymorphicUtilities;
 import pickleib.utilities.Utilities;
+import pickleib.web.driver.PickleibWebDriver;
 import java.time.Duration;
 
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 
-public abstract class MobileUtilities extends Utilities {
+public abstract class MobileUtilities extends Utilities implements PolymorphicUtilities {
+
+    public RemoteWebDriver driver;
 
     /**
-     * MobileUtilities for frameworks that use the Pickleib drivers
+     * MobileUtilities for frameworks that use the Pickleib driver
      *
      */
-    protected MobileUtilities(){
-        super(PickleibAppiumDriver.driver);
-        PageFactory.initElements(
-                new AppiumFieldDecorator(
-                        PickleibAppiumDriver.driver,
-                        Duration.ofSeconds(
-                                Long.parseLong(ContextStore.get("element-timeout", "15000"))/1000
-                        )
-                ),
-                this
-        );
+    public MobileUtilities(){
+        super(PickleibWebDriver.get());
+        this.driver = PickleibWebDriver.get();
     }
 
     /**
-     * MobileUtilities for frameworks that do not use the Pickleib drivers
+     * MobileUtilities for frameworks that do not use the Pickleib driver
      *
      */
-    protected MobileUtilities(RemoteWebDriver driver){
+    public MobileUtilities(RemoteWebDriver driver){
         super(driver);
-        PageFactory.initElements(
-                new AppiumFieldDecorator(
-                        driver,
-                        Duration.ofSeconds(
-                                Long.parseLong(ContextStore.get("element-timeout", "15000"))/1000
-                        )
-                ),
-                this
-        );
     }
 
     /**
@@ -76,8 +60,44 @@ public abstract class MobileUtilities extends Utilities {
      *                          with the last caught WebDriver exception.
      */
     public void clickElement(WebElement element, boolean scroll){
-        if (scroll) clickElement(element, this::centerElement);
-        else clickElement(element);
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        super.clickElement(
+                element,
+                (targetElement) -> {
+                    if (scroll) this.centerElement(targetElement).click();
+                    else targetElement.click();
+                }
+        );
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
+    }
+
+    /**
+     * Clicks the specified {@code element} with retry mechanism and optional scrolling.
+     *
+     * <p>
+     * This method attempts to click the given {@code element} with a retry mechanism.
+     * It uses an implicit wait of 500 milliseconds during the retry attempts.
+     * The method supports an optional {@code scroller} for scrolling before clicking the element.
+     * If the {@code scroller} is provided, it scrolls towards the specified location before clicking.
+     * </p>
+     *
+     * <p>
+     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
+     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
+     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
+     * </p>
+     *
+     * @param element   The target {@code WebElement} to be clicked with retry mechanism.
+     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
+     *                          with the last caught WebDriver exception.
+     */
+    public void clickElement(WebElement element){
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        super.clickElement(
+                element,
+                WebElement::click
+        );
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
     }
 
     /**
@@ -104,7 +124,7 @@ public abstract class MobileUtilities extends Utilities {
     }
 
     //TODO: Implement iterative scroll that will swipe or center depending on if the element can be found in view.
-    protected WebElement centerElement(WebElement element){
+    public WebElement centerElement(WebElement element){
         Point center = new Point(
                 driver.manage().window().getSize().getWidth()/2,
                 driver.manage().window().getSize().getHeight()/2
@@ -136,6 +156,14 @@ public abstract class MobileUtilities extends Utilities {
         }
 
         return element;
+    }
+
+    public RemoteWebDriver driver(){
+        return this.driver;
+    }
+
+    public WebDriverWait driverWait(){
+        return PickleibWebDriver.driverWait();
     }
 
     public void swiper(Direction direction){

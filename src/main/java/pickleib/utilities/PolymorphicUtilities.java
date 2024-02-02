@@ -8,15 +8,7 @@ import utils.StringUtilities;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public interface UtilityDefinitions {
-
-    /**
-     * Highlights a given text with a specified color (resets to plain)
-     *
-     * @param color target color
-     * @param text target text
-     */
-    String highlighted(StringUtilities.Color color, CharSequence text);
+public interface PolymorphicUtilities {
 
     /**
      * Acquires a specified attribute of a given element

@@ -1,17 +1,18 @@
 package pickleib.utilities.element;
 
 import context.ContextStore;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
 import pickleib.utilities.ScrollFunction;
-import pickleib.utilities.Utilities;
 import collections.Bundle;
+import pickleib.utilities.PolymorphicUtilities;
+import utils.Printer;
 import java.util.List;
 import java.util.Map;
 
@@ -33,43 +34,14 @@ import static utils.StringUtilities.*;
  * @since 1.8.0
  */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
-public class ElementInteractions extends Utilities {
+public class ElementInteractions implements PolymorphicUtilities {
 
-    WebDriverWait wait;
+    Printer log = new Printer(ElementInteractions.class);
+    PolymorphicUtilities utilities;
 
-    public ElementInteractions(RemoteWebDriver driver, WebDriverWait wait){
-        super(driver);
-        this.wait = wait;
+    public ElementInteractions(PolymorphicUtilities utilities){
+        this.utilities = utilities;
     }
-
-    public ElementInteractions(RemoteWebDriver driver){
-        super(driver);
-    }
-
-    /**
-     *
-     * Adds given values to the local storage
-     *
-     * @param form Map(String, String)
-     */
-    public void addLocalStorageValues(Map<String, String> form){
-        addValuesToLocalStorage(form);
-    }
-
-    /**
-     *
-     * Adds given cookies
-     *
-     * @param cookies Map(String, String)
-     */
-    public void addCookies(Map<String, String> cookies){
-        putCookies(cookies);
-    }
-
-    /**
-     * Deletes all cookies
-     */
-    public void deleteCookies() {deleteAllCookies();}
 
     /**
      *
@@ -78,11 +50,11 @@ public class ElementInteractions extends Utilities {
      * @param text target text
      */
     public void clickByText(String text, ScrollFunction scroller) {
-        clickButtonWithText(text, scroller);
+        utilities.clickButtonWithText(text, scroller);
     }
 
     public void clickByText(String text) {
-        clickButtonWithText(text, null);
+        utilities.clickButtonWithText(text, null);
     }
 
     /**
@@ -92,7 +64,7 @@ public class ElementInteractions extends Utilities {
      * @param duration desired duration
      */
     public void waitForSeconds(Integer duration) {
-        waitFor(duration);
+        utilities.waitFor(duration);
     }
 
     /**
@@ -108,7 +80,7 @@ public class ElementInteractions extends Utilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickElement(button, scroller);
+        utilities.clickElement(button, (target) -> scroller.scroll(target).click());
     }
 
     /**
@@ -124,7 +96,7 @@ public class ElementInteractions extends Utilities {
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickElement(button, null);
+        utilities.clickElement(button, null);
     }
 
     /**
@@ -133,7 +105,7 @@ public class ElementInteractions extends Utilities {
      *
      */
     public void clickInteraction(WebElement button, ScrollFunction scroller){
-        clickElement(button, scroller);
+        clickElement(button, (target) -> scroller.scroll(target).click());
     }
 
     /**
@@ -802,5 +774,170 @@ public class ElementInteractions extends Utilities {
      */
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName){
         bundleInteraction(bundles, pageName, null);
+    }
+
+    @Override
+    public String getAttribute(WebElement element, String attribute) {
+        return null;
+    }
+
+    @Override
+    public void clickElement(WebElement element, Boolean scroll) {
+
+    }
+
+    @Override
+    public void clickTowards(WebElement element) {
+
+    }
+
+    @Override
+    public void clickElement(WebElement element) {
+
+    }
+
+    @Override
+    public void clickIfPresent(WebElement element, Boolean scroll) {
+
+    }
+
+    @Override
+    public void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify) {
+
+    }
+
+    @Override
+    public WebElement verifyElementState(WebElement element, ElementState state) {
+        return null;
+    }
+
+    @Override
+    public Boolean elementIs(WebElement element, @NotNull ElementState state) {
+        return null;
+    }
+
+    @Override
+    public WebElement hoverOver(WebElement element) {
+        return null;
+    }
+
+    @Override
+    public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName) {
+        return null;
+    }
+
+    @Override
+    public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName) {
+        return null;
+    }
+
+    @Override
+    public WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue) {
+        return null;
+    }
+
+    @Override
+    public void clickButtonWithText(String buttonText, Boolean scroll) {
+
+    }
+
+    @Override
+    public WebElement clearInputField(@NotNull WebElement element) {
+        return null;
+    }
+
+    @Override
+    public WebElement getElementByText(String elementText) {
+        return null;
+    }
+
+    @Override
+    public WebElement getElementContainingText(String elementText) {
+        return null;
+    }
+
+    @Override
+    public void dragDropToAction(WebElement element, WebElement destinationElement) {
+
+    }
+
+    @Override
+    public void dragDropByAction(WebElement element, int xOffset, int yOffset) {
+
+    }
+
+    @Override
+    public void dragDropAction(WebElement element, int xOffset, int yOffset) {
+
+    }
+
+    @Override
+    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset) {
+
+    }
+
+    @Override
+    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName) {
+
+    }
+
+    @Override
+    public String combineKeys(Keys... keys) {
+        return null;
+    }
+
+    @Override
+    public void waitFor(double seconds) {
+
+    }
+
+    @Override
+    public void waitUntilPageLoads() {
+
+    }
+
+    @Override
+    public WebElement centerElement(WebElement element) {
+        return null;
+    }
+
+    @Override
+    public void scroll(@NotNull Direction direction) {
+
+    }
+
+    @Override
+    public Object getElementObject(WebElement element) {
+        return null;
+    }
+
+    @Override
+    public void printElementAttributes(WebElement element) {
+
+    }
+
+    @Override
+    public WebElement getParentByClass(WebElement childElement, String current, String parentSelectorClass) {
+        return null;
+    }
+
+    @Override
+    public String generateXPath(@NotNull WebElement childElement, String current) {
+        return null;
+    }
+
+    @Override
+    public boolean isEventFired(String eventName, String listenerScript) {
+        return false;
+    }
+
+    @Override
+    public boolean isEventFiredByScript(String eventKey, String listenerScript) {
+        return false;
+    }
+
+    @Override
+    public Object executeScript(String script) {
+        return null;
     }
 }

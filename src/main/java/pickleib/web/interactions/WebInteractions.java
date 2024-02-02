@@ -10,6 +10,7 @@ import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Interactions;
+import pickleib.utilities.PolymorphicUtilities;
 import pickleib.utilities.element.ElementInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.driver.PickleibWebDriver;
@@ -24,7 +25,7 @@ import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.contextCheck;
 
 @SuppressWarnings("unused")
-public class WebInteractions extends WebUtilities implements Interactions {
+public class WebInteractions extends WebUtilities {
 
     public ElementInteractions interact;
     protected WebDriverWait wait;
@@ -41,9 +42,8 @@ public class WebInteractions extends WebUtilities implements Interactions {
     }
 
     public WebInteractions(){
-        super(PickleibWebDriver.driver);
-        this.driver = PickleibWebDriver.driver;
-        this.wait = PickleibWebDriver.wait;
+        super(PickleibWebDriver.get());
+        this.wait = PickleibWebDriver.driverWait();
         interact = new ElementInteractions(
                 driver
         );
@@ -337,7 +337,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
      *
      * @param direction target direction (UP or DOWN)
      */
-    protected void scroll(@NotNull Direction direction){
+    public void scroll(@NotNull Direction direction){
         log.info("Scrolling " + highlighted(BLUE, direction.name().toLowerCase()));
         String script = switch (direction) {
             case up -> "window.scrollBy(0,-document.body.scrollHeight)";

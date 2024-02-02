@@ -1,5 +1,6 @@
 package pickleib.mobile.interactions;
 
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -7,7 +8,6 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
-import pickleib.utilities.Interactions;
 import pickleib.utilities.element.ElementInteractions;
 import collections.Bundle;
 import java.util.List;
@@ -16,39 +16,27 @@ import java.util.Map;
 import static utils.StringUtilities.Color.*;
 
 @SuppressWarnings("unused")
-public class MobileInteractions extends MobileUtilities implements Interactions {
+public class MobileInteractions extends MobileUtilities {
 
     public ElementInteractions interact;
     protected WebDriverWait wait;
-    boolean scroll = false;
 
     public MobileInteractions(RemoteWebDriver driver, WebDriverWait wait){
         super(driver);
         this.driver = driver;
         this.wait = wait;
-        interact = new ElementInteractions(
-                driver,
-                wait
-        );
     }
 
     public MobileInteractions(){
-        super(PickleibAppiumDriver.driver);
-        this.driver = PickleibAppiumDriver.driver;
-        this.wait = PickleibAppiumDriver.wait;
-        interact = new ElementInteractions(
-                driver,
-                wait
-        );
+        super(PickleibAppiumDriver.get());
+        this.driver = PickleibAppiumDriver.get();
+        this.wait = PickleibAppiumDriver.getWait();
+
     }
 
-    public boolean isScrolling() {
-        return scroll;
-    }
-
-    public void setScroll(boolean scroll) {
-        this.scroll = scroll;
-    }
+    public void scroll(@NotNull Direction direction){
+        swiper(direction);
+    };
 
     /**
      *
@@ -58,36 +46,13 @@ public class MobileInteractions extends MobileUtilities implements Interactions 
      * @param elementName target element name
      * @param pageName specified page instance name
      */
-    public void center(WebElement element, String elementName, String pageName){
+    public void centerElement(WebElement element, String elementName, String pageName){
         log.info("Centering " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on ") +
                 highlighted(BLUE, pageName)
         );
-        center(element);
-    }
-
-    /**
-     * Center a given element
-     *
-     * @param element target element
-     * @return the given element
-     */
-    public WebElement center(WebElement element){
-        centerElement(element);
-        return element;
-    }
-
-    public void addLocalStorageValues(Map<String, String> form) {
-        interact.addLocalStorageValues(form);
-    }
-
-    public void addCookies(Map<String, String> cookies) {
-        interact.addCookies(cookies);
-    }
-
-    public void deleteCookies() {
-        interact.deleteCookies();
+        this.centerElement(element);
     }
 
     public void clickByText(String text) {

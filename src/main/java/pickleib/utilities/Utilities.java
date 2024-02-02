@@ -2,18 +2,18 @@ package pickleib.utilities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.functions.ExpectedCondition;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
-import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.html5.RemoteWebStorage;
+import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
@@ -21,12 +21,12 @@ import collections.Bundle;
 import utils.*;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import static pickleib.driver.DriverFactory.DriverType.Mobile;
+import static pickleib.driver.DriverFactory.DriverType.Web;
 import static pickleib.enums.ElementState.*;
-import static pickleib.utilities.element.ElementAcquisition.*;
 import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
@@ -73,17 +73,16 @@ public abstract class Utilities {
      * @param element target element
      */
     protected void clickElement(WebElement element){
-        clickElement(element, null);
+        clickElement(element, WebElement::click);
     }
 
     /**
-     * Clicks the specified {@code element} with retry mechanism and optional scrolling.
+     * Clicks the specified {@code element} with a retry mechanism and optional scrolling.
      *
      * <p>
      * This method attempts to click the given {@code element} with a retry mechanism.
-     * It uses an implicit wait of 500 milliseconds during the retry attempts.
-     * The method supports an optional {@code scroller} for scrolling before clicking the element.
-     * If the {@code scroller} is provided, it scrolls towards the specified location before clicking.
+     * Optionally, it supports scrolling before clicking the element using the provided {@code scroller}.
+     * If the {@code scroller} is provided, it scrolls towards the specified location before attempting the click.
      * </p>
      *
      * <p>
@@ -92,23 +91,18 @@ public abstract class Utilities {
      * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
      * </p>
      *
-     * @param element   The target {@code WebElement} to be clicked with retry mechanism.
-     * @param scroller  The {@code ScrollFunction} for scrolling before clicking. If {@code null}, no scrolling is performed.
+     * @param element   The target {@code WebElement} to be clicked with a retry mechanism.
+     * @param clicker   The {@code ClickFunction} representing the clicking action to be performed on the element.
+     *                  The {@code ClickFunction} interface should define the click method.
      * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
      *                          with the last caught WebDriver exception.
      */ //TODO: clickElement should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
-    protected void clickElement(WebElement element, ScrollFunction scroller){
+    protected void clickElement(WebElement element, ClickFunction clicker){
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
         int counter = 0;
         do {
-            try {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-                if (counter > 0 && scroller != null) clickTowards(scroller.scroll(element));
-                else if (scroller != null) scroller.scroll(element).click();
-                else element.click();
-                return;
-            }
+            try {clicker.click(element);}
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
@@ -120,13 +114,10 @@ public abstract class Utilities {
                 }
                 counter++;
             }
-            finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getDriverTimeout()));
-            }
         }
         while (!(System.currentTimeMillis() - initialTime > elementTimeout));
         if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning(caughtException.getMessage());
+        if (caughtException != null) log.warning(caughtException.getMessage());
         throw new PickleibException(caughtException);
     }
 
@@ -155,7 +146,10 @@ public abstract class Utilities {
      * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
     public void clickButtonIfPresent(WebElement element, ScrollFunction scroller){
-        try {if (elementIs(element, ElementState.displayed)) clickElement(element, scroller);}
+        try {
+            if (elementIs(element, ElementState.displayed))
+                clickElement(element, (target) -> scroller.scroll(target).click());
+        }
         catch (WebDriverException ignored){log.warning("The element was not present!");}
     }
 
@@ -183,7 +177,7 @@ public abstract class Utilities {
     public void clickButtonByItsText(String buttonText, ScrollFunction scroller) {
         log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
         WebElement element = getElementByText(buttonText);
-        clickElement(element, scroller);
+        clickElement(element, (target) -> scroller.scroll(target).click());
     }
 
     /**
@@ -222,7 +216,7 @@ public abstract class Utilities {
      * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
     protected void clickIfPresent(WebElement element, ScrollFunction scroller){
-        try {clickElement(element, scroller);}
+        try {clickElement(element, (target) -> scroller.scroll(target).click());}
         catch (WebDriverException exception){log.warning(exception.getMessage());}
     }
 
@@ -429,7 +423,7 @@ public abstract class Utilities {
      * @param scroller   The {@code ScrollFunction} for scrolling before clicking. If {@code null}, no scrolling is performed.
      */
     protected void clickButtonWithText(String buttonText, ScrollFunction scroller){
-        clickElement(getElementByText(buttonText), scroller);
+        clickElement(getElementByText(buttonText), (target) -> scroller.scroll(target).click());
     }
 
     /**
@@ -549,13 +543,6 @@ public abstract class Utilities {
                 .build()
                 .perform();
     }
-
-    /**
-     * Switches to present alert
-     *
-     * @return returns the alert
-     */
-    protected Alert getAlert(){return driver.switchTo().alert();}
 
     /**
      * Uploads a given file
@@ -728,39 +715,6 @@ public abstract class Utilities {
         }
         return null;
     }
-
-    /**
-     *
-     * Adds given values to the local storage
-     *
-     * @param form Map(String, String)
-     */
-    public void addValuesToLocalStorage(Map<String, String> form){
-        for (String valueKey: form.keySet()) {
-            RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(driver);
-            RemoteWebStorage webStorage = new RemoteWebStorage(executeMethod);
-            LocalStorage storage = webStorage.getLocalStorage();
-            storage.setItem(valueKey, contextCheck(form.get(valueKey)));
-        }
-    }
-
-    /**
-     *
-     * Adds given cookies
-     *
-     * @param cookies Map(String, String)
-     */
-    public void putCookies(Map<String, String> cookies){
-        for (String cookieName: cookies.keySet()) {
-            Cookie cookie = new Cookie(cookieName, contextCheck(cookies.get(cookieName)));
-            driver.manage().addCookie(cookie);
-        }
-    }
-
-    /**
-     * Deletes all cookies
-     */
-    public void deleteAllCookies() {driver.manage().deleteAllCookies();}
 
     /**
      *
@@ -965,43 +919,30 @@ public abstract class Utilities {
         return false;
     }
 
-    public static class InteractionUtilities extends Utilities {
-        public ScrollFunction scroller;
+    /**
+     * Determines the type of driver associated with the provided WebElement.
+     *
+     * @param element The WebElement whose driver type needs to be determined.
+     * @return The DriverType associated with the WebElement:
+     *         - If the WebElement is associated with an AppiumDriver, returns DriverType.Mobile.
+     *         - If the WebElement is associated with a standard WebDriver, returns DriverType.Web.
+     */
+    public static DriverFactory.DriverType getElementDriverType(WebElement element){
+        if (isAppiumElement(element))
+            return Mobile;
+        else
+            return Web;
+    }
 
-        public InteractionUtilities(RemoteWebDriver driver, ScrollFunction scroller){
-            super(driver);
-            this.scroller = scroller;
-        }
-
-        public void click(WebElement element){
-            clickElement(element, scroller);
-        }
-
-        public void fill(WebElement element, String input){
-            clearFillInput(element, input, scroller, true);
-        }
-
-        public boolean elementStateIs(WebElement element, ElementState expectedState){
-            return elementIs(element, expectedState);
-        }
-
-        public WebElement acquireElementFromList(List<WebElement> elements, String selectionText){
-            return acquireNamedElementAmongst(elements, selectionText);
-        }
-
-        public WebElement acquireElementFromList(List<WebElement> elements, String attributeName, String attributeValue){
-            return acquireElementUsingAttributeAmongst(elements, attributeName, attributeValue); //innerHTML for text
-        }
-
-        public <Component extends WebElement> Component acquireComponentFromList(List<Component> items, String selectionName){
-            return acquireNamedComponentAmongst(items, selectionName);
-        }
-
-        public <Component extends WebElement> Component acquireComponentFromList(List<Component> items,
-                                                              String attributeName,
-                                                              String attributeValue,
-                                                              String elementFieldName){
-            return acquireComponentByElementAttributeAmongst(items, attributeName, attributeValue, elementFieldName);
-        }
+    /**
+     * Checks if the provided WebElement is associated with an AppiumDriver.
+     *
+     * @param element The WebElement to be checked.
+     * @return true if the WebElement is associated with an AppiumDriver, false otherwise.
+     *         If a ClassCastException occurs during the check, it returns false.
+     */
+    public static boolean isAppiumElement(WebElement element){
+        try {return ((RemoteWebElement) element).getWrappedDriver().getClass().isAssignableFrom(AppiumDriver.class);}
+        catch (ClassCastException exception){return false;}
     }
 }

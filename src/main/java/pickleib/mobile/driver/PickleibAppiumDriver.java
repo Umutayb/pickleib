@@ -11,15 +11,22 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 @SuppressWarnings("unused")
-public class PickleibAppiumDriver {
+public abstract class PickleibAppiumDriver {
 
 	static {PropertyLoader.load();}
 
-	public static AppiumDriver driver;
-	public static WebDriverWait wait;
+	private static AppiumDriver driver;
+	private static WebDriverWait wait;
+
+	public static AppiumDriver get(){
+		return driver;
+	}
+
+	public static WebDriverWait getWait(){
+		return wait;
+	}
 
 	private static final PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
-	private static final StringUtilities strUtils = new StringUtilities();
 	private static final Printer log = new Printer(PickleibAppiumDriver.class);
 
 	public static void startService(){
@@ -45,8 +52,8 @@ public class PickleibAppiumDriver {
 
 		String directory = ContextStore.get("config", "src/test/resources/configurations");
 
-		JSONObject json = AppiumDriverFactory.jsonUtils.parseJSONFile(directory+"/"+device+".json");
-		driver = AppiumDriverFactory.getDriver(strUtils.firstLetterCapped(device), json);
+		JSONObject json = FileUtilities.Json.parseJSONFile(directory+"/"+device+".json");
+		driver = AppiumDriverFactory.getDriver(StringUtilities.firstLetterCapped(device), json);
 	}
 
 	public static void terminate(){
