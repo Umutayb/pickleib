@@ -35,18 +35,11 @@ public class WebInteractions extends WebUtilities {
         super(driver);
         this.driver = driver;
         this.wait = wait;
-        interact = new ElementInteractions(
-                driver,
-                wait
-        );
     }
 
     public WebInteractions(){
         super(PickleibWebDriver.get());
         this.wait = PickleibWebDriver.driverWait();
-        interact = new ElementInteractions(
-                driver
-        );
     }
 
     public boolean isScrolling() {
@@ -70,11 +63,11 @@ public class WebInteractions extends WebUtilities {
     }
 
     public void clickByText(String text) {
-        interact.clickByText(text);
+        clickButtonByItsText(text);
     }
 
-    public void waitForSeconds(Integer duration) {
-        interact.waitForSeconds(duration);
+    public void waitFor(Integer duration) {
+        super.waitFor(duration);
     }
 
     public void clickInteraction(WebElement button, String buttonName, String pageName) {
@@ -214,9 +207,8 @@ public class WebInteractions extends WebUtilities {
      * @param element target element
      * @return the given element
      */
-    public WebElement center(WebElement element){
-        centerElement(element);
-        return element;
+    public WebElement centerElement(WebElement element){
+        return super.centerElement(element);
     }
 
     private final ScreenCaptureUtility capture = new ScreenCaptureUtility();
@@ -347,6 +339,9 @@ public class WebInteractions extends WebUtilities {
         ((JavascriptExecutor) driver).executeScript(script);
     }
 
+    /**
+     * Waits actively for the page to load up to 10 seconds
+     */
     public void waitUntilPageLoads(int waitingTime) {
         waitUntilLoads(waitingTime);
     }

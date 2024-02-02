@@ -594,4 +594,25 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * @param fileName file name (including a file extension)
      */
     public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
+
+    /**
+     * Waits actively for the page to load up to 10 seconds
+     */
+    protected void waitUntilLoads(int waitingTime) {
+        long startTime = System.currentTimeMillis();
+        String url = driver.getCurrentUrl();
+        log.info("Waiting for page to be loaded -> " + markup(BLUE, url));
+
+        ExpectedCondition<Boolean> pageLoadCondition = driverLoad ->
+        {
+            assert driverLoad != null;
+            return ((JavascriptExecutor) driverLoad).executeScript("return document.readyState").equals("complete");
+        };
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(waitingTime));
+        wait.until(pageLoadCondition);
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        int elapsedTimeSeconds = (int) ((double) elapsedTime / 1000);
+        log.info("The page is loaded in " + elapsedTimeSeconds + " second(s)");
+    }
 }

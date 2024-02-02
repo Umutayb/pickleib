@@ -11,6 +11,14 @@ import java.util.List;
 public interface PolymorphicUtilities {
 
     /**
+     *
+     * Clicks a button by its {text} text
+     *
+     * @param text target text
+     */
+    void clickByText(String text);
+
+    /**
      * Acquires a specified attribute of a given element
      *
      * @param element target element
@@ -204,7 +212,6 @@ public interface PolymorphicUtilities {
     //This method makes the thread wait for a certain while
     void waitFor(double seconds);
 
-    void waitUntilPageLoads();
     /**
      * Scrolls an element to the center of the view
      *
