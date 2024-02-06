@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static utils.StringUtilities.Color.*;
+import static utils.StringUtilities.highlighted;
 
 @SuppressWarnings("unused")
 public class MobileInteractions extends MobileUtilities {
@@ -46,13 +47,13 @@ public class MobileInteractions extends MobileUtilities {
      * @param elementName target element name
      * @param pageName specified page instance name
      */
-    public void centerElement(WebElement element, String elementName, String pageName){
+    public WebElement centerElement(WebElement element, String elementName, String pageName){
         log.info("Centering " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on ") +
                 highlighted(BLUE, pageName)
         );
-        this.centerElement(element);
+        return this.centerElement(element);
     }
 
     public void clickByText(String text) {
@@ -67,10 +68,36 @@ public class MobileInteractions extends MobileUtilities {
         interact.clickInteraction(button, buttonName, pageName);
     }
 
-    public void clickInteraction(WebElement button) {
-        interact.clickInteraction(button);
+    /**
+     * Clicks an element after waiting for its state to be enabled
+     *
+     * @param element target element
+     */
+    public void clickElement(WebElement element, String buttonName, String pageName){
+        log.info("Clicking " +
+                highlighted(BLUE, buttonName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clickElement(element);
+    }
+
+
+    @Override
+    public void clickTowards(WebElement element) {
 
     }
+
+    @Override
+    public void clickIfPresent(WebElement element, Boolean scroll) {
+
+    }
+
+    @Override
+    public String getAttribute(WebElement element, String attribute) {
+        return null;
+    }
+
 
     public void saveAttributeValue(WebElement element, String attributeName, String elementName, String pageName) {
         interact.saveAttributeValue(element, attributeName, elementName, pageName);

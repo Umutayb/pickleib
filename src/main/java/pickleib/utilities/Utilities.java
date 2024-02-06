@@ -7,9 +7,6 @@ import io.appium.java_client.functions.ExpectedCondition;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -43,7 +40,7 @@ public abstract class Utilities {
 
     public long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
 
-    protected Utilities(RemoteWebDriver driver){
+    public Utilities(RemoteWebDriver driver){
         this.driver = driver;
     }
 
@@ -53,7 +50,7 @@ public abstract class Utilities {
      * @param color target color
      * @param text target text
      */
-    protected String highlighted(StringUtilities.Color color, CharSequence text){
+    public String highlighted(StringUtilities.Color color, CharSequence text){
         StringJoiner colorFormat = new StringJoiner("", color.getValue(), RESET.getValue());
         return String.valueOf(colorFormat.add(text));
     }
@@ -65,14 +62,14 @@ public abstract class Utilities {
      * @param attribute target attribute
      * @return returns the element attribute
      */
-    protected String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
+    public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
 
     /**
      * Clicks an element after waiting for its state to be enabled
      *
      * @param element target element
      */
-    protected void clickElement(WebElement element){
+    public void clickElement(WebElement element){
         clickElement(element, WebElement::click);
     }
 
@@ -97,7 +94,7 @@ public abstract class Utilities {
      * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
      *                          with the last caught WebDriver exception.
      */ //TODO: clickElement should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
-    protected void clickElement(WebElement element, ClickFunction clicker){
+    public void clickElement(WebElement element, ClickFunction clicker){
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
         int counter = 0;
@@ -199,7 +196,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    protected void clickTowards(WebElement element){
+    public void clickTowards(WebElement element){
         elementIs(element, ElementState.displayed);
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
         builder
@@ -215,7 +212,7 @@ public abstract class Utilities {
      * @param element target element
      * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
-    protected void clickIfPresent(WebElement element, ScrollFunction scroller){
+    public void clickIfPresent(WebElement element, ScrollFunction scroller){
         try {clickElement(element, (target) -> scroller.scroll(target).click());}
         catch (WebDriverException exception){log.warning(exception.getMessage());}
     }
@@ -226,7 +223,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    protected void clickIfPresent(WebElement element){
+    public void clickIfPresent(WebElement element){
         try {clickElement(element, null);}
         catch (WebDriverException exception){log.warning(exception.getMessage());}
     }
@@ -239,7 +236,7 @@ public abstract class Utilities {
      * @param verify verifies the input text value equals to an expected text if true
      * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
-    protected void clearFillInput(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify){
         fillInputElement(inputElement, inputText, scroller, verify);
     }
 
@@ -251,7 +248,7 @@ public abstract class Utilities {
      * @param inputText input text
      * @param verify verifies the input text value equals to an expected text if true
      */
-    protected void clearFillInput(WebElement inputElement, String inputText, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, boolean verify){
         fillInputElement(inputElement, inputText, verify);
     }
 
@@ -261,7 +258,7 @@ public abstract class Utilities {
      * @param inputElement target input element
      * @param inputText input text
      */
-    protected void fillInput(WebElement inputElement, String inputText){
+    public void fillInput(WebElement inputElement, String inputText){
         // This method clears the input field before filling it
         fillInputElement(inputElement, inputText, false);
     }
@@ -272,7 +269,7 @@ public abstract class Utilities {
      * @param inputElement target input element
      * @param inputText input text
      */
-    protected void fillAndVerifyInput(WebElement inputElement, String inputText){
+    public void fillAndVerifyInput(WebElement inputElement, String inputText){
         // This method clears the input field before filling it
         fillInputElement(inputElement, inputText, true);
     }
@@ -283,7 +280,7 @@ public abstract class Utilities {
      * @param inputElement target input element
      * @param inputText input text
      */
-    protected void fillAndVerifyInput(WebElement inputElement, String inputText, ScrollFunction scroller){
+    public void fillAndVerifyInput(WebElement inputElement, String inputText, ScrollFunction scroller){
         // This method clears the input field before filling it
         fillInputElement(inputElement, inputText, scroller, true);
     }
@@ -295,7 +292,7 @@ public abstract class Utilities {
      * @param inputText input text
      * @param verify verifies the input text value equals to an expected text if true
      */
-    protected void fillInputElement(WebElement inputElement, String inputText, boolean verify){
+    public void fillInputElement(WebElement inputElement, String inputText, boolean verify){
         fillInputElement(inputElement, inputText, null, verify);
     }
 
@@ -307,7 +304,7 @@ public abstract class Utilities {
      * @param verify verifies the input text value equals to an expected text if true
      * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
-    protected void fillInputElement(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify){
+    public void fillInputElement(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify){
         // This method clears the input field before filling it
         elementIs(inputElement, ElementState.displayed);
         inputText = contextCheck(inputText);
@@ -323,7 +320,7 @@ public abstract class Utilities {
      * @param state expected state
      * @return returns the element if its in expected state
      */
-    protected WebElement verifyElementState(WebElement element, ElementState state){
+    public WebElement verifyElementState(WebElement element, ElementState state){
         if (!elementIs(element, state)) throw new PickleibException("Element is not in " + state.name() + " state!");
         log.success("Element state is verified to be: " + state.name());
         return element;
@@ -336,7 +333,7 @@ public abstract class Utilities {
      * @param state expected state
      * @return returns true if an element is in the expected state
      */ //TODO: elementIs should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
-    protected Boolean elementIs(WebElement element, @NotNull ElementState state){
+    public Boolean elementIs(WebElement element, @NotNull ElementState state){
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
         boolean timeout;
@@ -407,7 +404,7 @@ public abstract class Utilities {
      *
      * @param buttonText The text of the target element to be clicked.
      */
-    protected void clickButtonWithText(String buttonText){
+    public void clickButtonWithText(String buttonText){
         clickElement(getElementByText(buttonText), null);
     }
 
@@ -422,7 +419,7 @@ public abstract class Utilities {
      * @param buttonText The text of the target element to be clicked.
      * @param scroller   The {@code ScrollFunction} for scrolling before clicking. If {@code null}, no scrolling is performed.
      */
-    protected void clickButtonWithText(String buttonText, ScrollFunction scroller){
+    public void clickButtonWithText(String buttonText, ScrollFunction scroller){
         clickElement(getElementByText(buttonText), (target) -> scroller.scroll(target).click());
     }
 
@@ -431,7 +428,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    protected WebElement clearInputField(@NotNull WebElement element){
+    public WebElement clearInputField(@NotNull WebElement element){
         int textLength = element.getAttribute("value").length();
         for(int i = 0; i < textLength; i++){element.sendKeys(Keys.BACK_SPACE);}
         return element;
@@ -442,7 +439,7 @@ public abstract class Utilities {
      *
      * @param elementText target element text
      */
-    protected WebElement getElementByText(String elementText){
+    public WebElement getElementByText(String elementText){
         try {
             return driver.findElement(By.xpath("//*[text()='" +elementText+ "']"));
         }
@@ -456,7 +453,7 @@ public abstract class Utilities {
      *
      * @param elementText target element text
      */
-    protected WebElement getElementContainingText(String elementText){
+    public WebElement getElementContainingText(String elementText){
         try {
             return driver.findElement(By.xpath("//*[contains(text(), '" +elementText+ "')]"));
         }
@@ -471,7 +468,7 @@ public abstract class Utilities {
      * @param element element that drags
      * @param destinationElement target element
      */
-    protected void dragDropToAction(WebElement element, WebElement destinationElement){
+    public void dragDropToAction(WebElement element, WebElement destinationElement){
         Actions action = new Actions(driver);
         action.moveToElement(element)
                 .clickAndHold(element)
@@ -490,7 +487,7 @@ public abstract class Utilities {
      * @param yOffset y offset from the center of the element
      */
     //This method performs click, hold, dragAndDropBy action on at a certain offset
-    protected void dragDropByAction(WebElement element, int xOffset, int yOffset){
+    public void dragDropByAction(WebElement element, int xOffset, int yOffset){
         Actions action = new Actions(driver);
         action.moveToElement(element)
                 .clickAndHold(element)
@@ -508,7 +505,7 @@ public abstract class Utilities {
      * @param xOffset x offset from the center of the element
      * @param yOffset y offset from the center of the element
      */
-    protected void dragDropAction(WebElement element, int xOffset, int yOffset){
+    public void dragDropAction(WebElement element, int xOffset, int yOffset){
         Actions action = new Actions(driver);
         action.moveToElement(element)
                 .clickAndHold(element)
@@ -523,7 +520,7 @@ public abstract class Utilities {
      * Refreshes the current page
      *
      */
-    protected void refreshThePage(){
+    public void refreshThePage(){
         driver.navigate().refresh();
     }
 
@@ -535,7 +532,7 @@ public abstract class Utilities {
      * @param yOffset y offset from the center of the element
      */
     @SuppressWarnings("SameParameterValue")
-    protected void clickAtAnOffset(WebElement element, int xOffset, int yOffset){
+    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset){
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
         builder
                 .moveToElement(element, xOffset, yOffset)
@@ -551,14 +548,14 @@ public abstract class Utilities {
      * @param directory absolute file directory (excluding the file name)
      * @param fileName file name (including a file extension)
      */
-    protected void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
+    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
 
     /**
      * Combines the given keys
      *
      * @param keys key inputs
      */
-    protected String combineKeys(Keys... keys) {
+    public String combineKeys(Keys... keys) {
         return Keys.chord(keys);
     }
 
@@ -568,7 +565,7 @@ public abstract class Utilities {
      * @param seconds duration as a double
      */
     //This method makes the thread wait for a certain while
-    protected void waitFor(double seconds){
+    public void waitFor(double seconds){
         if (seconds > 1) log.info("Waiting for " + markup(BLUE, String.valueOf(seconds)) + " seconds");
         try {Thread.sleep((long) (seconds* 1000L));}
         catch (InterruptedException exception){
@@ -584,7 +581,7 @@ public abstract class Utilities {
      * @param parentSelectorClass selector class for selecting the parent elements
      * @return returns the targeted parent element
      */
-    protected WebElement getParentByClass(WebElement childElement, String current, String parentSelectorClass) {
+    public WebElement getParentByClass(WebElement childElement, String current, String parentSelectorClass) {
 
         if (current == null) {current = "";}
 
@@ -613,7 +610,7 @@ public abstract class Utilities {
      * @param current empty string (at the beginning)
      * @return returns generated xPath
      */
-    protected String generateXPath(@NotNull WebElement childElement, String current) {
+    public String generateXPath(@NotNull WebElement childElement, String current) {
         String childTag = childElement.getTagName();
         if (childTag.equals("html")) {return "/html[1]" + current;}
         WebElement parentElement = childElement.findElement(By.xpath(".."));
@@ -627,56 +624,6 @@ public abstract class Utilities {
             }
         }
         return null;
-    }
-
-    /**
-     * Checks if an event was fired
-     * Create a custom script to listen for an event by generating a unique event key and catches this key in the console
-     * Ex: "dataLayerObject.listen(eventName, function(){console.warn(eventKey)});"
-     *
-     * @param eventName event name of the event that is expected to be fired
-     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen( eventName );"
-     * @return true if the specified event was fired.
-     */
-    protected boolean isEventFired(String eventName, String listenerScript){
-        log.info("Listening to '" + eventName + "' event");
-        String eventKey = generateRandomString(eventName + "#", 6, false, true);
-        listenerScript = listenerScript.replace(eventName, "'" + eventName + "', function(){console.warn('" + eventKey +"')}");
-        executeScript(listenerScript);
-        LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
-        for (LogEntry entry: logs.getAll())
-            if (entry.toString().contains(eventKey)) {
-                log.success("'" + eventName + "' event is fired!");
-                return true;
-            }
-        log.warning(eventName + " event is not fired!");
-        return false;
-    }
-
-    /**
-     * Checks if an event was fired
-     *
-     * @param eventKey key that is meant to be caught from the console in case the event fires
-     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen('page.info', function(){console.warn(eventKey)});"
-     * @return true if the specified event was fired.
-     */
-    protected boolean isEventFiredByScript(String eventKey, String listenerScript){
-        log.info("Listening to '" + markup(BLUE, eventKey) + "' event");
-        executeScript(listenerScript);
-        LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
-        for (LogEntry entry: logs.getAll()) if (entry.toString().contains(eventKey)) return true;
-        return false;
-    }
-
-    /**
-     * Executes a JS script and returns the responding object
-     *
-     * @param script script that is to be executed
-     * @return object if the scripts yield one
-     */
-    protected Object executeScript(String script){
-        log.info("Executing script: " + highlighted(BLUE, script));
-        return ((JavascriptExecutor) driver).executeScript(script);
     }
 
     /**

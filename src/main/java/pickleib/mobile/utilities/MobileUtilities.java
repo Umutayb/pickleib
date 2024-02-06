@@ -13,6 +13,7 @@ import pickleib.exceptions.PickleibException;
 import pickleib.utilities.PolymorphicUtilities;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
+import utils.StringUtilities;
 import java.time.Duration;
 
 import static java.time.Duration.ofMillis;
@@ -71,6 +72,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
     }
 
+
     /**
      * Clicks the specified {@code element} with retry mechanism and optional scrolling.
      *
@@ -107,7 +109,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * @param inputText input text
      * @param verify verifies the input text value equals to an expected text if true
      */
-    protected void clearFillInput(WebElement inputElement, String inputText, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, boolean verify){
         fillInputElement(inputElement, inputText, null, verify);
     }
 
@@ -118,7 +120,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * @param inputText input text
      * @param verify verifies the input text value equals to an expected text if true
      */
-    protected void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify){
         if (scroll) fillInputElement(inputElement, inputText, this::centerElement, verify);
         else fillInputElement(inputElement, inputText, null, verify);
     }
@@ -156,6 +158,11 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
         }
 
         return element;
+    }
+
+    public void scroll(@NotNull Direction direction) {
+        log.info("Scrolling in " + highlighted(StringUtilities.Color.BLUE, direction.name()) + " direction.");
+        swiper(direction);
     }
 
     public RemoteWebDriver driver(){
@@ -257,7 +264,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * @param scroll scrolls if true
      * @param verify verifies the input text value equals to an expected text if true
      */
-    protected void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify){
         fillInputElement(inputElement, inputText, scroll, verify);
     }
 
@@ -267,7 +274,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * @param inputElement target input element
      * @param inputText input text
      */
-    protected void fillInput(WebElement inputElement, String inputText){
+    public void fillInput(WebElement inputElement, String inputText){
         // This method clears the input field before filling it
         fillInputElement(inputElement, inputText, false, false);
     }
@@ -278,7 +285,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * @param inputElement target input element
      * @param inputText input text
      */
-    protected void fillAndVerifyInput(WebElement inputElement, String inputText){
+    public void fillAndVerifyInput(WebElement inputElement, String inputText){
         // This method clears the input field before filling it
         fillInputElement(inputElement, inputText, false, true);
     }

@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
-import utils.StringUtilities;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -31,9 +30,23 @@ public interface PolymorphicUtilities {
      * Clicks an element after waiting for its state to be enabled
      *
      * @param element target element
+     */
+    void clickElement(WebElement element);
+
+    /**
+     * Clicks an element after waiting for its state to be enabled
+     *
+     * @param element target element
      * @param scroll scrolls if true
      */
-    void clickElement(WebElement element, Boolean scroll);
+    void clickElement(WebElement element, boolean scroll);
+
+    /**
+     * Clicks an element after waiting for its state to be enabled
+     *
+     * @param element target element
+     */
+    void clickElement(WebElement element, String buttonName, String pageName);
 
     /**
      * Click coordinates specified by the given offsets from the center of a given element
@@ -41,13 +54,6 @@ public interface PolymorphicUtilities {
      * @param element target element
      */
     void clickTowards(WebElement element);
-
-    /**
-     * Clicks an element after waiting for its state to be enabled
-     *
-     * @param element target element
-     */
-    void clickElement(WebElement element);
 
     /**
      * Clicks an element if its present (in enabled state)
@@ -65,7 +71,7 @@ public interface PolymorphicUtilities {
      * @param scroll scrolls if true
      * @param verify verifies the input text value equals to an expected text if true
      */
-    void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify);
+    void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify);
 
     /**
      * Verifies a given element is in expected state
@@ -222,28 +228,20 @@ public interface PolymorphicUtilities {
     WebElement centerElement(WebElement element);
 
     /**
+     * Scrolls an element to the center of the view
+     *
+     * @param element target element
+     * @return returns the targeted element
+     */
+    //This method scrolls an element to the center of the view
+    WebElement centerElement(WebElement element, String elementName, String pageName);
+
+    /**
      * Scroll in a given direction
      *
      * @param direction target direction (UP or DOWN)
      */
     void scroll(@NotNull Direction direction);
-
-    /**
-     * Transform a given element to an object using javascript
-     *
-     * @param element target element
-     * @return returns an object with the attributes of a given element
-     */
-    //This method returns all the attributes of an element as an object
-    Object getElementObject(WebElement element);
-
-    /**
-     * Prints all the attributes of a given element
-     *
-     * @param element target element
-     */
-    //This method prints all the attributes of a given element
-    void printElementAttributes(WebElement element);
 
     /**
      * Gets the parent class from a child element using a selector class
@@ -263,32 +261,4 @@ public interface PolymorphicUtilities {
      * @return returns generated xPath
      */
     String generateXPath(@NotNull WebElement childElement, String current);
-
-    /**
-     * Checks if an event was fired
-     * Create a custom script to listen for an event by generating a unique event key and catches this key in the console
-     * Ex: "dataLayerObject.listen(eventName, function(){console.warn(eventKey)});"
-     *
-     * @param eventName event name of the event that is expected to be fired
-     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen( eventName );"
-     * @return true if the specified event was fired.
-     */
-    boolean isEventFired(String eventName, String listenerScript);
-
-    /**
-     * Checks if an event was fired
-     *
-     * @param eventKey key that is meant to be caught from the console in case the event fires
-     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen('page.info', function(){console.warn(eventKey)});"
-     * @return true if the specified event was fired.
-     */
-    boolean isEventFiredByScript(String eventKey, String listenerScript);
-
-    /**
-     * Executes a JS script and returns the responding object
-     *
-     * @param script script that is to be executed
-     * @return object if the scripts yield one
-     */
-    Object executeScript(String script);
 }
