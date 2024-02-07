@@ -881,8 +881,7 @@ public abstract class Utilities {
     }
 
     /**
-     *
-     * Verify the page is redirecting to the page {target url}
+     * Verifies the page is redirecting to the page {target url}
      *
      * @param url target url
      */
