@@ -12,7 +12,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
-import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.PolymorphicUtilities;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
@@ -32,8 +31,8 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * MobileUtilities for frameworks that use the Pickleib driver
      */
     public MobileUtilities() {
-        super(PickleibAppiumDriver.get());
-        this.driver = PickleibAppiumDriver.get();
+        super(PickleibWebDriver.get());
+        this.driver = PickleibWebDriver.get();
     }
 
     /**
@@ -259,7 +258,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * Swipes from one point to another
      *
      * @param pointOfDeparture the point where swiping starts
-     * @param pointOfArrival the point where swiping ends
+     * @param pointOfArrival   the point where swiping ends
      */
     public void swipe(Point pointOfDeparture, Point pointOfArrival) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
@@ -282,7 +281,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
     /**
      * Performs sequence
      *
-     * @param sequence target sequence
+     * @param sequence    target sequence
      * @param initialTime start time
      */
     public void performSequence(Sequence sequence, long initialTime) {
@@ -313,7 +312,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * Swipes element to the point
      *
      * @param element target element
-     * @param point target point
+     * @param point   target point
      * @return returns the swiped element
      */
     public WebElement swipeElement(WebElement element, Point point) {
@@ -340,7 +339,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
     /**
      * Swipes {element} to {destinationElement}.
      *
-     * @param element target element before swiping
+     * @param element            target element before swiping
      * @param destinationElement target element after swiping
      * @return returns the swiped element
      */

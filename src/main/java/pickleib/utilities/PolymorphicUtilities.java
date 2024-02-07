@@ -440,10 +440,10 @@ public interface PolymorphicUtilities {
      * Acquires attribute {attribute name} from element {element name} on the {page name}
      * (Use 'innerHTML' attributeName to acquire text on an element)
      *
-     * @param element target element
+     * @param element       target element
      * @param attributeName acquired attribute name
-     * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param elementName   target element name
+     * @param pageName      specified page instance name
      */
     void saveAttributeValue(WebElement element, String attributeName, String elementName, String pageName);
 
@@ -459,9 +459,9 @@ public interface PolymorphicUtilities {
     /**
      * Verifies the text of {element name} on the {page name} to be: {expected text}
      *
-     * @param element target element
-     * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param element      target element
+     * @param elementName  target element name
+     * @param pageName     specified page instance name
      * @param expectedText expected text
      */
     void verifyText(WebElement element, String elementName, String pageName, String expectedText);
@@ -470,9 +470,9 @@ public interface PolymorphicUtilities {
     /**
      * Verifies the text of {element name} on the {page name} to contain: {expected text}
      *
-     * @param element target element
-     * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param element      target element
+     * @param elementName  target element name
+     * @param pageName     specified page instance name
      * @param expectedText expected text
      */
     void verifyContainsText(WebElement element, String elementName, String pageName, String expectedText);
@@ -488,9 +488,9 @@ public interface PolymorphicUtilities {
     /**
      * Verifies the presence of an element {element name} on the {page name}
      *
-     * @param element target element
+     * @param element     target element
      * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param pageName    specified page instance name
      */
     void verifyPresence(WebElement element, String elementName, String pageName);
 
@@ -502,61 +502,60 @@ public interface PolymorphicUtilities {
     /**
      * Waits for absence of an element {element name} on the {page name}
      *
-     * @param element target element
+     * @param element     target element
      * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param pageName    specified page instance name
      */
     void waitUntilAbsence(WebElement element, String elementName, String pageName);
 
     /**
      * Waits for element {element name} on the {page name} to be visible
      *
-     * @param element target element
+     * @param element     target element
      * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param pageName    specified page instance name
      */
     void waitUntilVisible(WebElement element, String elementName, String pageName);
 
     /**
      * Waits until an element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
      *
-     * @param element target element
-     * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param element        target element
+     * @param elementName    target element name
+     * @param pageName       specified page instance name
      * @param attributeValue expected attribute value
-     * @param attributeName target attribute name
+     * @param attributeName  target attribute name
      */
     void waitUntilElementContainsAttribute(WebElement element, String elementName, String pageName, String attributeName, String attributeValue);
 
     /**
      * Verifies that element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
      *
-     * @param element target element
-     * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param element        target element
+     * @param elementName    target element name
+     * @param pageName       specified page instance name
      * @param attributeValue expected attribute value
-     * @param attributeName target attribute name
+     * @param attributeName  target attribute name
      */
     void verifyElementContainsAttribute(WebElement element, String elementName, String pageName, String attributeName, String attributeValue);
 
     /**
      * Verifies that an attribute {attribute name} of element {element name} on the {page name} contains a specific {value}.
      *
-     * @param attributeName  the name of the attribute to be verified
-     * @param elementName    the name of the element to be verified
-     * @param pageName       the name of the page containing the element
-     * @param value the expected part of value of the attribute
-     *
+     * @param attributeName the name of the attribute to be verified
+     * @param elementName   the name of the element to be verified
+     * @param pageName      the name of the page containing the element
+     * @param value         the expected part of value of the attribute
      */
     void verifyElementAttributeContainsValue(WebElement element, String attributeName, String elementName, String pageName, String value);
 
     /**
      * Verifies {attribute name} css attribute of an element {element name} on the {page name} is {attribute value}
      *
-     * @param element target element
-     * @param attributeName target attribute name
-     * @param elementName target attribute name
-     * @param pageName specified page instance name
+     * @param element        target element
+     * @param attributeName  target attribute name
+     * @param elementName    target attribute name
+     * @param pageName       specified page instance name
      * @param attributeValue expected attribute value
      */
     void verifyElementColor(WebElement element, String attributeName, String elementName, String pageName, String attributeValue);
@@ -564,8 +563,8 @@ public interface PolymorphicUtilities {
     /**
      * Verifies the presence of listed element from a list on the {page name}
      *
-     * @param bundles list that contains element, elementName, elementText
-     * @param pageName specified page instance name
+     * @param bundles   list that contains element, elementName, elementText
+     * @param pageName  specified page instance name
      * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
      */
     void verifyPresenceOfListedElements(List<Bundle<WebElement, String, String>> bundles, WebElement element, List<WebElement> elements, String pageName, List<Map<String, String>> signForms);
@@ -573,7 +572,7 @@ public interface PolymorphicUtilities {
     /**
      * Updates context {key} -> {value}
      *
-     * @param key Context key
+     * @param key   Context key
      * @param value Context value
      */
     void updateContext(String key, String value);
@@ -581,9 +580,9 @@ public interface PolymorphicUtilities {
     /**
      * Presses {target key} key on {element name} element of the {}
      *
-     * @param keys target key
+     * @param keys        target key
      * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param pageName    specified page instance name
      */
     void pressKey(WebElement element, String elementName, String pageName, Keys... keys);
 
@@ -596,10 +595,10 @@ public interface PolymorphicUtilities {
      * Before filling the input, it clears the existing content if specified.
      * </p>
      *
-     * @param inputElement      The {@code WebElement} representing the input field to be filled.
-     * @param inputName         The name of the input field for logging purposes.
-     * @param pageName          The name of the page where the interaction is performed for logging purposes.
-     * @param absoluteFilePath  The absolute file path to the file whose content will be used to fill the input.
+     * @param inputElement     The {@code WebElement} representing the input field to be filled.
+     * @param inputName        The name of the input field for logging purposes.
+     * @param pageName         The name of the page where the interaction is performed for logging purposes.
+     * @param absoluteFilePath The absolute file path to the file whose content will be used to fill the input.
      */
     void fillInputWithFile(WebElement inputElement, String inputName, String pageName, String absoluteFilePath);
 
@@ -608,7 +607,8 @@ public interface PolymorphicUtilities {
      * <p>
      * The interaction type is specified in the "Interaction Type" key of the map contained in each element bundle.
      * <p>
-     * @param bundles A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
+     *
+     * @param bundles  A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
      * @param pageName The name of the page object.
      * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
      */

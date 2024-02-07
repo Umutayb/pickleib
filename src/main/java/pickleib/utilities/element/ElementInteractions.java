@@ -74,13 +74,13 @@ public class ElementInteractions implements PolymorphicUtilities {
      * @param buttonName target button name
      * @param pageName specified page instance name
      */
-    public void clickInteraction(WebElement button, String buttonName, String pageName, Boolean scroll){
+    public void clickInteraction(WebElement button, String buttonName, String pageName, ScrollFunction scroller){
         log.info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        utilities.clickElement(button, scroll);
+        utilities.clickElement(button, (target) -> scroller.scroll(target).click());
     }
 
     /**
@@ -104,13 +104,8 @@ public class ElementInteractions implements PolymorphicUtilities {
      * Click the {button name} on the {page name}
      *
      */
-    public void clickInteraction(WebElement button, Boolean scroll, String buttonName, String pageName){
-        log.info("Clicking " +
-                highlighted(BLUE, buttonName) +
-                highlighted(GRAY," on the ") +
-                highlighted(BLUE, pageName)
-        );
-        clickElement(button, scroll);
+    public void clickInteraction(WebElement button, ScrollFunction scroller){
+        clickElement(button, (target) -> scroller.scroll(target).click());
     }
 
     /**
@@ -406,7 +401,7 @@ public class ElementInteractions implements PolymorphicUtilities {
      * @param pageName specified page instance name
      */
     public void waitUntilAbsence(WebElement element, String elementName, String pageName){
-        log.info("Waiting for absence of " +
+        log.info("Waiting for the absence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -779,155 +774,5 @@ public class ElementInteractions implements PolymorphicUtilities {
      */
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName){
         bundleInteraction(bundles, pageName, null);
-    }
-
-    @Override
-    public String getAttribute(WebElement element, String attribute) {
-        return null;
-    }
-
-    @Override
-    public void clickElement(WebElement element, Boolean scroll) {
-
-    }
-
-    @Override
-    public void clickTowards(WebElement element) {
-
-    }
-
-    @Override
-    public void clickElement(WebElement element) {
-
-    }
-
-    @Override
-    public void clickElement(WebElement element, String elementName, String pageName) {
-
-    }
-
-    @Override
-    public void clickIfPresent(WebElement element, Boolean scroll) {
-
-    }
-
-    @Override
-    public void clearFillInput(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify) {
-
-    }
-
-    @Override
-    public WebElement verifyElementState(WebElement element, ElementState state) {
-        return null;
-    }
-
-    @Override
-    public Boolean elementIs(WebElement element, @NotNull ElementState state) {
-        return null;
-    }
-
-    @Override
-    public void clickButtonWithText(String buttonText, Boolean scroll) {
-
-    }
-
-    @Override
-    public WebElement clearInputField(@NotNull WebElement element) {
-        return null;
-    }
-
-    @Override
-    public WebElement getElementByText(String elementText) {
-        return null;
-    }
-
-    @Override
-    public WebElement getElementContainingText(String elementText) {
-        return null;
-    }
-
-    @Override
-    public void dragDropToAction(WebElement element, WebElement destinationElement) {
-
-    }
-
-    @Override
-    public void dragDropByAction(WebElement element, int xOffset, int yOffset) {
-
-    }
-
-    @Override
-    public void dragDropAction(WebElement element, int xOffset, int yOffset) {
-
-    }
-
-    @Override
-    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset) {
-
-    }
-
-    @Override
-    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName) {
-
-    }
-
-    @Override
-    public String combineKeys(Keys... keys) {
-        return null;
-    }
-
-    @Override
-    public void waitFor(double seconds) {
-
-    }
-
-    @Override
-    public void waitUntilPageLoads() {
-
-    }
-
-    @Override
-    public WebElement centerElement(WebElement element) {
-        return null;
-    }
-
-    @Override
-    public void scroll(@NotNull Direction direction) {
-
-    }
-
-    @Override
-    public Object getElementObject(WebElement element) {
-        return null;
-    }
-
-    @Override
-    public void printElementAttributes(WebElement element) {
-
-    }
-
-    @Override
-    public WebElement getParentByClass(WebElement childElement, String current, String parentSelectorClass) {
-        return null;
-    }
-
-    @Override
-    public String generateXPath(@NotNull WebElement childElement, String current) {
-        return null;
-    }
-
-    @Override
-    public boolean isEventFired(String eventName, String listenerScript) {
-        return false;
-    }
-
-    @Override
-    public boolean isEventFiredByScript(String eventKey, String listenerScript) {
-        return false;
-    }
-
-    @Override
-    public Object executeScript(String script) {
-        return null;
     }
 }

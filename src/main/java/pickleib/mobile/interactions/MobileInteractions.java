@@ -1,7 +1,5 @@
 package pickleib.mobile.interactions;
 
-import org.jetbrains.annotations.NotNull;
-import org.openqa.selenium.*;
 import collections.Bundle;
 import context.ContextStore;
 import org.jetbrains.annotations.NotNull;
@@ -149,7 +147,7 @@ public class MobileInteractions extends MobileUtilities {
     }
 
     /**
-     * Clicks an {element} with the {element name} on the {page name} if its present (in enabled state).
+     * Clicks an {element} with the {element name} on the {page name} after waiting for its state to be enabled.
      *
      * @param element     target element
      * @param scroll      The {@code scroll} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
@@ -742,20 +740,19 @@ public class MobileInteractions extends MobileUtilities {
     /**
      * Verifies that an attribute {attribute name} of element {element name} on the {page name} contains a specific {value}.
      *
-     * @param attributeName  the name of the attribute to be verified
-     * @param elementName    the name of the element to be verified
-     * @param pageName       the name of the page containing the element
-     * @param value the expected part of value of the attribute
-     *
+     * @param attributeName the name of the attribute to be verified
+     * @param elementName   the name of the element to be verified
+     * @param pageName      the name of the page containing the element
+     * @param value         the expected part of value of the attribute
      */
     public void verifyElementAttributeContainsValue(WebElement element, String attributeName, String elementName, String pageName, String value) {
         log.info("Verifying that " +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," contains ") +
+                highlighted(GRAY, " contains ") +
                 highlighted(BLUE, value) +
-                highlighted(GRAY," in its ") +
+                highlighted(GRAY, " in its ") +
                 highlighted(BLUE, attributeName) +
-                highlighted(GRAY," attribute.")
+                highlighted(GRAY, " attribute.")
         );
 
         if (!super.elementAttributeContainsValue(element, attributeName, value))
@@ -763,16 +760,16 @@ public class MobileInteractions extends MobileUtilities {
                     "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
                             "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName)
             );
-        log.success("The " + attributeName + " attribute of element " + elementName + " is verified!" );
+        log.success("The " + attributeName + " attribute of element " + elementName + " is verified!");
     }
 
     /**
      * Verifies {attribute name} css attribute of an element {element name} on the {page name} is {attribute value}
      *
-     * @param element target element
-     * @param attributeName target attribute name
-     * @param elementName target attribute name
-     * @param pageName specified page instance name
+     * @param element        target element
+     * @param attributeName  target attribute name
+     * @param elementName    target attribute name
+     * @param pageName       specified page instance name
      * @param attributeValue expected attribute value
      */
     public void verifyElementColor(WebElement element, String attributeName, String elementName, String pageName, String attributeValue) {
@@ -780,7 +777,7 @@ public class MobileInteractions extends MobileUtilities {
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute of ") +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," on the ") +
+                highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
         if (!attributeValue.equals(element.getCssValue(attributeName)))
@@ -794,8 +791,8 @@ public class MobileInteractions extends MobileUtilities {
     /**
      * Verifies the presence of listed element from a list on the {page name}
      *
-     * @param bundles list that contains element, elementName, elementText
-     * @param pageName specified page instance name
+     * @param bundles   list that contains element, elementName, elementText
+     * @param pageName  specified page instance name
      * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
      */
     public void verifyPresenceOfListedElements(List<Bundle<WebElement, String, String>> bundles, WebElement element, List<WebElement> elements, String pageName, List<Map<String, String>> signForms) {
@@ -805,7 +802,7 @@ public class MobileInteractions extends MobileUtilities {
 
             log.info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
-                    highlighted(GRAY," on the ") +
+                    highlighted(GRAY, " on the ") +
                     highlighted(BLUE, pageName) +
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, expectedText)
@@ -819,7 +816,7 @@ public class MobileInteractions extends MobileUtilities {
     /**
      * Updates context {key} -> {value}
      *
-     * @param key Context key
+     * @param key   Context key
      * @param value Context value
      */
     public void updateContext(String key, String value) {
@@ -836,9 +833,9 @@ public class MobileInteractions extends MobileUtilities {
     /**
      * Presses {target key} key on {element name} element of the {}
      *
-     * @param keys target key
+     * @param keys        target key
      * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param pageName    specified page instance name
      */
     public void pressKey(WebElement element, String elementName, String pageName, Keys... keys) {
         super.pressKeysOnElement(element, elementName, pageName, keys);
@@ -853,16 +850,16 @@ public class MobileInteractions extends MobileUtilities {
      * Before filling the input, it clears the existing content if specified.
      * </p>
      *
-     * @param inputElement      The {@code WebElement} representing the input field to be filled.
-     * @param inputName         The name of the input field for logging purposes.
-     * @param pageName          The name of the page where the interaction is performed for logging purposes.
-     * @param absoluteFilePath  The absolute file path to the file whose content will be used to fill the input.
+     * @param inputElement     The {@code WebElement} representing the input field to be filled.
+     * @param inputName        The name of the input field for logging purposes.
+     * @param pageName         The name of the page where the interaction is performed for logging purposes.
+     * @param absoluteFilePath The absolute file path to the file whose content will be used to fill the input.
      */
     public void fillInputWithFile(WebElement inputElement, String inputName, String pageName, String absoluteFilePath) {
         absoluteFilePath = contextCheck(absoluteFilePath);
         log.info("Filling " +
                 highlighted(BLUE, inputName) +
-                highlighted(GRAY," on the ") +
+                highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName) +
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, absoluteFilePath)
@@ -880,7 +877,8 @@ public class MobileInteractions extends MobileUtilities {
      * <p>
      * The interaction type is specified in the "Interaction Type" key of the map contained in each element bundle.
      * <p>
-     * @param bundles A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
+     *
+     * @param bundles  A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
      * @param pageName The name of the page object.
      * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
      */
@@ -908,18 +906,18 @@ public class MobileInteractions extends MobileUtilities {
      * For 'fill' interactions, an additional boolean parameter is added to specify whether to clear the input field before filling.
      * </p>
      *
-     * @param bundles   The list of bundles, where each bundle contains information for a specific interaction.
-     * @param pageName  The name of the page where the interactions are performed.
-     * @param scroll  The {scroll} used for centering elements. It is applicable for 'click' and 'center' interactions.
-     *
+     * @param bundles  The list of bundles, where each bundle contains information for a specific interaction.
+     * @param pageName The name of the page where the interactions are performed.
+     * @param scroll   The {scroll} used for centering elements. It is applicable for 'click' and 'center' interactions.
      * @throws EnumConstantNotPresentException If an unsupported interaction type is encountered in the bundle.
      */
-    public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName, boolean scroll){
-        for (Bundle<String, WebElement, Map<String, String>> bundle:bundles) {
+    public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName, boolean scroll) {
+        for (Bundle<String, WebElement, Map<String, String>> bundle : bundles) {
             InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
-            switch (interactionType){
-                case click  -> clickElement(bundle.beta(), scroll, bundle.alpha(), pageName);
-                case fill   -> clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), false, scroll);
+            switch (interactionType) {
+                case click -> clickElement(bundle.beta(), scroll, bundle.alpha(), pageName);
+                case fill ->
+                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), false, scroll);
                 case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);
                 case verify -> verifyElementContainsAttribute(
                         bundle.beta(),
