@@ -4,13 +4,11 @@ import collections.Bundle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.functions.ExpectedCondition;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
@@ -25,10 +23,8 @@ import java.util.StringJoiner;
 
 import static pickleib.driver.DriverFactory.DriverType.Mobile;
 import static pickleib.driver.DriverFactory.DriverType.Web;
-import static pickleib.enums.ElementState.*;
 import static pickleib.enums.ElementState.absent;
 import static pickleib.enums.ElementState.displayed;
-import static pickleib.utilities.element.ElementAcquisition.*;
 import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
@@ -882,5 +878,18 @@ public abstract class Utilities {
      */
     public void quitDriver() {
         driver.quit();
+    }
+
+    /**
+     *
+     * Verify the page is redirecting to the page {target url}
+     *
+     * @param url target url
+     */
+    public void verifyCurrentUrl(String url) {
+        url = contextCheck(url);
+        log.info("The url contains " + url);
+        if (!driver.getCurrentUrl().contains(url))
+            throw new PickleibException("Current url does not contain the expected url!");
     }
 }
