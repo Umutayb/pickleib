@@ -74,13 +74,13 @@ public class ElementInteractions implements PolymorphicUtilities {
      * @param buttonName target button name
      * @param pageName specified page instance name
      */
-    public void clickInteraction(WebElement button, String buttonName, String pageName, ScrollFunction scroller){
+    public void clickInteraction(WebElement button, String buttonName, String pageName, Boolean scroll){
         log.info("Clicking " +
                 highlighted(BLUE, buttonName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );
-        utilities.clickElement(button, (target) -> scroller.scroll(target).click());
+        utilities.clickElement(button, scroll);
     }
 
     /**
@@ -104,8 +104,13 @@ public class ElementInteractions implements PolymorphicUtilities {
      * Click the {button name} on the {page name}
      *
      */
-    public void clickInteraction(WebElement button, ScrollFunction scroller){
-        clickElement(button, (target) -> scroller.scroll(target).click());
+    public void clickInteraction(WebElement button, Boolean scroll, String buttonName, String pageName){
+        log.info("Clicking " +
+                highlighted(BLUE, buttonName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clickElement(button, scroll);
     }
 
     /**
@@ -401,7 +406,7 @@ public class ElementInteractions implements PolymorphicUtilities {
      * @param pageName specified page instance name
      */
     public void waitUntilAbsence(WebElement element, String elementName, String pageName){
-        log.info("Waiting for the absence of " +
+        log.info("Waiting for absence of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
@@ -797,6 +802,11 @@ public class ElementInteractions implements PolymorphicUtilities {
     }
 
     @Override
+    public void clickElement(WebElement element, String elementName, String pageName) {
+
+    }
+
+    @Override
     public void clickIfPresent(WebElement element, Boolean scroll) {
 
     }
@@ -813,26 +823,6 @@ public class ElementInteractions implements PolymorphicUtilities {
 
     @Override
     public Boolean elementIs(WebElement element, @NotNull ElementState state) {
-        return null;
-    }
-
-    @Override
-    public WebElement hoverOver(WebElement element) {
-        return null;
-    }
-
-    @Override
-    public <T> T acquireNamedComponentAmongst(List<T> items, String selectionName) {
-        return null;
-    }
-
-    @Override
-    public WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName) {
-        return null;
-    }
-
-    @Override
-    public WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue) {
         return null;
     }
 

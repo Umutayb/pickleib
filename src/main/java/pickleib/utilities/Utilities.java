@@ -1,5 +1,6 @@
 package pickleib.utilities;
 
+import collections.Bundle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
@@ -14,8 +15,9 @@ import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
-import collections.Bundle;
-import utils.*;
+import utils.Printer;
+import utils.StringUtilities;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -24,6 +26,9 @@ import java.util.StringJoiner;
 import static pickleib.driver.DriverFactory.DriverType.Mobile;
 import static pickleib.driver.DriverFactory.DriverType.Web;
 import static pickleib.enums.ElementState.*;
+import static pickleib.enums.ElementState.absent;
+import static pickleib.enums.ElementState.displayed;
+import static pickleib.utilities.element.ElementAcquisition.*;
 import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
@@ -870,5 +875,12 @@ public abstract class Utilities {
     public static boolean isAppiumElement(WebElement element){
         try {return ((RemoteWebElement) element).getWrappedDriver().getClass().isAssignableFrom(AppiumDriver.class);}
         catch (ClassCastException exception){return false;}
+    }
+
+    /**
+     * Closes the browser
+     */
+    public void quitDriver() {
+        driver.quit();
     }
 }
