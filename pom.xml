@@ -313,7 +313,7 @@
                 <arg>--pinentry-mode</arg>
                 <arg>loopback</arg>
               </gpgArguments>
-              <!--<skip>true</skip>-->
+              <skip>false</skip> <!--set true for local deployments, always set false before pushing-->
             </configuration>
           </execution>
         </executions>
