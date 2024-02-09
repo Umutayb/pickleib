@@ -1,17 +1,15 @@
 package pickleib.utilities.element;
 
 import context.ContextStore;
-import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
-import pickleib.utilities.ScrollFunction;
+import pickleib.utilities.interfaces.functions.ScrollFunction;
 import collections.Bundle;
-import pickleib.utilities.PolymorphicUtilities;
+import pickleib.utilities.interfaces.PolymorphicUtilities;
 import utils.Printer;
 import java.util.List;
 import java.util.Map;

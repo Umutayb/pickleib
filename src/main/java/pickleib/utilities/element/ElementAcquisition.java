@@ -13,7 +13,7 @@ import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
 import pickleib.exceptions.PickleibException;
-import pickleib.utilities.page.repository.PageRepository;
+import pickleib.utilities.interfaces.repository.PageRepository;
 import collections.Bundle;
 import collections.Pair;
 import utils.Printer;

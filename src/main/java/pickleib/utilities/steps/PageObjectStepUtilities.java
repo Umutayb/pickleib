@@ -4,15 +4,11 @@ import org.openqa.selenium.WebElement;
 import pickleib.driver.DriverFactory;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.interactions.MobileInteractions;
-import pickleib.mobile.utilities.MobileUtilities;
-import pickleib.utilities.Interactions;
-import pickleib.utilities.PolymorphicUtilities;
+import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.utilities.element.ElementAcquisition;
-import pickleib.utilities.element.ElementInteractions;
-import pickleib.utilities.page.repository.PageRepository;
+import pickleib.utilities.interfaces.repository.PageRepository;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.interactions.WebInteractions;
-import pickleib.web.utilities.WebUtilities;
 import utils.Printer;
 import utils.StringUtilities;
 

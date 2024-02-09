@@ -12,7 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
-import pickleib.utilities.PolymorphicUtilities;
+import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
@@ -71,7 +71,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      *                           with the last caught WebDriver exception.
      */
     public void clickElement(WebElement element, boolean scroll) {
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+
         super.clickElement(
                 element,
                 (targetElement) -> {
@@ -79,7 +79,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
                     else targetElement.click();
                 }
         );
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
+
     }
 
     /**

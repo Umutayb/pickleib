@@ -8,7 +8,6 @@ import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
 import pickleib.web.driver.PickleibWebDriver;
-import pickleib.web.utilities.WebUtilities;
 
 import java.time.Duration;
 

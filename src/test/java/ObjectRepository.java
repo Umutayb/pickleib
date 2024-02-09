@@ -1,4 +1,4 @@
-import pickleib.utilities.page.repository.PageRepository;
+import pickleib.utilities.interfaces.repository.PageRepository;
 
 public class ObjectRepository implements PageRepository {
     PageClass pageClass = new PageClass();

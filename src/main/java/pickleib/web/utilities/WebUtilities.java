@@ -19,7 +19,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
-import pickleib.utilities.PolymorphicUtilities;
+import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
 import collections.Bundle;

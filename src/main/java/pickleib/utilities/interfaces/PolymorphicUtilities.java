@@ -1,4 +1,4 @@
-package pickleib.utilities;
+package pickleib.utilities.interfaces;
 
 import collections.Bundle;
 import org.jetbrains.annotations.NotNull;

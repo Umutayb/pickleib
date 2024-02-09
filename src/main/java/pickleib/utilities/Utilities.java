@@ -12,6 +12,8 @@ import org.openqa.selenium.remote.RemoteWebElement;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
+import pickleib.utilities.interfaces.functions.ClickFunction;
+import pickleib.utilities.interfaces.functions.ScrollFunction;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import utils.Printer;
 import utils.StringUtilities;
@@ -100,7 +102,11 @@ public abstract class Utilities {
         WebDriverException caughtException = null;
         int counter = 0;
         do {
-            try {clicker.click(element);}
+            try {
+                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+                clicker.click(element);
+                return;
+            }
             catch (WebDriverException webDriverException){
                 if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
@@ -112,10 +118,13 @@ public abstract class Utilities {
                 }
                 counter++;
             }
+            finally {
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
+            }
         }
         while (!(System.currentTimeMillis() - initialTime > elementTimeout));
         if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        if (caughtException != null) log.warning(caughtException.getMessage());
+        log.warning(caughtException.getMessage());
         throw new PickleibException(caughtException);
     }
 
