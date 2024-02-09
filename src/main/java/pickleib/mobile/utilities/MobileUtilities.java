@@ -185,7 +185,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      *
      * @param direction target direction (UP or DOWN)
      */
-    public void scroll(@NotNull Direction direction) {
+    public void scrollOrSwipeInDirection(@NotNull Direction direction) {
         log.info("Scrolling in " + highlighted(StringUtilities.Color.BLUE, direction.name()) + " direction.");
         swiper(direction);
     }

@@ -1,11 +1,15 @@
 package pickleib.web.utilities;
 
+import collections.Bundle;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.failsafe.internal.util.Assert;
 import io.appium.java_client.functions.ExpectedCondition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.openqa.selenium.*;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.interactions.Actions;
@@ -19,10 +23,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
-import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.web.driver.PickleibWebDriver;
-import collections.Bundle;
 import utils.StringUtilities;
 
 import java.time.Duration;
@@ -30,18 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebElement;
-
-import static utils.StringUtilities.*;
 import static utils.StringUtilities.Color.*;
+import static utils.StringUtilities.*;
 
-public class WebUtilities extends Utilities implements PolymorphicUtilities {
+public abstract class WebUtilities extends Utilities implements PolymorphicUtilities {
 
     /**
      * WebUtilities for frameworks that use the Pickleib driver
@@ -480,27 +475,6 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
     }
 
     /**
-     * Waits actively for the page to load up to 10 seconds
-     */
-    public void waitUntilPageLoads(int waitingTime) {
-        long startTime = System.currentTimeMillis();
-        String url = driver.getCurrentUrl();
-        log.info("Waiting for page to be loaded -> " + markup(BLUE, url));
-
-        ExpectedCondition<Boolean> pageLoadCondition = driverLoad ->
-        {
-            assert driverLoad != null;
-            return ((JavascriptExecutor) driverLoad).executeScript("return document.readyState").equals("complete");
-        };
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(waitingTime));
-        wait.until(pageLoadCondition);
-        long elapsedTime = System.currentTimeMillis() - startTime;
-        int elapsedTimeSeconds = (int) ((double) elapsedTime / 1000);
-        log.info("The page is loaded in " + elapsedTimeSeconds + " second(s)");
-    }
-
-    /**
      * Navigate to url: {url}
      *
      * @param url target url
@@ -579,7 +553,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      *
      * @param cookies Map(String, String)
      */
-    public void putCookies(Map<String, String> cookies) {
+    public void addCookies(Map<String, String> cookies) {
         for (String cookieName : cookies.keySet()) {
             Cookie cookie = new Cookie(cookieName, contextCheck(cookies.get(cookieName)));
             driver.manage().addCookie(cookie);

@@ -872,7 +872,7 @@ public class MobileInteractions extends MobileUtilities {
      * <ul>
      *     <li><b>Click:</b> Executes a click interaction on the specified element.</li>
      *     <li><b>Fill:</b> Fills the specified input value into the specified input field.</li>
-     *     <li><b>Center:</b> Centers the specified element on the page using the provided {@code scroller} for scrolling.</li>
+     *     <li><b>Center:</b> Centers the specified element on the page using the provided {@code scroll} for scrolling.</li>
      *     <li><b>Verify:</b> Verifies that the specified element contains the expected attribute value.</li>
      * </ul>
      *
@@ -882,7 +882,7 @@ public class MobileInteractions extends MobileUtilities {
      *
      * @param bundles  The list of bundles, where each bundle contains information for a specific interaction.
      * @param pageName The name of the page where the interactions are performed.
-     * @param scroll   The {scroll} used for centering elements. It is applicable for 'click' and 'center' interactions.
+     * @param scroll   Scrolls if true
      * @throws EnumConstantNotPresentException If an unsupported interaction type is encountered in the bundle.
      */
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName, boolean scroll) {

@@ -7,6 +7,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
+import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
@@ -49,16 +50,29 @@ public class WebInteractions extends WebUtilities {
         this.scroll = scroll;
     }
 
+    /**
+     * Adds given values to the local storage
+     *
+     * @param form Map(String, String)
+     */
     public void addLocalStorageValues(Map<String, String> form) {
-        interact.addLocalStorageValues(form);
+        super.addValuesToLocalStorage(form);
     }
 
+    /**
+     * Adds given cookies
+     *
+     * @param cookies Map(String, String)
+     */
     public void addCookies(Map<String, String> cookies) {
-        interact.addCookies(cookies);
+        super.addCookies(cookies);
     }
 
+    /**
+     * Deletes all cookies
+     */
     public void deleteCookies() {
-        interact.deleteCookies();
+        super.deleteAllCookies();
     }
 
     /**
@@ -534,16 +548,94 @@ public class WebInteractions extends WebUtilities {
         super.pressKeysOnElement(element, elementName, pageName, keys);
     }
 
+    /**
+     * Fills the specified input element with the content of a file.
+     *
+     * <p>
+     * This method fills the provided {@code inputElement} with the content of a file specified by {@code absoluteFilePath}.
+     * The method logs information about the input name, page name, and the absolute file path being used.
+     * Before filling the input, it clears the existing content if specified.
+     * </p>
+     *
+     * @param inputElement     The {@code WebElement} representing the input field to be filled.
+     * @param inputName        The name of the input field for logging purposes.
+     * @param pageName         The name of the page where the interaction is performed for logging purposes.
+     * @param absoluteFilePath The absolute file path to the file whose content will be used to fill the input.
+     */
     public void fillInputWithFile(WebElement inputElement, String inputName, String pageName, String absoluteFilePath) {
-        interact.fillInputWithFile(inputElement, inputName, pageName, absoluteFilePath);
+        absoluteFilePath = contextCheck(absoluteFilePath);
+        log.info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, absoluteFilePath)
+        );
+        super.clearFillInput(
+                inputElement,
+                absoluteFilePath,
+                null,
+                false
+        );
     }
 
+    /**
+     * Executes interactions on a list of element bundles, based on the specified interaction type.
+     * <p>
+     * The interaction type is specified in the "Interaction Type" key of the map contained in each element bundle.
+     * <p>
+     *
+     * @param bundles  A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
+     * @param pageName The name of the page object.
+     * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
+     */
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName) {
-        interact.bundleInteraction(bundles, pageName);
+        bundleInteraction(bundles, pageName);
     }
 
-    public void scrollOrSwipeInDirection(Direction direction) {
-        scroll(direction);
+    /**
+     * Performs a series of interactions based on the provided list of bundles.
+     *
+     * <p>
+     * This method iterates through the given list of bundles, where each bundle contains information for a specific interaction.
+     * The interaction type is determined by the "Interaction Type" value in the bundle.
+     * The supported interaction types include:
+     * </p>
+     *
+     * <ul>
+     *     <li><b>Click:</b> Executes a click interaction on the specified element.</li>
+     *     <li><b>Fill:</b> Fills the specified input value into the specified input field.</li>
+     *     <li><b>Center:</b> Centers the specified element on the page using the provided {@code scroll} for scrolling.</li>
+     *     <li><b>Verify:</b> Verifies that the specified element contains the expected attribute value.</li>
+     * </ul>
+     *
+     * <p>
+     * For 'fill' interactions, an additional boolean parameter is added to specify whether to clear the input field before filling.
+     * </p>
+     *
+     * @param bundles  The list of bundles, where each bundle contains information for a specific interaction.
+     * @param pageName The name of the page where the interactions are performed.
+     * @param scroll   Scrolls if true
+     * @throws EnumConstantNotPresentException If an unsupported interaction type is encountered in the bundle.
+     */
+    public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName, boolean scroll) {
+        for (Bundle<String, WebElement, Map<String, String>> bundle : bundles) {
+            InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
+            switch (interactionType) {
+                case click -> clickElement(bundle.beta(), scroll, bundle.alpha(), pageName);
+                case fill ->
+                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), false, scroll);
+                case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);
+                case verify -> verifyElementContainsAttribute(
+                        bundle.beta(),
+                        bundle.alpha(),
+                        pageName,
+                        bundle.theta().get("Attribute Name"),
+                        contextCheck(bundle.theta().get("Attribute Value"))
+                );
+                default -> throw new EnumConstantNotPresentException(InteractionType.class, interactionType.name());
+            }
+        }
     }
 
     /**
@@ -691,7 +783,7 @@ public class WebInteractions extends WebUtilities {
      *
      * @param direction target direction (UP or DOWN)
      */
-    public void scroll(@NotNull Direction direction){
+    public void scrollOrSwipeInDirection(@NotNull Direction direction){
         log.info("Scrolling " + highlighted(BLUE, direction.name().toLowerCase()));
         String script = switch (direction) {
             case up -> "window.scrollBy(0,-document.body.scrollHeight)";
@@ -873,5 +965,27 @@ public class WebInteractions extends WebUtilities {
             }
         }
         else throw new RuntimeException("'" + eventName + "' event is not fired!");
+    }
+
+    /**
+     * Uploads a given file
+     *
+     * @param fileUploadInput upload element
+     * @param elementName     target element name
+     * @param pageName        specified page instance name
+     * @param directory       absolute file directory (excluding the file name)
+     * @param fileName        file name (including a file extension)
+     */
+    public void uploadFile(@NotNull WebElement fileUploadInput, String elementName, String pageName, String directory, String fileName) {
+        log.info("Uploading file " +
+                highlighted(BLUE, fileName) +
+                highlighted(GRAY, " to ") +
+                highlighted(BLUE, directory) +
+                highlighted(GRAY, " using ") +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName)
+        );
+        super.uploadFile(fileUploadInput, directory, fileName);
     }
 }

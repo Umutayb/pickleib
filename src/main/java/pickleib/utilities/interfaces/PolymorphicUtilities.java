@@ -392,7 +392,7 @@ public interface PolymorphicUtilities {
      *
      * @param direction target direction (UP or DOWN)
      */
-    void scroll(@NotNull Direction direction);
+    void scrollOrSwipeInDirection(@NotNull Direction direction);
 
     /**
      * Gets the parent class from a child element using a selector class
