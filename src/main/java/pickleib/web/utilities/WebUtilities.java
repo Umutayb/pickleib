@@ -24,10 +24,12 @@ import pickleib.utilities.Utilities;
 import pickleib.web.driver.PickleibWebDriver;
 import collections.Bundle;
 import utils.StringUtilities;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -43,69 +45,77 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
 
     /**
      * WebUtilities for frameworks that use the Pickleib driver
-     *
      */
-    public WebUtilities(){
+    public WebUtilities() {
         super(PickleibWebDriver.get());
         this.driver = PickleibWebDriver.get();
     }
 
     /**
      * WebUtilities for frameworks that do not use the Pickleib driver
-     *
      */
-    public WebUtilities(RemoteWebDriver driver){
+    public WebUtilities(RemoteWebDriver driver) {
         super(driver);
     }
 
-    public RemoteWebDriver driver(){
+    public RemoteWebDriver driver() {
         return this.driver;
     }
 
-    public WebDriverWait driverWait(){
+    public WebDriverWait driverWait() {
         return PickleibWebDriver.driverWait();
     }
 
     /**
-     * Clicks the specified {@code element} with retry mechanism and optional scrolling.
+     * Clicks an {element} with optional scrolling after waiting for its state to be enabled.
      *
-     * <p>
-     * This method attempts to click the given {@code element} with a retry mechanism.
-     * It uses an implicit wait of 500 milliseconds during the retry attempts.
-     * The method supports an optional {@code scroller} for scrolling before clicking the element.
-     * If the {@code scroller} is provided, it scrolls towards the specified location before clicking.
-     * </p>
-     *
-     * <p>
-     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
-     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
-     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
-     * </p>
-     *
-     * @param element   The target {@code WebElement} to be clicked with retry mechanism.
-     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
-     *                          with the last caught WebDriver exception.
+     * @param element     target element
+     * @param scroll      scrolls if true
      */
-    public void clickElement(WebElement element, boolean scroll){
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-        super.clickElement(
+    public void clickElement(WebElement element, boolean scroll) {
+        clickElement(
                 element,
                 (targetElement) -> {
                     if (scroll) this.centerElement(targetElement).click();
                     else targetElement.click();
                 }
         );
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
+    }
+
+    /**
+     * Clicks an {element} after waiting for its state to be enabled.
+     *
+     * @param element     target element
+     */
+    public void clickElement(WebElement element) {
+        super.clickElement(
+                element,
+                WebElement::click
+        );
+    }
+
+    /**
+     * Clicks an element if its present (in enabled state)
+     *
+     * @param element target element
+     * @param scroll  The {@code scroll} to be used for scrolling.
+     */
+    public void clickIfPresent(WebElement element, Boolean scroll) {
+        try {
+            clickElement(element, scroll);
+        } catch (WebDriverException exception) {
+            log.warning(exception.getMessage());
+        }
     }
 
     /**
      * Clears and fills a given input
      *
      * @param inputElement target input element
-     * @param inputText input text
-     * @param verify verifies the input text value equals to an expected text if true
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void clearFillInput(WebElement inputElement, String inputText, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, boolean verify) {
         fillInputElement(inputElement, inputText, null, verify);
     }
 
@@ -113,10 +123,10 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * Clears and fills a given input
      *
      * @param inputElement target input element
-     * @param inputText input text
-     * @param verify verifies the input text value equals to an expected text if true
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify) {
         if (scroll) fillInputElement(inputElement, inputText, this::centerElement, verify);
         else fillInputElement(inputElement, inputText, null, verify);
     }
@@ -127,15 +137,14 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * @param url target url
      */
     @SuppressWarnings("UnusedReturnValue")
-    public String navigate(String url){
+    public String navigate(String url) {
         try {
             log.info("Navigating to " + highlighted(BLUE, url));
 
-            if (!url.contains("http")) url = "https://"+url;
+            if (!url.contains("http")) url = "https://" + url;
 
             driver.get(url);
-        }
-        catch (Exception gamma){
+        } catch (Exception gamma) {
             driver.quit();
             throw new PickleibException("Unable to navigate to the \"" + StringUtilities.highlighted(YELLOW, url) + "\"");
         }
@@ -145,11 +154,11 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
     /**
      * Sets the window size
      *
-     * @param width windows width
+     * @param width  windows width
      * @param height windows height
      */
     public void setWindowSize(Integer width, Integer height) {
-        driver.manage().window().setSize(new Dimension(width,height));
+        driver.manage().window().setSize(new Dimension(width, height));
     }
 
     /**
@@ -157,7 +166,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      *
      * @param direction backwards or forwards
      */
-    public void navigateBrowser(Navigation direction){
+    public void navigateBrowser(Navigation direction) {
         try {
             log.info("Navigating " + StringUtilities.highlighted(BLUE, direction.name()));
 
@@ -166,19 +175,18 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
                 case backwards -> driver.navigate().back();
                 default -> throw new EnumConstantNotPresentException(Navigation.class, direction.name());
             }
-        }
-        catch (Exception e){
-            throw new PickleibException("Unable to navigate browser \"" + StringUtilities.highlighted(YELLOW, direction.name())+"\" due to: " + e);
+        } catch (Exception e) {
+            throw new PickleibException("Unable to navigate browser \"" + StringUtilities.highlighted(YELLOW, direction.name()) + "\" due to: " + e);
         }
     }
 
     /**
      * Scrolls through a list of elements until an element containing a given text is found
      *
-     * @param list target element list
+     * @param list        target element list
      * @param elementText target element text
      */
-    public void scrollInContainer(List<WebElement> list, String elementText){
+    public void scrollInContainer(List<WebElement> list, String elementText) {
         for (WebElement element : list) {
             scrollWithJS(element);
             if (element.getText().contains(elementText)) {
@@ -192,11 +200,11 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      *
      * @param handle target tab/window
      */
-    public String switchWindowByHandle(@Nullable String handle){
+    public String switchWindowByHandle(@Nullable String handle) {
         log.info("Switching to the next tab");
         String parentWindowHandle = driver.getWindowHandle();
         if (handle == null)
-            for (String windowHandle: driver.getWindowHandles()) {
+            for (String windowHandle : driver.getWindowHandles()) {
                 if (!windowHandle.equalsIgnoreCase(parentWindowHandle))
                     driver = (RemoteWebDriver) driver.switchTo().window((windowHandle));
             }
@@ -209,7 +217,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      *
      * @param tabIndex target tab/window
      */
-    public String switchWindowByIndex(Integer tabIndex){
+    public String switchWindowByIndex(Integer tabIndex) {
         log.info("Switching the tab with the window index: " + tabIndex);
         String parentWindowHandle = driver.getWindowHandle();
         List<String> handles = new ArrayList<>(driver.getWindowHandles());
@@ -223,7 +231,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      *
      * @param url target url
      */
-    public void verifyUrlContains(String url){
+    public void verifyUrlContains(String url) {
         Assert.isTrue(driver.getCurrentUrl().contains(StringUtilities.contextCheck(url)),
                 "The url does not contain '" + url + "'! -> " + driver.getCurrentUrl()
         );
@@ -234,7 +242,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      *
      * @param url target url
      */
-    public void verifyCurrentUrl(String url){
+    public void verifyCurrentUrl(String url) {
         Assert.isTrue(driver.getCurrentUrl().equalsIgnoreCase(StringUtilities.contextCheck(url)),
                 "The url does not match with '" + url + "'! -> " + driver.getCurrentUrl()
         );
@@ -246,7 +254,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * @param pageTitle target page
      */
     //This method verifies the page title
-    public void verifyPageTitle(String pageTitle){
+    public void verifyPageTitle(String pageTitle) {
         Assert.isTrue(driver.getTitle().contains(StringUtilities.contextCheck(pageTitle)),
                 "The page title does not contain '" + pageTitle + "'! -> " + driver.getTitle()
         );
@@ -277,7 +285,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * @return returns the targeted element
      */
     //This method scrolls an element to the center of the view
-    public WebElement centerElement(WebElement element){
+    public WebElement centerElement(WebElement element) {
         String scrollScript = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
                 + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
@@ -295,7 +303,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * @return returns an object with the attributes of a given element
      */
     //This method returns all the attributes of an element as an object
-    public JsonObject getElementJson(WebElement element){
+    public JsonObject getElementJson(WebElement element) {
         String object = ((JavascriptExecutor) driver).executeScript(
                 "var items = {}; " +
                         "for (index = 0; index < arguments[0].attributes.length; ++index) " +
@@ -312,7 +320,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * @param element target element
      * @return returns an object with the attributes of a given element
      */
-    public JSONObject getElementJSON(WebElement element){
+    public JSONObject getElementJSON(WebElement element) {
         try {
             String object = ((JavascriptExecutor) driver).executeScript(
                     "var items = {}; " +
@@ -322,8 +330,9 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
                     element
             ).toString();
             return (JSONObject) new JSONParser().parse(object);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
-        catch (ParseException e) {throw new RuntimeException(e);}
     }
 
     /**
@@ -331,14 +340,13 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      *
      * @param element target element
      */
-    public void printElementAttributes(WebElement element){
+    public void printElementAttributes(WebElement element) {
         JSONObject attributeJSON = getElementJSON(element);
         for (Object attribute : attributeJSON.keySet())
-            log.info(attribute +" : "+ attributeJSON.get(attribute));
+            log.info(attribute + " : " + attributeJSON.get(attribute));
     }
 
     /**
-     *
      * Click button includes {button text} text with css locator
      *
      * @param cssSelector target text
@@ -350,26 +358,37 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
     }
 
     /**
-     *
      * Click on a button that contains {button text} text
      * It does not scroll by default.
      *
      * @param buttonText target button text
      */
-    public void clickButtonByItsText(String buttonText) {
+    public void clickByText(String buttonText) {
         log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
         WebElement element = getElementByText(buttonText);
         clickElement(element, this::centerElement);
     }
 
     /**
+     * Clicks on a button that contains {button text} text
+     * It does not scroll by default.
      *
+     * @param buttonText target button text
+     * @param scroll     The {scroll} to be used for scrolling.
+     */
+    public void clickButtonByItsText(String buttonText, boolean scroll) {
+        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
+        WebElement element = getElementByText(buttonText);
+        clickElement(element, scroll);
+    }
+
+    /**
      * Click iFrame element {element name} in {iframe name} on the {page name}
      *
-     * @param iframe target iframe
+     * @param iframe  target iframe
      * @param element target element
      */
-    public void clickIframeButton(WebElement iframe, WebElement element){
+    public void clickIframeButton(WebElement iframe, WebElement element) {
         driver.switchTo().frame(iframe);
         centerElement(element);
         clickElement(element);
@@ -377,40 +396,38 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
     }
 
     /**
-     *
      * Fill iFrame element {element name} of {iframe name} on the {page name} with text: {input text}
      *
-     * @param iframe target iframe
-     * @param element target element
+     * @param iframe    target iframe
+     * @param element   target element
      * @param inputText input text
      */
     public void fillIframeInputElement(
             WebElement iframe,
             WebElement element,
-            String inputText){
+            String inputText) {
         inputText = StringUtilities.contextCheck(inputText);
         elementIs(iframe, ElementState.displayed);
         driver.switchTo().frame(iframe);
-        clearFillInput(element, inputText, this::centerElement,true);
+        clearFillInput(element, inputText, this::centerElement, true);
         driver.switchTo().parentFrame();
     }
 
     /**
-     *
      * Fill {iframe name} iframe form input on the {page name}
      *
-     * @param bundles list of bundles where input element, input name and input texts are stored
-     * @param iFrame target element
+     * @param bundles  list of bundles where input element, input name and input texts are stored
+     * @param iFrame   target element
      * @param pageName specified page instance name
      */
     public void fillIframeForm(
             List<Bundle<WebElement, String, String>> bundles,
             WebElement iFrame,
-            String pageName){
+            String pageName) {
         for (Bundle<WebElement, String, String> bundle : bundles) {
             log.info("Filling " +
                     highlighted(BLUE, bundle.theta()) +
-                    highlighted(GRAY," on the ") +
+                    highlighted(GRAY, " on the ") +
                     highlighted(BLUE, pageName) +
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, bundle.beta())
@@ -434,7 +451,7 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * @param element target element
      * @return returns the selected element
      */
-    public WebElement hoverOver(WebElement element){
+    public WebElement hoverOver(WebElement element) {
         long initialTime = System.currentTimeMillis();
         Actions actions = new Actions(driver);
         String caughtException = null;
@@ -445,14 +462,12 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
                 centerElement(element);
                 actions.moveToElement(element).build().perform();
                 break;
-            }
-            catch (WebDriverException webDriverException){
+            } catch (WebDriverException webDriverException) {
                 if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                     counter++;
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                     counter++;
@@ -486,7 +501,6 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
     }
 
     /**
-     *
      * Navigate to url: {url}
      *
      * @param url target url
@@ -501,17 +515,17 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * Create a custom script to listen for an event by generating a unique event key and catches this key in the console
      * Ex: "dataLayerObject.listen(eventName, function(){console.warn(eventKey)});"
      *
-     * @param eventName event name of the event that is expected to be fired
+     * @param eventName      event name of the event that is expected to be fired
      * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen( eventName );"
      * @return true if the specified event was fired.
      */
-    public boolean isEventFired(String eventName, String listenerScript){
+    public boolean isEventFired(String eventName, String listenerScript) {
         log.info("Listening to '" + eventName + "' event");
         String eventKey = generateRandomString(eventName + "#", 6, false, true);
-        listenerScript = listenerScript.replace(eventName, "'" + eventName + "', function(){console.warn('" + eventKey +"')}");
+        listenerScript = listenerScript.replace(eventName, "'" + eventName + "', function(){console.warn('" + eventKey + "')}");
         executeScript(listenerScript);
         LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
-        for (LogEntry entry: logs.getAll())
+        for (LogEntry entry : logs.getAll())
             if (entry.toString().contains(eventKey)) {
                 log.success("'" + eventName + "' event is fired!");
                 return true;
@@ -523,15 +537,15 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
     /**
      * Checks if an event was fired
      *
-     * @param eventKey key that is meant to be caught from the console in case the event fires
+     * @param eventKey       key that is meant to be caught from the console in case the event fires
      * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen('page.info', function(){console.warn(eventKey)});"
      * @return true if the specified event was fired.
      */
-    public boolean isEventFiredByScript(String eventKey, String listenerScript){
+    public boolean isEventFiredByScript(String eventKey, String listenerScript) {
         log.info("Listening to '" + markup(BLUE, eventKey) + "' event");
         executeScript(listenerScript);
         LogEntries logs = driver.manage().logs().get(LogType.BROWSER);
-        for (LogEntry entry: logs.getAll()) if (entry.toString().contains(eventKey)) return true;
+        for (LogEntry entry : logs.getAll()) if (entry.toString().contains(eventKey)) return true;
         return false;
     }
 
@@ -541,19 +555,18 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
      * @param script script that is to be executed
      * @return object if the scripts yield one
      */
-    public Object executeScript(String script){
+    public Object executeScript(String script) {
         log.info("Executing script: " + highlighted(BLUE, script));
         return ((JavascriptExecutor) driver).executeScript(script);
     }
 
     /**
-     *
      * Adds given values to the local storage
      *
      * @param form Map(String, String)
      */
-    public void addValuesToLocalStorage(Map<String, String> form){
-        for (String valueKey: form.keySet()) {
+    public void addValuesToLocalStorage(Map<String, String> form) {
+        for (String valueKey : form.keySet()) {
             RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(driver);
             RemoteWebStorage webStorage = new RemoteWebStorage(executeMethod);
             LocalStorage storage = webStorage.getLocalStorage();
@@ -562,13 +575,12 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
     }
 
     /**
-     *
      * Adds given cookies
      *
      * @param cookies Map(String, String)
      */
-    public void putCookies(Map<String, String> cookies){
-        for (String cookieName: cookies.keySet()) {
+    public void putCookies(Map<String, String> cookies) {
+        for (String cookieName : cookies.keySet()) {
             Cookie cookie = new Cookie(cookieName, contextCheck(cookies.get(cookieName)));
             driver.manage().addCookie(cookie);
         }
@@ -577,23 +589,29 @@ public class WebUtilities extends Utilities implements PolymorphicUtilities {
     /**
      * Deletes all cookies
      */
-    public void deleteAllCookies() {driver.manage().deleteAllCookies();}
+    public void deleteAllCookies() {
+        driver.manage().deleteAllCookies();
+    }
 
     /**
      * Switches to present alert
      *
      * @return returns the alert
      */
-    public Alert getAlert(){return driver.switchTo().alert();}
+    public Alert getAlert() {
+        return driver.switchTo().alert();
+    }
 
     /**
      * Uploads a given file
      *
      * @param fileUploadInput upload element
-     * @param directory absolute file directory (excluding the file name)
-     * @param fileName file name (including a file extension)
+     * @param directory       absolute file directory (excluding the file name)
+     * @param fileName        file name (including a file extension)
      */
-    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
+    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName) {
+        fileUploadInput.sendKeys(directory + "/" + fileName);
+    }
 
     /**
      * Waits actively for the page to load up to 10 seconds

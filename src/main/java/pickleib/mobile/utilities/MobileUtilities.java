@@ -11,9 +11,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
-import pickleib.exceptions.PickleibException;
-import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
 
@@ -51,27 +50,12 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
     }
 
     /**
-     * Clicks the specified {@code element} with retry mechanism and optional scrolling.
+     * Clicks an {element} with optional scrolling after waiting for its state to be enabled.
      *
-     * <p>
-     * This method attempts to click the given {@code element} with a retry mechanism.
-     * It uses an implicit wait of 500 milliseconds during the retry attempts.
-     * The method supports an optional {@code scroll} for scrolling before clicking the element.
-     * If the {@code scroller} is provided, it scrolls towards the specified location before clicking.
-     * </p>
-     *
-     * <p>
-     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
-     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
-     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
-     * </p>
-     *
-     * @param element The target {@code WebElement} to be clicked with retry mechanism.
-     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
-     *                           with the last caught WebDriver exception.
+     * @param element     target element
+     * @param scroll      scrolls if true
      */
     public void clickElement(WebElement element, boolean scroll) {
-
         super.clickElement(
                 element,
                 (targetElement) -> {
@@ -79,34 +63,18 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
                     else targetElement.click();
                 }
         );
-
     }
 
     /**
-     * Clicks the specified {@code element}.
+     * Clicks an {element} after waiting for its state to be enabled.
      *
-     * <p>
-     * This method attempts to click the given {@code element} with a retry mechanism.
-     * It uses an implicit wait of 500 milliseconds during the retry attempts.
-     * </p>
-     *
-     * <p>
-     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
-     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
-     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
-     * </p>
-     *
-     * @param element The target {@code WebElement} to be clicked with retry mechanism.
-     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
-     *                           with the last caught WebDriver exception.
+     * @param element     target element
      */
     public void clickElement(WebElement element) {
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
         super.clickElement(
                 element,
                 WebElement::click
         );
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
     }
 
     /**
@@ -126,7 +94,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * It does not scroll by default.
      *
      * @param buttonText target button text
-     * @param scroll     The {scroll} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param scroll     The {scroll} to be used for scrolling.
      */
     public void clickButtonByText(String buttonText, boolean scroll) {
         log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
@@ -138,7 +106,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
      * Clicks an element if its present (in enabled state)
      *
      * @param element target element
-     * @param scroll  The {@code scroll} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param scroll  The {@code scroll} to be used for scrolling.
      */
     public void clickIfPresent(WebElement element, Boolean scroll) {
         try {

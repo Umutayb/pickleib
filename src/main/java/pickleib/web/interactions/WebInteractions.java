@@ -60,41 +60,164 @@ public class WebInteractions extends WebUtilities {
         interact.deleteCookies();
     }
 
+    /**
+     * Clicks a button by its {text} text
+     *
+     * @param text target text
+     */
     public void clickByText(String text) {
-        clickButtonByItsText(text);
+        log.info("Clicking button by text " + highlighted(BLUE, text));
+        super.clickButtonByItsText(text);
     }
 
-    public void waitFor(Integer duration) {
-        super.waitFor(duration);
+    /**
+     * Clicks an element acquired by text with optional scrolling.
+     *
+     * @param buttonText target element text
+     * @param scroll     scrolls if true
+     */
+    public void clickButtonWithText(String buttonText, boolean scroll) {
+        log.info("Clicking button with text " + highlighted(BLUE, buttonText));
+        if (scroll) super.clickButtonByItsText(buttonText, scroll);
+        else super.clickByText(buttonText);
     }
 
-    public void clickInteraction(WebElement button, String buttonName, String pageName) {
-        interact.clickInteraction(button, buttonName, pageName);
+    /**
+     * Clicks an {element} with the {element name} on the {page name} with optional scrolling
+     * after waiting for its state to be enabled
+     *
+     * @param element     target element
+     * @param scroll      scrolls if true
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     */
+    public void clickElement(WebElement element, boolean scroll, String elementName, String pageName) {
+        log.info("Clicking " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName)
+        );
+        clickElement(element, scroll);
     }
 
-    public void clickInteraction(WebElement button) {
-        interact.clickInteraction(button);
-
+    /**
+     * Clicks an {element} with the {element name} on the {page name} after waiting for its state to be enabled
+     *
+     * @param element     target element
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     */
+    public void clickElement(WebElement element, String elementName, String pageName) {
+        log.info("Clicking " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clickElement(element);
     }
 
+    /**
+     * Waits for a certain while
+     *
+     * @param seconds duration as a double
+     */
+    //This method makes the thread wait for a certain while
+    public void waitFor(double seconds) {
+        log.info("Waiting for " + highlighted(BLUE, String.valueOf(seconds)));
+        super.waitFor(seconds);
+    }
+
+    /**
+     * Saves element attribute to context
+     *
+     * @param element       target element
+     * @param attributeName attribute name
+     * @param elementName   target element name
+     * @param pageName      specified page instance name
+     */
     public void saveAttributeValue(WebElement element, String attributeName, String elementName, String pageName) {
-        interact.saveAttributeValue(element, attributeName, elementName, pageName);
+        log.info("Saving attribute " +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " of ") +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " to context")
+        );
+        super.updateContextByElementAttribute(element, attributeName, elementName, pageName);
+        log.success("Attribute " +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " of ") +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " from ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " was saved to context!"));
     }
 
+    /**
+     * Clicks coordinates specified by the given offsets from the center of a given {element}
+     * with the {element name} on the {page name}.
+     *
+     * @param element     target element
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     */
     public void clickTowards(WebElement element, String elementName, String pageName) {
-        interact.clickTowards(element, elementName, pageName);
+        log.info("Clicking towards " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        super.clickTowards(element);
     }
 
-    public void clickIfPresent(WebElement element, String elementName, String pageName) {
-        interact.clickIfPresent(element, elementName, pageName);
+    /**
+     * Clicks an {element} with the {element name} on the {page name} after waiting for its state to be enabled.
+     *
+     * @param element     target element
+     * @param scroll      scrolls if true
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     */
+    public void clickIfPresent(WebElement element, Boolean scroll, String elementName, String pageName) {
+        log.info("Checking if " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " presents on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clickIfPresent(element, scroll);
     }
 
-    public void basicFill(WebElement inputElement, String inputName, String pageName, String input, boolean verify) {
-        interact.basicFill(inputElement, inputName, pageName, input, verify);
+    /**
+     * Clears and fills a given input.
+     *
+     * @param inputElement target input element
+     * @param elementName  target element name
+     * @param pageName     specified page instance name
+     * @param inputText    input text
+     * @param scroll       scrolls if true
+     * @param verify       verifies the input text value equals to an expected text if true
+     */
+    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, @NotNull boolean scroll, boolean verify) {
+        log.info("Clearing input " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        clearFillInput(inputElement, inputText, scroll, verify);
     }
 
+    /**
+     * Fills input form
+     *
+     * @param bundles  list of bundles where input element, input text and boolean value
+     *                 (true - if the input text value equals to an expected text) are stored
+     * @param pageName specified page instance name
+     */
     public void fillForm(List<Bundle<WebElement, String, String>> bundles, String pageName) {
-        interact.fillForm(bundles, pageName);
+        log.info("Filling form on " + highlighted(BLUE, pageName));
+        super.fillInputForm(bundles, pageName);
+        log.success("Form was filled on " + highlighted(BLUE, pageName));
     }
 
     public void verifyText(WebElement element, String elementName, String pageName, String expectedText) {
@@ -151,15 +274,6 @@ public class WebInteractions extends WebUtilities {
 
     public void verifyPresenceOfListedElements(List<Bundle<WebElement, String, String>> bundles, WebElement element, List<WebElement> elements, String pageName, List<Map<String, String>> signForms) {
         interact.verifyPresenceOfListedElements(bundles, element, elements, pageName, signForms);
-    }
-
-    public void clickButtonByText(String buttonText, boolean scroll) {
-        if (scroll) interact.clickButtonByText(buttonText, this::centerElement);
-        else interact.clickButtonByText(buttonText);
-    }
-
-    public void clickButtonByText(String buttonText) {
-        interact.clickButtonByText(buttonText);
     }
 
     public void updateContext(String key, String value) {
@@ -374,6 +488,8 @@ public class WebInteractions extends WebUtilities {
     public void clickIframeElement(WebElement iframe, WebElement element, String elementName, String iframeName, String pageName){
         log.info("Clicking i-frame element " +
                 highlighted(BLUE, elementName) +
+                highlighted(BLUE, " in i-frame ") +
+                highlighted(BLUE, iframeName) +
                 highlighted(GRAY," on the ") +
                 highlighted(BLUE, pageName)
         );

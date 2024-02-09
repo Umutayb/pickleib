@@ -49,7 +49,7 @@ public class MobileInteractions extends MobileUtilities {
      * @param direction target direction (UP or DOWN)
      */
     public void scroll(@NotNull Direction direction) {
-        log.info("Scrolling in dirction " + highlighted(BLUE, direction.name()));
+        log.info("Scrolling in direction " + highlighted(BLUE, direction.name()));
         swiper(direction);
     }
 
@@ -70,26 +70,13 @@ public class MobileInteractions extends MobileUtilities {
     }
 
     /**
-     * Clicks the specified {@code element} with the {element name} on the {page name} with retry mechanism and optional scrolling.
+     * Clicks an {element} with the {element name} on the {page name} with optional scrolling
+     * after waiting for its state to be enabled
      *
-     * <p>
-     * This method attempts to click the given {@code element} with a retry mechanism.
-     * It uses an implicit wait of 500 milliseconds during the retry attempts.
-     * The method supports an optional {@code scroll} for scrolling before clicking the element.
-     * If the {@code scroller} is provided, it scrolls towards the specified location before clicking.
-     * </p>
-     *
-     * <p>
-     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
-     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
-     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
-     * </p>
-     *
-     * @param element     The target {@code WebElement} to be clicked with retry mechanism.
+     * @param element     target element
+     * @param scroll      scrolls if true
      * @param elementName target element name
      * @param pageName    specified page instance name
-     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
-     *                           with the last caught WebDriver exception.
      */
     public void clickElement(WebElement element, boolean scroll, String elementName, String pageName) {
         log.info("Clicking " +
@@ -101,24 +88,11 @@ public class MobileInteractions extends MobileUtilities {
     }
 
     /**
-     * Clicks the specified {@code element} with the {element name} on the {page name}.
+     * Clicks an {element} with the {element name} on the {page name} after waiting for its state to be enabled
      *
-     * <p>
-     * This method attempts to click the given {@code element} with a retry mechanism.
-     * It uses an implicit wait of 500 milliseconds during the retry attempts.
-     * </p>
-     *
-     * <p>
-     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
-     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
-     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
-     * </p>
-     *
-     * @param element     The target {@code WebElement} to be clicked with retry mechanism.
+     * @param element     target element
      * @param elementName target element name
      * @param pageName    specified page instance name
-     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
-     *                           with the last caught WebDriver exception.
      */
     public void clickElement(WebElement element, String elementName, String pageName) {
         log.info("Clicking " +
@@ -126,7 +100,7 @@ public class MobileInteractions extends MobileUtilities {
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickElement(element);
+        super.clickElement(element);
     }
 
     /**
@@ -150,7 +124,7 @@ public class MobileInteractions extends MobileUtilities {
      * Clicks an {element} with the {element name} on the {page name} after waiting for its state to be enabled.
      *
      * @param element     target element
-     * @param scroll      The {@code scroll} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param scroll      scrolls if true
      * @param elementName target element name
      * @param pageName    specified page instance name
      */
@@ -267,18 +241,18 @@ public class MobileInteractions extends MobileUtilities {
      */
     public void clickButtonWithText(String buttonText, boolean scroll) {
         log.info("Clicking button with text " + highlighted(BLUE, buttonText));
-        if (scroll) clickButtonByText(buttonText, scroll);
+        if (scroll) super.clickButtonByText(buttonText, scroll);
         else super.clickByText(buttonText);
     }
 
     /**
      * Clicks a button by its {text} text
      *
-     * @param buttonText target text
+     * @param text target text
      */
-    public void clickByText(String buttonText) {
-        log.info("Clicking button by text " + highlighted(BLUE, buttonText));
-        super.clickByText(buttonText);
+    public void clickByText(String text) {
+        log.info("Clicking button by text " + highlighted(BLUE, text));
+        super.clickByText(text);
     }
 
     /**
