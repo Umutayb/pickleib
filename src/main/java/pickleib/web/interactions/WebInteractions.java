@@ -9,6 +9,7 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
+import pickleib.exceptions.PickleibVerificationException;
 import pickleib.utilities.element.ElementInteractions;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.web.driver.PickleibWebDriver;
@@ -216,72 +217,321 @@ public class WebInteractions extends WebUtilities {
      */
     public void fillForm(List<Bundle<WebElement, String, String>> bundles, String pageName) {
         log.info("Filling form on " + highlighted(BLUE, pageName));
-        super.fillInputForm(bundles, pageName);
+        fillInputForm(bundles, pageName);
         log.success("Form was filled on " + highlighted(BLUE, pageName));
     }
 
+    /**
+     * Verifies the text of {element name} on the {page name} to be: {expected text}
+     *
+     * @param element      target element
+     * @param expectedText expected text
+     */
     public void verifyText(WebElement element, String elementName, String pageName, String expectedText) {
-        interact.verifyText(element, elementName, pageName, expectedText);
+        log.info("Verifying text " +
+                highlighted(BLUE, expectedText) +
+                highlighted(GRAY, " of element ") +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName)
+        );
+        super.verifyElementText(element, expectedText);
+        log.success("Text of element " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " is ") +
+                highlighted(BLUE, expectedText) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName));
     }
 
+    /**
+     * Verifies the text of {element name} on the {page name} to contain: {expected text}
+     *
+     * @param element      target element
+     * @param elementName  target element name
+     * @param pageName     specified page instance name
+     * @param expectedText expected text
+     */
     public void verifyContainsText(WebElement element, String elementName, String pageName, String expectedText) {
-        interact.verifyContainsText(element, elementName, pageName, expectedText);
+        log.info("Verifying that text of element " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " contains ") +
+                highlighted(BLUE, expectedText) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName)
+        );
+        verifyElementContainsText(element, expectedText);
+        log.success("Text of element " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " contains ") +
+                highlighted(BLUE, expectedText) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName));
     }
 
+    /**
+     * Verifies the text of an element from the list on the {page name}.
+     *
+     * @param bundles  list of bundles where element text, element name and expected text are stored
+     * @param pageName specified page instance name
+     */
     public void verifyListedText(List<Bundle<WebElement, String, String>> bundles, String pageName) {
-        interact.verifyListedText(bundles, pageName);
+        log.info("Verifying the text of elements on " + highlighted(BLUE, pageName));
+        verifyListedElementText(bundles, pageName);
+        log.success("Text of the elements was verified on " + highlighted(BLUE, pageName));
     }
 
+    /**
+     * Verifies the presence of an element {element name} on the {page name}
+     *
+     * @param element     target element
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     */
     public void verifyPresence(WebElement element, String elementName, String pageName) {
-        interact.verifyPresence(element, elementName, pageName);
+        log.info("Verifying the presence of " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName)
+        );
+        super.verifyElementState(element, ElementState.displayed);
+        log.success("Presence of the element " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " was verified on ") +
+                highlighted(BLUE, pageName));
     }
 
+    /**
+     * Closes the browser
+     */
     public void quitDriver() {
-        interact.quitDriver();
+        super.quitDriver();
     }
 
-    public void verifyState(WebElement element, String elementName, String pageName, ElementState expectedState) {
-        interact.verifyState(element, elementName, pageName, expectedState);
+    /**
+     * Verifies a given element is in expected state
+     *
+     * @param element     target element
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     * @param state       expected state
+     * @return returns the element if its in expected state
+     */
+    public WebElement verifyElementState(WebElement element, String elementName, String pageName, ElementState state) {
+        log.info("Verifying that the state of " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " is ") +
+                highlighted(BLUE, state.name()) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        return verifyElementState(element, state);
     }
 
-    public boolean elementIs(WebElement element, String elementName, String pageName, ElementState expectedState) {
-        return interact.elementIs(element, elementName, pageName, expectedState);
+    /**
+     * Waits until a given element is in expected state
+     *
+     * @param element     target element
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     * @param state       expected state
+     * @return returns true if an element is in the expected state
+     */
+    public Boolean elementIs(WebElement element, String elementName, String pageName, @NotNull ElementState state) {
+        log.info("Verifying that the state of " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " is ") +
+                highlighted(BLUE, state.name()) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        return elementIs(element, state);
     }
 
+    /**
+     * Waits for absence of an element {element name} on the {page name}
+     *
+     * @param element     target element
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     */
     public void waitUntilAbsence(WebElement element, String elementName, String pageName) {
-        interact.waitUntilAbsence(element, elementName, pageName);
+        log.info("Waiting for absence of " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        boolean absent = elementIs(element, ElementState.absent);
+        log.info("Element is absent ? " + highlighted(BLUE, String.valueOf(absent)));
     }
 
+    /**
+     * Waits for element {element name} on the {page name} to be visible
+     *
+     * @param element     target element
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     */
     public void waitUntilVisible(WebElement element, String elementName, String pageName) {
-        interact.waitUntilVisible(element, elementName, pageName);
+        log.info("Waiting visibility of " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        boolean visible = elementIs(element, ElementState.displayed);
+        log.info("Element is visible ? " + highlighted(BLUE, String.valueOf(visible)));
     }
 
+    /**
+     * Waits until an element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
+     *
+     * @param element        target element
+     * @param elementName    target element name
+     * @param pageName       specified page instance name
+     * @param attributeValue expected attribute value
+     * @param attributeName  target attribute name
+     */
     public void waitUntilElementContainsAttribute(WebElement element, String elementName, String pageName, String attributeName, String attributeValue) {
-        interact.waitUntilElementContainsAttribute(element, elementName, pageName, attributeName, attributeValue);
+        log.info("Waiting until element " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " contains ") +
+                highlighted(BLUE, attributeValue) +
+                highlighted(GRAY, " in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " attribute.")
+        );
+        boolean attributeFound = elementContainsAttribute(element, attributeName, attributeValue);
+        log.info("Attribute match ? " + highlighted(BLUE, String.valueOf(attributeFound)));
     }
 
+    /**
+     * Verifies that element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
+     *
+     * @param element        target element
+     * @param elementName    target element name
+     * @param pageName       specified page instance name
+     * @param attributeValue expected attribute value
+     * @param attributeName  target attribute name
+     */
     public void verifyElementContainsAttribute(WebElement element, String elementName, String pageName, String attributeName, String attributeValue) {
-        interact.verifyElementContainsAttribute(element, elementName, pageName, attributeName, attributeValue);
+        log.info("Verifying that " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " contains ") +
+                highlighted(BLUE, attributeValue) +
+                highlighted(GRAY, " in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " attribute.")
+        );
+        if (!super.elementContainsAttribute(element, attributeName, attributeValue))
+            throw new PickleibException(
+                    "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                            "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName)
+            );
+        log.success("The " + attributeName + " attribute of element " + elementName + " is verified!");
     }
 
+    /**
+     * Verifies that an attribute {attribute name} of element {element name} on the {page name} contains a specific {value}.
+     *
+     * @param attributeName the name of the attribute to be verified
+     * @param elementName   the name of the element to be verified
+     * @param pageName      the name of the page containing the element
+     * @param value         the expected part of value of the attribute
+     */
     public void verifyElementAttributeContainsValue(WebElement element, String attributeName, String elementName, String pageName, String value) {
-        interact.verifyElementAttributeContainsValue(element, attributeName, elementName, pageName, value);
+        log.info("Verifying that " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " contains ") +
+                highlighted(BLUE, value) +
+                highlighted(GRAY, " in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " attribute.")
+        );
+
+        if (!super.elementAttributeContainsValue(element, attributeName, value))
+            throw new PickleibVerificationException(
+                    "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                            "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName)
+            );
+        log.success("The " + attributeName + " attribute of element " + elementName + " is verified!");
     }
 
+    /**
+     * Verifies {attribute name} css attribute of an element {element name} on the {page name} is {attribute value}
+     *
+     * @param element        target element
+     * @param attributeName  target attribute name
+     * @param elementName    target attribute name
+     * @param pageName       specified page instance name
+     * @param attributeValue expected attribute value
+     */
     public void verifyElementColor(WebElement element, String attributeName, String elementName, String pageName, String attributeValue) {
-        interact.verifyElementColor(element, attributeName, elementName, pageName, attributeValue);
+        log.info("Verifying " +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " attribute of ") +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        if (!attributeValue.equals(element.getCssValue(attributeName)))
+            throw new PickleibException(
+                    "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                            "\nExpected value: " + attributeValue + "\nActual value: " + element.getCssValue(attributeName)
+            );
+        log.success("Value of '" + attributeName + "' attribute is verified to be '" + attributeValue + "'!");
     }
 
+    /**
+     * Verifies the presence of listed element from a list on the {page name}
+     *
+     * @param bundles   list that contains element, elementName, elementText
+     * @param pageName  specified page instance name
+     * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
+     */
     public void verifyPresenceOfListedElements(List<Bundle<WebElement, String, String>> bundles, WebElement element, List<WebElement> elements, String pageName, List<Map<String, String>> signForms) {
-        interact.verifyPresenceOfListedElements(bundles, element, elements, pageName, signForms);
+        for (Bundle<WebElement, String, String> bundle : bundles) {
+            String elementName = bundle.beta();
+            String expectedText = contextCheck(bundle.theta());
+
+            log.info("Performing text verification for " +
+                    highlighted(BLUE, elementName) +
+                    highlighted(GRAY, " on the ") +
+                    highlighted(BLUE, pageName) +
+                    highlighted(GRAY, " with the text: ") +
+                    highlighted(BLUE, expectedText)
+            );
+            if (!element.getText().contains(expectedText))
+                throw new PickleibException("The " + elementName + " does not contain text '" + expectedText + "' ");
+            log.success("Text of '" + elementName + "' verified as '" + expectedText + "'!");
+        }
     }
 
+    /**
+     * Updates context {key} -> {value}
+     *
+     * @param key   Context key
+     * @param value Context value
+     */
     public void updateContext(String key, String value) {
-        interact.updateContext(key, value);
+        value = contextCheck(value);
+        log.info(
+                "Updating context: " +
+                        highlighted(BLUE, key) +
+                        highlighted(GRAY, " -> ") +
+                        highlighted(BLUE, value)
+        );
+        ContextStore.put(key, value);
     }
 
+    /**
+     * Presses {target key} key on {element name} element of the {}
+     *
+     * @param keys        target key
+     * @param elementName target element name
+     * @param pageName    specified page instance name
+     */
     public void pressKey(WebElement element, String elementName, String pageName, Keys... keys) {
-        interact.pressKey(element, elementName, pageName, keys);
+        super.pressKeysOnElement(element, elementName, pageName, keys);
     }
 
     public void fillInputWithFile(WebElement inputElement, String inputName, String pageName, String absoluteFilePath) {
