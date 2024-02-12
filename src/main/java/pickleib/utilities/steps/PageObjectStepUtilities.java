@@ -100,6 +100,7 @@ public class PageObjectStepUtilities<ObjectRepository extends PageRepository> {
                 return mobileInteractions;
             }
         }
+        return null;
     }
 
     /**
