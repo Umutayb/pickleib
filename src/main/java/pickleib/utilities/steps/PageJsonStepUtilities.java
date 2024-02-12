@@ -1,21 +1,16 @@
 package pickleib.utilities.steps;
 
 import com.google.gson.JsonObject;
-import org.openqa.selenium.WebElement;
 import pickleib.driver.DriverFactory;
 import pickleib.mobile.driver.PickleibAppiumDriver;
-import pickleib.mobile.interactions.MobileInteractions;
-import pickleib.utilities.Interactions;
-import pickleib.utilities.Utilities;
 import pickleib.utilities.element.ElementAcquisition;
 import pickleib.web.driver.PickleibWebDriver;
-import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 
 public class PageJsonStepUtilities {
-    public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.Web;
-    public WebInteractions webInteractions = new WebInteractions();
-    public MobileInteractions mobileInteractions = new MobileInteractions();
+//    public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.Web;
+//    public WebInteractions webInteractions = new WebInteractions();
+//    public MobileInteractions mobileInteractions = new MobileInteractions();
     public Printer log = new Printer(this.getClass());
     ElementAcquisition.PageObjectJson pageJson;
     ElementAcquisition.PageObjectJson screenJson;
@@ -31,33 +26,33 @@ public class PageJsonStepUtilities {
      * @param driverType The type of the driver (Web or Mobile).
      * @return The element interactions for the specified driver type.
      */
-    public Interactions getInteractions(DriverFactory.DriverType driverType) {
-        switch (driverType) {
-            case Web -> {
-                return webInteractions;
-            }
-            case Mobile -> {
-                return mobileInteractions;
-            }
-            default -> {
-                return getInteractions(defaultPlatform);
-            }
-        }
-    }
-
-    public Interactions getInteractions(WebElement element) {
-        switch (Utilities.getElementDriverType(element)) {
-            case Web -> {
-                return webInteractions;
-            }
-            case Mobile -> {
-                return mobileInteractions;
-            }
-            default -> {
-                return getInteractions(defaultPlatform);
-            }
-        }
-    }
+//    public Interactions getInteractions(DriverFactory.DriverType driverType) {
+//        switch (driverType) {
+//            case Web -> {
+//                return webInteractions;
+//            }
+//            case Mobile -> {
+//                return mobileInteractions;
+//            }
+//            default -> {
+//                return getInteractions(defaultPlatform);
+//            }
+//        }
+//    }
+//
+//    public Interactions getInteractions(WebElement element) {
+//        switch (Utilities.getElementDriverType(element)) {
+//            case Web -> {
+//                return webInteractions;
+//            }
+//            case Mobile -> {
+//                return mobileInteractions;
+//            }
+//            default -> {
+//                return getInteractions(defaultPlatform);
+//            }
+//        }
+//    }
 
     public ElementAcquisition.PageObjectJson getAcquisition(DriverFactory.DriverType driverType) {
         switch (driverType) {

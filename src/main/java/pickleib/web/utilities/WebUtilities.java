@@ -561,6 +561,25 @@ public abstract class WebUtilities extends Utilities implements PolymorphicUtili
     }
 
     /**
+     * Updates given cookies
+     *
+     * @param cookieValue
+     * @param cookieName
+     */
+    public void updateCookies(String cookieValue, String cookieName) {
+        Cookie cookie = driver.manage().getCookieNamed(cookieName);
+        driver.manage().deleteCookie(cookie);
+        driver.manage().addCookie(
+                new Cookie.Builder(cookie.getName(), cookieValue)
+                        .domain(cookie.getDomain())
+                        .expiresOn(cookie.getExpiry())
+                        .path(cookie.getPath())
+                        .isSecure(cookie.isSecure())
+                        .build()
+        );
+    }
+
+    /**
      * Deletes all cookies
      */
     public void deleteAllCookies() {

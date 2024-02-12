@@ -61,6 +61,17 @@ public class WebInteractions extends WebUtilities {
     }
 
     /**
+     * Updates given cookies
+     *
+     * @param cookieValue
+     * @param cookieName
+     */
+    public void updateCookies(String cookieValue, String cookieName) {
+        log.info("Updating cookies ... ");
+        super.updateCookies(cookieValue, cookieName);
+    }
+
+    /**
      * Deletes all cookies
      */
     public void deleteCookies() {

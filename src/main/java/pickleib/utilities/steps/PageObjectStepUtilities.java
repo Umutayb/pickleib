@@ -32,8 +32,8 @@ public class PageObjectStepUtilities<ObjectRepository extends PageRepository> {
 
     public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.Web;
     public Printer log = new Printer(this.getClass());
-    PolymorphicUtilities webInteractions = new WebInteractions();
-    PolymorphicUtilities mobileInteractions = new MobileInteractions();
+    private final PolymorphicUtilities webInteractions = new WebInteractions();
+    private final PolymorphicUtilities mobileInteractions = new MobileInteractions();
 
     ElementAcquisition.PageObjectModel<ObjectRepository> webObjectModel;
     ElementAcquisition.PageObjectModel<ObjectRepository> mobileObjectModel;
@@ -41,7 +41,7 @@ public class PageObjectStepUtilities<ObjectRepository extends PageRepository> {
     ElementAcquisition.Reflections<ObjectRepository> mobileReflections;
 
     /**
-     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
+     * Constructs an instance of the PageObjectStepUtilities class with the specific object repository.
      *
      * @param objectRepositoryClass The class of the object repository which will be used to initialize
      *                              the page object model, element interactions, and reflections.
