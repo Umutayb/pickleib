@@ -73,7 +73,7 @@ public interface PolymorphicUtilities {
      * @param elementName target element name
      * @param pageName    specified page instance name
      */
-    void clickElement(WebElement element, boolean scroll, String elementName, String pageName);
+    void clickElement(WebElement element, String elementName, String pageName, boolean scroll);
 
     /**
      * Click coordinates specified by the given offsets from the center of a given element
@@ -199,7 +199,7 @@ public interface PolymorphicUtilities {
      * @param buttonText target element text
      * @param scroll     scrolls if true
      */
-    void clickButtonWithText(String buttonText, boolean scroll);
+    void clickByText(String buttonText, boolean scroll);
 
     /**
      * Clears an input element
@@ -493,11 +493,6 @@ public interface PolymorphicUtilities {
      * @param pageName    specified page instance name
      */
     void verifyPresence(WebElement element, String elementName, String pageName);
-
-    /**
-     * Closes the browser
-     */
-    void quitDriver();
 
     /**
      * Waits for absence of an element {element name} on the {page name}

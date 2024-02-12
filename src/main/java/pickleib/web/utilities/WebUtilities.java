@@ -58,7 +58,7 @@ public abstract class WebUtilities extends Utilities implements PolymorphicUtili
     }
 
     public WebDriverWait driverWait() {
-        return PickleibWebDriver.driverWait();
+        return PickleibWebDriver.getWait();
     }
 
     /**

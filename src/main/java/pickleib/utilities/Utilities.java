@@ -9,6 +9,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
@@ -34,16 +35,19 @@ import static utils.StringUtilities.*;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class Utilities {
 
-    static {PropertyLoader.load();}
+    static {
+        PropertyLoader.load();
+    }
 
     public ScreenCaptureUtility capture = new ScreenCaptureUtility();
     public ObjectMapper objectMapper = new ObjectMapper();
     public Printer log = new Printer(this.getClass());
     public RemoteWebDriver driver;
+    public WebDriverWait wait;
 
     public long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
 
-    public Utilities(RemoteWebDriver driver){
+    public Utilities(RemoteWebDriver driver) {
         this.driver = driver;
     }
 
@@ -51,9 +55,9 @@ public abstract class Utilities {
      * Highlights a given text with a specified color (resets to plain)
      *
      * @param color target color
-     * @param text target text
+     * @param text  target text
      */
-    public String highlighted(StringUtilities.Color color, CharSequence text){
+    public String highlighted(StringUtilities.Color color, CharSequence text) {
         StringJoiner colorFormat = new StringJoiner("", color.getValue(), RESET.getValue());
         return String.valueOf(colorFormat.add(text));
     }
@@ -61,18 +65,20 @@ public abstract class Utilities {
     /**
      * Acquires a specified attribute of a given element
      *
-     * @param element target element
+     * @param element   target element
      * @param attribute target attribute
      * @return returns the element attribute
      */
-    public String getAttribute(WebElement element, String attribute){return element.getAttribute(attribute);}
+    public String getAttribute(WebElement element, String attribute) {
+        return element.getAttribute(attribute);
+    }
 
     /**
      * Clicks an element after waiting for its state to be enabled
      *
      * @param element target element
      */
-    public void clickElement(WebElement element){
+    public void clickElement(WebElement element) {
         clickElement(element, WebElement::click);
     }
 
@@ -91,13 +97,13 @@ public abstract class Utilities {
      * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
      * </p>
      *
-     * @param element   The target {@code WebElement} to be clicked with a retry mechanism.
-     * @param clicker   The {@code ClickFunction} representing the clicking action to be performed on the element.
-     *                  The {@code ClickFunction} interface should define the click method.
+     * @param element The target {@code WebElement} to be clicked with a retry mechanism.
+     * @param clicker The {@code ClickFunction} representing the clicking action to be performed on the element.
+     *                The {@code ClickFunction} interface should define the click method.
      * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
-     *                          with the last caught WebDriver exception.
+     *                           with the last caught WebDriver exception.
      */ //TODO: clickElement should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
-    public void clickElement(WebElement element, ClickFunction clicker){
+    public void clickElement(WebElement element, ClickFunction clicker) {
         long initialTime = System.currentTimeMillis();
         WebDriverException caughtException = null;
         int counter = 0;
@@ -106,19 +112,16 @@ public abstract class Utilities {
                 driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
                 clicker.click(element);
                 return;
-            }
-            catch (WebDriverException webDriverException){
+            } catch (WebDriverException webDriverException) {
                 if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException;
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
+                } else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException;
                 }
                 counter++;
-            }
-            finally {
+            } finally {
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
             }
         }
@@ -129,13 +132,12 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * If present, click element {element name} on the {page name}
      * It does not scroll by default.
      *
      * @param element target element
      */
-    public void clickButtonIfPresent(WebElement element){
+    public void clickButtonIfPresent(WebElement element) {
         clickButtonIfPresent(element, null);
     }
 
@@ -149,19 +151,19 @@ public abstract class Utilities {
      * If the element is not present, a {@code WebDriverException} is caught, and a warning message is logged.
      * </p>
      *
-     * @param element   The target {@code WebElement} to be clicked if present.
-     * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param element  The target {@code WebElement} to be clicked if present.
+     * @param scroller The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
-    public void clickButtonIfPresent(WebElement element, ScrollFunction scroller){
+    public void clickButtonIfPresent(WebElement element, ScrollFunction scroller) {
         try {
             if (elementIs(element, ElementState.displayed))
                 clickElement(element, (target) -> scroller.scroll(target).click());
+        } catch (WebDriverException ignored) {
+            log.warning("The element was not present!");
         }
-        catch (WebDriverException ignored){log.warning("The element was not present!");}
     }
 
     /**
-     *
      * Click on a button that contains {button text} text
      * It does not scroll by default.
      *
@@ -174,12 +176,11 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * Click on a button that contains {button text} text
      * It does not scroll by default.
      *
      * @param buttonText target button text
-     * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param scroller   The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
     public void clickButtonByItsText(String buttonText, ScrollFunction scroller) {
         log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
@@ -188,14 +189,13 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * Press {target key} key on {element name} element of the {}
      *
-     * @param keys target keys
+     * @param keys        target keys
      * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param pageName    specified page instance name
      */
-    public void pressKeysOnElement(WebElement element, String elementName, String pageName, Keys... keys){
+    public void pressKeysOnElement(WebElement element, String elementName, String pageName, Keys... keys) {
         String combination = Keys.chord(keys);
         log.info("Pressing " + markup(BLUE, combination) + " keys on " + markup(BLUE, elementName) + " element.");
         element.sendKeys(combination);
@@ -206,7 +206,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickTowards(WebElement element){
+    public void clickTowards(WebElement element) {
         elementIs(element, ElementState.displayed);
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
         builder
@@ -219,12 +219,15 @@ public abstract class Utilities {
     /**
      * Clicks an element if its present (in enabled state)
      *
-     * @param element target element
-     * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param element  target element
+     * @param scroller The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
-    public void clickIfPresent(WebElement element, ScrollFunction scroller){
-        try {clickElement(element, (target) -> scroller.scroll(target).click());}
-        catch (WebDriverException exception){log.warning(exception.getMessage());}
+    public void clickIfPresent(WebElement element, ScrollFunction scroller) {
+        try {
+            clickElement(element, (target) -> scroller.scroll(target).click());
+        } catch (WebDriverException exception) {
+            log.warning(exception.getMessage());
+        }
     }
 
     /**
@@ -233,20 +236,25 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickIfPresent(WebElement element){
-        try {clickElement(element, null);}
-        catch (WebDriverException exception){log.warning(exception.getMessage());}
+    public void clickIfPresent(WebElement element) {
+        try {
+            clickElement(element, (target) -> {
+                if (elementIs(element, displayed)) target.click();
+            });
+        } catch (WebDriverException exception) {
+            log.warning(exception.getMessage());
+        }
     }
 
     /**
      * Clears and fills a given input
      *
      * @param inputElement target input element
-     * @param inputText input text
-     * @param verify verifies the input text value equals to an expected text if true
-     * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
+     * @param scroller     The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
-    public void clearFillInput(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify) {
         fillInputElement(inputElement, inputText, scroller, verify);
     }
 
@@ -255,10 +263,10 @@ public abstract class Utilities {
      * Does not scroll by default.
      *
      * @param inputElement target input element
-     * @param inputText input text
-     * @param verify verifies the input text value equals to an expected text if true
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void clearFillInput(WebElement inputElement, String inputText, boolean verify){
+    public void clearFillInput(WebElement inputElement, String inputText, boolean verify) {
         fillInputElement(inputElement, inputText, verify);
     }
 
@@ -266,9 +274,9 @@ public abstract class Utilities {
      * Clears and fills a given input
      *
      * @param inputElement target input element
-     * @param inputText input text
+     * @param inputText    input text
      */
-    public void fillInput(WebElement inputElement, String inputText){
+    public void fillInput(WebElement inputElement, String inputText) {
         // This method clears the input field before filling it
         fillInputElement(inputElement, inputText, false);
     }
@@ -277,9 +285,9 @@ public abstract class Utilities {
      * Clears and fills a given input
      *
      * @param inputElement target input element
-     * @param inputText input text
+     * @param inputText    input text
      */
-    public void fillAndVerifyInput(WebElement inputElement, String inputText){
+    public void fillAndVerifyInput(WebElement inputElement, String inputText) {
         // This method clears the input field before filling it
         fillInputElement(inputElement, inputText, true);
     }
@@ -288,9 +296,9 @@ public abstract class Utilities {
      * Clears and fills a given input
      *
      * @param inputElement target input element
-     * @param inputText input text
+     * @param inputText    input text
      */
-    public void fillAndVerifyInput(WebElement inputElement, String inputText, ScrollFunction scroller){
+    public void fillAndVerifyInput(WebElement inputElement, String inputText, ScrollFunction scroller) {
         // This method clears the input field before filling it
         fillInputElement(inputElement, inputText, scroller, true);
     }
@@ -299,10 +307,10 @@ public abstract class Utilities {
      * Clears and fills a given input
      *
      * @param inputElement target input element
-     * @param inputText input text
-     * @param verify verifies the input text value equals to an expected text if true
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void fillInputElement(WebElement inputElement, String inputText, boolean verify){
+    public void fillInputElement(WebElement inputElement, String inputText, boolean verify) {
         fillInputElement(inputElement, inputText, null, verify);
     }
 
@@ -310,11 +318,11 @@ public abstract class Utilities {
      * Clears and fills a given input
      *
      * @param inputElement target input element
-     * @param inputText input text
-     * @param verify verifies the input text value equals to an expected text if true
-     * @param scroller  The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
+     * @param scroller     The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
      */
-    public void fillInputElement(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify){
+    public void fillInputElement(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify) {
         // This method clears the input field before filling it
         elementIs(inputElement, ElementState.displayed);
         inputText = contextCheck(inputText);
@@ -327,10 +335,10 @@ public abstract class Utilities {
      * Verifies a given element is in expected state
      *
      * @param element target element
-     * @param state expected state
+     * @param state   expected state
      * @return returns the element if its in expected state
      */
-    public WebElement verifyElementState(WebElement element, ElementState state){
+    public WebElement verifyElementState(WebElement element, ElementState state) {
         if (!elementIs(element, state)) throw new PickleibException("Element is not in " + state.name() + " state!");
         log.success("Element state is verified to be: " + state.name());
         return element;
@@ -340,10 +348,10 @@ public abstract class Utilities {
      * Waits until a given element is in expected state
      *
      * @param element target element
-     * @param state expected state
+     * @param state   expected state
      * @return returns true if an element is in the expected state
      */ //TODO: elementIs should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
-    public Boolean elementIs(WebElement element, @NotNull ElementState state){
+    public Boolean elementIs(WebElement element, @NotNull ElementState state) {
         long initialTime = System.currentTimeMillis();
         String caughtException = null;
         boolean timeout;
@@ -381,21 +389,17 @@ public abstract class Utilities {
                     }
                     default -> throw new EnumConstantNotPresentException(ElementState.class, state.name());
                 }
-            }
-            catch (WebDriverException webDriverException){
+            } catch (WebDriverException webDriverException) {
                 if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
-                }
-                else if (state.equals(absent) && webDriverException.getClass().getName().equals("StaleElementReferenceException"))
+                } else if (state.equals(absent) && webDriverException.getClass().getName().equals("StaleElementReferenceException"))
                     return true;
                 counter++;
-            }
-            finally {
+            } finally {
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getDriverTimeout()));
             }
         }
@@ -414,8 +418,8 @@ public abstract class Utilities {
      *
      * @param buttonText The text of the target element to be clicked.
      */
-    public void clickButtonWithText(String buttonText){
-        clickElement(getElementByText(buttonText), null);
+    public void clickButtonWithText(String buttonText) {
+        clickElement(getElementByText(buttonText), WebElement::click);
     }
 
     /**
@@ -429,7 +433,7 @@ public abstract class Utilities {
      * @param buttonText The text of the target element to be clicked.
      * @param scroller   The {@code ScrollFunction} for scrolling before clicking. If {@code null}, no scrolling is performed.
      */
-    public void clickButtonWithText(String buttonText, ScrollFunction scroller){
+    public void clickButtonWithText(String buttonText, ScrollFunction scroller) {
         clickElement(getElementByText(buttonText), (target) -> scroller.scroll(target).click());
     }
 
@@ -438,9 +442,11 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public WebElement clearInputField(@NotNull WebElement element){
+    public WebElement clearInputField(@NotNull WebElement element) {
         int textLength = element.getAttribute("value").length();
-        for(int i = 0; i < textLength; i++){element.sendKeys(Keys.BACK_SPACE);}
+        for (int i = 0; i < textLength; i++) {
+            element.sendKeys(Keys.BACK_SPACE);
+        }
         return element;
     }
 
@@ -449,12 +455,11 @@ public abstract class Utilities {
      *
      * @param elementText target element text
      */
-    public WebElement getElementByText(String elementText){
+    public WebElement getElementByText(String elementText) {
         try {
-            return driver.findElement(By.xpath("//*[text()='" +elementText+ "']"));
-        }
-        catch (NoSuchElementException exception){
-            throw new NoSuchElementException(GRAY+exception.getMessage()+RESET);
+            return driver.findElement(By.xpath("//*[text()='" + elementText + "']"));
+        } catch (NoSuchElementException exception) {
+            throw new NoSuchElementException(GRAY + exception.getMessage() + RESET);
         }
     }
 
@@ -463,22 +468,21 @@ public abstract class Utilities {
      *
      * @param elementText target element text
      */
-    public WebElement getElementContainingText(String elementText){
+    public WebElement getElementContainingText(String elementText) {
         try {
-            return driver.findElement(By.xpath("//*[contains(text(), '" +elementText+ "')]"));
-        }
-        catch (NoSuchElementException exception){
-            throw new NoSuchElementException(GRAY+exception.getMessage()+RESET);
+            return driver.findElement(By.xpath("//*[contains(text(), '" + elementText + "')]"));
+        } catch (NoSuchElementException exception) {
+            throw new NoSuchElementException(GRAY + exception.getMessage() + RESET);
         }
     }
 
     /**
      * Drags and drops a given element on top of another element
      *
-     * @param element element that drags
+     * @param element            element that drags
      * @param destinationElement target element
      */
-    public void dragDropToAction(WebElement element, WebElement destinationElement){
+    public void dragDropToAction(WebElement element, WebElement destinationElement) {
         Actions action = new Actions(driver);
         action.moveToElement(element)
                 .clickAndHold(element)
@@ -497,7 +501,7 @@ public abstract class Utilities {
      * @param yOffset y offset from the center of the element
      */
     //This method performs click, hold, dragAndDropBy action on at a certain offset
-    public void dragDropByAction(WebElement element, int xOffset, int yOffset){
+    public void dragDropByAction(WebElement element, int xOffset, int yOffset) {
         Actions action = new Actions(driver);
         action.moveToElement(element)
                 .clickAndHold(element)
@@ -515,7 +519,7 @@ public abstract class Utilities {
      * @param xOffset x offset from the center of the element
      * @param yOffset y offset from the center of the element
      */
-    public void dragDropAction(WebElement element, int xOffset, int yOffset){
+    public void dragDropAction(WebElement element, int xOffset, int yOffset) {
         Actions action = new Actions(driver);
         action.moveToElement(element)
                 .clickAndHold(element)
@@ -528,9 +532,8 @@ public abstract class Utilities {
 
     /**
      * Refreshes the current page
-     *
      */
-    public void refreshThePage(){
+    public void refreshThePage() {
         driver.navigate().refresh();
     }
 
@@ -542,7 +545,7 @@ public abstract class Utilities {
      * @param yOffset y offset from the center of the element
      */
     @SuppressWarnings("SameParameterValue")
-    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset){
+    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset) {
         Actions builder = new org.openqa.selenium.interactions.Actions(driver);
         builder
                 .moveToElement(element, xOffset, yOffset)
@@ -555,10 +558,12 @@ public abstract class Utilities {
      * Uploads a given file
      *
      * @param fileUploadInput upload element
-     * @param directory absolute file directory (excluding the file name)
-     * @param fileName file name (including a file extension)
+     * @param directory       absolute file directory (excluding the file name)
+     * @param fileName        file name (including a file extension)
      */
-    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName){fileUploadInput.sendKeys(directory+"/"+fileName);}
+    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName) {
+        fileUploadInput.sendKeys(directory + "/" + fileName);
+    }
 
     /**
      * Combines the given keys
@@ -575,10 +580,11 @@ public abstract class Utilities {
      * @param seconds duration as a double
      */
     //This method makes the thread wait for a certain while
-    public void waitFor(double seconds){
+    public void waitFor(double seconds) {
         if (seconds > 1) log.info("Waiting for " + markup(BLUE, String.valueOf(seconds)) + " seconds");
-        try {Thread.sleep((long) (seconds* 1000L));}
-        catch (InterruptedException exception){
+        try {
+            Thread.sleep((long) (seconds * 1000L));
+        } catch (InterruptedException exception) {
             throw new PickleibException(highlighted(GRAY, exception.getLocalizedMessage()));
         }
     }
@@ -586,14 +592,16 @@ public abstract class Utilities {
     /**
      * Gets the parent class from a child element using a selector class
      *
-     * @param childElement element that generates the parent class
-     * @param current empty string (at the beginning)
+     * @param childElement        element that generates the parent class
+     * @param current             empty string (at the beginning)
      * @param parentSelectorClass selector class for selecting the parent elements
      * @return returns the targeted parent element
      */
     public WebElement getParentByClass(WebElement childElement, String current, String parentSelectorClass) {
 
-        if (current == null) {current = "";}
+        if (current == null) {
+            current = "";
+        }
 
         String childTag = childElement.getTagName();
 
@@ -617,12 +625,14 @@ public abstract class Utilities {
      * Generate a xPath for a given element
      *
      * @param childElement web element gets generated a xPath from
-     * @param current empty string (at the beginning)
+     * @param current      empty string (at the beginning)
      * @return returns generated xPath
      */
     public String generateXPath(@NotNull WebElement childElement, String current) {
         String childTag = childElement.getTagName();
-        if (childTag.equals("html")) {return "/html[1]" + current;}
+        if (childTag.equals("html")) {
+            return "/html[1]" + current;
+        }
         WebElement parentElement = childElement.findElement(By.xpath(".."));
         List<WebElement> childrenElements = parentElement.findElements(By.xpath("*"));
         int count = 0;
@@ -641,11 +651,11 @@ public abstract class Utilities {
      *
      * @return the name of the method that called the API
      */
-    private static String getCallingClassName(){
+    private static String getCallingClassName() {
         StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
-        for (int i=1; i<stElements.length; i++) {
+        for (int i = 1; i < stElements.length; i++) {
             StackTraceElement ste = stElements[i];
-            if (!ste.getClassName().equals(Utilities.class.getName()) && ste.getClassName().indexOf("java.lang.Thread")!=0) {
+            if (!ste.getClassName().equals(Utilities.class.getName()) && ste.getClassName().indexOf("java.lang.Thread") != 0) {
                 return ste.getClassName();
             }
         }
@@ -653,29 +663,28 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * Acquire attribute {attribute name} from element {element name} on the {page name}
      * (Use 'innerHTML' attributeName to acquire text on an element)
      *
-     * @param element target element
+     * @param element       target element
      * @param attributeName acquired attribute name
-     * @param elementName target element name
-     * @param pageName specified page instance name
+     * @param elementName   target element name
+     * @param pageName      specified page instance name
      */
     public void updateContextByElementAttribute(
             WebElement element,
             String attributeName,
             String elementName,
-            String pageName){
+            String pageName) {
         log.info("Acquiring " +
-                highlighted(BLUE,attributeName) +
-                highlighted(GRAY," attribute of ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " attribute of ") +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," on the ") +
+                highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
         String attribute = element.getAttribute(attributeName);
-        log.info("Attribute -> " + highlighted(BLUE, attributeName) + highlighted(GRAY," : ") + highlighted(BLUE, attribute));
+        log.info("Attribute -> " + highlighted(BLUE, attributeName) + highlighted(GRAY, " : ") + highlighted(BLUE, attribute));
         ContextStore.put(elementName + "-" + attributeName, attribute);
         log.info("Element attribute saved to the ContextStore as -> '" +
                 highlighted(BLUE, elementName + "-" + attributeName) +
@@ -686,13 +695,12 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * Verify the text of {element name} on the {page name} to be: {expected text}
      *
-     * @param element target element
+     * @param element      target element
      * @param expectedText expected text
      */
-    public void verifyElementText(WebElement element, String expectedText){
+    public void verifyElementText(WebElement element, String expectedText) {
         expectedText = contextCheck(expectedText);
         if (!expectedText.equals(element.getText()))
             throw new PickleibException("Element text is not \"" + highlighted(BLUE, expectedText) + "\"!");
@@ -700,13 +708,12 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * Verify the text of {element name} on the {page name} to be: {expected text}
      *
-     * @param element target element
+     * @param element      target element
      * @param expectedText expected text
      */
-    public void verifyElementContainsText(WebElement element, String expectedText){
+    public void verifyElementContainsText(WebElement element, String expectedText) {
         expectedText = contextCheck(expectedText);
         elementIs(element, displayed);
         if (!element.getText().contains(expectedText))
@@ -715,20 +722,19 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * Verify the text of an element from the list on the {page name}
      *
      * @param pageName specified page instance name
      */
     public void verifyListedElementText(
             List<Bundle<WebElement, String, String>> bundles,
-            String pageName){
+            String pageName) {
         for (Bundle<WebElement, String, String> bundle : bundles) {
             String elementName = bundle.beta();
             String expectedText = bundle.theta();
             log.info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
-                    highlighted(GRAY," on the ") +
+                    highlighted(GRAY, " on the ") +
                     highlighted(BLUE, pageName) +
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, expectedText)
@@ -740,19 +746,18 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * Fill form input on the {page name}
      *
-     * @param bundles list of bundles where input element, input name and input texts are stored
+     * @param bundles  list of bundles where input element, input name and input texts are stored
      * @param pageName specified page instance name
      */
-    public void fillInputForm(List<Bundle<WebElement, String, String>> bundles, String pageName){
+    public void fillInputForm(List<Bundle<WebElement, String, String>> bundles, String pageName) {
         String inputName;
         String input;
         for (Bundle<WebElement, String, String> bundle : bundles) {
             log.info("Filling " +
                     highlighted(BLUE, bundle.theta()) +
-                    highlighted(GRAY," on the ") +
+                    highlighted(GRAY, " on the ") +
                     highlighted(BLUE, pageName) +
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, bundle.beta())
@@ -766,12 +771,11 @@ public abstract class Utilities {
     }
 
     /**
-     *
      * Verify that element {element name} on the {page name} has {attribute value} value for its {attribute name} attribute
      *
-     * @param element target element
+     * @param element        target element
      * @param attributeValue expected attribute value
-     * @param attributeName target attribute name
+     * @param attributeName  target attribute name
      */
     public boolean elementContainsAttribute(
             WebElement element,
@@ -786,13 +790,11 @@ public abstract class Utilities {
             try {
                 if (Objects.equals(element.getAttribute(attributeName), attributeValue))
                     return element.getAttribute(attributeName).contains(attributeValue);
-            }
-            catch (WebDriverException webDriverException){
+            } catch (WebDriverException webDriverException) {
                 if (counter == 0) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException)){
+                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
                     log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
                     caughtException = webDriverException.getClass().getName();
                 }
@@ -828,8 +830,10 @@ public abstract class Utilities {
         String caughtException = null;
         int counter = 0;
         value = contextCheck(value);
+        //TODO replace do-while with iterativeConditionalInvocation() method
         do {
             try {
+                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
                 return elementName.getAttribute(attributeName).contains(value);
             } catch (WebDriverException webDriverException) {
                 if (counter == 0) {
@@ -841,6 +845,9 @@ public abstract class Utilities {
                 }
                 waitFor(0.5);
                 counter++;
+            }
+            finally {
+                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(elementTimeout));
             }
         }
         while (!(System.currentTimeMillis() - initialTime > elementTimeout));
@@ -860,10 +867,10 @@ public abstract class Utilities {
      *
      * @param element The WebElement whose driver type needs to be determined.
      * @return The DriverType associated with the WebElement:
-     *         - If the WebElement is associated with an AppiumDriver, returns DriverType.Mobile.
-     *         - If the WebElement is associated with a standard WebDriver, returns DriverType.Web.
+     * - If the WebElement is associated with an AppiumDriver, returns DriverType.Mobile.
+     * - If the WebElement is associated with a standard WebDriver, returns DriverType.Web.
      */
-    public static DriverFactory.DriverType getElementDriverType(WebElement element){
+    public static DriverFactory.DriverType getElementDriverType(WebElement element) {
         if (isAppiumElement(element))
             return Mobile;
         else
@@ -875,11 +882,14 @@ public abstract class Utilities {
      *
      * @param element The WebElement to be checked.
      * @return true if the WebElement is associated with an AppiumDriver, false otherwise.
-     *         If a ClassCastException occurs during the check, it returns false.
+     * If a ClassCastException occurs during the check, it returns false.
      */
-    public static boolean isAppiumElement(WebElement element){
-        try {return ((RemoteWebElement) element).getWrappedDriver().getClass().isAssignableFrom(AppiumDriver.class);}
-        catch (ClassCastException exception){return false;}
+    public static boolean isAppiumElement(WebElement element) {
+        try {
+            return ((RemoteWebElement) element).getWrappedDriver().getClass().isAssignableFrom(AppiumDriver.class);
+        } catch (ClassCastException exception) {
+            return false;
+        }
     }
 
     /**

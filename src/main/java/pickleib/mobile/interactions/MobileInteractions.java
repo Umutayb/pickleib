@@ -15,8 +15,8 @@ import pickleib.exceptions.PickleibVerificationException;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
 import pickleib.utilities.element.ElementAcquisition;
-import pickleib.utilities.element.ElementInteractions;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -27,20 +27,14 @@ import static utils.StringUtilities.contextCheck;
 @SuppressWarnings("unused")
 public class MobileInteractions extends MobileUtilities {
 
-    public ElementInteractions interact;
-    protected WebDriverWait wait;
-
     public MobileInteractions(RemoteWebDriver driver, WebDriverWait wait) {
         super(driver);
-        this.driver = driver;
         this.wait = wait;
     }
 
     public MobileInteractions() {
         super(PickleibAppiumDriver.get());
-        this.driver = PickleibAppiumDriver.get();
         this.wait = PickleibAppiumDriver.getWait();
-
     }
 
     /**
@@ -49,7 +43,7 @@ public class MobileInteractions extends MobileUtilities {
      * @param direction target direction (UP or DOWN)
      */
     public void scroll(@NotNull Direction direction) {
-        log.info("Scrolling in direction " + highlighted(BLUE, direction.name()));
+        log.info("Swiping in direction " + highlighted(BLUE, direction.name()));
         swiper(direction);
     }
 
@@ -59,6 +53,7 @@ public class MobileInteractions extends MobileUtilities {
      * @param element     target element
      * @param elementName target element name
      * @param pageName    specified page instance name
+     * @return returns centered element
      */
     public WebElement centerElement(WebElement element, String elementName, String pageName) {
         log.info("Centering " +
@@ -66,7 +61,7 @@ public class MobileInteractions extends MobileUtilities {
                 highlighted(GRAY, " on ") +
                 highlighted(BLUE, pageName)
         );
-        return this.centerElement(element);
+        return super.centerElement(element);
     }
 
     /**
@@ -78,7 +73,7 @@ public class MobileInteractions extends MobileUtilities {
      * @param elementName target element name
      * @param pageName    specified page instance name
      */
-    public void clickElement(WebElement element, boolean scroll, String elementName, String pageName) {
+    public void clickElement(WebElement element, String elementName, String pageName, boolean scroll) {
         log.info("Clicking " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " on ") +
@@ -147,7 +142,7 @@ public class MobileInteractions extends MobileUtilities {
      * @param scroll       scrolls if true
      * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, @NotNull boolean scroll, boolean verify) {
+    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll, boolean verify) {
         log.info("Clearing input " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " on the ") +
@@ -185,7 +180,7 @@ public class MobileInteractions extends MobileUtilities {
      * @param state       expected state
      * @return returns true if an element is in the expected state
      */
-    public Boolean elementIs(WebElement element, String elementName, String pageName, @NotNull ElementState state) {
+    public Boolean elementIs(@NotNull WebElement element, String elementName, String pageName, @NotNull ElementState state) {
         log.info("Verifying that the state of " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " is ") +
@@ -239,10 +234,9 @@ public class MobileInteractions extends MobileUtilities {
      * @param buttonText target element text
      * @param scroll     scrolls if true
      */
-    public void clickButtonWithText(String buttonText, boolean scroll) {
+    public void clickByText(String buttonText, boolean scroll) {
         log.info("Clicking button with text " + highlighted(BLUE, buttonText));
-        if (scroll) super.clickButtonByText(buttonText, scroll);
-        else super.clickByText(buttonText);
+        super.clickButtonByText(buttonText, scroll);
     }
 
     /**
@@ -252,7 +246,7 @@ public class MobileInteractions extends MobileUtilities {
      */
     public void clickByText(String text) {
         log.info("Clicking button by text " + highlighted(BLUE, text));
-        super.clickByText(text);
+        super.clickButtonByText(text, false);
     }
 
     /**
@@ -267,7 +261,7 @@ public class MobileInteractions extends MobileUtilities {
     public String getAttribute(WebElement element, String attribute, String elementName, String pageName) {
         log.info("Acquiring " +
                 highlighted(BLUE, attribute) +
-                highlighted(GRAY, " from ") +
+                highlighted(GRAY, " of ") +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " on ") +
                 highlighted(BLUE, pageName)
@@ -350,7 +344,6 @@ public class MobileInteractions extends MobileUtilities {
      * @param xOffset     x offset from the center of the element
      * @param yOffset     y offset from the center of the element
      */
-    //This method performs click, hold, dragAndDropBy action on at a certain offset
     public void dragDropByAction(WebElement element, String elementName, String pageName, int xOffset, int yOffset) {
         log.info("Drag drop " +
                 highlighted(BLUE, elementName) +
@@ -441,7 +434,7 @@ public class MobileInteractions extends MobileUtilities {
      * @param keys key inputs
      */
     public String combineKeys(Keys... keys) {
-        log.info("Combining keys ... ");
+        log.info("Combining keys: " + Arrays.toString(keys));
         return super.combineKeys(keys);
     }
 
@@ -620,13 +613,6 @@ public class MobileInteractions extends MobileUtilities {
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " was verified on ") +
                 highlighted(BLUE, pageName));
-    }
-
-    /**
-     * Closes the browser
-     */
-    public void quitDriver() {
-        super.quitDriver();
     }
 
     /**
@@ -889,7 +875,7 @@ public class MobileInteractions extends MobileUtilities {
         for (Bundle<String, WebElement, Map<String, String>> bundle : bundles) {
             InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
             switch (interactionType) {
-                case click -> clickElement(bundle.beta(), scroll, bundle.alpha(), pageName);
+                case click -> clickElement(bundle.beta(), bundle.alpha(), pageName, scroll);
                 case fill ->
                         clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), false, scroll);
                 case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);

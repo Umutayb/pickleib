@@ -11,9 +11,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
+import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
-import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
 
 import java.time.Duration;
@@ -24,14 +24,11 @@ import static utils.StringUtilities.Color.BLUE;
 
 public abstract class MobileUtilities extends Utilities implements PolymorphicUtilities {
 
-    public RemoteWebDriver driver;
-
     /**
      * MobileUtilities for frameworks that use the Pickleib driver
      */
     public MobileUtilities() {
-        super(PickleibWebDriver.get());
-        this.driver = PickleibWebDriver.get();
+        super(PickleibAppiumDriver.get());
     }
 
     /**
@@ -46,7 +43,7 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
     }
 
     public WebDriverWait driverWait() {
-        return PickleibWebDriver.driverWait();
+        return PickleibAppiumDriver.getWait();
     }
 
     /**
@@ -75,18 +72,6 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
                 element,
                 WebElement::click
         );
-    }
-
-    /**
-     * Clicks on a button that contains {button text} text
-     * It does not scroll by default.
-     *
-     * @param buttonText target button text
-     */
-    public void clickByText(String buttonText) {
-        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
-        WebElement element = getElementByText(buttonText);
-        clickElement(element);
     }
 
     /**
@@ -138,7 +123,6 @@ public abstract class MobileUtilities extends Utilities implements PolymorphicUt
         if (scroll) fillInputElement(inputElement, inputText, this::centerElement, verify);
         else fillInputElement(inputElement, inputText, null, verify);
     }
-
 
     /**
      * Scrolls an element to the center of the view

@@ -1,7 +1,6 @@
 package pickleib.web.driver;
 
 import context.ContextStore;
-import io.appium.java_client.AppiumDriver;
 import org.bouncycastle.util.encoders.Base64;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
@@ -38,7 +37,7 @@ public class PickleibWebDriver {
 		return driver;
 	}
 
-	public static WebDriverWait driverWait(){
+	public static WebDriverWait getWait(){
 		return wait;
 	}
 
