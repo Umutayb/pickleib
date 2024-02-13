@@ -23,7 +23,7 @@ public class ServiceFactory {
         service = new AppiumServiceBuilder()
                 .withIPAddress(address)
                 .usingPort(port)
-                .withTimeout(Duration.ofSeconds(100))
+                .withTimeout(Duration.ofSeconds(Integer.parseInt(ContextStore.get("appium-server-launch-timeout", "45"))))
                 .build();
         if(!Boolean.parseBoolean(ContextStore.get("detailed-logging", "false")))
             ServiceFactory.service.clearOutPutStreams();
