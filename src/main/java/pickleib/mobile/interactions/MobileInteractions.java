@@ -45,7 +45,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
      */
     public void scroll(@NotNull Direction direction) {
         log.info("Swiping in direction " + highlighted(BLUE, direction.name()));
-        swiper(direction);
+        super.swiper(direction);
     }
 
     /**
@@ -267,7 +267,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(GRAY, " on ") +
                 highlighted(BLUE, pageName)
         );
-        return getAttribute(element, attribute);
+        return super.getAttribute(element, attribute);
     }
 
     /**
@@ -646,7 +646,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        boolean visible = elementIs(element, ElementState.displayed);
+        boolean visible = super.elementIs(element, ElementState.displayed);
         log.info("Element is visible ? " + highlighted(BLUE, String.valueOf(visible)));
     }
 
@@ -844,7 +844,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
      * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
      */
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName) {
-        bundleInteraction(bundles, pageName);
+        bundleInteraction(bundles, pageName, true);
     }
 
     /**

@@ -223,7 +223,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " presents on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickIfPresent(element, scroll);
+        super.clickIfPresent(element, scroll);
     }
 
     /**
@@ -242,7 +242,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        clearFillInput(inputElement, inputText, scroll, verify);
+        super.clearFillInput(inputElement, inputText, scroll, verify);
     }
 
     /**
@@ -254,7 +254,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void fillForm(List<Bundle<WebElement, String, String>> bundles, String pageName) {
         log.info("Filling form on " + highlighted(BLUE, pageName));
-        fillInputForm(bundles, pageName);
+        super.fillInputForm(bundles, pageName);
         log.success("Form was filled on " + highlighted(BLUE, pageName));
     }
 
@@ -297,7 +297,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on ") +
                 highlighted(BLUE, pageName)
         );
-        verifyElementContainsText(element, expectedText);
+        super.verifyElementContainsText(element, expectedText);
         log.success("Text of element " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " contains ") +
@@ -314,7 +314,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void verifyListedText(List<Bundle<WebElement, String, String>> bundles, String pageName) {
         log.info("Verifying the text of elements on " + highlighted(BLUE, pageName));
-        verifyListedElementText(bundles, pageName);
+        super.verifyListedElementText(bundles, pageName);
         log.success("Text of the elements was verified on " + highlighted(BLUE, pageName));
     }
 
@@ -355,7 +355,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        return verifyElementState(element, state);
+        return super.verifyElementState(element, state);
     }
 
     /**
@@ -375,7 +375,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        return elementIs(element, state);
+        return super.elementIs(element, state);
     }
 
     /**
@@ -565,7 +565,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        boolean absent = elementIs(element, ElementState.absent);
+        boolean absent = super.elementIs(element, ElementState.absent);
         log.info("Element is absent ? " + highlighted(BLUE, String.valueOf(absent)));
     }
 
@@ -582,7 +582,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        boolean visible = elementIs(element, ElementState.displayed);
+        boolean visible = super.elementIs(element, ElementState.displayed);
         log.info("Element is visible ? " + highlighted(BLUE, String.valueOf(visible)));
     }
 
@@ -604,7 +604,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute.")
         );
-        boolean attributeFound = elementContainsAttribute(element, attributeName, attributeValue);
+        boolean attributeFound = super.elementContainsAttribute(element, attributeName, attributeValue);
         log.info("Attribute match ? " + highlighted(BLUE, String.valueOf(attributeFound)));
     }
 
@@ -781,7 +781,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName) {
         log.info("Executing bundle interactions on " + pageName);
-        bundleInteraction(bundles, pageName);
+        bundleInteraction(bundles, pageName, true);
     }
 
     /**
@@ -867,7 +867,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
         log.info("Going to " + highlighted(BLUE, page));
         String url = driver.getCurrentUrl();
         String pageUrl = url + page;
-        navigate(pageUrl);
+        super.navigate(pageUrl);
     }
 
     /**
@@ -875,7 +875,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void switchToNextTab() {
         log.info("Switching to the next tab ... ");
-        String parentHandle = switchWindowByHandle(null);
+        String parentHandle = super.switchWindowByHandle(null);
         ContextStore.put("parentHandle", parentHandle);
     }
 
@@ -884,7 +884,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void switchToParentTab() {
         log.info("Switching to the parent tab ... ");
-        switchWindowByHandle(ContextStore.get("parentHandle").toString());
+        super.switchWindowByHandle(ContextStore.get("parentHandle").toString());
     }
 
     /**
@@ -896,7 +896,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     public void switchToTabByHandle(String handle) {
         handle = contextCheck(handle);
         log.info("Switching to the tab with handle: " + highlighted(BLUE, handle));
-        String parentHandle = switchWindowByHandle(handle);
+        String parentHandle = super.switchWindowByHandle(handle);
         ContextStore.put("parentHandle", parentHandle);
     }
 
@@ -908,7 +908,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void switchToTabByIndex(Integer handle) {
         log.info("Switching to the tab number: " + highlighted(BLUE, String.valueOf(handle)));
-        String parentHandle = switchWindowByIndex(handle);
+        String parentHandle = super.switchWindowByIndex(handle);
         ContextStore.put("parentHandle", parentHandle);
     }
 
@@ -943,7 +943,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void refresh() {
         log.info("Refreshing the  page ... ");
-        refreshThePage();
+        super.refreshThePage();
     }
 
     /**
@@ -953,7 +953,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void browserNavigate(Navigation direction) {
         log.info("Navigating browser in " + highlighted(BLUE, direction.name()));
-        navigateBrowser(direction);
+        super.navigateBrowser(direction);
     }
 
     /**
@@ -963,7 +963,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void clickByCssSelector(String cssSelector) {
         log.info("Clicking button by css selector " + highlighted(BLUE, cssSelector));
-        clickButtonByCssSelector(cssSelector);
+        super.clickButtonByCssSelector(cssSelector);
     }
 
     /**
@@ -1035,7 +1035,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(BLUE, String.valueOf(waitingTime)) +
                 highlighted(GRAY, " seconds to 10 seconds")
         );
-        waitUntilLoads(waitingTime);
+        super.waitUntilLoads(waitingTime);
     }
 
     /**
@@ -1051,7 +1051,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickWithJS(centerElement(element));
+        super.clickWithJS(centerElement(element));
     }
 
     /**
@@ -1071,7 +1071,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        clickIframeButton(iframe, element);
+        super.clickIframeButton(iframe, element);
     }
 
     /**
@@ -1096,7 +1096,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        fillIframeInputElement(iframe, element, inputText);
+        super.fillIframeInputElement(iframe, element, inputText);
     }
 
     /**
@@ -1112,7 +1112,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
             WebElement iFrame,
             String iframeName,
             String pageName) {
-        fillIframeForm(
+        super.fillIframeForm(
                 bundles,
                 iFrame,
                 pageName
@@ -1139,7 +1139,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     public void listenGetAndPrintObject(String listenerScript, String eventName, String objectScript) {
         objectScript = "return " + objectScript;
         if (isEventFired(eventName, listenerScript)) {
-            Object object = executeScript(objectScript);
+            Object object = super.executeScript(objectScript);
             log.info(object.toString());
         }
     }
@@ -1157,7 +1157,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
         String nodeScript = "return " + nodeSource;
         if (isEventFired(eventName, listenerScript)) {
             log.info("Verifying value of '" + highlighted(BLUE, nodeSource) + highlighted(GRAY, "' node"));
-            Object object = executeScript(nodeScript);
+            Object object = super.executeScript(nodeScript);
 
             Pattern sourcePattern = Pattern.compile(expectedValue);
             Matcher nodeValueMatcher = sourcePattern.matcher(object.toString());
@@ -1183,7 +1183,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
 
                 log.info("Verifying value of '" + highlighted(BLUE, nodeSource) + highlighted(GRAY, "' node"));
                 String nodeScript = "return " + nodeSource;
-                Object object = executeScript(nodeScript);
+                Object object = super.executeScript(nodeScript);
 
                 Pattern sourcePattern = Pattern.compile(nodeValue);
                 Matcher nodeValueMatcher = sourcePattern.matcher(object.toString());

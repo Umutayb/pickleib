@@ -5,6 +5,8 @@ import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import utils.Printer;
 
+import java.time.Duration;
+
 import static utils.StringUtilities.Color.*;
 
 public class ServiceFactory {
@@ -21,6 +23,7 @@ public class ServiceFactory {
         service = new AppiumServiceBuilder()
                 .withIPAddress(address)
                 .usingPort(port)
+                .withTimeout(Duration.ofSeconds(100))
                 .build();
         if(!Boolean.parseBoolean(ContextStore.get("detailed-logging", "false")))
             ServiceFactory.service.clearOutPutStreams();
