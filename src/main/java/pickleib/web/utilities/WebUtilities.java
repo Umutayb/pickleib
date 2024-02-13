@@ -24,7 +24,6 @@ import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
-import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
 
@@ -36,7 +35,7 @@ import java.util.Map;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
 
-public abstract class WebUtilities extends Utilities implements PolymorphicUtilities {
+public abstract class WebUtilities extends Utilities {
 
     /**
      * WebUtilities for frameworks that use the Pickleib driver

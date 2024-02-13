@@ -15,6 +15,7 @@ import pickleib.exceptions.PickleibVerificationException;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
 import pickleib.utilities.element.ElementAcquisition;
+import pickleib.utilities.interfaces.PolymorphicUtilities;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +26,7 @@ import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
 
 @SuppressWarnings("unused")
-public class MobileInteractions extends MobileUtilities {
+public class MobileInteractions extends MobileUtilities implements PolymorphicUtilities {
 
     public MobileInteractions(RemoteWebDriver driver, WebDriverWait wait) {
         super(driver);

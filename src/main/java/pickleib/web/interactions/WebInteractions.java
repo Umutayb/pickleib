@@ -15,6 +15,7 @@ import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
 import pickleib.utilities.element.ElementAcquisition;
+import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.utilities.WebUtilities;
 
@@ -28,7 +29,7 @@ import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
 
 @SuppressWarnings("unused")
-public class WebInteractions extends WebUtilities {
+public class WebInteractions extends WebUtilities implements PolymorphicUtilities {
 
     public WebInteractions(RemoteWebDriver driver, WebDriverWait wait) {
         super(driver);

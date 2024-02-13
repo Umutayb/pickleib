@@ -13,7 +13,6 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
-import pickleib.utilities.interfaces.PolymorphicUtilities;
 import utils.StringUtilities;
 
 import java.time.Duration;
@@ -22,7 +21,7 @@ import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
 import static utils.StringUtilities.Color.BLUE;
 
-public abstract class MobileUtilities extends Utilities implements PolymorphicUtilities {
+public abstract class MobileUtilities extends Utilities {
 
     /**
      * MobileUtilities for frameworks that use the Pickleib driver
