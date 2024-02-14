@@ -24,6 +24,7 @@ import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.interfaces.functions.ScrollFunction;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
 
@@ -48,8 +49,9 @@ public abstract class WebUtilities extends Utilities {
     /**
      * WebUtilities for frameworks that do not use the Pickleib driver
      */
-    public WebUtilities(RemoteWebDriver driver) {
-        super(driver);
+    public WebUtilities(RemoteWebDriver driver, ScrollFunction scroller) {
+        super(driver, scroller);
+        this.scroller = this::centerElement;
     }
 
     public RemoteWebDriver driver() {

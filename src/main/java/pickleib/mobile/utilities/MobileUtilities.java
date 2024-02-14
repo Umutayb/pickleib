@@ -11,6 +11,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.enums.Direction;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.interfaces.functions.ScrollFunction;
 import utils.StringUtilities;
 
 import java.time.Duration;
@@ -30,8 +31,9 @@ public abstract class MobileUtilities extends Utilities {
     /**
      * MobileUtilities for frameworks that do not use the Pickleib driver
      */
-    public MobileUtilities(RemoteWebDriver driver) {
-        super(driver);
+    public MobileUtilities(RemoteWebDriver driverScrollFunction, ScrollFunction scroller) {
+        super(driverScrollFunction, scroller);
+        this.scroller = this::centerElement;
     }
 
     public RemoteWebDriver driver() {

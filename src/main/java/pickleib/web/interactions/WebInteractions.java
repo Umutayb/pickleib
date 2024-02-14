@@ -33,12 +33,12 @@ import static utils.StringUtilities.contextCheck;
 public class WebInteractions extends WebUtilities implements PolymorphicUtilities {
 
     public WebInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
-        super(driver);
+        super(driver, scroller);
         this.wait = wait;
     }
 
     public WebInteractions() {
-        super(PickleibWebDriver.get());
+        super(PickleibWebDriver.get(), scroller);
     }
 
     /**

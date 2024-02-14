@@ -44,7 +44,7 @@ public abstract class Utilities {
     public Printer log = new Printer(this.getClass());
     public RemoteWebDriver driver;
     public FluentWait<RemoteWebDriver> wait;
-    public ScrollFunction scroller;
+    public static ScrollFunction scroller;
 
     public long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
 

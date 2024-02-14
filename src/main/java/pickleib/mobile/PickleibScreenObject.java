@@ -17,7 +17,7 @@ public abstract class PickleibScreenObject extends MobileUtilities {
      *
      */
     protected PickleibScreenObject(){
-        super(PickleibAppiumDriver.get());
+        super(PickleibAppiumDriver.get(), scroller);
         PageFactory.initElements(
                 new AppiumFieldDecorator(
                         PickleibAppiumDriver.get(),
@@ -34,7 +34,7 @@ public abstract class PickleibScreenObject extends MobileUtilities {
      *
      */
     protected PickleibScreenObject(RemoteWebDriver driver){
-        super(driver);
+        super(driver, scroller);
         PageFactory.initElements(
                 new AppiumFieldDecorator(
                         driver,
@@ -51,7 +51,7 @@ public abstract class PickleibScreenObject extends MobileUtilities {
      *
      */
     protected <CustomFieldDecorator extends DefaultFieldDecorator> PickleibScreenObject(CustomFieldDecorator fieldDecorator){
-        super(PickleibWebDriver.get());
+        super(PickleibWebDriver.get(), scroller);
         PageFactory.initElements(fieldDecorator, this);
     }
 
@@ -63,7 +63,7 @@ public abstract class PickleibScreenObject extends MobileUtilities {
             CustomFieldDecorator fieldDecorator,
             RemoteWebDriver driver
     ){
-        super(driver);
+        super(driver, scroller);
         PageFactory.initElements(fieldDecorator, this);
     }
 }

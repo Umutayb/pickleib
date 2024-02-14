@@ -30,12 +30,12 @@ import static utils.StringUtilities.contextCheck;
 public class MobileInteractions extends MobileUtilities implements PolymorphicUtilities {
 
     public MobileInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
-        super(driver);
+        super(driver, scroller);
         this.wait = wait;
     }
 
     public MobileInteractions() {
-        super(PickleibAppiumDriver.get());
+        super(PickleibAppiumDriver.get(), scroller);
     }
 
     /**
