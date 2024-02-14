@@ -2,10 +2,13 @@ package pickleib.mobile.interactions;
 
 import collections.Bundle;
 import context.ContextStore;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.AppiumFluentWait;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -28,7 +31,7 @@ import static utils.StringUtilities.contextCheck;
 @SuppressWarnings("unused")
 public class MobileInteractions extends MobileUtilities implements PolymorphicUtilities {
 
-    public MobileInteractions(RemoteWebDriver driver, WebDriverWait wait) {
+    public MobileInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         super(driver);
         this.wait = wait;
     }
@@ -137,17 +140,26 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
      * Clears and fills a given input.
      *
      * @param inputElement target input element
-     * @param elementName  target element name
+     * @param inputName  target element name
      * @param pageName     specified page instance name
      * @param inputText    input text
      * @param scroll       scrolls if true
      * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll, boolean verify) {
-        log.info("Clearing input " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " on the ") +
-                highlighted(BLUE, pageName)
+    public void clearFillInput(
+            WebElement inputElement,
+            String inputName,
+            String pageName,
+            String inputText,
+            boolean scroll,
+            boolean verify) {
+        inputText = contextCheck(inputText);
+        log.info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, inputText)
         );
         super.clearFillInput(inputElement, inputText, scroll, verify);
     }

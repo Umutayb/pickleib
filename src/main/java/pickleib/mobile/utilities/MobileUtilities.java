@@ -8,6 +8,7 @@ import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -41,7 +42,7 @@ public abstract class MobileUtilities extends Utilities {
         return this.driver;
     }
 
-    public WebDriverWait driverWait() {
+    public FluentWait<RemoteWebDriver> driverWait() {
         return PickleibAppiumDriver.getWait();
     }
 

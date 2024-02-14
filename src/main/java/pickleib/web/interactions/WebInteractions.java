@@ -7,6 +7,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -31,7 +32,7 @@ import static utils.StringUtilities.contextCheck;
 @SuppressWarnings("unused")
 public class WebInteractions extends WebUtilities implements PolymorphicUtilities {
 
-    public WebInteractions(RemoteWebDriver driver, WebDriverWait wait) {
+    public WebInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         super(driver);
         this.wait = wait;
     }

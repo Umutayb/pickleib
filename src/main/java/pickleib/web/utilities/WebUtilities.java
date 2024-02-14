@@ -19,6 +19,7 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
@@ -56,7 +57,7 @@ public abstract class WebUtilities extends Utilities {
         return this.driver;
     }
 
-    public WebDriverWait driverWait() {
+    public FluentWait<RemoteWebDriver> driverWait() {
         return PickleibWebDriver.getWait();
     }
 

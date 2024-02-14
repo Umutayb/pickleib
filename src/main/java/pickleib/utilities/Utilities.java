@@ -9,6 +9,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
@@ -43,12 +45,17 @@ public abstract class Utilities {
     public ObjectMapper objectMapper = new ObjectMapper();
     public Printer log = new Printer(this.getClass());
     public RemoteWebDriver driver;
-    public WebDriverWait wait;
+    public FluentWait<RemoteWebDriver> wait;
 
     public long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
 
     public Utilities(RemoteWebDriver driver) {
         this.driver = driver;
+        wait = new FluentWait<>(driver)
+                .withTimeout(Duration.ofSeconds(elementTimeout))
+                .pollingEvery(Duration.ofMillis(500))
+                .withMessage("Waiting for element visibility...")
+                .ignoring(WebDriverException.class);
     }
 
     /**
@@ -104,31 +111,8 @@ public abstract class Utilities {
      *                           with the last caught WebDriver exception.
      */ //TODO: clickElement should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
     public void clickElement(WebElement element, ClickFunction clicker) {
-        long initialTime = System.currentTimeMillis();
-        WebDriverException caughtException = null;
-        int counter = 0;
-        do {
-            try {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-                clicker.click(element);
-                return;
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                } else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                counter++;
-            } finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(elementTimeout));
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning(caughtException.getMessage());
-        throw new PickleibException(caughtException);
+        wait.until(ExpectedConditions.elementToBeClickable(element));
+        clicker.click(element);
     }
 
     /**

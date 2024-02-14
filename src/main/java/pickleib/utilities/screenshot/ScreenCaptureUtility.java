@@ -11,11 +11,11 @@ import utils.StringUtilities;
 import java.io.File;
 
 import static utils.StringUtilities.Color.*;
+import static utils.StringUtilities.highlighted;
 
 @SuppressWarnings("unused")
 public class ScreenCaptureUtility {
     Printer log = new Printer(ScreenCaptureUtility.class);
-    StringUtilities strUtils = new StringUtilities();
     NumericUtilities numeric = new NumericUtilities();
 
     /**
@@ -36,8 +36,9 @@ public class ScreenCaptureUtility {
             log.info("Screenshot saved as; "+name+" at the \"screenshots\" file.");
             return fileDestination;
         }
-        catch (Exception gamma){
-            log.error(strUtils.highlighted(YELLOW, "Could not capture screen")+strUtils.highlighted(RED, "\n\t"+gamma), gamma);
+        catch (Exception exception){
+            log.error("Could not capture screen", exception);
+            exception.printStackTrace();
             return null;
         }
     }
