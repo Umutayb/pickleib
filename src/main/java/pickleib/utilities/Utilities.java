@@ -11,7 +11,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
@@ -20,7 +19,6 @@ import pickleib.utilities.interfaces.functions.ScrollFunction;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import utils.Printer;
 import utils.StringUtilities;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -51,11 +49,12 @@ public abstract class Utilities {
 
     public Utilities(RemoteWebDriver driver) {
         this.driver = driver;
-        wait = new FluentWait<>(driver)
-                .withTimeout(Duration.ofSeconds(elementTimeout))
-                .pollingEvery(Duration.ofMillis(500))
-                .withMessage("Waiting for element visibility...")
-                .ignoring(WebDriverException.class);
+        if (driver != null)
+            wait = new FluentWait<>(driver)
+                    .withTimeout(Duration.ofSeconds(elementTimeout))
+                    .pollingEvery(Duration.ofMillis(500))
+                    .withMessage("Waiting for element visibility...")
+                    .ignoring(WebDriverException.class);
     }
 
     /**

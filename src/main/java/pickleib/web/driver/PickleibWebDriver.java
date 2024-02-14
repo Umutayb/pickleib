@@ -38,10 +38,6 @@ public class PickleibWebDriver {
 		return driver;
 	}
 
-	public static FluentWait<RemoteWebDriver> getWait(){
-		return wait;
-	}
-
 	static PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
 	public static Printer log = new Printer(PickleibWebDriver.class);
 

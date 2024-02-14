@@ -27,11 +27,6 @@ public abstract class PickleibAppiumDriver {
 	public static AppiumDriver get(){
 		return driver;
 	}
-
-	public static FluentWait<RemoteWebDriver> getWait(){
-		return wait;
-	}
-
 	private static final PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
 	private static final Printer log = new Printer(PickleibAppiumDriver.class);
 

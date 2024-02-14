@@ -39,7 +39,6 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
 
     public WebInteractions() {
         super(PickleibWebDriver.get());
-        this.wait = PickleibWebDriver.getWait();
     }
 
     /**

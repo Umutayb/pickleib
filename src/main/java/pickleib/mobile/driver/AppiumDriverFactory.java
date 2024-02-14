@@ -5,10 +5,8 @@ import io.appium.java_client.AppiumDriver;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import pickleib.driver.DriverFactory;
-import utils.FileUtilities;
 import utils.Printer;
 import java.net.URL;
-import java.time.Duration;
 
 import static pickleib.mobile.driver.ServiceFactory.service;
 import static utils.StringUtilities.Color.*;
@@ -29,11 +27,8 @@ public class AppiumDriverFactory implements DriverFactory {
                 url = new URL("http://" + address + ":" + port + "/wd/hub");
             }
             else url = service.getUrl();
-
-            AppiumDriver driver = new AppiumDriver(url, desiredCapabilities);
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(15));
             log.important(deviceName + markup(GRAY, " was selected"));
-            return driver;
+            return new AppiumDriver(url, desiredCapabilities);
         }
         catch (Exception gamma) {
             if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){

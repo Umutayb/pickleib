@@ -42,10 +42,6 @@ public abstract class MobileUtilities extends Utilities {
         return this.driver;
     }
 
-    public FluentWait<RemoteWebDriver> driverWait() {
-        return PickleibAppiumDriver.getWait();
-    }
-
     /**
      * Clicks an {element} with optional scrolling after waiting for its state to be enabled.
      *

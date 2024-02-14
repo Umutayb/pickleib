@@ -38,7 +38,6 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
 
     public MobileInteractions() {
         super(PickleibAppiumDriver.get());
-        this.wait = PickleibAppiumDriver.getWait();
     }
 
     /**

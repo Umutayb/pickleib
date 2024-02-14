@@ -168,8 +168,8 @@ public class ElementAcquisition {
     public static class PageObjectModel <ObjectRepository extends PageRepository> {
         Reflections<ObjectRepository> reflections;
 
-        public PageObjectModel(RemoteWebDriver driver, Class<ObjectRepository> pageRepository) {
-            reflections = new Reflections<>(driver, pageRepository);
+        public PageObjectModel(Class<ObjectRepository> pageRepository) {
+            reflections = new Reflections<>(pageRepository);
         }
 
         /**
@@ -866,7 +866,7 @@ public class ElementAcquisition {
     public static class Reflections<ObjectRepository extends PageRepository> {
         private final Class<ObjectRepository> pageRepositoryClass;
 
-        public Reflections(RemoteWebDriver driver, Class<ObjectRepository> pageRepository) {
+        public Reflections(Class<ObjectRepository> pageRepository) {
             this.pageRepositoryClass = pageRepository;
         }
 
