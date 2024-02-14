@@ -98,17 +98,14 @@ public interface PolymorphicUtilities {
      * @param element target element
      * @param scroll  scrolls if true
      */
-    void clickIfPresent(WebElement element, Boolean scroll);
+    void clickIfPresent(WebElement element, boolean scroll);
 
     /**
      * Clicks an {element} with the {element name} on the {page name} if its present (in enabled state).
      *
      * @param element     target element
-     * @param scroll      scrolls if true
-     * @param elementName target element name
-     * @param pageName    specified page instance name
      */
-    void clickIfPresent(WebElement element, Boolean scroll, String elementName, String pageName);
+    void clickIfPresent(WebElement element);
 
     /**
      * Clears and fills a given input

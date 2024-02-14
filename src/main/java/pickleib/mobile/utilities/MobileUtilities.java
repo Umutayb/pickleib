@@ -8,8 +8,6 @@ import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.mobile.driver.PickleibAppiumDriver;
@@ -43,34 +41,6 @@ public abstract class MobileUtilities extends Utilities {
     }
 
     /**
-     * Clicks an {element} with optional scrolling after waiting for its state to be enabled.
-     *
-     * @param element     target element
-     * @param scroll      scrolls if true
-     */
-    public void clickElement(WebElement element, boolean scroll) {
-        super.clickElement(
-                element,
-                (targetElement) -> {
-                    if (scroll) this.centerElement(targetElement).click();
-                    else targetElement.click();
-                }
-        );
-    }
-
-    /**
-     * Clicks an {element} after waiting for its state to be enabled.
-     *
-     * @param element     target element
-     */
-    public void clickElement(WebElement element) {
-        super.clickElement(
-                element,
-                WebElement::click
-        );
-    }
-
-    /**
      * Clicks on a button that contains {button text} text
      * It does not scroll by default.
      *
@@ -81,43 +51,6 @@ public abstract class MobileUtilities extends Utilities {
         log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
         WebElement element = getElementByText(buttonText);
         clickElement(element, scroll);
-    }
-
-    /**
-     * Clicks an element if its present (in enabled state)
-     *
-     * @param element target element
-     * @param scroll  The {@code scroll} to be used for scrolling.
-     */
-    public void clickIfPresent(WebElement element, Boolean scroll) {
-        try {
-            clickElement(element, scroll);
-        } catch (WebDriverException exception) {
-            log.warning(exception.getMessage());
-        }
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    public void clearFillInput(WebElement inputElement, String inputText, boolean verify) {
-        fillInputElement(inputElement, inputText, null, verify);
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify) {
-        if (scroll) fillInputElement(inputElement, inputText, this::centerElement, verify);
-        else fillInputElement(inputElement, inputText, null, verify);
     }
 
     /**

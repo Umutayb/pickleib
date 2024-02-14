@@ -19,7 +19,6 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
@@ -55,71 +54,6 @@ public abstract class WebUtilities extends Utilities {
 
     public RemoteWebDriver driver() {
         return this.driver;
-    }
-
-    /**
-     * Clicks an {element} with optional scrolling after waiting for its state to be enabled.
-     *
-     * @param element     target element
-     * @param scroll      scrolls if true
-     */
-    public void clickElement(WebElement element, boolean scroll) {
-        clickElement(
-                element,
-                (targetElement) -> {
-                    if (scroll) this.centerElement(targetElement).click();
-                    else targetElement.click();
-                }
-        );
-    }
-
-    /**
-     * Clicks an {element} after waiting for its state to be enabled.
-     *
-     * @param element     target element
-     */
-    public void clickElement(WebElement element) {
-        super.clickElement(
-                element,
-                WebElement::click
-        );
-    }
-
-    /**
-     * Clicks an element if its present (in enabled state)
-     *
-     * @param element target element
-     * @param scroll  The {@code scroll} to be used for scrolling.
-     */
-    public void clickIfPresent(WebElement element, Boolean scroll) {
-        try {
-            clickElement(element, scroll);
-        } catch (WebDriverException exception) {
-            log.warning(exception.getMessage());
-        }
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    public void clearFillInput(WebElement inputElement, String inputText, boolean verify) {
-        fillInputElement(inputElement, inputText, null, verify);
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify) {
-        if (scroll) fillInputElement(inputElement, inputText, this::centerElement, verify);
-        else fillInputElement(inputElement, inputText, null, verify);
     }
 
     /**
@@ -346,31 +280,6 @@ public abstract class WebUtilities extends Utilities {
         WebElement element = driver.findElement(By.cssSelector(cssSelector));
         centerElement(element);
         clickElement(element, true);
-    }
-
-    /**
-     * Click on a button that contains {button text} text
-     * It does not scroll by default.
-     *
-     * @param buttonText target button text
-     */
-    public void clickByText(String buttonText) {
-        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
-        WebElement element = getElementByText(buttonText);
-        clickElement(element, this::centerElement);
-    }
-
-    /**
-     * Clicks on a button that contains {button text} text
-     * It does not scroll by default.
-     *
-     * @param buttonText target button text
-     * @param scroll     The {scroll} to be used for scrolling.
-     */
-    public void clickButtonByItsText(String buttonText, boolean scroll) {
-        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
-        WebElement element = getElementByText(buttonText);
-        clickElement(element, scroll);
     }
 
     /**

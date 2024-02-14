@@ -14,11 +14,11 @@ import org.openqa.selenium.support.ui.FluentWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
-import pickleib.utilities.interfaces.functions.ClickFunction;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import utils.Printer;
 import utils.StringUtilities;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -44,11 +44,28 @@ public abstract class Utilities {
     public Printer log = new Printer(this.getClass());
     public RemoteWebDriver driver;
     public FluentWait<RemoteWebDriver> wait;
+    public ScrollFunction scroller;
 
     public long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
 
     public Utilities(RemoteWebDriver driver) {
         this.driver = driver;
+        if (driver != null)
+            wait = new FluentWait<>(driver)
+                    .withTimeout(Duration.ofSeconds(elementTimeout))
+                    .pollingEvery(Duration.ofMillis(500))
+                    .withMessage("Waiting for element visibility...")
+                    .ignoring(WebDriverException.class);
+    }
+
+    public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
+        this.driver = driver;
+        this.wait = wait;
+    }
+
+    public Utilities(RemoteWebDriver driver, ScrollFunction scroller) {
+        this.driver = driver;
+        this.scroller = scroller;
         if (driver != null)
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(elementTimeout))
@@ -85,33 +102,20 @@ public abstract class Utilities {
      * @param element target element
      */
     public void clickElement(WebElement element) {
-        clickElement(element, WebElement::click);
+        clickElement(element, false);
     }
 
     /**
-     * Clicks the specified {@code element} with a retry mechanism and optional scrolling.
+     * Clicks on the specified WebElement.
      *
-     * <p>
-     * This method attempts to click the given {@code element} with a retry mechanism.
-     * Optionally, it supports scrolling before clicking the element using the provided {@code scroller}.
-     * If the {@code scroller} is provided, it scrolls towards the specified location before attempting the click.
-     * </p>
-     *
-     * <p>
-     * The method logs warning messages during the iteration process, indicating WebDriver exceptions.
-     * After the maximum time specified by {@code elementTimeout}, if the element is still not clickable,
-     * a {@code PickleibException} is thrown, including the last caught WebDriver exception.
-     * </p>
-     *
-     * @param element The target {@code WebElement} to be clicked with a retry mechanism.
-     * @param clicker The {@code ClickFunction} representing the clicking action to be performed on the element.
-     *                The {@code ClickFunction} interface should define the click method.
-     * @throws PickleibException If the element is not clickable after the retry attempts, a {@code PickleibException} is thrown
-     *                           with the last caught WebDriver exception.
-     */ //TODO: clickElement should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
-    public void clickElement(WebElement element, ClickFunction clicker) {
+     * @param element The WebElement to click on.
+     * @param scroll  If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
+     * @throws TimeoutException if the element is not clickable within the specified timeout.
+     */
+    public void clickElement(WebElement element, boolean scroll) {
         wait.until(ExpectedConditions.elementToBeClickable(element));
-        clicker.click(element);
+        if (scroll) this.scroller.scroll(element).click();
+        else element.click();
     }
 
     /**
@@ -121,7 +125,7 @@ public abstract class Utilities {
      * @param element target element
      */
     public void clickButtonIfPresent(WebElement element) {
-        clickButtonIfPresent(element, null);
+        clickButtonIfPresent(element, false);
     }
 
     /**
@@ -134,13 +138,12 @@ public abstract class Utilities {
      * If the element is not present, a {@code WebDriverException} is caught, and a warning message is logged.
      * </p>
      *
-     * @param element  The target {@code WebElement} to be clicked if present.
-     * @param scroller The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param element The target {@code WebElement} to be clicked if present.
+     * @param scroll  scrolls if true
      */
-    public void clickButtonIfPresent(WebElement element, ScrollFunction scroller) {
+    public void clickButtonIfPresent(WebElement element, boolean scroll) {
         try {
-            if (elementIs(element, ElementState.displayed))
-                clickElement(element, (target) -> scroller.scroll(target).click());
+            clickElement(element, scroll);
         } catch (WebDriverException ignored) {
             log.warning("The element was not present!");
         }
@@ -163,12 +166,12 @@ public abstract class Utilities {
      * It does not scroll by default.
      *
      * @param buttonText target button text
-     * @param scroller   The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param scroll     If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
-    public void clickButtonByItsText(String buttonText, ScrollFunction scroller) {
+    public void clickButtonByItsText(String buttonText, boolean scroll) {
         log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
         WebElement element = getElementByText(buttonText);
-        clickElement(element, (target) -> scroller.scroll(target).click());
+        clickElement(element, scroll);
     }
 
     /**
@@ -202,12 +205,12 @@ public abstract class Utilities {
     /**
      * Clicks an element if its present (in enabled state)
      *
-     * @param element  target element
-     * @param scroller The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param element target element
+     * @param scroll  If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
-    public void clickIfPresent(WebElement element, ScrollFunction scroller) {
+    public void clickIfPresent(WebElement element, boolean scroll) {
         try {
-            clickElement(element, (target) -> scroller.scroll(target).click());
+            clickElement(element, scroll);
         } catch (WebDriverException exception) {
             log.warning(exception.getMessage());
         }
@@ -220,37 +223,7 @@ public abstract class Utilities {
      * @param element target element
      */
     public void clickIfPresent(WebElement element) {
-        try {
-            clickElement(element, (target) -> {
-                if (elementIs(element, displayed)) target.click();
-            });
-        } catch (WebDriverException exception) {
-            log.warning(exception.getMessage());
-        }
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
-     * @param scroller     The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
-     */
-    public void clearFillInput(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify) {
-        fillInputElement(inputElement, inputText, scroller, verify);
-    }
-
-    /**
-     * Clears and fills a given input
-     * Does not scroll by default.
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    public void clearFillInput(WebElement inputElement, String inputText, boolean verify) {
-        fillInputElement(inputElement, inputText, verify);
+        clickIfPresent(element, false);
     }
 
     /**
@@ -261,7 +234,7 @@ public abstract class Utilities {
      */
     public void fillInput(WebElement inputElement, String inputText) {
         // This method clears the input field before filling it
-        fillInputElement(inputElement, inputText, false);
+        clearFillInput(inputElement, inputText, false);
     }
 
     /**
@@ -272,7 +245,7 @@ public abstract class Utilities {
      */
     public void fillAndVerifyInput(WebElement inputElement, String inputText) {
         // This method clears the input field before filling it
-        fillInputElement(inputElement, inputText, true);
+        clearFillInput(inputElement, inputText, true);
     }
 
     /**
@@ -293,8 +266,20 @@ public abstract class Utilities {
      * @param inputText    input text
      * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void fillInputElement(WebElement inputElement, String inputText, boolean verify) {
-        fillInputElement(inputElement, inputText, null, verify);
+    public void clearFillInput(WebElement inputElement, String inputText, boolean verify) {
+        fillInputElement(inputElement, inputText, false, true, verify);
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText    input text
+     * @param scroll       If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
+     * @param verify       verifies the input text value equals to an expected text if true
+     */
+    public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify) {
+        fillInputElement(inputElement, inputText, false, true, verify);
     }
 
     /**
@@ -303,14 +288,14 @@ public abstract class Utilities {
      * @param inputElement target input element
      * @param inputText    input text
      * @param verify       verifies the input text value equals to an expected text if true
-     * @param scroller     The {@code ScrollFunction} to be used for scrolling. If {@code null}, the default scrolling behavior is applied.
+     * @param scroll       If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
-    public void fillInputElement(WebElement inputElement, String inputText, ScrollFunction scroller, boolean verify) {
-        // This method clears the input field before filling it
-        elementIs(inputElement, ElementState.displayed);
+    public void fillInputElement(WebElement inputElement, String inputText, boolean scroll, boolean clear, boolean verify) {
+        wait.until(ExpectedConditions.visibilityOf(inputElement));
         inputText = contextCheck(inputText);
-        if (scroller != null) scroller.scroll(inputElement).sendKeys(inputText);
-        else inputElement.sendKeys(inputText);
+        if (scroll) scroller.scroll(inputElement);
+        if (clear) clearInputField(inputElement);
+        inputElement.sendKeys(inputText);
         assert !verify || inputText.equals(inputElement.getAttribute("value"));
     }
 
@@ -402,7 +387,7 @@ public abstract class Utilities {
      * @param buttonText The text of the target element to be clicked.
      */
     public void clickButtonWithText(String buttonText) {
-        clickElement(getElementByText(buttonText), WebElement::click);
+        clickButtonWithText(buttonText, false);
     }
 
     /**
@@ -414,10 +399,10 @@ public abstract class Utilities {
      * </p>
      *
      * @param buttonText The text of the target element to be clicked.
-     * @param scroller   The {@code ScrollFunction} for scrolling before clicking. If {@code null}, no scrolling is performed.
+     * @param scroll     If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
-    public void clickButtonWithText(String buttonText, ScrollFunction scroller) {
-        clickElement(getElementByText(buttonText), (target) -> scroller.scroll(target).click());
+    public void clickButtonWithText(String buttonText, boolean scroll) {
+        clickElement(getElementByText(buttonText), scroll);
     }
 
     /**
@@ -828,8 +813,7 @@ public abstract class Utilities {
                 }
                 waitFor(0.5);
                 counter++;
-            }
-            finally {
+            } finally {
                 driver.manage().timeouts().implicitlyWait(Duration.ofMillis(elementTimeout));
             }
         }
@@ -873,24 +857,5 @@ public abstract class Utilities {
         } catch (ClassCastException exception) {
             return false;
         }
-    }
-
-    /**
-     * Closes the browser
-     */
-    public void quitDriver() {
-        driver.quit();
-    }
-
-    /**
-     * Verifies the page is redirecting to the page {target url}
-     *
-     * @param url target url
-     */
-    public void verifyCurrentUrl(String url) {
-        url = contextCheck(url);
-        log.info("The url contains " + url);
-        if (!driver.getCurrentUrl().contains(url))
-            throw new PickleibException("Current url does not contain the expected url!");
     }
 }
