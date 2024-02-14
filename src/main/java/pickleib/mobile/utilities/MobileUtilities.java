@@ -9,7 +9,6 @@ import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.enums.Direction;
-import pickleib.enums.ElementState;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
 import utils.StringUtilities;
@@ -18,7 +17,6 @@ import java.time.Duration;
 
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
-import static utils.StringUtilities.Color.BLUE;
 
 public abstract class MobileUtilities extends Utilities {
 
@@ -38,19 +36,6 @@ public abstract class MobileUtilities extends Utilities {
 
     public RemoteWebDriver driver() {
         return this.driver;
-    }
-
-    /**
-     * Clicks on a button that contains {button text} text
-     * It does not scroll by default.
-     *
-     * @param buttonText target button text
-     * @param scroll     The {scroll} to be used for scrolling.
-     */
-    public void clickButtonByText(String buttonText, boolean scroll) {
-        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
-        WebElement element = getElementByText(buttonText);
-        clickElement(element, scroll);
     }
 
     /**
@@ -229,68 +214,5 @@ public abstract class MobileUtilities extends Utilities {
         Point to = new Point(destinationElement.getLocation().x, destinationElement.getLocation().y);
         swipe(from, to);
         return element;
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param scroll       scrolls if true
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    public void clearFillInput(WebElement inputElement, String inputText, @NotNull boolean scroll, Boolean verify) {
-        fillInputElement(inputElement, inputText, scroll, verify);
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     */
-    public void fillInput(WebElement inputElement, String inputText) {
-        // This method clears the input field before filling it
-        fillInputElement(inputElement, inputText, false, false);
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     */
-    public void fillAndVerifyInput(WebElement inputElement, String inputText) {
-        // This method clears the input field before filling it
-        fillInputElement(inputElement, inputText, false, true);
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     */
-    protected void fillAndVerifyInput(WebElement inputElement, String inputText, Boolean scroll) {
-        // This method clears the input field before filling it
-        fillInputElement(inputElement, inputText, scroll, true);
-    }
-
-    /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param scroll       scrolls if true
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    protected void fillInputElement(WebElement inputElement, String inputText, @NotNull Boolean scroll, Boolean verify) {
-        // This method clears the input field before filling it
-        elementIs(inputElement, ElementState.displayed);
-        if (scroll) centerElement(inputElement).sendKeys(inputText);
-        else centerElement(inputElement).sendKeys(inputText);
-        log.warning(inputElement.getText());
-
-        assert !verify || inputText.equals(inputElement.getAttribute("value"));
     }
 }

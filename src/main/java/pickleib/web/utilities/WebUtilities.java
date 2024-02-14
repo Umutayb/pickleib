@@ -309,7 +309,7 @@ public abstract class WebUtilities extends Utilities {
         inputText = StringUtilities.contextCheck(inputText);
         elementIs(iframe, ElementState.displayed);
         driver.switchTo().frame(iframe);
-        clearFillInput(element, inputText, this::centerElement, true);
+        clearFillInput(element, inputText, true, true);
         driver.switchTo().parentFrame();
     }
 
@@ -338,7 +338,7 @@ public abstract class WebUtilities extends Utilities {
             clearFillInput(
                     bundle.alpha(),
                     bundle.beta(),
-                    this::centerElement,
+                    true,
                     true
             );
         }

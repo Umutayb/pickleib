@@ -150,31 +150,6 @@ public abstract class Utilities {
     }
 
     /**
-     * Click on a button that contains {button text} text
-     * It does not scroll by default.
-     *
-     * @param buttonText target button text
-     */
-    public void clickButtonByItsText(String buttonText) {
-        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
-        WebElement element = getElementByText(buttonText);
-        clickElement(element);
-    }
-
-    /**
-     * Click on a button that contains {button text} text
-     * It does not scroll by default.
-     *
-     * @param buttonText target button text
-     * @param scroll     If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
-     */
-    public void clickButtonByItsText(String buttonText, boolean scroll) {
-        log.info("Clicking button by its text " + highlighted(BLUE, buttonText));
-        WebElement element = getElementByText(buttonText);
-        clickElement(element, scroll);
-    }
-
-    /**
      * Press {target key} key on {element name} element of the {}
      *
      * @param keys        target keys
@@ -254,9 +229,9 @@ public abstract class Utilities {
      * @param inputElement target input element
      * @param inputText    input text
      */
-    public void fillAndVerifyInput(WebElement inputElement, String inputText, ScrollFunction scroller) {
+    public void fillAndVerifyInput(WebElement inputElement, String inputText, boolean scroll) {
         // This method clears the input field before filling it
-        fillInputElement(inputElement, inputText, scroller, true);
+        clearFillInput(inputElement, inputText, scroll, true);
     }
 
     /**
@@ -279,16 +254,20 @@ public abstract class Utilities {
      * @param verify       verifies the input text value equals to an expected text if true
      */
     public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify) {
-        fillInputElement(inputElement, inputText, false, true, verify);
+        fillInputElement(inputElement, inputText, scroll, true, verify);
     }
 
     /**
-     * Clears and fills a given input
+     * Fills the specified input WebElement with the given text.
      *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
-     * @param scroll       If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
+     * @param inputElement The WebElement representing the input field.
+     * @param inputText The text to be entered into the input field.
+     * @param scroll If true, scrolls to the inputElement before filling. If false, does not scroll.
+     * @param clear If true, clears the input field before entering text. If false, does not clear.
+     * @param verify If true, verifies that the entered text matches the value attribute of the inputElement. If false, skips verification.
+     *
+     * @throws TimeoutException if the inputElement is not visible within the specified timeout.
+     * @throws AssertionError if verification fails (inputText does not match the value attribute of inputElement).
      */
     public void fillInputElement(WebElement inputElement, String inputText, boolean scroll, boolean clear, boolean verify) {
         wait.until(ExpectedConditions.visibilityOf(inputElement));
@@ -297,6 +276,18 @@ public abstract class Utilities {
         if (clear) clearInputField(inputElement);
         inputElement.sendKeys(inputText);
         assert !verify || inputText.equals(inputElement.getAttribute("value"));
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
+     * @param clear If true, clears the input field before entering text. If false, does not clear.
+     */
+    public void fillInputElement(WebElement inputElement, String inputText, boolean clear, boolean verify) {
+       fillInputElement(inputElement, inputText, false, clear, verify);
     }
 
     /**

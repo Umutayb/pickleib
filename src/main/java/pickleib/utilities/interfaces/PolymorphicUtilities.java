@@ -3,6 +3,7 @@ package pickleib.utilities.interfaces;
 import collections.Bundle;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -103,7 +104,7 @@ public interface PolymorphicUtilities {
     /**
      * Clicks an {element} with the {element name} on the {page name} if its present (in enabled state).
      *
-     * @param element     target element
+     * @param element target element
      */
     void clickIfPresent(WebElement element);
 
@@ -128,6 +129,21 @@ public interface PolymorphicUtilities {
      * @param verify       verifies the input text value equals to an expected text if true
      */
     void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, @NotNull boolean scroll, boolean verify);
+
+    /**
+     * Fills the specified input WebElement with the given text.
+     *
+     * @param inputElement The WebElement representing the input field.
+     * @param elementName  The target element name.
+     * @param pageName     The specified page instance name.
+     * @param inputText    The text to be entered into the input field.
+     * @param scroll       If true, scrolls to the inputElement before filling. If false, does not scroll.
+     * @param clear        If true, clears the input field before entering text. If false, does not clear.
+     * @param verify       If true, verifies that the entered text matches the value attribute of the inputElement. If false, skips verification.
+     * @throws TimeoutException if the inputElement is not visible within the specified timeout.
+     * @throws AssertionError   if verification fails (inputText does not match the value attribute of inputElement).
+     */
+    void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll, boolean clear, boolean verify);
 
     /**
      * Verifies a given element is in expected state
