@@ -87,7 +87,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void clickByText(String text) {
         log.info("Clicking button by text " + highlighted(BLUE, text));
-        super.clickButtonByItsText(text, false);
+        super.clickButtonWithText(text, false);
     }
 
     /**
@@ -98,7 +98,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      */
     public void clickByText(String buttonText, boolean scroll) {
         log.info("Clicking button with text " + highlighted(BLUE, buttonText));
-        super.clickButtonByItsText(buttonText, scroll);
+        super.clickButtonWithText(buttonText, scroll);
     }
 
     /**
