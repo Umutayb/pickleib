@@ -379,7 +379,7 @@ public interface PolymorphicUtilities {
      * @param seconds duration as a double
      */
     //This method makes the thread wait for a certain while
-    default void waitFor(double seconds) {
+    static void waitFor(double seconds) {
         Utilities.waitFor(seconds);
     };
 
