@@ -110,15 +110,6 @@ public interface PolymorphicUtilities {
     void clickIfPresent(WebElement element);
 
     /**
-     * Clears and fills a given input
-     *
-     * @param inputElement target input element
-     * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    void fillInputElement(WebElement inputElement, String inputText, boolean verify);
-
-    /**
      * Fills the specified input WebElement with the given text.
      *
      * @param inputElement The WebElement representing the input field.
@@ -131,6 +122,17 @@ public interface PolymorphicUtilities {
      * @throws AssertionError   if verification fails (inputText does not match the value attribute of inputElement).
      */
     void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean clear, boolean verify);
+
+    /**
+     * Clears and fills a given input without scroll option.
+     *
+     * @param inputElement target input element
+     * @param elementName  target element name
+     * @param pageName     specified page instance name
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
+     */
+    void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, boolean verify);
 
     /**
      * Verifies a given element is in expected state
