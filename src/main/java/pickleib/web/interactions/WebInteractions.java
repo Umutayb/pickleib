@@ -217,7 +217,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     }
 
     /**
-     * Clears and fills a given input.
+     * Clears and fills a given input with scroll option.
      *
      * @param inputElement target input element
      * @param elementName  target element name
@@ -233,6 +233,24 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(BLUE, pageName)
         );
         super.clearFillInput(inputElement, inputText, scroll, verify);
+    }
+
+    /**
+     * Clears and fills a given input without scroll option.
+     *
+     * @param inputElement target input element
+     * @param elementName  target element name
+     * @param pageName     specified page instance name
+     * @param inputText    input text
+     * @param verify       verifies the input text value equals to an expected text if true
+     */
+    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, boolean verify) {
+        log.info("Clearing input " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " on the ") +
+                highlighted(BLUE, pageName)
+        );
+        super.clearFillInput(inputElement, inputText, false, verify);
     }
 
     /**
@@ -760,7 +778,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     }
 
     /**
-     * Fills the specified input WebElement with the given text.
+     * Fills the specified input WebElement with the given text with scroll option.
      *
      * @param inputElement The WebElement representing the input field.
      * @param elementName  The target element name.
@@ -781,6 +799,29 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(BLUE, inputText)
         );
         super.fillInputElement(inputElement, inputText, scroll, clear, verify);
+    }
+
+    /**
+     * Fills the specified input WebElement with the given text without scroll option.
+     *
+     * @param inputElement The WebElement representing the input field.
+     * @param elementName  The target element name.
+     * @param pageName     The specified page instance name.
+     * @param inputText    The text to be entered into the input field.
+     * @param clear        If true, clears the input field before entering text. If false, does not clear.
+     * @param verify       If true, verifies that the entered text matches the value attribute of the inputElement. If false, skips verification.
+     * @throws TimeoutException if the inputElement is not visible within the specified timeout.
+     * @throws AssertionError   if verification fails (inputText does not match the value attribute of inputElement).
+     */
+    public void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean clear, boolean verify) {
+        log.info("Filling " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, inputText)
+        );
+        super.fillInputElement(inputElement, inputText, false, clear, verify);
     }
 
     /**
@@ -829,7 +870,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
             switch (interactionType) {
                 case click -> clickElement(bundle.beta(), bundle.alpha(), pageName, scroll);
                 case fill ->
-                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), false, scroll);
+                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"),  scroll,false);
                 case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);
                 case verify -> verifyElementContainsAttribute(
                         bundle.beta(),

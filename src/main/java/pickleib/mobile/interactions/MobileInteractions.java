@@ -140,7 +140,6 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
      * @param inputName  target element name
      * @param pageName     specified page instance name
      * @param inputText    input text
-     * @param scroll       scrolls if true
      * @param verify       verifies the input text value equals to an expected text if true
      */
     public void clearFillInput(
@@ -148,7 +147,6 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
             String inputName,
             String pageName,
             String inputText,
-            boolean scroll,
             boolean verify) {
         inputText = contextCheck(inputText);
         log.info("Filling " +
@@ -158,7 +156,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.clearFillInput(inputElement, inputText, scroll, verify);
+        super.clearFillInput(inputElement, inputText, verify);
     }
 
     /**
@@ -838,13 +836,12 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
      * @param elementName  The target element name.
      * @param pageName     The specified page instance name.
      * @param inputText    The text to be entered into the input field.
-     * @param scroll       If true, scrolls to the inputElement before filling. If false, does not scroll.
      * @param clear        If true, clears the input field before entering text. If false, does not clear.
      * @param verify       If true, verifies that the entered text matches the value attribute of the inputElement. If false, skips verification.
      * @throws TimeoutException if the inputElement is not visible within the specified timeout.
      * @throws AssertionError   if verification fails (inputText does not match the value attribute of inputElement).
      */
-    public void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll, boolean clear, boolean verify) {
+    public void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean clear, boolean verify) {
         inputText = contextCheck(inputText);
         log.info("Filling " +
                 highlighted(BLUE, elementName) +
@@ -853,7 +850,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.fillInputElement(inputElement, inputText, scroll, clear, verify);
+        super.fillInputElement(inputElement, inputText, clear, verify);
     }
 
     /**
@@ -901,7 +898,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
             switch (interactionType) {
                 case click -> clickElement(bundle.beta(), bundle.alpha(), pageName, scroll);
                 case fill ->
-                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), false, scroll);
+                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"),false);
                 case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);
                 case verify -> verifyElementContainsAttribute(
                         bundle.beta(),
