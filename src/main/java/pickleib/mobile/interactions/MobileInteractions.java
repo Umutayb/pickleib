@@ -845,6 +845,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
      * @throws AssertionError   if verification fails (inputText does not match the value attribute of inputElement).
      */
     public void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll, boolean clear, boolean verify) {
+        inputText = contextCheck(inputText);
         log.info("Filling " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY," on the ") +

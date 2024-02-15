@@ -250,7 +250,7 @@ public abstract class Utilities {
     /**
      * Fills the specified input WebElement with the given text.
      *
-     * @param inputElement The WebElement representing the input field.
+     * @param element The WebElement representing the input field.
      * @param inputText The text to be entered into the input field.
      * @param scroll If true, scrolls to the inputElement before filling. If false, does not scroll.
      * @param clear If true, clears the input field before entering text. If false, does not clear.
@@ -259,13 +259,15 @@ public abstract class Utilities {
      * @throws TimeoutException if the inputElement is not visible within the specified timeout.
      * @throws AssertionError if verification fails (inputText does not match the value attribute of inputElement).
      */
-    public void fillInputElement(WebElement inputElement, String inputText, boolean scroll, boolean clear, boolean verify) {
-        wait.until(ExpectedConditions.visibilityOf(inputElement));
+    public void fillInputElement(WebElement element, String inputText, boolean scroll, boolean clear, boolean verify) {
+        wait.until(ExpectedConditions.visibilityOf(element));
         inputText = contextCheck(inputText);
-        if (scroll) scroller.scroll(inputElement);
-        if (clear) clearInputField(inputElement);
-        inputElement.sendKeys(inputText);
-        assert !verify || inputText.equals(inputElement.getAttribute("value"));
+        if (scroll) scroller.scroll(element);
+        if (clear) clearInputField(element);
+        element.sendKeys(inputText);
+        boolean isMobileElement = isAppiumElement(element);
+        String value = isMobileElement ? element.getAttribute("text") : element.getAttribute("value");
+        assert !verify || inputText.equals(value);
     }
 
     /**
@@ -392,10 +394,10 @@ public abstract class Utilities {
      * @param element target element
      */
     public WebElement clearInputField(@NotNull WebElement element) {
-        int textLength = element.getAttribute("value").length();
-        for (int i = 0; i < textLength; i++) {
-            element.sendKeys(Keys.BACK_SPACE);
-        }
+        boolean isMobileElement = isAppiumElement(element);
+        String input = isMobileElement ? element.getAttribute("text") : element.getAttribute("value");
+        int textLength = input.length();
+        for (int i = 0; i < textLength; i++) element.sendKeys(Keys.BACK_SPACE);
         return element;
     }
 
@@ -406,8 +408,11 @@ public abstract class Utilities {
      */
     public WebElement getElementByText(String elementText) {
         try {
-            return driver.findElement(By.xpath("//*[text()='" + elementText + "']"));
-        } catch (NoSuchElementException exception) {
+            String queryKeyword = isAppiumDriver(driver) ? "@text" : "text()";
+            String xpath = "//*[" + queryKeyword + "='" + elementText + "']";
+            return driver.findElement(By.xpath(xpath));
+        }
+        catch (NoSuchElementException exception) {
             throw new NoSuchElementException(GRAY + exception.getMessage() + RESET);
         }
     }
@@ -419,7 +424,10 @@ public abstract class Utilities {
      */
     public WebElement getElementContainingText(String elementText) {
         try {
-            return driver.findElement(By.xpath("//*[contains(text(), '" + elementText + "')]"));
+            //*[contains(@text,'Schiphol')]"
+            String queryKeyword = isAppiumDriver(driver) ? "@text" : "text()";
+            String xpath = "//*[contains(" + queryKeyword + ",'" + elementText + "')]";
+            return driver.findElement(By.xpath(xpath));
         } catch (NoSuchElementException exception) {
             throw new NoSuchElementException(GRAY + exception.getMessage() + RESET);
         }
@@ -820,10 +828,7 @@ public abstract class Utilities {
      * - If the WebElement is associated with a standard WebDriver, returns DriverType.Web.
      */
     public static DriverFactory.DriverType getElementDriverType(WebElement element) {
-        if (isAppiumElement(element))
-            return Mobile;
-        else
-            return Web;
+        return isAppiumElement(element) ? Mobile : Web;
     }
 
     /**
@@ -835,7 +840,22 @@ public abstract class Utilities {
      */
     public static boolean isAppiumElement(WebElement element) {
         try {
-            return ((RemoteWebElement) element).getWrappedDriver().getClass().isAssignableFrom(AppiumDriver.class);
+            return isAppiumDriver(((RemoteWebElement) element).getWrappedDriver());
+        } catch (ClassCastException exception) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the provided WebElement is associated with an AppiumDriver.
+     *
+     * @param driver The RemoteWebDriver to be checked.
+     * @return true if the WebElement is associated with an AppiumDriver, false otherwise.
+     * If a ClassCastException occurs during the check, it returns false.
+     */
+    public static boolean isAppiumDriver(WebDriver driver) {
+        try {
+            return driver.getClass().isAssignableFrom(AppiumDriver.class);
         } catch (ClassCastException exception) {
             return false;
         }

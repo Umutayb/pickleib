@@ -1,6 +1,7 @@
 package pickleib.mobile.utilities;
 
 import org.jetbrains.annotations.NotNull;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -8,12 +9,16 @@ import org.openqa.selenium.interactions.Pause;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.pagefactory.ByAll;
+import org.openqa.selenium.support.pagefactory.ByChained;
 import pickleib.enums.Direction;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.element.ElementAcquisition;
 import utils.StringUtilities;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.time.Duration.ofMillis;
@@ -115,19 +120,61 @@ public abstract class MobileUtilities extends Utilities {
     }
 
     /**
-     * Scrolls through a list of elements until an element containing a given text is found
+     * Scrolls through a list of elements until an element with the specified text is found and displayed.
      *
-     * @param list        target element list
-     * @param elementText target element text
+     * @param elementText The text of the element to be found.
+     * @return WebElement representing the found element, or null if not found within the specified time.
      */
-    public WebElement scrollInContainer(List<WebElement> list, String elementText) {
-        for (int index = 0; index < list.size() - 2; index++) {
-            if (list.get(index).getText().contains(elementText)) {
-                return list.get(index);
+    public WebElement swipeUntilFound(String elementText) {
+        long initialTime = System.currentTimeMillis();
+        do {
+            try {
+                WebElement targetElement = getElementByText(elementText);
+                if (targetElement.isDisplayed()) return targetElement;
+                else swiper(Direction.up);
             }
-            swipeFromTo(list.get(index + 1), list.get(index));
+            catch (WebDriverException ignored){
+                swiper(Direction.up);
+            }
         }
-        return null;
+        while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
+        throw new RuntimeException("Element '" + elementText + "' could not be located!");
+    }
+
+    /**
+     * Scrolls through a list of elements until an element with the specified text is found and displayed.
+     * Uses the provided locators to identify the elements in the list.
+     *
+     * @param elementText The text of the element to be found.
+     * @param locators    Additional locators to identify the list of elements.
+     * @return WebElement representing the found element, or null if not found within the specified time.
+     */
+    public WebElement scrollInList(String elementText, By... locators) {
+        return scrollInList(elementText, driver.findElements(new ByAll(locators)));
+    }
+
+    /**
+     * Scrolls through a list of elements until an element with the specified text is found and displayed.
+     * Uses a provided list of elements to perform the scroll action.
+     *
+     * @param elementText The text of the element to be found.
+     * @param elements    The list of elements to scroll through.
+     * @return WebElement representing the found element, or null if not found within the specified time.
+     */
+    public WebElement scrollInList(String elementText, List<WebElement> elements){
+        long initialTime = System.currentTimeMillis();
+        do {
+            try {
+                WebElement targetElement = getElementByText(elementText);
+                if (targetElement.isDisplayed()) return targetElement;
+                else throw new WebDriverException("Element is not displayed (yet)!");
+            }
+            catch (WebDriverException ignored){
+                swipeFromTo(elements.get(elements.size() - 1), elements.get(0));;
+            }
+        }
+        while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
+        throw new RuntimeException("Element '" + elementText + "' could not be located!");
     }
 
     /**
@@ -144,17 +191,17 @@ public abstract class MobileUtilities extends Utilities {
         Point destination = switch (direction) {
             case up -> new Point(
                     center.getX(),
-                    center.getY() + (3 * (driver.manage().window().getSize().getHeight() / 4))
+                    center.getY() - (3 * (driver.manage().window().getSize().getHeight() / 4))
             );
             case down -> new Point(
                     center.getX(),
-                    center.getY() - (3 * (driver.manage().window().getSize().getHeight() / 4))
+                    center.getY() + (3 * (driver.manage().window().getSize().getHeight() / 4))
             );
-            case left -> new Point(
+            case right -> new Point(
                     center.getX() - (3 * (driver.manage().window().getSize().getWidth() / 4)),
                     center.getY()
             );
-            case right -> new Point(
+            case left -> new Point(
                     center.getX() + (3 * (driver.manage().window().getSize().getWidth() / 4)),
                     center.getY()
             );
@@ -182,11 +229,12 @@ public abstract class MobileUtilities extends Utilities {
                 PointerInput.Origin.viewport(), pointOfDeparture.x, pointOfDeparture.y)
         );
         sequence.addAction(finger.createPointerDown(PointerInput.MouseButton.MIDDLE.asArg()));
-        sequence.addAction(new Pause(finger, ofMillis(750)));
+        sequence.addAction(new Pause(finger, ofMillis(250)));
         sequence.addAction(finger.createPointerMove(
-                Duration.ofMillis(250),
+                Duration.ofMillis(750),
                 PointerInput.Origin.viewport(), pointOfArrival.x, pointOfArrival.y)
         );
+        sequence.addAction(new Pause(finger, ofMillis(250)));
         sequence.addAction(finger.createPointerUp(PointerInput.MouseButton.MIDDLE.asArg()));
         performSequence(sequence, System.currentTimeMillis(), driver);
     }

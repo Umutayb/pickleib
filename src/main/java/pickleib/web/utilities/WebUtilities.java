@@ -107,16 +107,17 @@ public abstract class WebUtilities extends Utilities {
     /**
      * Scrolls through a list of elements until an element containing a given text is found
      *
-     * @param list        target element list
      * @param elementText target element text
+     * @param elements    target element list
      */
-    public void scrollInContainer(List<WebElement> list, String elementText) {
-        for (WebElement element : list) {
-            scrollWithJS(element);
+    public WebElement scrollInList(String elementText, List<WebElement> elements) {
+        for (WebElement element : elements) {
+            centerElement(element);
             if (element.getText().contains(elementText)) {
-                break;
+                return element;
             }
         }
+        throw new RuntimeException("Element '" + elementText + "' could not be located!");
     }
 
     /**

@@ -117,19 +117,7 @@ public interface PolymorphicUtilities {
      * @param scroll       scrolls if true
      * @param verify       verifies the input text value equals to an expected text if true
      */
-    void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify);
-
-    /**
-     * Clears and fills a given input.
-     *
-     * @param inputElement target input element
-     * @param elementName  target element name
-     * @param pageName     specified page instance name
-     * @param inputText    input text
-     * @param scroll       scrolls if true
-     * @param verify       verifies the input text value equals to an expected text if true
-     */
-    void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, @NotNull boolean scroll, boolean verify);
+    void fillInputElement(WebElement inputElement, String inputText, boolean scroll, boolean verify);
 
     /**
      * Fills the specified input WebElement with the given text.
@@ -624,4 +612,14 @@ public interface PolymorphicUtilities {
      * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
      */
     void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName);
+
+    /**
+     * Scrolls through a list of elements until an element with the specified text is found and displayed.
+     * Uses a provided list of elements to perform the scroll action.
+     *
+     * @param elementText The text of the element to be found.
+     * @param elements    The list of elements to scroll through.
+     * @return WebElement representing the found element, or null if not found within the specified time.
+     */
+    WebElement scrollInList(String elementText, List<WebElement> elements);
 }
