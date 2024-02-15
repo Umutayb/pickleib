@@ -33,12 +33,12 @@ import static utils.StringUtilities.contextCheck;
 public class WebInteractions extends WebUtilities implements PolymorphicUtilities {
 
     public WebInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
-        super(driver, scroller);
+        super(driver);
         this.wait = wait;
     }
 
     public WebInteractions() {
-        super(PickleibWebDriver.get(), scroller);
+        super(PickleibWebDriver.get());
     }
 
     /**
@@ -153,16 +153,6 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(BLUE, pageName)
         );
         super.clickElement(element);
-    }
-
-    /**
-     * Waits for a certain while
-     *
-     * @param seconds duration as a double
-     */
-    public void waitFor(double seconds) {
-        log.info("Waiting for " + highlighted(BLUE, String.valueOf(seconds)));
-        super.waitFor(seconds);
     }
 
     /**

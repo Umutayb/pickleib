@@ -12,7 +12,7 @@ public abstract class PickleibPageObject extends WebUtilities {
      *
      */
     protected PickleibPageObject(){
-        super(PickleibWebDriver.get(), scroller);
+        super(PickleibWebDriver.get());
         PageFactory.initElements(driver, this);
     }
 
@@ -21,7 +21,7 @@ public abstract class PickleibPageObject extends WebUtilities {
      *
      */
     protected PickleibPageObject(RemoteWebDriver driver){
-        super(driver, scroller);
+        super(driver);
         PageFactory.initElements(driver, this);
     }
 
@@ -30,7 +30,7 @@ public abstract class PickleibPageObject extends WebUtilities {
      *
      */
     protected <CustomFieldDecorator extends DefaultFieldDecorator> PickleibPageObject(CustomFieldDecorator fieldDecorator){
-        super(PickleibWebDriver.get(), scroller);
+        super(PickleibWebDriver.get());
         PageFactory.initElements(fieldDecorator, this);
     }
 
@@ -42,7 +42,7 @@ public abstract class PickleibPageObject extends WebUtilities {
             CustomFieldDecorator fieldDecorator,
             RemoteWebDriver driver
     ){
-        super(driver, scroller);
+        super(driver);
         PageFactory.initElements(fieldDecorator, this);
     }
 }

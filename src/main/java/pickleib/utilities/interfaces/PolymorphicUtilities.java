@@ -7,6 +7,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
+import pickleib.utilities.Utilities;
 
 import java.util.List;
 import java.util.Map;
@@ -378,7 +379,9 @@ public interface PolymorphicUtilities {
      * @param seconds duration as a double
      */
     //This method makes the thread wait for a certain while
-    void waitFor(double seconds);
+    default void waitFor(double seconds) {
+        Utilities.waitFor(seconds);
+    };
 
     /**
      * Scrolls an element to the center of the view

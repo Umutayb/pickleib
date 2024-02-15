@@ -11,7 +11,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.enums.Direction;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
-import pickleib.utilities.interfaces.functions.ScrollFunction;
 import utils.StringUtilities;
 
 import java.time.Duration;
@@ -25,15 +24,14 @@ public abstract class MobileUtilities extends Utilities {
      * MobileUtilities for frameworks that use the Pickleib driver
      */
     public MobileUtilities() {
-        super(PickleibAppiumDriver.get());
+        super(PickleibAppiumDriver.get(), (element) -> centerElement(element, PickleibAppiumDriver.get()));
     }
 
     /**
      * MobileUtilities for frameworks that do not use the Pickleib driver
      */
-    public MobileUtilities(RemoteWebDriver driverScrollFunction, ScrollFunction scroller) {
-        super(driverScrollFunction, scroller);
-        this.scroller = this::centerElement;
+    public MobileUtilities(RemoteWebDriver driver) {
+        super(driver, (element) -> centerElement(element, driver));
     }
 
     public RemoteWebDriver driver() {
@@ -47,7 +45,7 @@ public abstract class MobileUtilities extends Utilities {
      * @return returns the targeted element
      */
     //TODO: Implement iterative scroll that will swipe or center depending on if the element can be found in view.
-    public WebElement centerElement(WebElement element) {
+    public static WebElement centerElement(WebElement element, RemoteWebDriver driver) {
         Point center = new Point(
                 driver.manage().window().getSize().getWidth() / 2,
                 driver.manage().window().getSize().getHeight() / 2
@@ -65,19 +63,25 @@ public abstract class MobileUtilities extends Utilities {
                         new Point(
                                 center.getX() + horizontalScrollDist % horizontalScrollStep,
                                 center.getY() + verticalScrollDist % verticalScrollStep
-                        )
+                        ),
+                        driver
                 );
             } else {
                 swipeFromCenter(
                         new Point(
                                 center.getX() + horizontalScrollStep,
                                 center.getY() + verticalScrollStep
-                        )
+                        ),
+                        driver
                 );
             }
         }
 
         return element;
+    }
+
+    public WebElement centerElement (WebElement element) {
+        return centerElement(element, driver);
     }
 
     /**
@@ -128,7 +132,7 @@ public abstract class MobileUtilities extends Utilities {
      * @param pointOfDeparture the point where swiping starts
      * @param pointOfArrival   the point where swiping ends
      */
-    public void swipe(Point pointOfDeparture, Point pointOfArrival) {
+    public static void swipe(Point pointOfDeparture, Point pointOfArrival, RemoteWebDriver driver) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         Sequence sequence = new Sequence(finger, 1);
         sequence.addAction(finger.createPointerMove(
@@ -142,9 +146,12 @@ public abstract class MobileUtilities extends Utilities {
                 PointerInput.Origin.viewport(), pointOfArrival.x, pointOfArrival.y)
         );
         sequence.addAction(finger.createPointerUp(PointerInput.MouseButton.MIDDLE.asArg()));
-        performSequence(sequence, System.currentTimeMillis());
+        performSequence(sequence, System.currentTimeMillis(), driver);
     }
 
+    public void swipe(Point pointOfDeparture, Point pointOfArrival) {
+      swipe(pointOfDeparture, pointOfArrival, driver);
+    }
 
     /**
      * Performs sequence
@@ -152,15 +159,18 @@ public abstract class MobileUtilities extends Utilities {
      * @param sequence    target sequence
      * @param initialTime start time
      */
-    public void performSequence(Sequence sequence, long initialTime) {
+    public static void performSequence(Sequence sequence, long initialTime, RemoteWebDriver driver) {
         try {
             driver.perform(singletonList(sequence));
         } catch (WebDriverException exception) {
             if (!(System.currentTimeMillis() - initialTime > 15000)) {
-                log.warning("Recursion! (" + exception.getClass().getName() + ")");
-                performSequence(sequence, initialTime);
+                performSequence(sequence, initialTime, driver);
             } else throw exception;
         }
+    }
+
+    public void performSequence(Sequence sequence, long initialTime) {
+        performSequence(sequence, initialTime, driver);
     }
 
     /**
@@ -168,12 +178,16 @@ public abstract class MobileUtilities extends Utilities {
      *
      * @param point target point
      */
-    public void swipeFromCenter(Point point) {
+    public static void swipeFromCenter(Point point, RemoteWebDriver driver) {
         Point center = new Point(
                 driver.manage().window().getSize().getWidth() / 2,
                 driver.manage().window().getSize().getHeight() / 2
         );
-        swipe(center, point);
+        swipe(center, point, driver);
+    }
+
+    public void swipeFromCenter(Point point) {
+       swipeFromCenter(point, driver);
     }
 
     /**

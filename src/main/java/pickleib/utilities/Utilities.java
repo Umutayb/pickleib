@@ -44,19 +44,9 @@ public abstract class Utilities {
     public Printer log = new Printer(this.getClass());
     public RemoteWebDriver driver;
     public FluentWait<RemoteWebDriver> wait;
-    public static ScrollFunction scroller;
+    public ScrollFunction scroller;
 
     public long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
-
-    public Utilities(RemoteWebDriver driver) {
-        this.driver = driver;
-        if (driver != null)
-            wait = new FluentWait<>(driver)
-                    .withTimeout(Duration.ofSeconds(elementTimeout))
-                    .pollingEvery(Duration.ofMillis(500))
-                    .withMessage("Waiting for element visibility...")
-                    .ignoring(WebDriverException.class);
-    }
 
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         this.driver = driver;
@@ -539,12 +529,13 @@ public abstract class Utilities {
      * @param seconds duration as a double
      */
     //This method makes the thread wait for a certain while
-    public void waitFor(double seconds) {
+    public static void waitFor(double seconds) {
+        Printer log = new Printer(Utilities.class);
         if (seconds > 1) log.info("Waiting for " + markup(BLUE, String.valueOf(seconds)) + " seconds");
         try {
             Thread.sleep((long) (seconds * 1000L));
         } catch (InterruptedException exception) {
-            throw new PickleibException(highlighted(GRAY, exception.getLocalizedMessage()));
+            throw new PickleibException(StringUtilities.highlighted(GRAY, exception.getLocalizedMessage()));
         }
     }
 

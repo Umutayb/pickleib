@@ -24,7 +24,6 @@ import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
-import pickleib.utilities.interfaces.functions.ScrollFunction;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
 
@@ -42,16 +41,14 @@ public abstract class WebUtilities extends Utilities {
      * WebUtilities for frameworks that use the Pickleib driver
      */
     public WebUtilities() {
-        super(PickleibWebDriver.get());
-        this.driver = PickleibWebDriver.get();
+        super(PickleibWebDriver.get(), (element) -> centerElement(element, PickleibWebDriver.get()));
     }
 
     /**
      * WebUtilities for frameworks that do not use the Pickleib driver
      */
-    public WebUtilities(RemoteWebDriver driver, ScrollFunction scroller) {
-        super(driver, scroller);
-        this.scroller = this::centerElement;
+    public WebUtilities(RemoteWebDriver driver) {
+        super(driver, (element) -> centerElement(element, driver));
     }
 
     public RemoteWebDriver driver() {
@@ -212,7 +209,7 @@ public abstract class WebUtilities extends Utilities {
      * @return returns the targeted element
      */
     //This method scrolls an element to the center of the view
-    public WebElement centerElement(WebElement element) {
+    public static WebElement centerElement(WebElement element, RemoteWebDriver driver) {
         String scrollScript = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
                 + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
@@ -221,6 +218,10 @@ public abstract class WebUtilities extends Utilities {
 
         waitFor(0.3);
         return element;
+    }
+
+    public WebElement centerElement(WebElement element) {
+        return centerElement(element, driver);
     }
 
     /**

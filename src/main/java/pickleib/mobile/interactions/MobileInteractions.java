@@ -30,12 +30,12 @@ import static utils.StringUtilities.contextCheck;
 public class MobileInteractions extends MobileUtilities implements PolymorphicUtilities {
 
     public MobileInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
-        super(driver, scroller);
+        super(driver);
         this.wait = wait;
     }
 
     public MobileInteractions() {
-        super(PickleibAppiumDriver.get(), scroller);
+        super(PickleibAppiumDriver.get());
     }
 
     /**
@@ -446,17 +446,6 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
     public String combineKeys(Keys... keys) {
         log.info("Combining keys: " + Arrays.toString(keys));
         return super.combineKeys(keys);
-    }
-
-    /**
-     * Waits for a certain while
-     *
-     * @param seconds duration as a double
-     */
-    //This method makes the thread wait for a certain while
-    public void waitFor(double seconds) {
-        log.info("Waiting for " + highlighted(BLUE, String.valueOf(seconds)));
-        super.waitFor(seconds);
     }
 
     /**
