@@ -116,12 +116,13 @@ public interface PolymorphicUtilities {
      * @param elementName  The target element name.
      * @param pageName     The specified page instance name.
      * @param inputText    The text to be entered into the input field.
+     * @param scroll       If true, scrolls to the inputElement before filling. If false, does not scroll.
      * @param clear        If true, clears the input field before entering text. If false, does not clear.
      * @param verify       If true, verifies that the entered text matches the value attribute of the inputElement. If false, skips verification.
      * @throws TimeoutException if the inputElement is not visible within the specified timeout.
      * @throws AssertionError   if verification fails (inputText does not match the value attribute of inputElement).
      */
-    void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean clear, boolean verify);
+    void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll, boolean clear, boolean verify);
 
     /**
      * Clears and fills a given input without scroll option.
