@@ -865,6 +865,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
      * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
      */
     public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName) {
+        log.info("Executing bundle interactions on " + pageName);
         bundleInteraction(bundles, pageName, true);
     }
 

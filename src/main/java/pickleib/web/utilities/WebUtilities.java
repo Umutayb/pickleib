@@ -112,6 +112,7 @@ public abstract class WebUtilities extends Utilities {
      * @param elements    target element list
      */
     public WebElement scrollInList(String elementText, List<WebElement> elements) {
+        log.info("Scrolling the list to element with text: " + highlighted(BLUE, elementText));
         for (WebElement element : elements) {
             centerElement(element);
             if (element.getText().contains(elementText)) {
@@ -138,6 +139,7 @@ public abstract class WebUtilities extends Utilities {
      *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
     public WebElement scrollUntilFound(WebElement element) {
+        log.info("Scrolling until an element is found");
         long initialTime = System.currentTimeMillis();
         do {
             try {
@@ -189,6 +191,10 @@ public abstract class WebUtilities extends Utilities {
      *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
     public WebElement scrollUntilFound(String elementText) {
+        log.info("Scrolling until an element with text " +
+                highlighted(BLUE, elementText) +
+                highlighted(GRAY, "is found")
+        );
         return scrollUntilFound(getElementByText(elementText));
     }
 
@@ -382,6 +388,7 @@ public abstract class WebUtilities extends Utilities {
             WebElement iframe,
             WebElement element,
             String inputText) {
+        log.info("Filling " + highlighted(BLUE, inputText));
         inputText = StringUtilities.contextCheck(inputText);
         elementIs(iframe, ElementState.displayed);
         driver.switchTo().frame(iframe);

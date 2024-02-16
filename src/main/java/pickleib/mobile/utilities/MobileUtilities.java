@@ -19,6 +19,8 @@ import java.util.List;
 
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
+import static utils.StringUtilities.Color.BLUE;
+import static utils.StringUtilities.Color.GRAY;
 
 public abstract class MobileUtilities extends Utilities {
 
@@ -121,6 +123,7 @@ public abstract class MobileUtilities extends Utilities {
      *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
     public WebElement scrollUntilFound(WebElement element) {
+        log.info("Scrolling until an element is found");
         long initialTime = System.currentTimeMillis();
         do {
             try {
@@ -152,6 +155,10 @@ public abstract class MobileUtilities extends Utilities {
      *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
     public WebElement scrollUntilFound(String elementText) {
+        log.info("Scrolling until an element with text " +
+                highlighted(BLUE, elementText) +
+                highlighted(GRAY, "is found")
+        );
         return scrollUntilFound(getElementByText(elementText));
     }
 
@@ -164,6 +171,7 @@ public abstract class MobileUtilities extends Utilities {
      * @return WebElement representing the found element, or null if not found within the specified time.
      */
     public WebElement scrollInList(String elementText, By... locators) {
+        log.info("Scrolling the list to element with text: " + highlighted(BLUE, elementText));
         return scrollInList(elementText, driver.findElements(new ByAll(locators)));
     }
 
@@ -176,6 +184,7 @@ public abstract class MobileUtilities extends Utilities {
      * @return WebElement representing the found element, or null if not found within the specified time.
      */
     public WebElement scrollInList(String elementText, List<WebElement> elements) {
+        log.info("Scrolling the list to element with text: " + highlighted(BLUE, elementText));
         long initialTime = System.currentTimeMillis();
         do {
             try {
@@ -184,7 +193,6 @@ public abstract class MobileUtilities extends Utilities {
                 else throw new WebDriverException("Element is not displayed (yet)!");
             } catch (WebDriverException ignored) {
                 swipeFromTo(elements.get(elements.size() - 1), elements.get(0));
-                ;
             }
         }
         while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
