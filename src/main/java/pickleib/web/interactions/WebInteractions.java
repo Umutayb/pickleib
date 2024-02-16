@@ -3,13 +3,11 @@ package pickleib.web.interactions;
 import collections.Bundle;
 import context.ContextStore;
 import org.jetbrains.annotations.NotNull;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
-import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
@@ -1019,21 +1017,6 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     public void clickByCssSelector(String cssSelector) {
         log.info("Clicking button by css selector " + highlighted(BLUE, cssSelector));
         super.clickButtonByCssSelector(cssSelector);
-    }
-
-    /**
-     * Scroll in a given direction
-     *
-     * @param direction target direction (UP or DOWN)
-     */
-    public void scrollOrSwipeInDirection(@NotNull Direction direction) {
-        log.info("Scrolling " + highlighted(BLUE, direction.name().toLowerCase()));
-        String script = switch (direction) {
-            case up -> "window.scrollBy(0,-document.body.scrollHeight)";
-            case down -> "window.scrollBy(0,document.body.scrollHeight)";
-            case left, right -> null;
-        };
-        ((JavascriptExecutor) driver).executeScript(script);
     }
 
     /**

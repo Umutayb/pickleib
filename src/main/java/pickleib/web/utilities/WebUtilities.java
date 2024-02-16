@@ -20,6 +20,7 @@ import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
@@ -118,6 +119,77 @@ public abstract class WebUtilities extends Utilities {
             }
         }
         throw new RuntimeException("Element '" + elementText + "' could not be located!");
+    }
+
+    /**
+     * Swipes upward until the specified WebElement is found or a timeout is reached.
+     *
+     * <p>
+     * This method continuously swipes upward until the specified WebElement is found or a timeout occurs.
+     * If the element is found, it is returned. If the element is not found within the specified timeout,
+     * a RuntimeException is thrown.
+     * </p>
+     *
+     * @param element The WebElement to be located.
+     * @return The located WebElement.
+     * @throws RuntimeException   if the element could not be located within the specified timeout.
+     * @throws WebDriverException if WebDriver encounters an exception while interacting with the element.
+     *                            If an exception occurs during the swipe operation, the method retries the swipe.
+     *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
+     */
+    public WebElement scrollUntilFound(WebElement element) {
+        long initialTime = System.currentTimeMillis();
+        do {
+            try {
+                if (element.isDisplayed()) return element;
+                else scrollInDirection(Direction.up);
+            } catch (WebDriverException ignored) {
+                scrollInDirection(Direction.up);
+            }
+        }
+        while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
+        throw new RuntimeException("Element could not be located!");
+    }
+
+    /**
+     * Scrolls the viewport in the specified direction.
+     *
+     * <p>
+     * This method scrolls the viewport in the specified direction.
+     * It scrolls the page content based on the direction specified.
+     * </p>
+     *
+     * @param direction The direction in which to scroll the viewport.
+     * @throws NullPointerException if the direction parameter is null.
+     */
+    public void scrollInDirection(@NotNull Direction direction) {
+        log.info("Scrolling " + highlighted(BLUE, direction.name().toLowerCase()));
+        String script = switch (direction) {
+            case up -> "window.scrollBy(0,-document.body.scrollHeight * 0.9)";
+            case down -> "window.scrollBy(0,document.body.scrollHeight * 0.9)";
+            case left, right -> null;
+        };
+        ((JavascriptExecutor) driver).executeScript(script);
+    }
+
+    /**
+     * Swipes upward until the specified WebElement is found or a timeout is reached.
+     *
+     * <p>
+     * This method continuously swipes upward until the specified WebElement is found or a timeout occurs.
+     * If the element is found, it is returned. If the element is not found within the specified timeout,
+     * a RuntimeException is thrown.
+     * </p>
+     *
+     * @param elementText The text of WebElement to be located.
+     * @return The located WebElement.
+     * @throws RuntimeException   if the element could not be located within the specified timeout.
+     * @throws WebDriverException if WebDriver encounters an exception while interacting with the element.
+     *                            If an exception occurs during the swipe operation, the method retries the swipe.
+     *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
+     */
+    public WebElement scrollUntilFound(String elementText) {
+        return scrollUntilFound(getElementByText(elementText));
     }
 
     /**

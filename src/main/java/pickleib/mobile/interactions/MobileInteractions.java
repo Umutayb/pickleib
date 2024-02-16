@@ -45,7 +45,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
      */
     public void scroll(@NotNull Direction direction) {
         log.info("Swiping in direction " + highlighted(BLUE, direction.name()));
-        super.swiper(direction);
+        super.scrollInDirection(direction);
     }
 
     /**

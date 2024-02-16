@@ -4,6 +4,7 @@ import collections.Bundle;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -370,7 +371,9 @@ public interface PolymorphicUtilities {
     //This method makes the thread wait for a certain while
     static void waitFor(double seconds) {
         Utilities.waitFor(seconds);
-    };
+    }
+
+    ;
 
     /**
      * Scrolls an element to the center of the view
@@ -391,13 +394,6 @@ public interface PolymorphicUtilities {
      */
     //This method scrolls an element to the center of the view
     WebElement centerElement(WebElement element, String elementName, String pageName);
-
-    /**
-     * Scrolls in a given direction
-     *
-     * @param direction target direction (UP or DOWN)
-     */
-    void scrollOrSwipeInDirection(@NotNull Direction direction);
 
     /**
      * Gets the parent class from a child element using a selector class
@@ -623,4 +619,51 @@ public interface PolymorphicUtilities {
      * @return WebElement representing the found element, or null if not found within the specified time.
      */
     WebElement scrollInList(String elementText, List<WebElement> elements);
+
+    /**
+     * Swipes upward until the specified WebElement is found or a timeout is reached.
+     *
+     * <p>
+     * This method continuously swipes upward until the specified WebElement is found or a timeout occurs.
+     * If the element is found, it is returned. If the element is not found within the specified timeout,
+     * a RuntimeException is thrown.
+     * </p>
+     *
+     * @param element The WebElement to be located.
+     * @return The located WebElement.
+     * @throws RuntimeException   if the element could not be located within the specified timeout.
+     * @throws WebDriverException if WebDriver encounters an exception while interacting with the element.
+     *                            If an exception occurs during the swipe operation, the method retries the swipe.
+     *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
+     */
+    WebElement scrollUntilFound(WebElement element);
+
+    /**
+     * Swipes upward until the specified WebElement is found or a timeout is reached.
+     *
+     * <p>
+     * This method continuously swipes upward until the specified WebElement is found or a timeout occurs.
+     * If the element is found, it is returned. If the element is not found within the specified timeout,
+     * a RuntimeException is thrown.
+     * </p>
+     *
+     * @param elementText The text of WebElement to be located.
+     * @return The located WebElement.
+     * @throws RuntimeException   if the element could not be located within the specified timeout.
+     * @throws WebDriverException if WebDriver encounters an exception while interacting with the element.
+     *                            If an exception occurs during the swipe operation, the method retries the swipe.
+     *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
+     */
+    WebElement scrollUntilFound(String elementText);
+
+    /**
+     * Scrolls or swipes the viewport in the specified direction.
+     *
+     * <p>
+     * This method is intended to be implemented by subclasses to scroll or swipe the viewport in the specified direction.
+     * </p>
+     *
+     * @param direction The direction in which to scroll or swipe the viewport.
+     */
+    void scrollInDirection(Direction direction);
 }

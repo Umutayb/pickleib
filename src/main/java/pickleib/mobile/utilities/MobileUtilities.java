@@ -1,6 +1,5 @@
 package pickleib.mobile.utilities;
 
-import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriverException;
@@ -10,15 +9,12 @@ import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.pagefactory.ByAll;
-import org.openqa.selenium.support.pagefactory.ByChained;
 import pickleib.enums.Direction;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
-import pickleib.utilities.element.ElementAcquisition;
 import utils.StringUtilities;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.time.Duration.ofMillis;
@@ -49,9 +45,8 @@ public abstract class MobileUtilities extends Utilities {
      * If the element is not initially visible, this method scrolls to center it.
      *
      * @param element The WebElement to be centered.
-     * @param driver The RemoteWebDriver instance.
+     * @param driver  The RemoteWebDriver instance.
      * @return The centered WebElement.
-     *
      * @throws WebDriverException if WebDriver encounters an exception while attempting to center the element.
      *                            If the exception occurs within the retry timeout (15 seconds),
      *                            the method retries the centering operation.
@@ -99,46 +94,65 @@ public abstract class MobileUtilities extends Utilities {
      *
      * @param element The WebElement to be centered.
      * @return The centered WebElement.
-     *
      * @throws WebDriverException if WebDriver encounters an exception while attempting to center the element.
      *                            If the exception occurs within the retry timeout (15 seconds),
      *                            the method retries the centering operation.
      *                            If the retry timeout is exceeded, the WebDriverException is thrown.
      */
-    public WebElement centerElement (WebElement element) {
+    public WebElement centerElement(WebElement element) {
         return centerElement(element, driver);
     }
 
     /**
-     * Scrolls in a given direction
+     * Swipes upward until the specified WebElement is found or a timeout is reached.
      *
-     * @param direction target direction (UP or DOWN)
-     */
-    public void scrollOrSwipeInDirection(@NotNull Direction direction) {
-        log.info("Scrolling in " + highlighted(StringUtilities.Color.BLUE, direction.name()) + " direction.");
-        swiper(direction);
-    }
-
-    /**
-     * Scrolls through a list of elements until an element with the specified text is found and displayed.
+     * <p>
+     * This method continuously swipes upward until the specified WebElement is found or a timeout occurs.
+     * If the element is found, it is returned. If the element is not found within the specified timeout,
+     * a RuntimeException is thrown.
+     * </p>
      *
-     * @param elementText The text of the element to be found.
-     * @return WebElement representing the found element, or null if not found within the specified time.
+     * @param element The WebElement to be located.
+     * @return The located WebElement.
+     *
+     * @throws RuntimeException if the element could not be located within the specified timeout.
+     * @throws WebDriverException if WebDriver encounters an exception while interacting with the element.
+     *                            If an exception occurs during the swipe operation, the method retries the swipe.
+     *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
-    public WebElement swipeUntilFound(String elementText) {
+    public WebElement scrollUntilFound(WebElement element) {
         long initialTime = System.currentTimeMillis();
         do {
             try {
-                WebElement targetElement = getElementByText(elementText);
-                if (targetElement.isDisplayed()) return targetElement;
-                else swiper(Direction.up);
-            }
-            catch (WebDriverException ignored){
-                swiper(Direction.up);
+                if (element.isDisplayed()) return element;
+                else scrollInDirection(Direction.up);
+            } catch (WebDriverException ignored) {
+                scrollInDirection(Direction.up);
             }
         }
         while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
-        throw new RuntimeException("Element '" + elementText + "' could not be located!");
+        throw new RuntimeException("Element could not be located!");
+    }
+
+    /**
+     * Swipes upward until the specified WebElement is found or a timeout is reached.
+     *
+     * <p>
+     * This method continuously swipes upward until the specified WebElement is found or a timeout occurs.
+     * If the element is found, it is returned. If the element is not found within the specified timeout,
+     * a RuntimeException is thrown.
+     * </p>
+     *
+     * @param elementText The text of WebElement to be located.
+     * @return The located WebElement.
+     *
+     * @throws RuntimeException if the element could not be located within the specified timeout.
+     * @throws WebDriverException if WebDriver encounters an exception while interacting with the element.
+     *                            If an exception occurs during the swipe operation, the method retries the swipe.
+     *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
+     */
+    public WebElement scrollUntilFound(String elementText) {
+        return scrollUntilFound(getElementByText(elementText));
     }
 
     /**
@@ -161,16 +175,16 @@ public abstract class MobileUtilities extends Utilities {
      * @param elements    The list of elements to scroll through.
      * @return WebElement representing the found element, or null if not found within the specified time.
      */
-    public WebElement scrollInList(String elementText, List<WebElement> elements){
+    public WebElement scrollInList(String elementText, List<WebElement> elements) {
         long initialTime = System.currentTimeMillis();
         do {
             try {
                 WebElement targetElement = getElementByText(elementText);
                 if (targetElement.isDisplayed()) return targetElement;
                 else throw new WebDriverException("Element is not displayed (yet)!");
-            }
-            catch (WebDriverException ignored){
-                swipeFromTo(elements.get(elements.size() - 1), elements.get(0));;
+            } catch (WebDriverException ignored) {
+                swipeFromTo(elements.get(elements.size() - 1), elements.get(0));
+                ;
             }
         }
         while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
@@ -178,11 +192,12 @@ public abstract class MobileUtilities extends Utilities {
     }
 
     /**
-     * Swipes in a given direction
+     * Swipes in the specified direction.
      *
-     * @param direction target direction (UP or DOWN)
+     * @param direction The direction in which to swipe.
      */
-    public void swiper(Direction direction) {
+    public void scrollInDirection(Direction direction) {
+        log.info("Scrolling in the " + highlighted(StringUtilities.Color.BLUE, direction.name()) + " direction.");
         Point center = new Point(
                 driver.manage().window().getSize().getWidth() / 2,
                 driver.manage().window().getSize().getHeight() / 2
@@ -213,9 +228,8 @@ public abstract class MobileUtilities extends Utilities {
      * Performs a swipe gesture from the point of departure to the point of arrival on the RemoteWebDriver.
      *
      * @param pointOfDeparture The starting point of the swipe gesture.
-     * @param pointOfArrival The ending point of the swipe gesture.
-     * @param driver The RemoteWebDriver on which the swipe gesture is to be performed.
-     *
+     * @param pointOfArrival   The ending point of the swipe gesture.
+     * @param driver           The RemoteWebDriver on which the swipe gesture is to be performed.
      * @throws WebDriverException if WebDriver encounters an exception while performing the swipe gesture.
      *                            If the exception occurs within the retry timeout (15 seconds),
      *                            the method retries the swipe gesture execution.
@@ -243,24 +257,22 @@ public abstract class MobileUtilities extends Utilities {
      * Performs a swipe gesture from the point of departure to the point of arrival using the default driver.
      *
      * @param pointOfDeparture The starting point of the swipe gesture.
-     * @param pointOfArrival The ending point of the swipe gesture.
-     *
+     * @param pointOfArrival   The ending point of the swipe gesture.
      * @throws WebDriverException if WebDriver encounters an exception while performing the swipe gesture.
      *                            If the exception occurs within the retry timeout (15 seconds),
      *                            the method retries the swipe gesture execution.
      *                            If the retry timeout is exceeded, the WebDriverException is thrown.
      */
     public void swipe(Point pointOfDeparture, Point pointOfArrival) {
-      swipe(pointOfDeparture, pointOfArrival, driver);
+        swipe(pointOfDeparture, pointOfArrival, driver);
     }
 
     /**
      * Performs the specified Sequence on the RemoteWebDriver, with retry logic.
      *
-     * @param sequence The Sequence of actions to be performed.
+     * @param sequence    The Sequence of actions to be performed.
      * @param initialTime The initial time when the method was called (used for retry timeout).
-     * @param driver The RemoteWebDriver on which the Sequence is to be performed.
-     *
+     * @param driver      The RemoteWebDriver on which the Sequence is to be performed.
      * @throws WebDriverException if WebDriver encounters an exception while performing the Sequence.
      *                            If the exception occurs within the retry timeout (15 seconds),
      *                            the method retries the Sequence execution.
@@ -279,9 +291,8 @@ public abstract class MobileUtilities extends Utilities {
     /**
      * Performs the specified Sequence with the given initial time.
      *
-     * @param sequence The Sequence of actions to be performed.
+     * @param sequence    The Sequence of actions to be performed.
      * @param initialTime The initial time when the method was called (used for retry timeout).
-     *
      * @throws WebDriverException if WebDriver encounters an exception while performing the Sequence.
      *                            If the exception occurs within the retry timeout (15 seconds),
      *                            the method retries the Sequence execution.
@@ -305,7 +316,7 @@ public abstract class MobileUtilities extends Utilities {
     }
 
     public void swipeFromCenter(Point point) {
-       swipeFromCenter(point, driver);
+        swipeFromCenter(point, driver);
     }
 
     /**
