@@ -113,6 +113,7 @@ public abstract class WebUtilities extends Utilities {
      * @param elements    target element list
      */
     public WebElement scrollInList(String elementText, List<WebElement> elements) {
+        log.info("Scrolling the list to element with text: " + highlighted(BLUE, elementText));
         for (WebElement element : elements) {
             centerElement(element);
             if (element.getText().contains(elementText)) {
@@ -137,14 +138,15 @@ public abstract class WebUtilities extends Utilities {
      * @see Direction
      */
     public WebElement scrollUntilFound(LocateElement locator) {
+        log.info("Scrolling until an element is found");
         long initialTime = System.currentTimeMillis();
         do {
             try {
                 WebElement element = locator.locate();
                 if (element.isDisplayed()) return element;
-                else scrollInDirection(Direction.up);
+                else throw new WebDriverException("Element is not displayed (yet)!");
             } catch (WebDriverException ignored) {
-                scrollInDirection(Direction.up);
+                scrollInDirection(Direction.down);
             }
         }
         while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
@@ -188,9 +190,13 @@ public abstract class WebUtilities extends Utilities {
      *                            If an exception occurs during the swipe operation, the method retries the swipe.
      *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
-    public WebElement scrollUntilFound(String elementText) {
-        return scrollUntilFound(() -> getElementByText(elementText));
-    }
+        public WebElement scrollUntilFound(String elementText) {
+            log.info("Scrolling until an element with text " +
+                    highlighted(BLUE, elementText) +
+                    highlighted(GRAY, " is found.")
+            );
+            return scrollUntilFound(() -> getElementByText(elementText));
+        }
 
     /**
      * Scrolls the view until the specified WebElement is found and visible.
@@ -203,9 +209,10 @@ public abstract class WebUtilities extends Utilities {
      * @return The located WebElement if found and displayed.
      * @throws RuntimeException if the element is not found within the specified timeout.
      */
-    public WebElement scrollUntilFound(WebElement element) {
-        return scrollUntilFound(() -> element);
-    }
+        public WebElement scrollUntilFound(WebElement element) {
+            log.info("Scrolling until the element is found.");
+            return scrollUntilFound(() -> element);
+        }
 
     /**
      * Switches driver focus by using a tab handle
@@ -397,6 +404,7 @@ public abstract class WebUtilities extends Utilities {
             WebElement iframe,
             WebElement element,
             String inputText) {
+        log.info("Filling " + highlighted(BLUE, inputText));
         inputText = StringUtilities.contextCheck(inputText);
         elementIs(iframe, ElementState.displayed);
         driver.switchTo().frame(iframe);
