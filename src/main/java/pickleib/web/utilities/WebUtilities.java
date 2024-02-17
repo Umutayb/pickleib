@@ -167,8 +167,8 @@ public abstract class WebUtilities extends Utilities {
     public void scrollInDirection(@NotNull Direction direction) {
         log.info("Scrolling " + highlighted(BLUE, direction.name().toLowerCase()));
         String script = switch (direction) {
-            case up -> "window.scrollBy(0,-document.body.scrollHeight * 0.9)";
-            case down -> "window.scrollBy(0,document.body.scrollHeight * 0.9)";
+            case up -> "window.scrollBy(0,-window.innerHeight * 0.9)";
+            case down -> "window.scrollBy(0,window.innerHeight * 0.9)";
             case left, right -> null;
         };
         ((JavascriptExecutor) driver).executeScript(script);
