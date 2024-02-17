@@ -7,12 +7,12 @@ import pickleib.mobile.interactions.MobileInteractions;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.utilities.element.ElementAcquisition;
 import pickleib.utilities.interfaces.repository.PageRepository;
-import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;
 
-import static pickleib.utilities.Utilities.getElementDriverType;
+import static pickleib.driver.DriverFactory.DriverType.getGeneralType;
+import static pickleib.utilities.platform.PlatformUtilities.getElementDriverType;
 
 /**
  * A utility class that provides common methods and interactions for web and mobile steps in the context of Pickleib.
@@ -93,7 +93,7 @@ public class PageObjectStepUtilities<ObjectRepository extends PageRepository> {
      * @return The element interactions for the specified driver type.
      */
     public PolymorphicUtilities getInteractions(WebElement element) {
-        switch (getElementDriverType(element)) {
+        switch (getGeneralType(getElementDriverType(element))) {
             case Web -> {
                 return webInteractions;
             }

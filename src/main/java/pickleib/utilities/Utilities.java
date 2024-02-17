@@ -3,15 +3,12 @@ package pickleib.utilities;
 import collections.Bundle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
-import io.appium.java_client.AppiumDriver;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
-import pickleib.driver.DriverFactory;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
@@ -24,13 +21,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-import static pickleib.driver.DriverFactory.DriverType.Mobile;
-import static pickleib.driver.DriverFactory.DriverType.Web;
 import static pickleib.enums.ElementState.absent;
 import static pickleib.enums.ElementState.displayed;
+import static pickleib.utilities.platform.PlatformUtilities.*;
 import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
+import static utils.reflection.ReflectionUtilities.iterativeConditionalInvocation;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class Utilities {
@@ -58,21 +55,10 @@ public abstract class Utilities {
         this.scroller = scroller;
         if (driver != null)
             wait = new FluentWait<>(driver)
-                    .withTimeout(Duration.ofSeconds(elementTimeout))
+                    .withTimeout(Duration.ofMillis(elementTimeout))
                     .pollingEvery(Duration.ofMillis(500))
                     .withMessage("Waiting for element visibility...")
                     .ignoring(WebDriverException.class);
-    }
-
-    /**
-     * Highlights a given text with a specified color (resets to plain)
-     *
-     * @param color target color
-     * @param text  target text
-     */
-    public String highlighted(StringUtilities.Color color, CharSequence text) {
-        StringJoiner colorFormat = new StringJoiner("", color.getValue(), RESET.getValue());
-        return String.valueOf(colorFormat.add(text));
     }
 
     /**
@@ -103,9 +89,48 @@ public abstract class Utilities {
      * @throws TimeoutException if the element is not clickable within the specified timeout.
      */
     public void clickElement(WebElement element, boolean scroll) {
-        wait.until(ExpectedConditions.elementToBeClickable(element));
-        if (scroll) this.scroller.scroll(element).click();
-        else element.click();
+        WebDriverException caughtException = null;
+        int counter = 0;
+        long initialTime = System.currentTimeMillis();
+        do {
+            try {
+                wait.until(ExpectedConditions.elementToBeClickable(element));
+                if (scroll) this.scroller.scroll(element).click();
+                else element.click();
+                return;
+            }
+            catch (WebDriverException webDriverException) {
+                if (counter == 0) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException;
+                } else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())) {
+                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
+                    caughtException = webDriverException;
+                }
+                counter++;
+            }
+        }
+        while (System.currentTimeMillis() - initialTime < elementTimeout);
+        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        log.warning(caughtException.getMessage());
+        throw new PickleibException(caughtException);
+    }
+
+    public boolean isElementInViewPort(WebElement element) {
+        int windowHeight = driver.manage().window().getSize().getHeight();
+        int windowWidth = driver.manage().window().getSize().getWidth();
+
+        org.openqa.selenium.Point elementLocation = element.getRect().getPoint();
+        int elementHeight = element.getRect().getHeight();
+        int elementWidth = element.getRect().getWidth();
+
+        int elementBottomY = elementLocation.getY() + elementHeight;
+        int elementRightX = elementLocation.getX() + elementWidth;
+
+        return (elementLocation.getY() >= 0 && elementLocation.getY() < windowHeight
+                && elementLocation.getX() >= 0 && elementLocation.getX() < windowWidth
+                && elementBottomY >= 0 && elementBottomY < windowHeight
+                && elementRightX >= 0 && elementRightX < windowWidth);
     }
 
     /**
@@ -265,9 +290,8 @@ public abstract class Utilities {
         if (scroll) scroller.scroll(element);
         if (clear) clearInputField(element);
         element.sendKeys(inputText);
-        boolean isMobileElement = isAppiumElement(element);
-        String value = isMobileElement ? element.getAttribute("text") : element.getAttribute("value");
-        assert !verify || inputText.equals(value);
+        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverType(element)));
+        assert !verify || inputText.equals(inputValue);
     }
 
     /**
@@ -394,10 +418,12 @@ public abstract class Utilities {
      * @param element target element
      */
     public WebElement clearInputField(@NotNull WebElement element) {
-        boolean isMobileElement = isAppiumElement(element);
-        String input = isMobileElement ? element.getAttribute("text") : element.getAttribute("value");
-        int textLength = input.length();
-        for (int i = 0; i < textLength; i++) element.sendKeys(Keys.BACK_SPACE);
+        StringJoiner deletion = new StringJoiner(Keys.BACK_SPACE);
+        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverType(element)));
+        if (inputValue != null)
+            for (int i = 0; i <= inputValue.length(); i++)
+                deletion.add("");
+        element.sendKeys(deletion.toString());
         return element;
     }
 
@@ -408,9 +434,9 @@ public abstract class Utilities {
      */
     public WebElement getElementByText(String elementText) {
         try {
-            String queryKeyword = isAppiumDriver(driver) ? "@text" : "text()";
-            String xpath = "//*[" + queryKeyword + "='" + elementText + "']";
-            return driver.findElement(By.xpath(xpath));
+            String queryAttribute = getTextAttributeNameFor(getDriverPlatformParentType(driver));
+            String xpath = "//*[" + queryAttribute + "='" + elementText + "']";
+            return wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
         }
         catch (NoSuchElementException exception) {
             throw new NoSuchElementException(GRAY + exception.getMessage() + RESET);
@@ -817,47 +843,5 @@ public abstract class Utilities {
         );
         log.warning(caughtException);
         return false;
-    }
-
-    /**
-     * Determines the type of driver associated with the provided WebElement.
-     *
-     * @param element The WebElement whose driver type needs to be determined.
-     * @return The DriverType associated with the WebElement:
-     * - If the WebElement is associated with an AppiumDriver, returns DriverType.Mobile.
-     * - If the WebElement is associated with a standard WebDriver, returns DriverType.Web.
-     */
-    public static DriverFactory.DriverType getElementDriverType(WebElement element) {
-        return isAppiumElement(element) ? Mobile : Web;
-    }
-
-    /**
-     * Checks if the provided WebElement is associated with an AppiumDriver.
-     *
-     * @param element The WebElement to be checked.
-     * @return true if the WebElement is associated with an AppiumDriver, false otherwise.
-     * If a ClassCastException occurs during the check, it returns false.
-     */
-    public static boolean isAppiumElement(WebElement element) {
-        try {
-            return isAppiumDriver(((RemoteWebElement) element).getWrappedDriver());
-        } catch (ClassCastException exception) {
-            return false;
-        }
-    }
-
-    /**
-     * Checks if the provided WebElement is associated with an AppiumDriver.
-     *
-     * @param driver The RemoteWebDriver to be checked.
-     * @return true if the WebElement is associated with an AppiumDriver, false otherwise.
-     * If a ClassCastException occurs during the check, it returns false.
-     */
-    public static boolean isAppiumDriver(WebDriver driver) {
-        try {
-            return driver.getClass().isAssignableFrom(AppiumDriver.class);
-        } catch (ClassCastException exception) {
-            return false;
-        }
     }
 }

@@ -12,13 +12,14 @@ import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.enums.Direction;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
-import utils.StringUtilities;
-
+import pickleib.utilities.interfaces.functions.LocateElement;
 import java.time.Duration;
 import java.util.List;
 
 import static java.time.Duration.ofMillis;
 import static java.util.Collections.singletonList;
+import static utils.StringUtilities.Color.BLUE;
+import static utils.StringUtilities.highlighted;
 
 public abstract class MobileUtilities extends Utilities {
 
@@ -104,26 +105,24 @@ public abstract class MobileUtilities extends Utilities {
     }
 
     /**
-     * Swipes upward until the specified WebElement is found or a timeout is reached.
+     * Scrolls the view until the specified element is found and visible.
      *
-     * <p>
-     * This method continuously swipes upward until the specified WebElement is found or a timeout occurs.
-     * If the element is found, it is returned. If the element is not found within the specified timeout,
-     * a RuntimeException is thrown.
-     * </p>
+     * This method continuously scrolls in the 'up' direction and attempts to locate the element using
+     * the provided LocateElement strategy. The process is repeated until the element is found and
+     * displayed or the time limit is reached.
      *
-     * @param element The WebElement to be located.
-     * @return The located WebElement.
+     * @param locator The LocateElement strategy used to find the target WebElement.
+     * @return The located WebElement if found and displayed.
+     * @throws RuntimeException if the element is not found within the specified timeout.
      *
-     * @throws RuntimeException if the element could not be located within the specified timeout.
-     * @throws WebDriverException if WebDriver encounters an exception while interacting with the element.
-     *                            If an exception occurs during the swipe operation, the method retries the swipe.
-     *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
+     * @see LocateElement
+     * @see Direction
      */
-    public WebElement scrollUntilFound(WebElement element) {
+    public WebElement scrollUntilFound(LocateElement locator) {
         long initialTime = System.currentTimeMillis();
         do {
             try {
+                WebElement element = locator.locate();
                 if (element.isDisplayed()) return element;
                 else scrollInDirection(Direction.up);
             } catch (WebDriverException ignored) {
@@ -152,7 +151,22 @@ public abstract class MobileUtilities extends Utilities {
      *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
     public WebElement scrollUntilFound(String elementText) {
-        return scrollUntilFound(getElementByText(elementText));
+        return scrollUntilFound(() -> getElementByText(elementText));
+    }
+
+    /**
+     * Scrolls the view until the specified WebElement is found and visible.
+     *
+     * This method continuously scrolls in the 'up' direction and attempts to locate the element
+     * using the provided WebElement instance. The process is repeated until the element is found and
+     * displayed or the time limit is reached.
+     *
+     * @param element The WebElement instance to be located.
+     * @return The located WebElement if found and displayed.
+     * @throws RuntimeException if the element is not found within the specified timeout.
+     */
+    public WebElement scrollUntilFound(WebElement element) {
+        return scrollUntilFound(() -> element);
     }
 
     /**
@@ -174,17 +188,22 @@ public abstract class MobileUtilities extends Utilities {
      * @param elementText The text of the element to be found.
      * @param elements    The list of elements to scroll through.
      * @return WebElement representing the found element, or null if not found within the specified time.
+     *
+     * Note: Works better with Android. Try scrollUntilFound() for iOS.
      */
     public WebElement scrollInList(String elementText, List<WebElement> elements) {
         long initialTime = System.currentTimeMillis();
         do {
             try {
-                WebElement targetElement = getElementByText(elementText);
-                if (targetElement.isDisplayed()) return targetElement;
-                else throw new WebDriverException("Element is not displayed (yet)!");
-            } catch (WebDriverException ignored) {
+                WebElement element = getElementByText(elementText);
+                if (element.isDisplayed())
+                    return element;
+                else
+                    throw new WebDriverException("Element is not displayed!");
+            }
+            catch (WebDriverException ignored) {
+                log.info("Swiping...");
                 swipeFromTo(elements.get(elements.size() - 1), elements.get(0));
-                ;
             }
         }
         while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
@@ -197,7 +216,7 @@ public abstract class MobileUtilities extends Utilities {
      * @param direction The direction in which to swipe.
      */
     public void scrollInDirection(Direction direction) {
-        log.info("Scrolling in the " + highlighted(StringUtilities.Color.BLUE, direction.name()) + " direction.");
+        log.info("Swiping " + highlighted(BLUE, direction.name().toLowerCase()));
         Point center = new Point(
                 driver.manage().window().getSize().getWidth() / 2,
                 driver.manage().window().getSize().getHeight() / 2
@@ -206,11 +225,11 @@ public abstract class MobileUtilities extends Utilities {
         Point destination = switch (direction) {
             case up -> new Point(
                     center.getX(),
-                    center.getY() - (3 * (driver.manage().window().getSize().getHeight() / 4))
+                    center.getY() - (3 * (driver.manage().window().getSize().getHeight() / 5))
             );
             case down -> new Point(
                     center.getX(),
-                    center.getY() + (3 * (driver.manage().window().getSize().getHeight() / 4))
+                    center.getY() + (3 * (driver.manage().window().getSize().getHeight() / 5))
             );
             case right -> new Point(
                     center.getX() - (3 * (driver.manage().window().getSize().getWidth() / 4)),
@@ -251,6 +270,7 @@ public abstract class MobileUtilities extends Utilities {
         sequence.addAction(new Pause(finger, ofMillis(250)));
         sequence.addAction(finger.createPointerUp(PointerInput.MouseButton.MIDDLE.asArg()));
         performSequence(sequence, System.currentTimeMillis(), driver);
+        sequence.addAction(new Pause(finger, ofMillis(250)));
     }
 
     /**

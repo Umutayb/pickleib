@@ -25,6 +25,7 @@ import java.util.Map;
 import static utils.StringUtilities.Color.BLUE;
 import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
+import static utils.StringUtilities.*;
 
 @SuppressWarnings("unused")
 public class MobileInteractions extends MobileUtilities implements PolymorphicUtilities {

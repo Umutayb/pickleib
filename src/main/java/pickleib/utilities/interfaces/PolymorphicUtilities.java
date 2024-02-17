@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.interfaces.functions.LocateElement;
 
 import java.util.List;
 import java.util.Map;
@@ -655,6 +656,22 @@ public interface PolymorphicUtilities {
      *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
     WebElement scrollUntilFound(String elementText);
+
+    /**
+     * Scrolls the view until the specified element is found and visible.
+     *
+     * This method continuously scrolls in the 'up' direction and attempts to locate the element using
+     * the provided LocateElement strategy. The process is repeated until the element is found and
+     * displayed or the time limit is reached.
+     *
+     * @param locator The LocateElement strategy used to find the target WebElement.
+     * @return The located WebElement if found and displayed.
+     * @throws RuntimeException if the element is not found within the specified timeout.
+     *
+     * @see LocateElement
+     * @see Direction
+     */
+    WebElement scrollUntilFound(LocateElement locator);
 
     /**
      * Scrolls or swipes the viewport in the specified direction.

@@ -25,6 +25,7 @@ import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.interfaces.functions.LocateElement;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
 
@@ -122,25 +123,24 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Swipes upward until the specified WebElement is found or a timeout is reached.
+     * Scrolls the view until the specified element is found and visible.
      *
-     * <p>
-     * This method continuously swipes upward until the specified WebElement is found or a timeout occurs.
-     * If the element is found, it is returned. If the element is not found within the specified timeout,
-     * a RuntimeException is thrown.
-     * </p>
+     * This method continuously scrolls in the 'up' direction and attempts to locate the element using
+     * the provided LocateElement strategy. The process is repeated until the element is found and
+     * displayed or the time limit is reached.
      *
-     * @param element The WebElement to be located.
-     * @return The located WebElement.
-     * @throws RuntimeException   if the element could not be located within the specified timeout.
-     * @throws WebDriverException if WebDriver encounters an exception while interacting with the element.
-     *                            If an exception occurs during the swipe operation, the method retries the swipe.
-     *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
+     * @param locator The LocateElement strategy used to find the target WebElement.
+     * @return The located WebElement if found and displayed.
+     * @throws RuntimeException if the element is not found within the specified timeout.
+     *
+     * @see LocateElement
+     * @see Direction
      */
-    public WebElement scrollUntilFound(WebElement element) {
+    public WebElement scrollUntilFound(LocateElement locator) {
         long initialTime = System.currentTimeMillis();
         do {
             try {
+                WebElement element = locator.locate();
                 if (element.isDisplayed()) return element;
                 else scrollInDirection(Direction.up);
             } catch (WebDriverException ignored) {
@@ -189,7 +189,22 @@ public abstract class WebUtilities extends Utilities {
      *                            If the element is not found after the specified timeout, the WebDriverException is thrown.
      */
     public WebElement scrollUntilFound(String elementText) {
-        return scrollUntilFound(getElementByText(elementText));
+        return scrollUntilFound(() -> getElementByText(elementText));
+    }
+
+    /**
+     * Scrolls the view until the specified WebElement is found and visible.
+     *
+     * This method continuously scrolls in the 'up' direction and attempts to locate the element
+     * using the provided WebElement instance. The process is repeated until the element is found and
+     * displayed or the time limit is reached.
+     *
+     * @param element The WebElement instance to be located.
+     * @return The located WebElement if found and displayed.
+     * @throws RuntimeException if the element is not found within the specified timeout.
+     */
+    public WebElement scrollUntilFound(WebElement element) {
+        return scrollUntilFound(() -> element);
     }
 
     /**
