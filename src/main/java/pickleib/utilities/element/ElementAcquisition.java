@@ -1008,12 +1008,13 @@ public class ElementAcquisition {
          * @return returns map of fields
          */
         public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName){
-            Map<String, Object> componentFields;
+            Map<String, Object> pageFields;
             pageName = firstLetterDeCapped(pageName);
             Object pageObject = getFields(getObjectRepository()).get(pageName);
-            if (pageObject != null) componentFields = getFields(pageObject);
+            if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
-            return getFields(componentFields.get(componentName));
+            if (pageFields.containsKey(componentName)) return getFields(pageFields.get(componentName));
+            else throw new PickleibException(pageName + " does not contain " + componentName + " component!");
         }
 
         /**
