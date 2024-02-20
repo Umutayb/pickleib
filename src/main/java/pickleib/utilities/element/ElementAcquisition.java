@@ -1064,7 +1064,9 @@ public class ElementAcquisition {
          * @return returns the element
          */
         public WebElement getElementFromComponent(String elementFieldName, String componentName, String pageName){
-            return (WebElement) getComponentFieldsFromPage(componentName, pageName).get(elementFieldName);
+            Map<String, Object> fields = getComponentFieldsFromPage(componentName, pageName);
+            if (fields.containsKey(elementFieldName)) return (WebElement) fields.get(elementFieldName);
+            else throw new PickleibException(componentName + " component of " + pageName + " does not contain a field called " + elementFieldName);
         }
 
         /**
@@ -1075,7 +1077,9 @@ public class ElementAcquisition {
          * @return returns the element
          */
         public WebElement getElementFromComponent(String elementFieldName, Object component){
-            return (WebElement) getComponentFields(component).get(elementFieldName);
+            Map<String, Object> fields = getComponentFields(component);
+            if (fields.containsKey(elementFieldName)) return (WebElement) fields.get(elementFieldName);
+            else throw new PickleibException("The component does not contain a field called " + elementFieldName);
         }
 
         /**
@@ -1088,7 +1092,9 @@ public class ElementAcquisition {
          */
         @SuppressWarnings("unchecked")
         public List<WebElement> getElementsFromComponent(String listFieldName, String componentName, String pageName){
-            return (List<WebElement>) getComponentFieldsFromPage(componentName, pageName).get(listFieldName);
+            Map<String, Object> fields = getComponentFieldsFromPage(componentName, pageName);
+            if (fields.containsKey(listFieldName)) return (List<WebElement>) fields.get(listFieldName);
+            else throw new PickleibException(componentName + " component of " + pageName + " does not contain a field called " + listFieldName);
         }
 
         /**
@@ -1100,7 +1106,9 @@ public class ElementAcquisition {
          */
         @SuppressWarnings("unchecked")
         public List<WebElement> getElementsFromComponent(String elementListFieldName, Object component){
-            return (List<WebElement>) getComponentFields(component).get(elementListFieldName);
+            Map<String, Object> fields = getComponentFields(component);
+            if (fields.containsKey(elementListFieldName)) return (List<WebElement>) fields.get(elementListFieldName);
+            else throw new PickleibException("The component does not contain a field called " + elementListFieldName);
         }
 
 
