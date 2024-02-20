@@ -25,6 +25,7 @@ import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.element.ElementAcquisition;
 import pickleib.utilities.interfaces.functions.LocateElement;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
@@ -531,11 +532,12 @@ public abstract class WebUtilities extends Utilities {
      * Executes a JS script and returns the responding object
      *
      * @param script script that is to be executed
+     *
      * @return object if the scripts yield one
      */
-    public Object executeScript(String script) {
+    public Object executeScript(String script, Object... args) {
         log.info("Executing script: " + highlighted(BLUE, script));
-        return ((JavascriptExecutor) driver).executeScript(script);
+        return ((JavascriptExecutor) driver).executeScript(script, args);
     }
 
     /**
@@ -629,5 +631,14 @@ public abstract class WebUtilities extends Utilities {
         long elapsedTime = System.currentTimeMillis() - startTime;
         int elapsedTimeSeconds = (int) ((double) elapsedTime / 1000);
         log.info("The page is loaded in " + elapsedTimeSeconds + " second(s)");
+    }
+
+    public WebElement scrollInContainer(WebElement container, List<WebElement> elements, String targetElementText) {
+        log.info("Scrolling " + targetElementText + " in view");
+        WebElement targetElement = ElementAcquisition.acquireNamedElementAmongst(elements, targetElementText);
+        WebElement firstElement = elements.get(0);
+        double distance = firstElement.getLocation().getY() - targetElement.getLocation().getY();
+        executeScript("arguments[0].scrollBy(0, "+distance+");", container);
+        return  targetElement;
     }
 }
