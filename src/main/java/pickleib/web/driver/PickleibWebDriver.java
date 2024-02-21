@@ -1,13 +1,13 @@
 package pickleib.web.driver;
 
 import context.ContextStore;
-import io.appium.java_client.AppiumDriver;
 import org.bouncycastle.util.encoders.Base64;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.v85.network.Network;
 import org.openqa.selenium.devtools.v85.network.model.Headers;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.utilities.PropertyLoader;
 import properties.PropertiesReader;
@@ -32,14 +32,10 @@ public class PickleibWebDriver {
 	/**
 	 * WebDriverWait instance
 	 */
-	private static WebDriverWait wait;
+	private static FluentWait<RemoteWebDriver> wait;
 
 	public static RemoteWebDriver get(){
 		return driver;
-	}
-
-	public static WebDriverWait driverWait(){
-		return wait;
 	}
 
 	static PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
@@ -53,7 +49,6 @@ public class PickleibWebDriver {
 	public static void initialize(WebDriverFactory.BrowserType browserType){
 		log.info("Initializing " + markup(StringUtilities.Color.PURPLE, browserType.getDriverName()) + " driver...");
 		driver = WebDriverFactory.getDriver(browserType);
-		wait = new WebDriverWait(driver, Duration.of(WebDriverFactory.driverTimeout, ChronoUnit.SECONDS));
 	}
 
 	/**

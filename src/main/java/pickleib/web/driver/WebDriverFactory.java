@@ -21,11 +21,10 @@ import java.net.URL;
 import java.time.Duration;
 
 import static utils.StringUtilities.Color.*;
+import static utils.StringUtilities.highlighted;
 
 @SuppressWarnings("unused")
 public class WebDriverFactory implements DriverFactory {
-
-    static StringUtilities strUtils = new StringUtilities();
 
     /**
      * determines frameWidth value
@@ -166,7 +165,7 @@ public class WebDriverFactory implements DriverFactory {
                 throw new RuntimeException(gamma);
             }
             else
-                throw new RuntimeException(strUtils.highlighted(YELLOW, "Something went wrong while selecting a driver ")+strUtils.highlighted(RED, "\n\t"+gamma), gamma);
+                throw new RuntimeException(highlighted(YELLOW, "Something went wrong while selecting a driver ") + highlighted(RED, "\n\t"+gamma), gamma);
         }
     }
 
@@ -340,10 +339,6 @@ public class WebDriverFactory implements DriverFactory {
     }
 
     public static void setNoSandbox(boolean noSandbox) {WebDriverFactory.noSandbox = noSandbox;}
-
-    public static StringUtilities getStrUtils() {
-        return strUtils;
-    }
 
     public static int getFrameWidth() {
         return frameWidth;

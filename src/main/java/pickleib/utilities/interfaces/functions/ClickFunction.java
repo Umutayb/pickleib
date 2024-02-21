@@ -1,4 +1,4 @@
-package pickleib.utilities;
+package pickleib.utilities.interfaces.functions;
 
 import org.openqa.selenium.WebElement;
 

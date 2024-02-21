@@ -14,7 +14,7 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
 //     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
 //     */
     public AppTest() {
-        super(ObjectRepository.class);
+        super(ObjectRepository.class, true, true);
     }
 //
 //    @Before
