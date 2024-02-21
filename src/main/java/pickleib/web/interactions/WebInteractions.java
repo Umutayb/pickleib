@@ -387,6 +387,24 @@ public class WebInteractions extends WebUtilities implements Interactions {
         clickIframeButton(iframe, element);
     }
 
+
+    /**
+     * Verifies the state of an element within a specified iframe.
+     *
+     * @param iframe target iframe
+     * @param element target element
+     * @param expectedState The expected state of the element
+     */
+    public void verifyElementInIframe(WebElement iframe, WebElement element, String elementName, String pageName, ElementState expectedState){
+        log.info("Verifying i-frame element " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName)
+        );
+        verifyIframeElement(iframe, element, expectedState);
+        log.success(elementName + " state is " + expectedState.name() + "!");
+    }
+
     /**
      *
      * Fill iFrame element {element name} of {iframe name} on the {page name} with text: {input text}
