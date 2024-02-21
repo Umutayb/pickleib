@@ -378,6 +378,22 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
+     * Verifies the state of an element within a specified iframe.
+     *
+     * @param iframe target iframe
+     * @param element target element
+     * @param expectedState The expected state of the element
+     */
+    public void verifyIframeElement(
+            WebElement iframe,
+            WebElement element,
+            ElementState expectedState){
+        driver.switchTo().frame(iframe);
+        verifyElementState(element, expectedState);
+        driver.switchTo().parentFrame();
+    }
+
+    /**
      *
      * Fill {iframe name} iframe form input on the {page name}
      *
