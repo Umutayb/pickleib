@@ -633,6 +633,20 @@ public abstract class WebUtilities extends Utilities {
         log.info("The page is loaded in " + elapsedTimeSeconds + " second(s)");
     }
 
+    /**
+     * Scrolls the container element to bring the target element into view.
+     *
+     * <p>
+     * This method scrolls the specified container element to bring the target element into view.
+     * It calculates the distance between the first element in the list and the target element,
+     * then scrolls the container by that distance to ensure the target element is in view.
+     * </p>
+     *
+     * @param container The container WebElement to be scrolled.
+     * @param elements The list of WebElements containing the target element.
+     * @param targetElementText The text of the target element to bring into view.
+     * @return The WebElement representing the target element after scrolling.
+     */
     public WebElement scrollInContainer(WebElement container, List<WebElement> elements, String targetElementText) {
         log.info("Scrolling " + targetElementText + " in view");
         WebElement targetElement = ElementAcquisition.acquireNamedElementAmongst(elements, targetElementText);
