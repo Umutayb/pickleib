@@ -652,7 +652,7 @@ public abstract class WebUtilities extends Utilities {
         WebElement targetElement = ElementAcquisition.acquireNamedElementAmongst(elements, targetElementText);
         WebElement firstElement = elements.get(0);
         double distance = firstElement.getLocation().getY() - targetElement.getLocation().getY();
-        executeScript("arguments[0].scrollBy(0, "+distance+");", container);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollBy(0, "+distance+");", container);
         return  targetElement;
     }
 }
