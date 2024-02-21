@@ -694,7 +694,9 @@ public class ElementAcquisition {
             );
             JsonObject elementJson = getElementJson(elementName, pageName, objectRepository);
             assert elementJson != null;
-            ByAll byAll = getByAll(elementJson, selectorTypes);
+            ByAll byAll;
+            if (selectorTypes.length > 0) byAll = getByAll(elementJson, selectorTypes);
+            else byAll = getByAll(elementJson, SelectorType.xpath, SelectorType.css, SelectorType.text);
             return driver.findElement(byAll);
         }
 
