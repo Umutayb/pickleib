@@ -386,8 +386,7 @@ public class WebInteractions extends WebUtilities implements Interactions {
         );
         clickIframeButton(iframe, element);
     }
-
-
+    
     /**
      * Verifies the state of an element within a specified iframe.
      *
