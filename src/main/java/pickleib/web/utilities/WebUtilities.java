@@ -25,7 +25,7 @@ import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.Utilities;
-import pickleib.utilities.element.ElementAcquisition;
+import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.functions.LocateElement;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;

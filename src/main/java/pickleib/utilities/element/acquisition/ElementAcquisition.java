@@ -1,4 +1,4 @@
-package pickleib.utilities.element;
+package pickleib.utilities.element.acquisition;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -17,7 +17,6 @@ import pickleib.utilities.interfaces.repository.PageRepository;
 import collections.Bundle;
 import collections.Pair;
 import utils.Printer;
-import utils.StringUtilities;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;

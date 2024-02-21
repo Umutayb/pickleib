@@ -13,7 +13,7 @@ import pickleib.enums.InteractionType;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
-import pickleib.utilities.element.ElementAcquisition;
+import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.utilities.WebUtilities;

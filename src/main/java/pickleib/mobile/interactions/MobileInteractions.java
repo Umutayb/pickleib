@@ -15,7 +15,7 @@ import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
-import pickleib.utilities.element.ElementAcquisition;
+import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 
 import java.util.Arrays;
