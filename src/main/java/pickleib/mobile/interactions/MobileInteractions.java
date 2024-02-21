@@ -484,12 +484,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(BLUE, pageName)
         );
         String xpath = super.generateXPath(childElement, current);
-        log.success("XPath was generated for " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " of ") +
-                highlighted(BLUE, pageName) +
-                highlighted(GRAY, ": ") +
-                highlighted(BLUE, xpath));
+        log.success("XPath was generated for " + elementName + " of " + pageName + ": " + xpath);
         return xpath;
     }
 
@@ -511,13 +506,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(GRAY, " to context")
         );
         super.updateContextByElementAttribute(element, attributeName, elementName, pageName);
-        log.success("Attribute " +
-                highlighted(BLUE, attributeName) +
-                highlighted(GRAY, " of ") +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " from ") +
-                highlighted(BLUE, pageName) +
-                highlighted(GRAY, " was saved to context!"));
+        log.success("Attribute " + attributeName + " of " + elementName + " from " + pageName + " was saved to context!");
     }
 
     /**
@@ -530,7 +519,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
     public void fillForm(List<Bundle<WebElement, String, String>> bundles, String pageName) {
         log.info("Filling form on " + highlighted(BLUE, pageName));
         super.fillInputForm(bundles, pageName);
-        log.success("Form was filled on " + highlighted(BLUE, pageName));
+        log.success("Form was filled on " + pageName);
     }
 
     /**
@@ -548,12 +537,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(BLUE, pageName)
         );
         super.verifyElementText(element, expectedText);
-        log.success("Text of element " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " is ") +
-                highlighted(BLUE, expectedText) +
-                highlighted(GRAY, " on ") +
-                highlighted(BLUE, pageName));
+        log.success("Text of element " + elementName + " is " + expectedText + " on " + pageName);
     }
 
     /**
@@ -573,12 +557,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(BLUE, pageName)
         );
         super.verifyElementContainsText(element, expectedText);
-        log.success("Text of element " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " contains ") +
-                highlighted(BLUE, expectedText) +
-                highlighted(GRAY, " on ") +
-                highlighted(BLUE, pageName));
+        log.success("Text of element " + elementName + " contains " + expectedText + " on " + pageName);
     }
 
     /**
@@ -590,7 +569,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
     public void verifyListedText(List<Bundle<WebElement, String, String>> bundles, String pageName) {
         log.info("Verifying the text of elements on " + highlighted(BLUE, pageName));
         super.verifyListedElementText(bundles, pageName);
-        log.success("Text of the elements was verified on " + highlighted(BLUE, pageName));
+        log.success("Text of the elements was verified on " + pageName);
     }
 
     /**
@@ -607,10 +586,7 @@ public class MobileInteractions extends MobileUtilities implements PolymorphicUt
                 highlighted(BLUE, pageName)
         );
         super.verifyElementState(element, ElementState.displayed);
-        log.success("Presence of the element " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " was verified on ") +
-                highlighted(BLUE, pageName));
+        log.success("Presence of the element " + elementName + " was verified on " + pageName);
     }
 
     /**
