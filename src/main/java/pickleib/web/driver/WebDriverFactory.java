@@ -15,7 +15,6 @@ import pickleib.enums.EmulatedDevice;
 import pickleib.exceptions.PickleibException;
 import utils.LogUtilities;
 import utils.Printer;
-import utils.StringUtilities;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
@@ -128,11 +127,6 @@ public class WebDriverFactory implements DriverFactory {
     private static final Printer log = new Printer(WebDriverFactory.class);
 
     /**
-     * Logging utilities.
-     */
-    private static final LogUtilities logUtils = new LogUtilities();
-
-    /**
      * Initializes and returns a driver of specified type
      * @param browserType driver type
      * @return returns driver
@@ -154,7 +148,7 @@ public class WebDriverFactory implements DriverFactory {
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
-            driver.setLogLevel(logUtils.getLevel(logLevel));
+            driver.setLogLevel(LogUtilities.getLevel(logLevel));
             log.important(browserType.getDriverName() + GRAY.getValue() + " was selected");
             return driver;
         }
