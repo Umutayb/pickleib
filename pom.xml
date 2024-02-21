@@ -98,8 +98,7 @@
     <dependency>
       <groupId>io.appium</groupId>
       <artifactId>java-client</artifactId>
-      <version>8.3.0</version>
-      <scope>compile</scope>
+      <version>${appium.version}</version>
     </dependency>
 
     <!-- Gson -->
