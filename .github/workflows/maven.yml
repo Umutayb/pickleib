@@ -14,31 +14,32 @@ on:
   pull_request:
     branches: [ "main" ]
 
-container-job:
-  # Containers must run in Linux based operating systems
-  runs-on: ubuntu-latest
-  # Docker Hub image that `container-job` executes in
-  container: umutayb/vue-test-website
+jobs:
+  container-job:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+    # Docker Hub image that `container-job` executes in
+    container: umutayb/vue-test-website
 
-  # Service containers to run with `container-job`
-  services:
-    # Label used to access the service container
-    postgres:
-      # Docker Hub image
-      image: umutayb/vue-test-website
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: umutayb/vue-test-website
 
-  steps:
-    - name: Install dependencies
-      run: npm install
+    steps:
+      - name: Install dependencies
+        run: npm install
 
-    - name: Run website
-      run: npm run serve
+      - name: Run website
+        run: npm run serve
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Build with Maven
-      run: mvn clean test
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean test
