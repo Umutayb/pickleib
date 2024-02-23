@@ -35,6 +35,7 @@ jobs:
       - uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: 114
-
+      - run: chrome --version
+        
       - name: Build with Maven
         run: mvn clean test
