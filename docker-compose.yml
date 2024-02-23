@@ -11,4 +11,3 @@ services:
 networks:
   vue-network:
     driver: bridge
-    
