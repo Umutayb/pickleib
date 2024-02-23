@@ -14,31 +14,15 @@ on:
   pull_request:
     branches: [ "main" ]
 
-jjobs:
-  # Label of the container job
-  container-job:
-    # Containers must run in Linux based operating systems
+jobs:
+  web_app_defn:
     runs-on: ubuntu-latest
-    # Docker Hub image that `container-job` executes in
-    container: node:10.18-jessie
-
-    # Service containers to run with `container-job`
+    container: ubuntu
     services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      pickleib:
+      juice_shop_app:
         image: umutayb/vue-test-website
+        ports:
+          - 8080:8080
 
     steps:
       - name: Set up JDK 17
