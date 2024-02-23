@@ -1,9 +1,15 @@
 version: '3.8'
 
 services:
-  website:
+  vue-vue-test-website:
     image: umutayb/vue-test-website:latest
-    command: npm run serve
-    volumes:
-    - ${PWD-.}/vue-test-website:/usr/src/app
-    - /usr/src/app/node_modules
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vue-app
+    restart: always
+    networks:
+      - vue-network
+networks:
+  vue-network:
+    driver: bridge
