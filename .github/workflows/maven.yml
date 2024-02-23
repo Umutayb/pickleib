@@ -33,7 +33,6 @@ jobs:
 
       - name: Set chrome version
         uses: browser-actions/setup-chrome@v1
-        run: chrome --version
         with:
           chrome-version: 114
 

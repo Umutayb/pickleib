@@ -23,7 +23,6 @@ jobs:
         run: docker-compose -f "docker-compose.yml" up -d --build
       - name: Set chrome version
         uses: browser-actions/setup-chrome@v1
-        run: chrome --version
         with:
           chrome-version: 114
       - name: build artifact
