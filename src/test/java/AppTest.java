@@ -12,7 +12,7 @@ import java.util.List;
 import static pickleib.enums.Navigation.backwards;
 
 public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
-    static String testWebsiteUrl = "http://127.0.0.1:8081/";
+    static String testWebsiteUrl = "http://127.0.0.1:8080/";
     static WebDriver driver;
 
     /**
