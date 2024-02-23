@@ -26,6 +26,7 @@ public class AppTest {
     @Before
     public void before(){
         WebDriverFactory.setHeadless(false);
+        WebDriverFactory.setUseWDM(false);
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
         webInteractions = new WebInteractions();
