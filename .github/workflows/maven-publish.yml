@@ -21,6 +21,10 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Start containers
         run: docker-compose -f "docker-compose.yml" up -d --build
+      - name: Set chrome version
+      - uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: 114
       - name: build artifact
         run: mvn clean package
       - name: Create release
