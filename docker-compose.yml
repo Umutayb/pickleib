@@ -4,3 +4,6 @@ services:
   website:
     image: umutayb/vue-test-website:latest
     command: npm run serve
+    volumes:
+    - ${PWD-.}/vue-test-website:/usr/src/app
+    - /usr/src/app/node_modules
