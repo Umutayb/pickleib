@@ -8,12 +8,6 @@ on:
 jobs:
   regression-tests:
     runs-on: ubuntu-latest
-    services:
-      redis:
-        image: redis
-        ports:
-          - 8080:8081
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
