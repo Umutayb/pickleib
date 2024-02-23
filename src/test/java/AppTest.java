@@ -22,7 +22,6 @@ public class AppTest {
      * Constructs an instance of the CommonStepUtilities class with the specific object repository.
      */
 
-
     @Before
     public void before(){
         WebDriverFactory.setHeadless(true);
