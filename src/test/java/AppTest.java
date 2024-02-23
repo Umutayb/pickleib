@@ -25,6 +25,7 @@ public class AppTest {
     @Before
     public void before(){
         WebDriverFactory.setHeadless(true);
+        setup();
     }
 
     public void setup(){
@@ -61,7 +62,6 @@ public class AppTest {
 
     @Test
     public void formTest(){
-        setup();
         List<WebElement> categories = stepUtilities.pageObjectReflections.getElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         stepUtilities.webInteractions.clickElement(forms);
