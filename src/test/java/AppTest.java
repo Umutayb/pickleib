@@ -2,11 +2,15 @@ import common.ObjectRepository;
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
+import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.utilities.steps.PageObjectStepUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
+import utils.StringUtilities;
+
 import java.util.List;
 
 import static pickleib.enums.Navigation.backwards;
@@ -34,6 +38,8 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
 
     @After
     public void after() {
+        ScreenCaptureUtility capture = new ScreenCaptureUtility();
+        capture.captureScreen(StringUtilities.generateRandomString(null, 6, false, true), "jpg", (RemoteWebDriver) driver);
         PickleibWebDriver.terminate();
     }
 
