@@ -34,7 +34,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
       - name: Change to Maven Project Directory
-        run: cd path/to/your/maven/project
+        run: cd ${{ github.workspace }}
       - name: Build with Maven
         run: mvn clean test
         env:
