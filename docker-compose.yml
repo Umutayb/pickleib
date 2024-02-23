@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  vue-vue-test-website:
+  vue-test-website:
     image: umutayb/vue-test-website:latest
     build:
       context: .
