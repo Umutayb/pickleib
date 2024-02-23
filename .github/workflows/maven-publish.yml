@@ -12,9 +12,8 @@ jobs:
         image: redis
         ports:
           - 8081:8081
-  publish:
     permissions: write-all
-    runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Java for publishing to Maven Central Repository
