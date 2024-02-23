@@ -20,7 +20,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Start containers
         run: docker-compose up -d
 
