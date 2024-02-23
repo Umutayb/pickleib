@@ -7,9 +7,22 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  # Label of the container job
+  runner-job:
+    # You must use a Linux environment when using service containers or container jobs
     runs-on: ubuntu-latest
 
+    # Service containers to run with `runner-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        #
+        ports:
+          # Opens tcp port 8080 on the host and service container
+          - 8080:8080
+  build:
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
