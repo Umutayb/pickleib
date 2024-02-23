@@ -20,7 +20,7 @@ jobs:
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Set up Docker
-        uses: docker/setup-docker@v2
+        uses: umutayb/vue-test-website
         with:
           docker-version: '20.10.5'  # Specify the desired Docker version
 
