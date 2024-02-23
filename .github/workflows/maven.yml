@@ -36,5 +36,9 @@ jobs:
         run: |
           docker-compose up -d
 
+      - name: Check docker
+        run: |
+          docker ps -a
+
       - name: Build with Maven
         run: mvn clean test
