@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  web:
+    image: umutayb/vue-test-website
+    ports:
+      - "7450:8080"
+    command: npm run serve

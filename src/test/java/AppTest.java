@@ -1,75 +1,87 @@
+import common.ObjectRepository;
+import org.junit.*;
+import org.openqa.selenium.PageLoadStrategy;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.steps.PageObjectStepUtilities;
+import pickleib.web.driver.PickleibWebDriver;
+import pickleib.web.driver.WebDriverFactory;
+
+import java.util.List;
+
+import static pickleib.enums.Navigation.backwards;
 
 public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
-//
-//    public ElementAcquisition.PageObjectModel<ObjectRepository> acquire;
-//    public ElementAcquisition.Reflections<ObjectRepository> reflections;
-//    public ElementInteractions interactions;
-//    public WebInteractions webInteractions;
-//
-//    String trainingUrl = "https://www.toolsqa.com/selenium-training/";
-//    String baseUrl = "https://demoqa.com/";
-//
-//    /**
-//     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
-//     */
+    static String testWebsiteUrl = "http://localhost:7450/";
+    static WebDriver driver;
+
+    /**
+     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
+     */
     public AppTest() {
-        super(ObjectRepository.class, true, true);
+        super(ObjectRepository.class, false, true);
     }
-//
-//    @Before
-//    public void before() {
-//        WebDriverFactory.setHeadless(true);
-//        WebDriverFactory.setDriverTimeout(120);
-//        WebDriverFactory.setUseWDM(true);
-//        WebDriverFactory.setLoadStrategy(PageLoadStrategy.NONE);
-//        PickleibWebDriver.initialize();
-//        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(120));
-//        acquire = new ElementAcquisition.PageObjectModel<>(PickleibWebDriver.driver, ObjectRepository.class);
-//        reflections = new ElementAcquisition.Reflections<>(PickleibWebDriver.driver, ObjectRepository.class);
-//        interactions = new ElementInteractions(PickleibWebDriver.driver, Web);
-//        webInteractions = new WebInteractions();
-//    }
-//
-//    @After
-//    public void after() {
-//        PickleibWebDriver.terminate();
-//    }
-//
-//    @Test
-//    public void navigateTest() {
-//        log.info("webInteractions.navigate(page.trainingUrl) test");
-//        webInteractions.navigate(trainingUrl);
-//        Assert.assertEquals("\"webInteractions.navigate(page.trainingUrl) test failed!", driver.getCurrentUrl(), trainingUrl);
-//        log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
-//    }
-//
-//    @Test
-//    public void navigateBrowserTest() {
-//        log.info("webInteractions.navigateBrowser(backwards) test");
-//        webInteractions.getUrl(baseUrl);
-//        webInteractions.toPage("buttons");
-//        webInteractions.navigateBrowser(backwards);
-//        Assert.assertEquals("webInteractions.navigateBrowser(backwards) test failed!", driver.getCurrentUrl(), baseUrl);
-//        log.success("The webInteractions.navigateBrowser(backwards) test pass!");
-//    }
-//
-//    @Test
-//    public void clickTest() {
-//        WebElement clickMeButton = this.getAcquisition(Web).acquireElementFromPage("clickMeButton", "PageClass");
-//        WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "PageClass");
-//
-//        log.info("interactions.clickInteraction(page.clickMeButton) test");
-//        webInteractions.getUrl(baseUrl + "buttons");
-//        interactions.clickInteraction(clickMeButton);
-//        Assert.assertEquals("interactions.clickInteraction(page.clickMeButton) test failed!", "You have done a dynamic click", dynamicClickMessage.getText());
-//        log.success("The interactions.clickInteraction(page.clickMeButton) test pass!");
-//    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        WebDriverFactory.setHeadless(true);
+        WebDriverFactory.setDriverTimeout(120);
+        WebDriverFactory.setUseWDM(true);
+        WebDriverFactory.setLoadStrategy(PageLoadStrategy.NONE);
+        PickleibWebDriver.initialize();
+        driver = PickleibWebDriver.get();
+        driver.get(testWebsiteUrl);
+    }
+
+    @After
+    public void after() {
+        PickleibWebDriver.terminate();
+    }
+
+    @Test
+    public void navigateTest() {
+        log.info("webInteractions.navigate(page.trainingUrl) test");
+        Assert.assertEquals("\"webInteractions.navigate(page.trainingUrl) test failed!", testWebsiteUrl, driver.getCurrentUrl());
+        log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
+    }
+
+    @Test
+    public void navigateBrowserTest() {
+        log.info("webInteractions.navigateBrowser(backwards) test");
+        webInteractions.toPage("elements");
+        webInteractions.navigateBrowser(backwards);
+        Assert.assertEquals("webInteractions.navigateBrowser(backwards) test failed!", testWebsiteUrl, driver.getCurrentUrl());
+        log.success("The webInteractions.navigateBrowser(backwards) test pass!");
+    }
+
+    @Test
+    public void formTest(){
+        List<WebElement> categories = pageObjectReflections.getElementsFromPage("categories", "homePage");
+        WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
+        webInteractions.clickElement(forms);
+
+        WebElement title = pageObjectReflections.getElementFromPage("title", "formsPage");
+        Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
+        log.success("The formTest test pass!");
+    }
+
+//  @Test
+//  public void clickTest() {
+//      List<WebElement> categories = pageObjectReflections.getElementsFromPage("clickMeButton", "pages.PageClass");
+//      WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "pages.PageClass");
+
+//      log.info("interactions.clickInteraction(page.clickMeButton) test");
+//      webInteractions.getUrl(baseUrl + "buttons");
+//      interactions.clickInteraction(clickMeButton);
+//      Assert.assertEquals("interactions.clickInteraction(page.clickMeButton) test failed!", "You have done a dynamic click", dynamicClickMessage.getText());
+//      log.success("The interactions.clickInteraction(page.clickMeButton) test pass!");
+//  }
 //
 //    @Test
 //    public void negativeClickTest() {
-//        WebElement unClickableButton = this.getAcquisition(Web).acquireElementFromPage("unClickableButton", "PageClass");
-//        WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "PageClass");
+//        WebElement unClickableButton = this.getAcquisition(Web).acquireElementFromPage("unClickableButton", "pages.PageClass");
+//        WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "pages.PageClass");
 //
 //        log.info("interactions.clickInteraction(page.clickMeButton) test");
 //        webInteractions.getUrl(baseUrl + "buttons");
@@ -84,7 +96,7 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
 //
 //    @Test
 //    public void clickByTextTest() {
-//        WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "PageClass");
+//        WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "pages.PageClass");
 //
 //        log.info("interactions.clickByText(\"Click Me\") test");
 //        webInteractions.getUrl(baseUrl + "buttons");
@@ -95,7 +107,7 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
 //
 //    @Test
 //    public void scrollInContainerTest() {
-//        PageClass page = new PageClass();
+//        pages.PageClass page = new pages.PageClass();
 //        log.info("webInteractions.scrollInContainer(page.accordionLeftPanel,\"Interactions\") test");
 //        webInteractions.getUrl(baseUrl + "elements");
 //        webInteractions.scrollInContainer(page.accordionLeftPanel, "Interactions");
@@ -156,8 +168,8 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
 //
 //    @Test
 //    public void clickWithJSTest() {
-//        WebElement element = this.getAcquisition(Web).acquireElementFromPage("clickMeButton", "PageClass");
-//        WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "PageClass");
+//        WebElement element = this.getAcquisition(Web).acquireElementFromPage("clickMeButton", "pages.PageClass");
+//        WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "pages.PageClass");
 //
 //        log.info("webInteractions.clickWithJS(page.clickMeButton) test");
 //        webInteractions.getUrl(baseUrl + "buttons");
@@ -170,7 +182,7 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
 //    public void scrollWithJSTest() {
 //        log.info("webInteractions.scrollWithJS(page.interactionsAccordionBar) test");
 //        webInteractions.getUrl(baseUrl + "elements");
-//        WebElement element = this.getAcquisition(Web).acquireElementFromPage("interactionsAccordionBar", "PageClass");
+//        WebElement element = this.getAcquisition(Web).acquireElementFromPage("interactionsAccordionBar", "pages.PageClass");
 //
 //        webInteractions.scrollWithJS(element);
 //        Assert.assertTrue("webInteractions.scrollWithJS(page.interactionsAccordionBar) test failed!", element.isDisplayed());
@@ -183,7 +195,7 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
 //        webInteractions.getUrl(baseUrl);
 //        WebElement element = this.getAcquisition(Web).acquireListedElementFromPage("Forms", "toolCards", "pageClass");
 //        interactions.clickInteraction(element);
-//        WebElement header = this.getAcquisition(Web).acquireElementFromPage("headerTitle", "PageClass");
+//        WebElement header = this.getAcquisition(Web).acquireElementFromPage("headerTitle", "pages.PageClass");
 //        Assert.assertTrue("acquire.acquireListedElementFromPage(elementName, listName, pageName) test failed!", header.getText().contains("Forms"));
 //        log.success("The acquire.acquireListedElementFromPage(elementName, listName, pageName) test pass!");
 //    }
