@@ -7,5 +7,5 @@ import java.util.List;
 
 public class HomePage extends PickleibPageObject {
     @FindBy(css = "categories a")
-    List<WebElement> categories;
+    public List<WebElement> categories;
 }
