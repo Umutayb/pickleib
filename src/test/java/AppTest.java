@@ -14,7 +14,7 @@ import java.util.List;
 import static pickleib.enums.Navigation.backwards;
 
 public class AppTest {
-    String testWebsiteUrl = "http://0.0.0.0:8080/";
+    String testWebsiteUrl = "http://localhost:8080/";
     WebDriver driver;
     WebInteractions webInteractions;
     Printer log = new Printer(AppTest.class);
