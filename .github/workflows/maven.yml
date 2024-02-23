@@ -31,10 +31,10 @@ jobs:
       - name: Set up Node.js and Maven
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
-      - run: npm install -g npm
-      - run: npm install -g yarn
-      - run: yarn global add maven
+          node-version: '14'
+          # No need to specify npm version, using the default npm version provided by the Node.js version.
+
+      - run: npm install -g maven
 
       - name: Build with Maven
         run: mvn clean test
