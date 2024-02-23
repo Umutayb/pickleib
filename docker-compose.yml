@@ -1,6 +1,6 @@
 version: '3.8'
 
 services:
-  api:
+  website:
     image: umutayb/vue-test-website:latest
     command: npm run serve
