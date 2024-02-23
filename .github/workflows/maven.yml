@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  runner-job:
+  Regression Tests:
     runs-on: ubuntu-latest
     services:
       redis:
