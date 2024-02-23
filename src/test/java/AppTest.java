@@ -28,6 +28,7 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
         PickleibWebDriver.initialize();
         webInteractions = new WebInteractions();
         driver = webInteractions.driver();
+        pageObjectReflections = new ElementAcquisition.Reflections<ObjectRepository>(ObjectRepository.class);
         webInteractions.navigate(testWebsiteUrl);
     }
 
