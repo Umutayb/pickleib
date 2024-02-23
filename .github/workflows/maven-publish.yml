@@ -19,14 +19,8 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-      - name: Set up Docker
-        uses: umutayb/vue-test-website
-        with:
-          docker-version: '20.10.5'  # Specify the desired Docker version
-
-      - name: Build and run Docker Compose
-        run: |
-          docker-compose up -d
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d --build
       - name: build artifact
         run: mvn clean package
       - name: Create release
