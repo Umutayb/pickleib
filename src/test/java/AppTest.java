@@ -2,44 +2,40 @@ import common.ObjectRepository;
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
-import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.utilities.steps.PageObjectStepUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
-import utils.StringUtilities;
-
+import utils.Printer;
 import java.util.List;
 
 import static pickleib.enums.Navigation.backwards;
 
-public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
-    static String testWebsiteUrl = "http://127.0.0.1:8080/";
-    static WebDriver driver;
+public class AppTest {
+    PageObjectStepUtilities<ObjectRepository> stepUtilities;
+    String testWebsiteUrl = "http://127.0.0.1:8080/";
+    Printer log = new Printer(AppTest.class);
+    WebDriver driver;
 
     /**
      * Constructs an instance of the CommonStepUtilities class with the specific object repository.
      */
-    public AppTest() {
-        super(ObjectRepository.class, false, true);
-    }
+
 
     @Before
     public void before(){
         WebDriverFactory.setHeadless(true);
         PickleibWebDriver.initialize();
-        webInteractions = new WebInteractions();
-        driver = webInteractions.driver();
-        pageObjectReflections = new ElementAcquisition.Reflections<ObjectRepository>(ObjectRepository.class);
-        webInteractions.navigate(testWebsiteUrl);
+        stepUtilities = new PageObjectStepUtilities<>(ObjectRepository.class);
+        stepUtilities.webInteractions = new WebInteractions();
+        driver = stepUtilities.webInteractions.driver();
+        stepUtilities.pageObjectReflections = new ElementAcquisition.Reflections<ObjectRepository>(ObjectRepository.class);
+        stepUtilities.webInteractions.navigate(testWebsiteUrl);
     }
 
     @After
     public void after() {
-        ScreenCaptureUtility capture = new ScreenCaptureUtility();
-        capture.captureScreen(StringUtilities.generateRandomString(null, 6, false, true), "jpg", (RemoteWebDriver) driver);
         PickleibWebDriver.terminate();
     }
 
@@ -53,21 +49,18 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
     @Test
     public void navigateBrowserTest() {
         log.info("webInteractions.navigateBrowser(backwards) test");
-        webInteractions.toPage("elements");
-        webInteractions.navigateBrowser(backwards);
+        stepUtilities.webInteractions.toPage("elements");
+        stepUtilities.webInteractions.navigateBrowser(backwards);
         Assert.assertEquals("webInteractions.navigateBrowser(backwards) test failed!", testWebsiteUrl, driver.getCurrentUrl());
         log.success("The webInteractions.navigateBrowser(backwards) test pass!");
     }
 
     @Test
     public void formTest(){
-        List<WebElement> categories = pageObjectReflections.getElementsFromPage("categories", "homePage");
-        for (WebElement category:categories) {
-            log.info(category.getText());
-            if (category.getText().contains("Forms")) webInteractions.clickElement(category);
-        }
-
-        WebElement title = pageObjectReflections.getElementFromPage("title", "formsPage");
+        List<WebElement> categories = stepUtilities.pageObjectReflections.getElementsFromPage("categories", "homePage");
+        WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
+        stepUtilities.webInteractions.clickElement(forms);
+        WebElement title = stepUtilities.pageObjectReflections.getElementFromPage("title", "formsPage");
         Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
         log.success("The formTest test pass!");
     }
