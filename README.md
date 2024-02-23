@@ -160,3 +160,7 @@ mvn archetype:generate                      \
 "-Dversion=1.0.0-SNAPSHOT"                  \
 "-DinteractiveMode=false"
 ````
+##### Local tests:
+````shell
+docker run -p 8080:8080 umutayb/vue-test-website
+````
