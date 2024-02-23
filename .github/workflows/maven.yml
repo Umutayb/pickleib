@@ -29,9 +29,6 @@ jobs:
         image: umutayb/vue-test-website
 
     steps:
-      - name: Run website
-        run: npm run serve
-
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
