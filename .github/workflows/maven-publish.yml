@@ -5,7 +5,7 @@ on:
       - '*'
       
 jobs:
-  Maven Central Deploy:
+  maven-central-deploy:
     runs-on: ubuntu-latest
     services:
       redis:
