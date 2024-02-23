@@ -14,7 +14,7 @@ import static pickleib.enums.Navigation.backwards;
 
 public class AppTest {
     PageObjectStepUtilities<ObjectRepository> stepUtilities;
-    String testWebsiteUrl = "http://127.0.0.1:8080/";
+    String testWebsiteUrl = "http://0.0.0.0:8080/";
     Printer log = new Printer(AppTest.class);
     WebDriver driver;
 
@@ -26,6 +26,9 @@ public class AppTest {
     @Before
     public void before(){
         WebDriverFactory.setHeadless(true);
+    }
+
+    public void setup(){
         PickleibWebDriver.initialize();
         stepUtilities = new PageObjectStepUtilities<>(ObjectRepository.class);
         stepUtilities.webInteractions = new WebInteractions();
@@ -41,6 +44,7 @@ public class AppTest {
 
     @Test
     public void navigateTest() {
+        setup();
         log.info("webInteractions.navigate(page.trainingUrl) test");
         Assert.assertEquals("\"webInteractions.navigate(page.trainingUrl) test failed!", testWebsiteUrl, driver.getCurrentUrl());
         log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
@@ -48,6 +52,7 @@ public class AppTest {
 
     @Test
     public void navigateBrowserTest() {
+        setup();
         log.info("webInteractions.navigateBrowser(backwards) test");
         stepUtilities.webInteractions.toPage("elements");
         stepUtilities.webInteractions.navigateBrowser(backwards);
@@ -57,6 +62,7 @@ public class AppTest {
 
     @Test
     public void formTest(){
+        setup();
         List<WebElement> categories = stepUtilities.pageObjectReflections.getElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         stepUtilities.webInteractions.clickElement(forms);
