@@ -43,7 +43,6 @@ public class AppTest {
 
     @Test
     public void navigateTest() {
-        setup();
         log.info("webInteractions.navigate(page.trainingUrl) test");
         Assert.assertEquals("\"webInteractions.navigate(page.trainingUrl) test failed!", testWebsiteUrl, driver.getCurrentUrl());
         log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
@@ -51,7 +50,6 @@ public class AppTest {
 
     @Test
     public void navigateBrowserTest() {
-        setup();
         log.info("webInteractions.navigateBrowser(backwards) test");
         webInteractions.toPage("elements");
         webInteractions.navigateBrowser(backwards);
