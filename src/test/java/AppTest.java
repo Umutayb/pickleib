@@ -62,8 +62,10 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
     @Test
     public void formTest(){
         List<WebElement> categories = pageObjectReflections.getElementsFromPage("categories", "homePage");
-        WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
-        webInteractions.clickElement(forms);
+        for (WebElement category:categories) {
+            log.info(category.getText());
+            if (category.getText().contains("Forms")) webInteractions.clickElement(category);
+        }
 
         WebElement title = pageObjectReflections.getElementFromPage("title", "formsPage");
         Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
