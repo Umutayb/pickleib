@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     container: ubuntu
     services:
-      juice_shop_app:
+      vue-test-website:
         image: umutayb/vue-test-website
         ports:
           - 8080:8080
@@ -31,5 +31,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Change to Maven Project Directory
+        run: cd path/to/your/maven/project
       - name: Build with Maven
         run: mvn clean test
+        env:
+          MAVEN_OPTS: '-Dmaven.repo.local=$GITHUB_WORKSPACE/.m2/repository'
