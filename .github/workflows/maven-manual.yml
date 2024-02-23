@@ -28,9 +28,10 @@ jobs:
         cache: maven
 
     - name: Set chrome version
-    - uses: browser-actions/setup-chrome@v1
+      uses: browser-actions/setup-chrome@v1
+      run: chrome --version
       with:
         chrome-version: 114
-    - run: chrome --version
+
     - name: Build with Maven
       run: mvn clean test
