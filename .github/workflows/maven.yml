@@ -31,6 +31,6 @@ jobs:
       - name: Build and start Docker Compose services
         run: |
           docker-compose up -d
-    
+
       - name: Build with Maven
         run: mvn clean test

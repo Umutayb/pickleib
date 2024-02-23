@@ -5,8 +5,6 @@ services:
     image: umutayb/vue-test-website:latest
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: vue-test-website
     restart: always
     networks:
       - vue-network
