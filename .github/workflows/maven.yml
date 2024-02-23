@@ -25,16 +25,16 @@ jobs:
           - 8080:8080
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Change to Maven Project Directory
+        run: cd ${{ github.workspace }}
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-      - name: Change to Maven Project Directory
-        run: cd ${{ github.workspace }}
       - name: Build with Maven
         run: mvn clean test
         env:
