@@ -29,9 +29,6 @@ jobs:
         image: umutayb/vue-test-website
 
     steps:
-      - name: Install dependencies
-        run: npm install
-
       - name: Run website
         run: npm run serve
 
