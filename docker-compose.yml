@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   web:
-    container_name: pickleib-test
     image: umutayb/vue-test-website
     ports:
       - "8080:8080"
