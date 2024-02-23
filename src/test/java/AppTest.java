@@ -1,13 +1,12 @@
 import common.ObjectRepository;
 import org.junit.*;
-import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.steps.PageObjectStepUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
-
+import pickleib.web.interactions.WebInteractions;
 import java.util.List;
 
 import static pickleib.enums.Navigation.backwards;
@@ -23,15 +22,15 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
         super(ObjectRepository.class, false, true);
     }
 
-    @BeforeClass
-    public static void beforeClass() {
+    @Before
+    public void before(){
         WebDriverFactory.setHeadless(true);
         WebDriverFactory.setDriverTimeout(120);
         WebDriverFactory.setUseWDM(true);
-        WebDriverFactory.setLoadStrategy(PageLoadStrategy.NONE);
         PickleibWebDriver.initialize();
-        driver = PickleibWebDriver.get();
-        driver.get(testWebsiteUrl);
+        webInteractions = new WebInteractions();
+        driver = webInteractions.driver();
+        webInteractions.navigate(testWebsiteUrl);
     }
 
     @After
