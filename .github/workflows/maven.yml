@@ -2,29 +2,26 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  # Label of the container job
   runner-job:
-    # You must use a Linux environment when using service containers or container jobs
     runs-on: ubuntu-latest
 
-    # Service containers to run with `runner-job`
     services:
-      # Label used to access the service container
       redis:
-        # Docker Hub image
         image: redis
-        #
         ports:
-          # Opens tcp port 8080 on the host and service container
           - 8080:8080
-  build:
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -32,8 +29,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Set up Docker
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
       - name: Build and start Docker Compose services
         run: |
           docker-compose up -d
