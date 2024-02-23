@@ -24,7 +24,7 @@ public interface DriverFactory {
 
         public static DriverType getParentType(Platform platform) {
             return switch (platform) {
-                case WINDOWS, LINUX, UNIX, VENTURA, MONTEREY, BIG_SUR, CATALINA, MOJAVE, HIGH_SIERRA, SIERRA, EL_CAPITAN, YOSEMITE, MAVERICKS, MOUNTAIN_LION, SNOW_LEOPARD, MAC, WIN11, WIN10, WIN8_1, WIN8, WIN7, VISTA, XP -> Web;
+                case WINDOWS, SONOMA, LINUX, UNIX, VENTURA, MONTEREY, BIG_SUR, CATALINA, MOJAVE, HIGH_SIERRA, SIERRA, EL_CAPITAN, YOSEMITE, MAVERICKS, MOUNTAIN_LION, SNOW_LEOPARD, MAC, WIN11, WIN10, WIN8_1, WIN8, WIN7, VISTA, XP -> Web;
                 case ANDROID -> Android;
                 case IOS -> iOS;
                 case ANY -> null;
