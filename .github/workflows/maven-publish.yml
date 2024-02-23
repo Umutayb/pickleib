@@ -5,6 +5,13 @@ on:
       - '*'
       
 jobs:
+  runner-job:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis
+        ports:
+          - 8081:8081
   publish:
     permissions: write-all
     runs-on: ubuntu-latest
@@ -19,12 +26,11 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-      - name: Start containers
-        run: docker-compose -f "docker-compose.yml" up -d --build
-      - name: Set chrome version
-        uses: browser-actions/setup-chrome@v1
-        with:
-          chrome-version: 114
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and start Docker Compose services
+        run: |
+          docker-compose up -d
       - name: build artifact
         run: mvn clean package
       - name: Create release

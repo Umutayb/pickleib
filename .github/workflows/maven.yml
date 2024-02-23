@@ -11,13 +11,11 @@ on:
 jobs:
   runner-job:
     runs-on: ubuntu-latest
-
     services:
       redis:
         image: redis
         ports:
           - 8081:8081
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -35,10 +33,6 @@ jobs:
       - name: Build and start Docker Compose services
         run: |
           docker-compose up -d
-
-      - name: Check docker
-        run: |
-          docker ps -a
 
       - name: Build with Maven
         run: mvn clean test
