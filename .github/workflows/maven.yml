@@ -30,7 +30,8 @@ jobs:
       - name: Build with Maven
         run: mvn clean test
 
-      - uses: actions/download-artifact@v4
+      - name: Download
+        uses: actions/download-artifact@v4
         with:
           # Name of the artifact to download.
           # If unspecified, all artifacts for the run are downloaded.
