@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'  # specify the Node.js version you need
+          node-version: '10'  # specify the Node.js version you need
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
