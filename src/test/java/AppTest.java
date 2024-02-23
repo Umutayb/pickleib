@@ -26,7 +26,6 @@ public class AppTest extends PageObjectStepUtilities<ObjectRepository> {
     public void before(){
         WebDriverFactory.setHeadless(true);
         WebDriverFactory.setDriverTimeout(120);
-        WebDriverFactory.setUseWDM(true);
         PickleibWebDriver.initialize();
         webInteractions = new WebInteractions();
         driver = webInteractions.driver();
