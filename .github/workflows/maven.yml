@@ -35,3 +35,5 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn clean test
+        env:
+          MAVEN_OPTS: '-Dmaven.repo.local=$GITHUB_WORKSPACE/.m2/repository'
