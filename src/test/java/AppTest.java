@@ -7,6 +7,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.repository.PageRepository;
@@ -106,7 +107,7 @@ public class AppTest {
         String email = "AutomatedTester@email.com";
         String gender = genderSelection.getText();
         String mobile = "0000000000";
-        String dob = "23022024";
+        String dob = "02232024";
         String hobbies = "Reading, Riding, Cooking";
         String address = "Prinsenstraat, 1015 DB";
         String city = "Amsterdam";
@@ -130,14 +131,14 @@ public class AppTest {
         webInteractions.fillInputElement(hobbiesInput, hobbies, true, true, true);
         webInteractions.fillInputElement(addressInput, address, true, true, true);
         webInteractions.fillInputElement(cityInput, city, true, true, true);
-        log.info("ALL: " + webInteractions.driver.findElement(By.cssSelector("*")).getText());
-
         webInteractions.clickElement(submitButton);
+
+        WebElement submissionModal = reflections.getElementFromPage("table", "formsPage");
+        webInteractions.wait.until(ExpectedConditions.visibilityOf(submissionModal));
 
         List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
 
         for (String entryKey: entries.keySet()){
-            log.info("KEY: " + entryKey);
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
             Assert.assertEquals("Data mismatch!", entries.get(entryKey), entryValueElement.getText());
         }
