@@ -46,8 +46,11 @@ public class FormsPage extends PickleibPageObject {
     @FindBy(css = ".submitted-info-table tr")
     List<WebElement> submissionEntries;
 
-    @FindBy(css = ".submitted-info-table")
+    @FindBy(className = "submitted-info-table")
     WebElement table;
+
+    @FindBy(id = "submission-title")
+    WebElement submissionTitle;
 
     public static WebElement getEntryValue(String entryKey, List<WebElement> submissionEntries) {
         return submissionEntries.stream().filter(

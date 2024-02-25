@@ -127,6 +127,7 @@ public class AppTest {
         webInteractions.clickElement(submitButton);
 
         log.info("TABLE: " +reflections.getElementFromPage("table", "formsPage").getText());
+        log.info("TITLE: " +reflections.getElementFromPage("submissionTitle", "formsPage").getText());
         for (String entryKey: entries.keySet()){
             log.info("KEY: " + entryKey);
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
