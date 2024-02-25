@@ -15,7 +15,7 @@ import static utils.StringUtilities.highlighted;
 
 @SuppressWarnings("unused")
 public class ScreenCaptureUtility {
-    Printer log = new Printer(ScreenCaptureUtility.class);
+    static Printer log = new Printer(ScreenCaptureUtility.class);
 
     /**
      * Captures screen
@@ -23,7 +23,7 @@ public class ScreenCaptureUtility {
      * @param driver session driver
      * @return returns the screenshot file
      */
-    public File captureScreen(String name, String extension, RemoteWebDriver driver) {
+    public static File captureScreen(String name, String extension, RemoteWebDriver driver) {
         try {
             log.info("Capturing page...");
             if (!extension.contains(".")) extension = "." + extension;
