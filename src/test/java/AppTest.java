@@ -47,7 +47,8 @@ public class AppTest {
 
     @After
     public void after() {
-        if (ContextStore.get("takes-snapshots", false))captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
+        if (ContextStore.get("takes-snapshots", false))
+            captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
         PickleibWebDriver.terminate();
     }
 
