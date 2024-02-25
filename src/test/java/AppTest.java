@@ -2,6 +2,7 @@ import common.ObjectRepository;
 import org.junit.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import pages.FormsPage;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.repository.PageRepository;
 import pickleib.utilities.steps.PageObjectStepUtilities;
@@ -9,7 +10,10 @@ import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
+import utils.arrays.ArrayUtilities;
+
 import java.util.List;
+import java.util.Map;
 
 import static pickleib.enums.Navigation.backwards;
 
@@ -58,7 +62,7 @@ public class AppTest {
     }
 
     @Test
-    public void formTest(){
+    public void formTitleTest(){
         ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
@@ -66,6 +70,69 @@ public class AppTest {
         WebElement title = reflections.getElementFromPage("title", "formsPage");
         Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
         log.success("The formTest test pass!");
+    }
+
+    @Test
+    public void completeFormSubmissionTest(){//TODO: Try soft assertions
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
+        webInteractions.clickElement(forms);
+
+        WebElement title = reflections.getElementFromPage("title", "formsPage");
+        WebElement nameInput = reflections.getElementFromPage("nameInput", "formsPage");
+        WebElement emailInput = reflections.getElementFromPage("emailInput", "formsPage");
+        WebElement genderDropdown = reflections.getElementFromPage("genderDropdown", "formsPage");
+        List<WebElement> genderOptions = reflections.getElementsFromPage("genderOptions", "formsPage");
+        WebElement mobileInput = reflections.getElementFromPage("mobileInput", "formsPage");
+        WebElement dateOfBirthInput = reflections.getElementFromPage("dateOfBirthInput", "formsPage");
+        WebElement hobbiesInput = reflections.getElementFromPage("hobbiesInput", "formsPage");
+        WebElement addressInput = reflections.getElementFromPage("addressInput", "formsPage");
+        WebElement cityInput = reflections.getElementFromPage("cityInput", "formsPage");
+        WebElement submitButton = reflections.getElementFromPage("submitButton", "formsPage");
+
+        Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
+
+        WebElement genderSelection = ArrayUtilities.getRandomItemFrom(genderOptions);
+
+        String name = "Automated Tester";
+        String email = "AutomatedTester@email.com";
+        String gender = genderSelection.getText();
+        String mobile = "0000000000";
+        String dob = "23/02/2024";
+        String hobbies = "Reading, Riding, Cooking";
+        String address = "Prinsenstraat, 1015 DB";
+        String city = "Amsterdam";
+
+        Map<String, String> entries = Map.of(
+                "Name", name,
+                "Email", email,
+                "Mobile", mobile,
+                "Dob", "2024-02-23", // value format changes due to website date formatting
+                "Hobbies", hobbies,
+                "CurrentAddress",address,
+                "Gender", gender
+        );
+
+        webInteractions.fillInputElement(nameInput, name, true, true, true);
+        webInteractions.fillInputElement(emailInput, email, true, true, true);
+        webInteractions.clickElement(genderDropdown);
+        webInteractions.clickElement(genderSelection);
+        webInteractions.fillInputElement(mobileInput, mobile, true, true, true);
+        webInteractions.fillInputElement(dateOfBirthInput, dob, true, true, false);
+        webInteractions.fillInputElement(hobbiesInput, hobbies, true, true, true);
+        webInteractions.fillInputElement(addressInput, address, true, true, true);
+        webInteractions.fillInputElement(cityInput, city, true, true, true);
+        webInteractions.clickElement(submitButton);
+
+        List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
+
+        for (String entryKey: entries.keySet()){
+            WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
+            Assert.assertEquals("Data mismatch!", entries.get(entryKey), entryValueElement.getText());
+        }
+
+        log.success("The completeFormSubmissionTest() passed!");
     }
 
 //  @Test
