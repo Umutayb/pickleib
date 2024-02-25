@@ -95,7 +95,6 @@ public class AppTest {
         Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
 
         WebElement genderSelection = ArrayUtilities.getRandomItemFrom(genderOptions);
-        List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
 
         String name = "Automated Tester";
         String email = "AutomatedTester@email.com";
@@ -128,6 +127,8 @@ public class AppTest {
         log.info("ALL: " + webInteractions.driver.findElement(By.cssSelector("*")).getText());
 
         webInteractions.clickElement(submitButton);
+
+        List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
 
         log.info("TABLE: " +reflections.getElementFromPage("table", "formsPage").getText());
         log.info("TITLE: " +reflections.getElementFromPage("submissionTitle", "formsPage").getText());
