@@ -13,30 +13,19 @@ on: workflow_dispatch
 jobs:
   manual-regression:
     runs-on: ubuntu-latest
-
-    services:
-      redis:
-        image: redis
-        ports:
-          - 8080:8081
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
+        uses: docker/setup-buildx-action@v3
       - name: Build and start Docker Compose services
         run: |
           docker-compose up --build -d
-
       - name: Build with Maven
         run: mvn clean test
