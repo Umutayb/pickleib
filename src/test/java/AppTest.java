@@ -1,5 +1,6 @@
 import common.ObjectRepository;
 import org.junit.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import pages.FormsPage;
@@ -124,6 +125,8 @@ public class AppTest {
         webInteractions.fillInputElement(hobbiesInput, hobbies, true, true, true);
         webInteractions.fillInputElement(addressInput, address, true, true, true);
         webInteractions.fillInputElement(cityInput, city, true, true, true);
+        log.info("ALL: " + webInteractions.driver.findElement(By.cssSelector("*")).getText());
+
         webInteractions.clickElement(submitButton);
 
         log.info("TABLE: " +reflections.getElementFromPage("table", "formsPage").getText());
