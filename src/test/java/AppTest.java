@@ -114,7 +114,6 @@ public class AppTest {
                 "Gender", gender
         );
 
-
         webInteractions.fillInputElement(nameInput, name, true, true, true);
         webInteractions.fillInputElement(emailInput, email, true, true, true);
         webInteractions.clickElement(genderDropdown);
