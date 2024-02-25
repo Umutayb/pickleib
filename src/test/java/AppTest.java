@@ -48,7 +48,7 @@ public class AppTest {
 
     @After
     public void after() {
-        if (ContextStore.get("takes-snapshots", true))
+        if (ContextStore.get("takes-snapshots", false))
             captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
         PickleibWebDriver.terminate();
     }
@@ -107,7 +107,6 @@ public class AppTest {
         String email = "AutomatedTester@email.com";
         String gender = genderSelection.getText();
         String mobile = "0000000000";
-        String dob = "02232024";
         String hobbies = "Reading, Riding, Cooking";
         String address = "Prinsenstraat, 1015 DB";
         String city = "Amsterdam";
@@ -116,18 +115,31 @@ public class AppTest {
                 "Name", name,
                 "Email", email,
                 "Mobile", mobile,
-                "Dob", "2024-02-23", // value format changes due to website date formatting
+                "Date of Birth", "2024-2-23", // value format changes due to website date formatting
                 "Hobbies", hobbies,
-                "CurrentAddress",address,
+                "Current Address",address,
                 "Gender", gender
         );
+
 
         webInteractions.fillInputElement(nameInput, name, true, true, true);
         webInteractions.fillInputElement(emailInput, email, true, true, true);
         webInteractions.clickElement(genderDropdown);
         webInteractions.clickElement(genderSelection);
         webInteractions.fillInputElement(mobileInput, mobile, true, true, true);
-        webInteractions.fillInputElement(dateOfBirthInput, dob, true, true, false);
+
+        webInteractions.clickElement(dateOfBirthInput);
+        WebElement monthButton = reflections.getElementFromPage("datePickerMonthsButton", "formsPage");
+        webInteractions.clickElement(monthButton);
+        List<WebElement> cells = reflections.getElementsFromPage("datePickerCells", "formsPage");
+        webInteractions.clickElement(ElementAcquisition.acquireNamedElementAmongst(cells, "Feb"));
+        WebElement yearButton = reflections.getElementFromPage("datePickerYearsButton", "formsPage");
+        webInteractions.clickElement(yearButton);
+        webInteractions.clickElement(ElementAcquisition.acquireNamedElementAmongst(cells, "2024"));
+        webInteractions.clickElement(ElementAcquisition.acquireNamedElementAmongst(cells, "23"));
+        WebElement datePickerSubmitButton = reflections.getElementFromPage("datePickerSubmitButton", "formsPage");
+        webInteractions.clickElement(datePickerSubmitButton);
+
         webInteractions.fillInputElement(hobbiesInput, hobbies, true, true, true);
         webInteractions.fillInputElement(addressInput, address, true, true, true);
         webInteractions.fillInputElement(cityInput, city, true, true, true);

@@ -49,6 +49,18 @@ public class FormsPage extends PickleibPageObject {
     @FindBy(className = "submitted-info-table")
     WebElement table;
 
+    @FindBy(css = "[aria-label='Open years overlay']")
+    WebElement datePickerYearsButton;
+
+    @FindBy(css = "[aria-label='Open months overlay']")
+    WebElement datePickerMonthsButton;
+
+    @FindBy(css = ".dp__action_row .dp__action_select")
+    WebElement datePickerSubmitButton;
+
+    @FindBy(css = "[role='gridcell']")
+    List<WebElement> datePickerCells;
+
     public static WebElement getEntryValue(String entryKey, List<WebElement> submissionEntries) {
         return submissionEntries.stream().filter(
                 entry -> entry.findElement(By.className("table-key")).getText().equalsIgnoreCase(entryKey)
