@@ -1,4 +1,5 @@
 import common.ObjectRepository;
+import context.ContextStore;
 import org.junit.*;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -46,7 +47,7 @@ public class AppTest {
 
     @After
     public void after() {
-        captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
+        if (ContextStore.get("takes-snapshots", false))captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
         PickleibWebDriver.terminate();
     }
 
@@ -104,7 +105,7 @@ public class AppTest {
         String email = "AutomatedTester@email.com";
         String gender = genderSelection.getText();
         String mobile = "0000000000";
-        String dob = "23/02/2024";
+        String dob = "23022024";
         String hobbies = "Reading, Riding, Cooking";
         String address = "Prinsenstraat, 1015 DB";
         String city = "Amsterdam";
@@ -134,8 +135,6 @@ public class AppTest {
 
         List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
 
-        log.info("TABLE: " +reflections.getElementFromPage("table", "formsPage").getText());
-        log.info("TITLE: " +reflections.getElementFromPage("submissionTitle", "formsPage").getText());
         for (String entryKey: entries.keySet()){
             log.info("KEY: " + entryKey);
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
