@@ -1,22 +1,28 @@
 import common.ObjectRepository;
 import org.junit.*;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import pages.FormsPage;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.repository.PageRepository;
+import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import pickleib.utilities.steps.PageObjectStepUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
+import utils.StringUtilities;
 import utils.arrays.ArrayUtilities;
 
 import java.util.List;
 import java.util.Map;
 
 import static pickleib.enums.Navigation.backwards;
+import static pickleib.utilities.screenshot.ScreenCaptureUtility.captureScreen;
 
 public class AppTest {
     String testWebsiteUrl = "http://127.0.0.1:8080/";
@@ -38,11 +44,9 @@ public class AppTest {
         webInteractions.getUrl(testWebsiteUrl);
     }
 
-    public void setup(){
-    }
-
     @After
     public void after() {
+        captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
         PickleibWebDriver.terminate();
     }
 
@@ -137,7 +141,7 @@ public class AppTest {
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
             Assert.assertEquals("Data mismatch!", entries.get(entryKey), entryValueElement.getText());
         }
-
+        
         log.success("The completeFormSubmissionTest() passed!");
     }
 
