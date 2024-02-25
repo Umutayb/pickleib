@@ -16,7 +16,6 @@ import static utils.StringUtilities.highlighted;
 @SuppressWarnings("unused")
 public class ScreenCaptureUtility {
     Printer log = new Printer(ScreenCaptureUtility.class);
-    NumericUtilities numeric = new NumericUtilities();
 
     /**
      * Captures screen
@@ -28,7 +27,7 @@ public class ScreenCaptureUtility {
         try {
             log.info("Capturing page...");
             if (!extension.contains(".")) extension = "." + extension;
-            name += "#"+numeric.randomNumber(1,10000) + extension;
+            name += "#"+ NumericUtilities.randomNumber(1,10000) + extension;
             File sourceFile = new File("screenshots");
             File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(fileDestination, new File(sourceFile, name));
