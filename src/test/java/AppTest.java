@@ -128,6 +128,7 @@ public class AppTest {
 
 
         for (String entryKey: entries.keySet()){
+            log.info("KEY: " + entryKey);
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
             Assert.assertEquals("Data mismatch!", entries.get(entryKey), entryValueElement.getText());
         }
