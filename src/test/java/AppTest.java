@@ -94,6 +94,7 @@ public class AppTest {
         Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
 
         WebElement genderSelection = ArrayUtilities.getRandomItemFrom(genderOptions);
+        List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
 
         String name = "Automated Tester";
         String email = "AutomatedTester@email.com";
@@ -125,7 +126,6 @@ public class AppTest {
         webInteractions.fillInputElement(cityInput, city, true, true, true);
         webInteractions.clickElement(submitButton);
 
-        List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
 
         for (String entryKey: entries.keySet()){
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
