@@ -21,12 +21,10 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Build and start Docker Compose services
+      - name: Start Unit Test Website
         run: |
           docker-compose up --build -d
-      - name: build artifact
-        run: mvn clean package
-      - name: Create release
+      - name: Build, Test & Release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true

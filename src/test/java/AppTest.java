@@ -31,6 +31,7 @@ public class AppTest {
 
     @Before
     public void before(){
+        ContextStore.loadProperties("test.properties");
         WebDriverFactory.setHeadless(true);
         WebDriverFactory.setUseWDM(false);
         PickleibWebDriver.initialize();
@@ -41,13 +42,14 @@ public class AppTest {
 
     @After
     public void after() {
-        if (ContextStore.get("takes-snapshots", false))
+        if (Boolean.parseBoolean(ContextStore.get("takes-snapshots", "false")))
             captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
         PickleibWebDriver.terminate();
     }
 
     @Test
     public void navigateTest() {
+        log.important(ContextStore.items().toString());
         log.info("webInteractions.navigate(page.trainingUrl) test");
         Assert.assertEquals("\"webInteractions.navigate(page.trainingUrl) test failed!", testWebsiteUrl, driver.getCurrentUrl());
         log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
