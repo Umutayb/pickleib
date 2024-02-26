@@ -19,8 +19,9 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-      - name: Start Unit Test Website
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Start Unit Test Website
         run: |
           docker-compose up --build -d
       - name: Build, Test & Release
