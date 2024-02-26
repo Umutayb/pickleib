@@ -17,12 +17,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Set up Docker Buildx
+      - name: Start Unit Test Website
         uses: docker/setup-buildx-action@v3
-      - name: Build and start Docker Compose services
         run: |
           docker-compose up --build -d
-      - name: Build with Maven
+      - name: Build & Test
         run: mvn clean test
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
