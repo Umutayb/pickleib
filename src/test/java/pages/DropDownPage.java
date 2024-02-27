@@ -6,7 +6,7 @@ import pickleib.web.PickleibPageObject;
 
 import java.util.List;
 
-public class SelectablePage extends PickleibPageObject {
+public class DropDownPage extends PickleibPageObject {
 
     @FindBy(id = "title")
     WebElement title;

@@ -1,12 +1,14 @@
 import common.ObjectRepository;
 import context.ContextStore;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
-import pickleib.utilities.Utilities;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
@@ -14,6 +16,7 @@ import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;
 import utils.arrays.ArrayUtilities;
+
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +36,7 @@ public class AppTest {
     @Before
     public void before(){
         ContextStore.loadProperties("test.properties");
-        WebDriverFactory.setHeadless(false);
+        WebDriverFactory.setHeadless(true);
         WebDriverFactory.setUseWDM(false);
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
@@ -160,12 +163,12 @@ public class AppTest {
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
         List<WebElement> dropDown = reflections.getElementsFromPage("tools", "interactionsPage");
-        WebElement selectable = ElementAcquisition.acquireNamedElementAmongst(dropDown, "Selectable");
+        WebElement selectable = ElementAcquisition.acquireNamedElementAmongst(dropDown, "DropDown");
         webInteractions.clickElement(selectable);
-        WebElement countriesDropDown = reflections.getElementFromPage("countriesDropDown", "selectablePage");
+        WebElement countriesDropDown = reflections.getElementFromPage("countriesDropDown", "dropDownPage");
         webInteractions.clickElement(countriesDropDown);
-        WebElement countriesContainer = reflections.getElementFromPage("countriesContainer", "selectablePage");
-        List<WebElement> countriesList = reflections.getElementsFromPage("countriesList", "selectablePage");
+        WebElement countriesContainer = reflections.getElementFromPage("countriesContainer", "dropDownPage");
+        List<WebElement> countriesList = reflections.getElementsFromPage("countriesList", "dropDownPage");
         String countrySelection = "Ukraine";
         WebElement preSelection = ElementAcquisition.acquireNamedElementAmongst(countriesList, countrySelection);
         Assert.assertFalse("Selected country is already in view!!", webInteractions.elementIsInView(preSelection));
