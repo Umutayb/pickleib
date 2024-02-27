@@ -6,6 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
+import pickleib.utilities.Utilities;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
@@ -32,7 +33,7 @@ public class AppTest {
     @Before
     public void before(){
         ContextStore.loadProperties("test.properties");
-        WebDriverFactory.setHeadless(true);
+        WebDriverFactory.setHeadless(false);
         WebDriverFactory.setUseWDM(false);
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
@@ -150,6 +151,24 @@ public class AppTest {
         }
         
         log.success("The completeFormSubmissionTest() passed!");
+    }
+
+    @Test
+    public void scrollInContainerTest(){//TODO: Try soft assertions
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> dropDown = reflections.getElementsFromPage("tools", "interactionsPage");
+        WebElement selectable = ElementAcquisition.acquireNamedElementAmongst(dropDown, "Selectable");
+        webInteractions.clickElement(selectable);
+        WebElement countriesDropDown = reflections.getElementFromPage("countriesDropDown", "selectablePage");
+        webInteractions.clickElement(countriesDropDown);
+        WebElement countriesContainer = reflections.getElementFromPage("countriesContainer", "selectablePage");
+        List<WebElement> countriesList = reflections.getElementsFromPage("countriesList", "selectablePage");
+        WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, "Ukraine");
+        Utilities.waitFor(5);
+        webInteractions.clickElement(country);
     }
 
 //  @Test
