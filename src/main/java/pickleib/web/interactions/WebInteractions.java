@@ -3,6 +3,7 @@ package pickleib.web.interactions;
 import collections.Bundle;
 import context.ContextStore;
 import org.jetbrains.annotations.NotNull;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
@@ -59,7 +60,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
         log.info("Adding cookies ... ");
         super.addCookies(cookies);
     }
-
+    
     /**
      * Updates given cookies
      *

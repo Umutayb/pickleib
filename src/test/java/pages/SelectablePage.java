@@ -19,4 +19,7 @@ public class SelectablePage extends PickleibPageObject {
 
     @FindBy(css = "#vs1__listbox .vs__dropdown-option")
     List<WebElement> countriesList;
+
+    @FindBy(css = "#countriesDropDown .vs__selected")
+    WebElement selection;
 }

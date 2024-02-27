@@ -166,9 +166,12 @@ public class AppTest {
         webInteractions.clickElement(countriesDropDown);
         WebElement countriesContainer = reflections.getElementFromPage("countriesContainer", "selectablePage");
         List<WebElement> countriesList = reflections.getElementsFromPage("countriesList", "selectablePage");
-        WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, "Ukraine");
-        Utilities.waitFor(5);
-        webInteractions.clickElement(country);
+        String countrySelection = "Ukraine";
+        WebElement preSelection = ElementAcquisition.acquireNamedElementAmongst(countriesList, countrySelection);
+        Assert.assertFalse("Selected country is already in view!!", webInteractions.elementIsInView(preSelection));
+        WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
+        Assert.assertTrue("Selected country is not in view!!", webInteractions.elementIsInView(country));
+        log.success("scrollInContainerTest() pass!");
     }
 
 //  @Test

@@ -651,8 +651,34 @@ public abstract class WebUtilities extends Utilities {
         log.info("Scrolling " + targetElementText + " in view");
         WebElement targetElement = ElementAcquisition.acquireNamedElementAmongst(elements, targetElementText);
         WebElement firstElement = elements.get(0);
-        double distance = firstElement.getLocation().getY() - targetElement.getLocation().getY();
+        double distance = Math.abs(firstElement.getLocation().getY() - targetElement.getLocation().getY());
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollBy(0, "+distance+");", container);
         return  targetElement;
     }
+
+    /**
+     * Checks if the specified WebElement is fully in view within the current browser window.
+     *          * The script calculates the element's bounding rectangle and checks if its
+     *          * top, left, bottom, and right coordinates are within the viewport.
+     *          * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect">getBoundingClientRect()</a>
+     *
+     * @param element The WebElement to be checked for visibility.
+     * @return {@code true} if the element is fully in view, {@code false} otherwise.
+     * @throws org.openqa.selenium.JavascriptException If a JavaScript error occurs during the execution of the script.
+     * @throws java.lang.ClassCastException If the WebDriver is not able to execute JavaScript.
+     * @throws java.lang.NullPointerException If the provided WebElement is null.
+     * @since 2.0.0
+     */
+    public boolean elementIsInView(WebElement element) {
+        String script = "var rect = arguments[0].getBoundingClientRect();" +
+                "    return (" +
+                "        rect.top >= 0 &&" +
+                "        rect.left >= 0 &&" +
+                "        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&\n" +
+                "        rect.right <= (window.innerWidth || document.documentElement.clientWidth)\n" +
+                "    );";
+
+        return Boolean.parseBoolean(((JavascriptExecutor) driver).executeScript(script, element).toString());
+    }
+
 }
