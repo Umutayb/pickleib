@@ -1,6 +1,9 @@
 import common.ObjectRepository;
 import context.ContextStore;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -13,6 +16,7 @@ import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;
 import utils.arrays.ArrayUtilities;
+
 import java.util.List;
 import java.util.Map;
 
@@ -150,6 +154,27 @@ public class AppTest {
         }
         
         log.success("The completeFormSubmissionTest() passed!");
+    }
+
+    @Test
+    public void scrollInContainerTest(){//TODO: Try soft assertions
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> dropDown = reflections.getElementsFromPage("tools", "interactionsPage");
+        WebElement selectable = ElementAcquisition.acquireNamedElementAmongst(dropDown, "DropDown");
+        webInteractions.clickElement(selectable);
+        WebElement countriesDropDown = reflections.getElementFromPage("countriesDropDown", "dropDownPage");
+        webInteractions.clickElement(countriesDropDown);
+        WebElement countriesContainer = reflections.getElementFromPage("countriesContainer", "dropDownPage");
+        List<WebElement> countriesList = reflections.getElementsFromPage("countriesList", "dropDownPage");
+        String countrySelection = "Ukraine";
+        WebElement preSelection = ElementAcquisition.acquireNamedElementAmongst(countriesList, countrySelection);
+        Assert.assertFalse("Selected country is already in view!!", webInteractions.elementIsInView(preSelection));
+        WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
+        Assert.assertTrue("Selected country is not in view!!", webInteractions.elementIsInView(country));
+        log.success("scrollInContainerTest() pass!");
     }
 
 //  @Test

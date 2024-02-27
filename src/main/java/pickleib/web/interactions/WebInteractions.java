@@ -773,7 +773,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     public void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll, boolean clear, boolean verify) {
         log.info("Filling " +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," on the ") +
+                highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName) +
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
@@ -796,7 +796,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     public void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean clear, boolean verify) {
         log.info("Filling " +
                 highlighted(BLUE, elementName) +
-                highlighted(GRAY," on the ") +
+                highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName) +
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
@@ -850,7 +850,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
             switch (interactionType) {
                 case click -> clickElement(bundle.beta(), bundle.alpha(), pageName, scroll);
                 case fill ->
-                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"),  scroll,false);
+                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), scroll, false);
                 case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);
                 case verify -> verifyElementContainsAttribute(
                         bundle.beta(),
@@ -1230,5 +1230,24 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(BLUE, pageName)
         );
         super.uploadFile(fileUploadInput, directory, fileName);
+    }
+
+    /**
+     * Checks if the specified WebElement is fully in view within the current browser window.
+     * * The script calculates the element's bounding rectangle and checks if its
+     * * top, left, bottom, and right coordinates are within the viewport.
+     * * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect">getBoundingClientRect()</a>
+     *
+     * @param element The WebElement to be checked for visibility.
+     * @return {@code true} if the element is fully in view, {@code false} otherwise.
+     * @throws org.openqa.selenium.JavascriptException If a JavaScript error occurs during the execution of the script.
+     * @throws java.lang.ClassCastException            If the WebDriver is not able to execute JavaScript.
+     * @throws java.lang.NullPointerException          If the provided WebElement is null.
+     * @since 2.0.0
+     */
+    public boolean elementIsInView(WebElement element) {
+        boolean isElementInView = super.elementIsInView(element);
+        log.info("Element is in view ? " + highlighted(BLUE, String.valueOf(isElementInView)));
+        return isElementInView;
     }
 }
