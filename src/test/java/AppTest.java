@@ -162,9 +162,9 @@ public class AppTest {
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
-        List<WebElement> dropDown = reflections.getElementsFromPage("tools", "interactionsPage");
-        WebElement selectable = ElementAcquisition.acquireNamedElementAmongst(dropDown, "DropDown");
-        webInteractions.clickElement(selectable);
+        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Dropdown");
+        webInteractions.clickElement(dropdownTool);
         WebElement countriesDropDown = reflections.getElementFromPage("countriesDropDown", "dropDownPage");
         webInteractions.clickElement(countriesDropDown);
         WebElement countriesContainer = reflections.getElementFromPage("countriesContainer", "dropDownPage");

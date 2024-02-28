@@ -11,6 +11,6 @@ public class InteractionsPage extends PickleibPageObject {
     @FindBy(id = "title")
     WebElement title;
 
-    @FindBy(css = "tools a")
+    @FindBy(id = "tool")
     List<WebElement> tools;
 }

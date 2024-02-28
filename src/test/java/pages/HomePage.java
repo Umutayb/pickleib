@@ -6,6 +6,6 @@ import pickleib.web.PickleibPageObject;
 import java.util.List;
 
 public class HomePage extends PickleibPageObject {
-    @FindBy(css = "categories a")
+    @FindBy(id = "category-card")
     public List<WebElement> categories;
 }
