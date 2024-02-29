@@ -36,7 +36,7 @@ public class AppTest {
     @Before
     public void before(){
         ContextStore.loadProperties("test.properties");
-        WebDriverFactory.setHeadless(true);
+        WebDriverFactory.setHeadless(false);
         WebDriverFactory.setUseWDM(false);
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
@@ -175,6 +175,11 @@ public class AppTest {
         WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
         Assert.assertTrue("Selected country is not in view!!", webInteractions.elementIsInView(country));
         log.success("scrollInContainerTest() pass!");
+    }
+
+    @Test
+    public void scrollInDirectionTest(){
+
     }
 
 //  @Test
