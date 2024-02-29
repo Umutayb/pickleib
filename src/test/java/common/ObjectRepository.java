@@ -1,9 +1,6 @@
 package common;
 
-import pages.FormsPage;
-import pages.HomePage;
-import pages.InteractionsPage;
-import pages.DropDownPage;
+import pages.*;
 import pickleib.utilities.interfaces.repository.PageRepository;
 
 public class ObjectRepository implements PageRepository {
@@ -11,4 +8,5 @@ public class ObjectRepository implements PageRepository {
     FormsPage formsPage = new FormsPage();
     InteractionsPage interactionsPage = new InteractionsPage();
     DropDownPage dropDownPage = new DropDownPage();
+    TallPage tallPage = new TallPage();
 }
