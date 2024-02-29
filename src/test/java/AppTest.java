@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
+import pickleib.enums.Direction;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
@@ -179,7 +180,17 @@ public class AppTest {
 
     @Test
     public void scrollInDirectionTest(){
-
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
+        webInteractions.clickElement(dropdownTool);
+        WebElement logo = reflections.getElementFromPage("logo", "tallPage");
+        Assert.assertFalse("Logo is already in view!", webInteractions.elementIsInView(logo));
+        webInteractions.scrollInDirection(Direction.down);
+        Assert.assertTrue("Logo is not in view!", webInteractions.elementIsInView(logo));
     }
 
 //  @Test
