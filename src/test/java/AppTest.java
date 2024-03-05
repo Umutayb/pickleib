@@ -34,7 +34,7 @@ public class AppTest {
      */
 
     @Before
-    public void before(){
+    public void before() {
         ContextStore.loadProperties("test.properties", "pickleib.properties");
         WebDriverFactory.setHeadless(Boolean.parseBoolean(ContextStore.get("headless", "true")));
         WebDriverFactory.setUseWDM(false);
