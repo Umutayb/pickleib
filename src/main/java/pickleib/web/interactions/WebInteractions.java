@@ -909,7 +909,6 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      * Switch to the next tab
      */
     public void switchToNextTab() {
-        log.info("Switching to the next tab ... ");
         String parentHandle = super.switchWindowByHandle(null);
         ContextStore.put("parentHandle", parentHandle);
     }

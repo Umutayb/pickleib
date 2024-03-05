@@ -8,8 +8,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import pages.ElementsPage;
 import pages.FormsPage;
 import pickleib.enums.Direction;
+import pickleib.enums.ElementState;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
@@ -24,7 +26,7 @@ import static pickleib.enums.Navigation.backwards;
 import static pickleib.utilities.screenshot.ScreenCaptureUtility.captureScreen;
 
 public class AppTest {
-    String testWebsiteUrl = "http://127.0.0.1:8080/";
+    String testWebsiteUrl = "http://127.0.0.1:8081/";
     WebDriver driver;
     WebInteractions webInteractions;
     Printer log = new Printer(AppTest.class);
@@ -194,8 +196,8 @@ public class AppTest {
     }
 
     @Test
-    public void centerElementTest(){
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+    public void centerElementTest() {
+        ElementAcquisition.Reflections<ObjectRepository> reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
@@ -207,6 +209,68 @@ public class AppTest {
         webInteractions.centerElement(logo);
         Assert.assertTrue("Logo is not in view!", webInteractions.elementIsInView(logo));
     }
+
+    @Test
+    public void openNewTabTest(){
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        WebElement newTabButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Tab");
+        webInteractions.clickElement(newTabButton);
+        webInteractions.switchToNextTab();
+        webInteractions.verifyCurrentUrl(testWebsiteUrl);
+        log.success("openNewTabTest() pass!");
+    }
+
+    @Test
+    public void openNewWindowTest(){
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        WebElement newWindowButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window");
+        webInteractions.clickElement(newWindowButton);
+        webInteractions.switchWindowByIndex(1);
+        webInteractions.verifyCurrentUrl(testWebsiteUrl);
+        log.success("openNewWindowTest() pass!");
+    }
+
+    @Test
+    public void dismissAlertTest(){
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window Message");
+        webInteractions.clickElement(newWindowsWithMessageButton);
+        webInteractions.getAlert().getText().equals("New window message!");
+        webInteractions.getAlert().dismiss();
+        webInteractions.switchToNextTab();
+        webInteractions.verifyCurrentUrl(testWebsiteUrl + "alerts");
+        log.success("dismissAlertTest() pass!");
+    }
+
+    @Test
+    public void acceptAlertTest(){
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window Message");
+        webInteractions.clickElement(newWindowsWithMessageButton);
+        webInteractions.getAlert().getText().equals("New window message!");
+        webInteractions.getAlert().accept();
+        webInteractions.waitUntilPageLoads(5);
+        webInteractions.switchToNextTab();
+        webInteractions.verifyCurrentUrl(testWebsiteUrl);
+        log.success("acceptAlertTest() pass!");
+    }
+
 
 //  @Test
 //  public void clickTest() {
