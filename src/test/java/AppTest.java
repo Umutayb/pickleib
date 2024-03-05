@@ -17,7 +17,6 @@ import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;
 import utils.arrays.ArrayUtilities;
-
 import java.util.List;
 import java.util.Map;
 
@@ -190,6 +189,22 @@ public class AppTest {
         WebElement logo = reflections.getElementFromPage("logo", "tallPage");
         Assert.assertFalse("Logo is already in view!", webInteractions.elementIsInView(logo));
         webInteractions.scrollInDirection(Direction.down);
+        webInteractions.scrollInDirection(Direction.down);
+        Assert.assertTrue("Logo is not in view!", webInteractions.elementIsInView(logo));
+    }
+
+    @Test
+    public void centerElementTest(){
+        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
+        webInteractions.clickElement(dropdownTool);
+        WebElement logo = reflections.getElementFromPage("logo", "tallPage");
+        Assert.assertFalse("Logo is already in view!", webInteractions.elementIsInView(logo));
+        webInteractions.centerElement(logo);
         Assert.assertTrue("Logo is not in view!", webInteractions.elementIsInView(logo));
     }
 
