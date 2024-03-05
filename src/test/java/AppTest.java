@@ -35,9 +35,9 @@ public class AppTest {
      */
 
     @Before
-    public void before() {
-        ContextStore.loadProperties("test.properties");
-        WebDriverFactory.setHeadless(true);
+    public void before(){
+        ContextStore.loadProperties("test.properties", "pickleib.properties");
+        WebDriverFactory.setHeadless(Boolean.parseBoolean(ContextStore.get("headless", "true")));
         WebDriverFactory.setUseWDM(false);
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
