@@ -35,7 +35,7 @@ public class AppTest {
      */
 
     @Before
-    public void before(){
+    public void before() {
         ContextStore.loadProperties("test.properties");
         WebDriverFactory.setHeadless(true);
         WebDriverFactory.setUseWDM(false);
@@ -70,8 +70,8 @@ public class AppTest {
     }
 
     @Test
-    public void formTitleTest(){
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+    public void formTitleTest() {
+        ElementAcquisition.Reflections<ObjectRepository> reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
@@ -81,8 +81,8 @@ public class AppTest {
     }
 
     @Test
-    public void completeFormSubmissionTest(){//TODO: Try soft assertions
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+    public void completeFormSubmissionTest() {//TODO: Try soft assertions
+        ElementAcquisition.Reflections<ObjectRepository> reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
@@ -117,7 +117,7 @@ public class AppTest {
                 "Mobile", mobile,
                 "Date of Birth", "2024-2-23", // value format changes due to website date formatting
                 "Hobbies", hobbies,
-                "Current Address",address,
+                "Current Address", address,
                 "Gender", gender
         );
 
@@ -149,17 +149,17 @@ public class AppTest {
 
         List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
 
-        for (String entryKey: entries.keySet()){
+        for (String entryKey : entries.keySet()) {
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
             Assert.assertEquals("Data mismatch!", entries.get(entryKey), entryValueElement.getText());
         }
-        
+
         log.success("The completeFormSubmissionTest() passed!");
     }
 
     @Test
-    public void scrollInContainerTest(){//TODO: Try soft assertions
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+    public void scrollInContainerTest() {//TODO: Try soft assertions
+        ElementAcquisition.Reflections<ObjectRepository> reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
