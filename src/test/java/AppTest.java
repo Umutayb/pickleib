@@ -26,7 +26,7 @@ import static pickleib.enums.Navigation.backwards;
 import static pickleib.utilities.screenshot.ScreenCaptureUtility.captureScreen;
 
 public class AppTest {
-    String testWebsiteUrl = "http://127.0.0.1:8081/";
+    String testWebsiteUrl = "http://127.0.0.1:8080/";
     WebDriver driver;
     WebInteractions webInteractions;
     Printer log = new Printer(AppTest.class);
