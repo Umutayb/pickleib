@@ -247,7 +247,7 @@ public class AppTest {
         List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window Message");
         webInteractions.clickElement(newWindowsWithMessageButton);
-        webInteractions.getAlert().getText().equals("New window message!");
+        Assert.assertEquals("The window message does not match!", webInteractions.getAlert().getText(), "New window message!");
         webInteractions.getAlert().dismiss();
         webInteractions.switchToNextTab();
         webInteractions.verifyCurrentUrl(testWebsiteUrl + "alerts");
@@ -263,7 +263,7 @@ public class AppTest {
         List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window Message");
         webInteractions.clickElement(newWindowsWithMessageButton);
-        webInteractions.getAlert().getText().equals("New window message!");
+        Assert.assertEquals("The window message does not match!", webInteractions.getAlert().getText(), "New window message!");
         webInteractions.getAlert().accept();
         webInteractions.waitUntilPageLoads(5);
         webInteractions.switchToNextTab();
