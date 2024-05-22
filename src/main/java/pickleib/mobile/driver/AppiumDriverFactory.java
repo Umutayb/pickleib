@@ -1,6 +1,5 @@
 package pickleib.mobile.driver;
 
-import com.google.gson.JsonObject;
 import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.options.BaseOptions;
@@ -8,10 +7,8 @@ import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import pickleib.driver.DriverFactory;
 import utils.Printer;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import static pickleib.mobile.driver.ServiceFactory.service;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
@@ -50,6 +47,7 @@ public class AppiumDriverFactory implements DriverFactory {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public static AppiumDriver getRemoteDriver(JSONObject capabilities){
         BaseOptions baseOptions = getBaseOptions(capabilities);
 
@@ -73,6 +71,7 @@ public class AppiumDriverFactory implements DriverFactory {
         return desiredCapabilities;
     }
 
+    @SuppressWarnings("rawtypes")
     public static BaseOptions getBaseOptions(JSONObject capabilities){
         BaseOptions options = new BaseOptions();
         for (Object key : capabilities.keySet()) options.setCapability((String) key, capabilities.get(key));

@@ -50,8 +50,8 @@
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.version>3.8.0</maven.compiler.version>
-    <java.utilities.version>1.6.5-SNAPSHOT</java.utilities.version>
-    <gpt.utilities.version>0.1.7-SNAPSHOT</gpt.utilities.version>
+    <java.utilities.version>1.6.5</java.utilities.version>
+    <gpt.utilities.version>0.1.5</gpt.utilities.version>
     <docker-java.version>3.3.0</docker-java.version>
     <selenium.version>4.6.0</selenium.version>
     <appium.version>8.6.0</appium.version>
