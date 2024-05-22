@@ -53,8 +53,8 @@
     <java.utilities.version>1.6.5-SNAPSHOT</java.utilities.version>
     <gpt.utilities.version>0.1.7-SNAPSHOT</gpt.utilities.version>
     <docker-java.version>3.3.0</docker-java.version>
-    <selenium.version>4.18.1</selenium.version>
-    <appium.version>8.5.1</appium.version>
+    <selenium.version>4.6.0</selenium.version>
+    <appium.version>8.6.0</appium.version>
     <retrofit.version>2.9.0</retrofit.version>
     <okhttp.version>4.10.0</okhttp.version>
   </properties>
@@ -65,6 +65,12 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>31.0.1-jre</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib</artifactId>
+        <version>3.3.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -195,13 +201,19 @@
       <version>20231013</version>
     </dependency>
 
-
     <!-- JUnit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.13.2</version>
       <scope>test</scope>
+    </dependency>
+
+    <!-- CGLIB -->
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>3.3.0</version>
     </dependency>
   </dependencies>
 

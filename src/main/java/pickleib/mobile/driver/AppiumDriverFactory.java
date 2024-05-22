@@ -1,5 +1,6 @@
 package pickleib.mobile.driver;
 
+import com.google.gson.JsonObject;
 import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.options.BaseOptions;
@@ -7,6 +8,8 @@ import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import pickleib.driver.DriverFactory;
 import utils.Printer;
+
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import static pickleib.mobile.driver.ServiceFactory.service;
@@ -20,7 +23,7 @@ public class AppiumDriverFactory implements DriverFactory {
 
     public static AppiumDriver getDriver(String deviceName, JSONObject capabilities){
         AppiumDriverFactory.deviceName = deviceName;
-        if (Boolean.parseBoolean(String.valueOf(capabilities.get("remote")))) return getRemoteDriver(capabilities);
+        if (Boolean.parseBoolean(ContextStore.get("remote-driver", "false"))) return getRemoteDriver(capabilities);
         else return getDriver(capabilities);
     }
 
@@ -49,23 +52,18 @@ public class AppiumDriverFactory implements DriverFactory {
 
     public static AppiumDriver getRemoteDriver(JSONObject capabilities){
         BaseOptions baseOptions = getBaseOptions(capabilities);
-        try {
-            String userName = String.valueOf(baseOptions.getCapability("username"));
-            String accessKey = String.valueOf(baseOptions.getCapability("access_key"));
 
-            String urlString = String.format("https://%s:%s@hub.browserstack.com/wd/hub", userName , accessKey);
-            log.info("Url: " + highlighted(BLUE, urlString));
-            URL url = new URL(urlString);
-            log.important(deviceName + markup(GRAY, " was selected"));
-            return new AppiumDriver(url, baseOptions);
-        }
-        catch (Exception gamma) {
-            if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){
-                log.info("Please make sure " + markup(PURPLE, "Appium ") + "is on & verify the port that its running on at 'resources/test.properties'.");
-                throw new RuntimeException(markup(YELLOW, gamma.getMessage()));
-            }
-            else throw new RuntimeException(markup(YELLOW, "Something went wrong while selecting a driver") + "\n" + markup(RED, gamma.getMessage()));
-        }
+        String userName = ContextStore.get("remote-username");
+        String accessKey = ContextStore.get("remote-access-key");
+        String server = ContextStore.get("remote-server");
+
+        String urlString = String.format("https://%s:%s@%s/wd/hub", userName , accessKey, server);
+        log.info("Url: " + highlighted(BLUE, urlString));
+        URL url;
+        try {url = new URL(urlString);}
+        catch (MalformedURLException e) {throw new RuntimeException(e);}
+        log.important(deviceName + markup(GRAY, " was selected"));
+        return new AppiumDriver(url, baseOptions);
     }
 
     public static DesiredCapabilities getConfig(JSONObject capabilities) {
