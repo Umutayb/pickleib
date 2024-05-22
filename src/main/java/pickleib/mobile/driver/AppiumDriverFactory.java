@@ -23,7 +23,7 @@ public class AppiumDriverFactory implements DriverFactory {
 
     public static AppiumDriver getDriver(String deviceName, JSONObject capabilities){
         AppiumDriverFactory.deviceName = deviceName;
-        if (Boolean.parseBoolean(ContextStore.get("remote-driver", "false"))) return getRemoteDriver(capabilities);
+        if (Boolean.parseBoolean(ContextStore.get("use-remote-mobile-driver", "false"))) return getRemoteDriver(capabilities);
         else return getDriver(capabilities);
     }
 
@@ -53,9 +53,9 @@ public class AppiumDriverFactory implements DriverFactory {
     public static AppiumDriver getRemoteDriver(JSONObject capabilities){
         BaseOptions baseOptions = getBaseOptions(capabilities);
 
-        String userName = ContextStore.get("remote-username");
-        String accessKey = ContextStore.get("remote-access-key");
-        String server = ContextStore.get("remote-server");
+        String userName = ContextStore.get("remote-mobile-username");
+        String accessKey = ContextStore.get("remote-mobile-access-key");
+        String server = ContextStore.get("remote-mobile-server");
 
         String urlString = String.format("https://%s:%s@%s/wd/hub", userName , accessKey, server);
         log.info("Url: " + highlighted(BLUE, urlString));
