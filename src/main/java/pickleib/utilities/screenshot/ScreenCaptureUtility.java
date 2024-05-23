@@ -6,12 +6,7 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import utils.NumericUtilities;
 import utils.Printer;
-import utils.StringUtilities;
-
 import java.io.File;
-
-import static utils.StringUtilities.Color.*;
-import static utils.StringUtilities.highlighted;
 
 @SuppressWarnings("unused")
 public class ScreenCaptureUtility {
@@ -33,6 +28,29 @@ public class ScreenCaptureUtility {
             FileUtils.copyFile(fileDestination, new File(sourceFile, name));
 
             log.info("Screenshot saved as; "+name+" at the \"screenshots\" file.");
+            return fileDestination;
+        }
+        catch (Exception exception){
+            log.error("Could not capture screen", exception);
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Captures screen
+     * @param name screenshot name
+     * @param driver session driver
+     * @return returns the screenshot file
+     */
+    public static File silentCaptureScreen(String name, String extension, RemoteWebDriver driver) {
+        try {
+            if (!extension.contains(".")) extension = "." + extension;
+            name += "#"+ NumericUtilities.randomNumber(1,10000) + extension;
+            File sourceFile = new File("screenshots");
+            File fileDestination  = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(fileDestination, new File(sourceFile, name));
+
             return fileDestination;
         }
         catch (Exception exception){

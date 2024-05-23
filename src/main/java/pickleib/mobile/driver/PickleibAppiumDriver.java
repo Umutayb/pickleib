@@ -54,7 +54,11 @@ public abstract class PickleibAppiumDriver {
 		String directory = ContextStore.get("config", "src/test/resources/configurations");
 
 		JSONObject json = FileUtilities.Json.parseJSONFile(directory+"/"+device+".json");
-		driver = AppiumDriverFactory.getDriver(StringUtilities.firstLetterCapped(device), json);
+		driver = AppiumDriverFactory.getDriver(
+				StringUtilities.firstLetterCapped(device),
+				json,
+				Boolean.parseBoolean(ContextStore.get("use-remote-mobile-driver", "false"))
+		);
 	}
 
 	public static void terminate(){

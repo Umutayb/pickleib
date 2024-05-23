@@ -7,7 +7,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import pickleib.driver.DriverFactory;
 import utils.Printer;
 import java.net.URL;
-
 import static pickleib.mobile.driver.ServiceFactory.service;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
@@ -15,22 +14,35 @@ import static utils.StringUtilities.*;
 public class AppiumDriverFactory implements DriverFactory {
 
     static Printer log = new Printer(AppiumDriverFactory.class);
+    static String deviceName;
 
-    public static AppiumDriver getDriver(String deviceName, JSONObject capabilities){
-        DesiredCapabilities desiredCapabilities = getConfig(capabilities);
-        desiredCapabilities.setCapability("app", contextCheck("UPLOAD-" + capabilities.get("app")));
+    public static AppiumDriver getDriver(String deviceName, JSONObject capabilitiesJSON, boolean remote){
+        AppiumDriverFactory.deviceName = deviceName;
+        DesiredCapabilities capabilities = getConfig(capabilitiesJSON);
+        String urlString;
+        if (remote) {
+            String userName = ContextStore.get("remote-mobile-username");
+            String accessKey = ContextStore.get("remote-mobile-access-key");
+            String server = ContextStore.get("remote-mobile-server");
+            urlString = String.format("https://%s:%s@%s/wd/hub", userName , accessKey, server);
+        }
+        else {
+            String address = ContextStore.get("address", "0.0.0.0");
+            String port = ContextStore.get("port", "4723");
+            urlString = "http://" + address + ":" + port + "/wd/hub";
+            capabilities.setCapability("app", contextCheck("UPLOAD-" + capabilitiesJSON.get("app")));
+            if (service != null) urlString = service.getUrl().toString();
+        }
+        return getDriver(capabilities, urlString);
+    }
+
+    public static AppiumDriver getDriver(DesiredCapabilities capabilities, String urlString){
         try {
-            URL url;
-            if (service == null) {
-                String address = ContextStore.get("address", "0.0.0.0");
-                String port = ContextStore.get("port", "4723");
-                url = new URL("http://" + address + ":" + port + "/wd/hub");
-            }
-            else url = service.getUrl();
             log.important(deviceName + markup(GRAY, " was selected"));
-            return new AppiumDriver(url, desiredCapabilities);
+            return new AppiumDriver(new URL(urlString), capabilities);
         }
         catch (Exception gamma) {
+            gamma.printStackTrace();
             if(gamma.toString().contains("Could not start a new session. Possible causes are invalid address of the remote server or browser start-up failure")){
                 log.info("Please make sure " + markup(PURPLE, "Appium ") + "is on & verify the port that its running on at 'resources/test.properties'.");
                 throw new RuntimeException(markup(YELLOW, gamma.getMessage()));
