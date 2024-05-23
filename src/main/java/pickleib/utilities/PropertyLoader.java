@@ -13,7 +13,7 @@ public class PropertyLoader {
         if (!loaded){
             Properties properties = PropertyUtilities.getProperties();
             Properties pickleibProperties = PropertyUtilities.loadPropertyFile("pickleib.properties");
-            ContextStore.loadProperties("pickleib.properties");
+            ContextStore.merge(pickleibProperties);
 
             if (!properties.isEmpty()){
                 for (Object key:pickleibProperties.keySet())

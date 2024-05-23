@@ -1,7 +1,9 @@
 package pickleib.mobile.driver;
 
+import com.google.gson.JsonObject;
 import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.remote.options.BaseOptions;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import pickleib.driver.DriverFactory;
