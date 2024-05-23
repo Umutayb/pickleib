@@ -18,7 +18,10 @@ import collections.Bundle;
 import collections.Pair;
 import utils.Printer;
 import utils.StringUtilities;
+import utils.arrays.lambda.Collectors;
+import utils.reflection.ReflectionUtilities;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -874,9 +877,14 @@ public class ElementAcquisition {
             this.pageRepositoryClass = pageRepository;
         }
 
-        protected ObjectRepository getObjectRepository(){
+        protected Object getPageObject(String pageName){
             try {
-                return pageRepositoryClass.getConstructor().newInstance();
+                return Arrays.stream(pageRepositoryClass.getDeclaredFields())
+                        .filter(field -> field.getName().equalsIgnoreCase(pageName))
+                        .collect(Collectors.toSingleton())
+                        .getType()
+                        .getDeclaredConstructor()
+                        .newInstance();
             }
             catch (
                     InstantiationException |
@@ -898,7 +906,7 @@ public class ElementAcquisition {
         public WebElement getElementFromPage(String elementFieldName, String pageName){
             pageName = StringUtilities.firstLetterDeCapped(pageName);
             Map<String, Object> pageFields;
-            Object pageObject = getFields(getObjectRepository()).get(pageName);
+            Object pageObject = getPageObject(pageName);
             if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             if (pageFields.get(elementFieldName) == null)
@@ -917,7 +925,7 @@ public class ElementAcquisition {
         public List<WebElement> getElementsFromPage(String elementListFieldName, String pageName){
             Map<String, Object> pageFields;
             pageName = firstLetterDeCapped(pageName);
-            Object pageObject = getFields(getObjectRepository()).get(pageName);
+            Object pageObject = getPageObject(pageName);
             if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             if (pageFields.get(elementListFieldName) == null)
@@ -1013,7 +1021,7 @@ public class ElementAcquisition {
         public Map<String, Object> getComponentFieldsFromPage(String componentName, String pageName){
             Map<String, Object> pageFields;
             pageName = firstLetterDeCapped(pageName);
-            Object pageObject = getFields(getObjectRepository()).get(pageName);
+            Object pageObject = getPageObject(pageName);
             if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             if (pageFields.containsKey(componentName)) return getFields(pageFields.get(componentName));
@@ -1032,7 +1040,7 @@ public class ElementAcquisition {
             Map<String, Object> pageFields;
             Map<String, Object> componentFields;
             pageName = firstLetterDeCapped(pageName);
-            Object pageObject = getFields(getObjectRepository()).get(pageName);
+            Object pageObject = getPageObject(pageName);
             if (pageObject != null) pageFields = getFields(pageObject);
             else throw new PickleibException("ObjectRepository does not contain an instance of " + pageName + " object!");
             return (List<Component>) pageFields.get(componentListName);
