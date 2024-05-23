@@ -93,11 +93,6 @@
       <artifactId>selenium-api</artifactId>
       <version>${selenium.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-remote-driver</artifactId>
-      <version>${selenium.version}</version>
-    </dependency>
 
     <!-- Appium -->
     <dependency>
