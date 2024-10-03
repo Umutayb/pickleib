@@ -25,7 +25,7 @@
       <developer>
           <name>Umut Ay Bora</name>
           <email>umutaybora@gmail.com</email>
-          <organization>Bora</organization>
+          <organization>bora</organization>
           <organizationUrl>https://github.com/Umutayb</organizationUrl>
       </developer>
 
@@ -33,7 +33,6 @@
       <developer>
           <name>Egecan Şen</name>
           <email>benegecansen@gmail.com</email>
-          <organization>Bora</organization>
           <organizationUrl>https://github.com/egecansen</organizationUrl>
       </developer>
 
@@ -41,9 +40,16 @@
       <developer>
         <name>Inna Drapii</name>
         <email>i.drapii@gmail.com</email>
-        <organization>Bora</organization>
         <organizationUrl>https://github.com/InnaDrapii</organizationUrl>
       </developer>
+
+      <!-- Fady -->
+      <developer>
+        <name>Fady Michel</name>
+        <email>fady.michel5@gmail.com</email>
+        <organizationUrl>https://github.com/fadymichel5</organizationUrl>
+      </developer>
+
   </developers>
 
   <properties>
