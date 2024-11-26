@@ -20,6 +20,7 @@ import utils.arrays.ArrayUtilities;
 import java.util.List;
 import java.util.Map;
 
+import static pickleib.enums.ElementState.displayed;
 import static pickleib.enums.Navigation.backwards;
 import static pickleib.utilities.screenshot.ScreenCaptureUtility.captureScreen;
 
@@ -110,15 +111,14 @@ public class AppTest {
         String address = "Prinsenstraat, 1015 DB";
         String city = "Amsterdam";
 
-        Map<String, String> entries = Map.of(
+        Map<String, String> entries = new java.util.HashMap<>(Map.of(
                 "Name", name,
                 "Email", email,
                 "Mobile", mobile,
-                "Date of Birth", "2024-2-23", // value format changes due to website date formatting
                 "Hobbies", hobbies,
                 "Current Address", address,
                 "Gender", gender
-        );
+        ));
 
         webInteractions.fillInputElement(nameInput, name, true, true, true);
         webInteractions.fillInputElement(emailInput, email, true, true, true);
@@ -126,15 +126,15 @@ public class AppTest {
         webInteractions.clickElement(genderSelection);
         webInteractions.fillInputElement(mobileInput, mobile, true, true, true);
 
-        webInteractions.clickElement(dateOfBirthInput);
-        WebElement monthButton = reflections.getElementFromPage("datePickerMonthsButton", "formsPage");
-        webInteractions.clickElement(monthButton);
-        List<WebElement> cells = reflections.getElementsFromPage("datePickerCells", "formsPage");
-        webInteractions.clickElement(ElementAcquisition.acquireNamedElementAmongst(cells, "Feb"));
-        WebElement yearButton = reflections.getElementFromPage("datePickerYearsButton", "formsPage");
-        webInteractions.clickElement(yearButton);
-        webInteractions.clickElement(ElementAcquisition.acquireNamedElementAmongst(cells, "2024"));
-        webInteractions.clickElement(ElementAcquisition.acquireNamedElementAmongst(cells, "23"));
+        webInteractions.clickElement(dateOfBirthInput, true);
+
+        WebElement dayButton = reflections.getElementFromPage("todayCell", "formsPage");
+        webInteractions.elementIs(dayButton, displayed);
+        webInteractions.clickElement(dayButton);
+
+        WebElement spSelectionPreview = reflections.getElementFromPage("spSelectionPreview", "formsPage");
+        entries.put("Date of Birth", spSelectionPreview.getText());
+
         WebElement datePickerSubmitButton = reflections.getElementFromPage("datePickerSubmitButton", "formsPage");
         webInteractions.clickElement(datePickerSubmitButton);
 
@@ -188,8 +188,8 @@ public class AppTest {
         webInteractions.clickElement(dropdownTool);
         WebElement logo = reflections.getElementFromPage("logo", "tallPage");
         Assert.assertFalse("Logo is already in view!", webInteractions.elementIsInView(logo));
-        webInteractions.scrollInDirection(Direction.down);
-        webInteractions.scrollInDirection(Direction.down);
+        while (!webInteractions.elementIsInView(logo))
+            webInteractions.scrollInDirection(Direction.down);
         Assert.assertTrue("Logo is not in view!", webInteractions.elementIsInView(logo));
     }
 
