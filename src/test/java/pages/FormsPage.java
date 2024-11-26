@@ -58,12 +58,22 @@ public class FormsPage extends PickleibPageObject {
     @FindBy(css = ".dp__action_row .dp__action_select")
     WebElement datePickerSubmitButton;
 
+    @FindBy(css = ".dp__today")
+    WebElement todayCell;
+
+    @FindBy(css = ".dp__selection_preview")
+    WebElement spSelectionPreview;
+
     @FindBy(css = "[role='gridcell']")
     List<WebElement> datePickerCells;
 
     public static WebElement getEntryValue(String entryKey, List<WebElement> submissionEntries) {
-        return submissionEntries.stream().filter(
-                entry -> entry.findElement(By.className("table-key")).getText().equalsIgnoreCase(entryKey)
-        ).collect(Collectors.toSingleton()).findElement(By.className("table-value"));
+        try {
+            return submissionEntries.stream().filter(
+                    entry -> entry.findElement(By.className("table-key")).getText().equalsIgnoreCase(entryKey)
+            ).collect(Collectors.toSingleton()).findElement(By.className("table-value"));
+        } catch (IllegalStateException e) {
+            throw new RuntimeException(entryKey + " cannot be found!", e);
+        }
     }
 }

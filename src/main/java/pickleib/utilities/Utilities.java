@@ -36,7 +36,6 @@ public abstract class Utilities {
         PropertyLoader.load();
     }
 
-    public ScreenCaptureUtility capture = new ScreenCaptureUtility();
     public ObjectMapper objectMapper = new ObjectMapper();
     public Printer log = new Printer(this.getClass());
     public RemoteWebDriver driver;
