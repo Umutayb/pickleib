@@ -10,7 +10,7 @@
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
-  <description>Pickleib library for supporting web application automation with Selenium</description>
+  <description>Pickleib helps you automate tests for WebUI, MobileUI, API, Email, DataBase, Localisation and more!</description>
   <url>http://github.com/Umutayb/Pickleib</url>
 
   <licenses>
