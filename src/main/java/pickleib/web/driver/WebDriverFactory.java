@@ -2,6 +2,7 @@ package pickleib.web.driver;
 
 import context.ContextStore;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import lombok.Getter;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -29,6 +30,16 @@ public class WebDriverFactory implements DriverFactory {
      * determines frameWidth value
      */
     static int frameWidth = Integer.parseInt(ContextStore.get("frame-width","1920"));
+
+    /**
+     * determines frameWidth value
+     */
+    static String proxyAddress = ContextStore.get("proxy-address");
+
+    /**
+     * determines frameWidth value
+     */
+    static int proxyPort = Integer.parseInt(ContextStore.get("proxy-port", "0"));
 
     /**
      * determines frameHeight value
@@ -236,9 +247,15 @@ public class WebDriverFactory implements DriverFactory {
         }
     }
 
+    public static void main(String[] args) {
+        System.out.println((proxyAddress != null) && proxyAddress.isBlank());
+    }
+
+
     /**
      * Available driver types
      */
+    @Getter
     public enum BrowserType {
         CHROME("Chrome"),
         FIREFOX("Firefox"),
@@ -251,9 +268,6 @@ public class WebDriverFactory implements DriverFactory {
             this.driverName = driverName;
         }
 
-        public String getDriverName() {
-            return driverName;
-        }
         public String getDriverKey() {
             return driverName.toLowerCase();
         }
