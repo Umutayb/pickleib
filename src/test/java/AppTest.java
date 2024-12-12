@@ -29,6 +29,7 @@ public class AppTest {
     WebDriver driver;
     WebInteractions webInteractions;
     Printer log = new Printer(AppTest.class);
+    ElementAcquisition.Reflections<ObjectRepository> reflections;
 
     /**
      * Constructs an instance of the CommonStepUtilities class with the specific object repository.
@@ -41,6 +42,7 @@ public class AppTest {
         WebDriverFactory.setUseWDM(false);
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
+        reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         webInteractions = new WebInteractions();
         webInteractions.getUrl(testWebsiteUrl);
     }
@@ -71,7 +73,6 @@ public class AppTest {
 
     @Test
     public void formTitleTest() {
-        ElementAcquisition.Reflections<ObjectRepository> reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
@@ -82,7 +83,6 @@ public class AppTest {
 
     @Test
     public void completeFormSubmissionTest() {//TODO: Try soft assertions
-        ElementAcquisition.Reflections<ObjectRepository> reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
@@ -158,7 +158,6 @@ public class AppTest {
 
     @Test
     public void scrollInContainerTest() {//TODO: Try soft assertions
-        ElementAcquisition.Reflections<ObjectRepository> reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
@@ -179,7 +178,6 @@ public class AppTest {
 
     @Test
     public void scrollInDirectionTest(){
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
@@ -195,7 +193,6 @@ public class AppTest {
 
     @Test
     public void centerElementTest() {
-        ElementAcquisition.Reflections<ObjectRepository> reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
@@ -210,7 +207,6 @@ public class AppTest {
 
     @Test
     public void openNewTabTest(){
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
@@ -224,7 +220,6 @@ public class AppTest {
 
     @Test
     public void openNewWindowTest(){
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
@@ -238,7 +233,6 @@ public class AppTest {
 
     @Test
     public void dismissAlertTest(){
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
@@ -254,7 +248,6 @@ public class AppTest {
 
     @Test
     public void acceptAlertTest(){
-        ElementAcquisition.Reflections< ObjectRepository > reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
