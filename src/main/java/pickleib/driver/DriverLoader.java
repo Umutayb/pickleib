@@ -21,8 +21,8 @@ public class DriverLoader {
     public void load(DriverFactory.DriverType... driverTypes){
         for (DriverFactory.DriverType type:driverTypes) {
             switch (type){
-                case Mobile -> PickleibAppiumDriver.initialize();
-                case Web -> PickleibWebDriver.initialize();
+                case appium -> PickleibAppiumDriver.initialize();
+                case selenium -> PickleibWebDriver.initialize();
                 default -> throw new EnumConstantNotPresentException(DriverFactory.DriverType.class, type.name());
             }
         }

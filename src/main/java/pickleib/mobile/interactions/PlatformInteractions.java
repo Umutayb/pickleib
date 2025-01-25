@@ -28,14 +28,14 @@ import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.*;
 
 @SuppressWarnings("unused")
-public class MobileInteractions extends MobileUtilities implements PolymorphicUtilities {
+public class PlatformInteractions extends MobileUtilities implements PolymorphicUtilities {
 
-    public MobileInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
+    public PlatformInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         super(driver);
         this.wait = wait;
     }
 
-    public MobileInteractions() {
+    public PlatformInteractions() {
         super(PickleibAppiumDriver.get());
     }
 
