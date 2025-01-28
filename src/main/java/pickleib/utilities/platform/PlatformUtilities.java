@@ -20,20 +20,29 @@ public class PlatformUtilities {
      *
      * @param element The WebElement whose driver type needs to be determined.
      * @return The DriverType associated with the WebElement:
-     * - If the WebElement is associated with an AppiumDriver, returns DriverType.Mobile.
-     * - If the WebElement is associated with a standard WebDriver, returns DriverType.Web.
+     * - If the WebElement is associated with an AppiumDriver, returns DriverType.appium.
+     * - If the WebElement is associated with a standard WebDriver, returns DriverType.selenium.
      */
     public static Platform getElementDriverPlatform(WebElement element) {
-        if (element instanceof java.lang.reflect.Proxy){
+        return ((RemoteWebDriver) getElementDriver(element)).getCapabilities().getPlatformName();
+    }
+
+    /**
+     * Retrieves the WebDriver instance associated with a given WebElement.
+     *
+     * @param element The WebElement whose WebDriver instance is to be retrieved.
+     * @return The WebDriver instance associated with the provided WebElement.
+     * @throws IllegalArgumentException if the element cannot be processed to retrieve its WebDriver.
+     */
+    public static WebDriver getElementDriver(WebElement element) {
+        if (element instanceof java.lang.reflect.Proxy) {
             InvocationHandler proxyInvocationHandler = java.lang.reflect.Proxy.getInvocationHandler(element);
             ElementLocator locator = (ElementLocator) getField("locator", proxyInvocationHandler);
             RemoteWebElement remoteWebElement = (RemoteWebElement) (locator).findElement();
-            return ((RemoteWebDriver) remoteWebElement.getWrappedDriver()).getCapabilities().getPlatformName();
-        }
-        else {
+            return remoteWebElement.getWrappedDriver();
+        } else {
             RemoteWebElement remoteWebElement = ((RemoteWebElement) element);
-            RemoteWebDriver remoteWebDriver = ((RemoteWebDriver) remoteWebElement.getWrappedDriver());
-            return remoteWebDriver.getCapabilities().getPlatformName();
+            return remoteWebElement.getWrappedDriver();
         }
     }
 
@@ -108,9 +117,14 @@ public class PlatformUtilities {
      * @return The input attribute keyword corresponding to the given DriverType.
      * @throws EnumConstantNotPresentException If the provided DriverType is not handled in the switch statement.
      */
+    /*TODO: this feature needs a redesign for compatibility, mobile vs web vs platform approach is not reliable
+        Instead try replacing platform with some other form on indicator. Ex: Android and iOS are different, iOS and
+        WebDriver work the same... Perhaps a new Enum class 'TextAttribute' could solve this issue, but it needs to be
+        assignable from WebElement type.
+     */
     public static String getInputContentAttributeNameFor(Platform platform){
         return switch (platform){
-            case ANY, IOS -> "value";
+            case ANY, IOS, WINDOWS, MAC -> "value";
             case ANDROID -> "text";
             default -> throw new EnumConstantNotPresentException(platform.getClass(), platform.name());
         };

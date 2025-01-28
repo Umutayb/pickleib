@@ -8,8 +8,9 @@ import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;
 
+import static pickleib.driver.DriverFactory.DriverType.appium;
 import static pickleib.driver.DriverFactory.DriverType.getDriverType;
-import static pickleib.utilities.platform.PlatformUtilities.getElementDriverType;
+import static pickleib.utilities.platform.PlatformUtilities.*;
 
 public class InteractionBase {
     public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.selenium;
@@ -49,14 +50,9 @@ public class InteractionBase {
      * @return The element interactions for the specified driver type.
      */
     public PolymorphicUtilities getInteractions(WebElement element) {
-        switch (getElementDriverType(element)) {
-            case selenium -> {
-                return webInteractions;
-            }
-            case appium -> {
-                return platformInteractions;
-            }
-        }
-        return null;
+        if (isAppiumDriver(getElementDriver(element)))
+            return platformInteractions;
+        else
+            return webInteractions;
     }
 }
