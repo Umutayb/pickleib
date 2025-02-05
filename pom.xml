@@ -6,11 +6,11 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>Pickleib</artifactId>
-  <version>1.9.9-2-SNAPSHOT</version>
+  <version>2.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Pickleib</name>
-  <description>Pickleib helps automate tests for WebUI, MobileUI, API, Email, DataBase, Localisation and more!</description>
+  <description>Pickleib helps automate tests for WebUI, MobileUI, Desktop UI, API, Email, DataBase, Localisation and more!</description>
   <url>http://github.com/Umutayb/Pickleib</url>
 
   <licenses>
@@ -56,7 +56,7 @@
     <buildDirectory>${project.basedir}/out/artifacts/POM-Framework_jar</buildDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.version>3.8.0</maven.compiler.version>
-    <java.utilities.version>1.6.8</java.utilities.version>
+    <java.utilities.version>1.7.0</java.utilities.version>
     <gpt.utilities.version>0.1.5</gpt.utilities.version>
     <docker-java.version>3.3.0</docker-java.version>
     <selenium.version>4.19.0</selenium.version>
@@ -317,7 +317,7 @@
                 <arg>--pinentry-mode</arg>
                 <arg>loopback</arg>
               </gpgArguments>
-              <skip>true</skip> <!--set true for local deployments, always set false before pushing-->
+              <skip>false</skip> <!--set true for local deployments, always set false before pushing-->
             </configuration>
           </execution>
         </executions>
