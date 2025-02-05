@@ -2,41 +2,42 @@ package pickleib.utilities.element.interactions;
 
 import org.openqa.selenium.WebElement;
 import pickleib.driver.DriverFactory;
-import pickleib.mobile.interactions.MobileInteractions;
+import pickleib.mobile.interactions.PlatformInteractions;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;
 
-import static pickleib.driver.DriverFactory.DriverType.getGeneralType;
-import static pickleib.utilities.platform.PlatformUtilities.getElementDriverType;
+import static pickleib.driver.DriverFactory.DriverType.appium;
+import static pickleib.driver.DriverFactory.DriverType.getDriverType;
+import static pickleib.utilities.platform.PlatformUtilities.*;
 
 public class InteractionBase {
-    public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.Web;
+    public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.selenium;
     public Printer log = new Printer(this.getClass());
     public WebInteractions webInteractions;
-    public MobileInteractions mobileInteractions;
+    public PlatformInteractions platformInteractions;
 
     public InteractionBase(
-            boolean mobileDriverActive,
+            boolean platformDriverActive,
             boolean webDriverActive) {
         if (webDriverActive) webInteractions = new WebInteractions();
-        if (mobileDriverActive) mobileInteractions = new MobileInteractions();
+        if (platformDriverActive) platformInteractions = new PlatformInteractions();
     }
 
     public InteractionBase() {
         webInteractions = new WebInteractions();
-        mobileInteractions = new MobileInteractions();
+        platformInteractions = new PlatformInteractions();
     }
 
     public PolymorphicUtilities getInteractions(DriverFactory.DriverType driverType) {
         if (!StringUtilities.isBlank(driverType))
             switch (driverType) {
-                case Web -> {
+                case selenium -> {
                     return webInteractions;
                 }
-                case Mobile -> {
-                    return mobileInteractions;
+                case appium -> {
+                    return platformInteractions;
                 }
             }
         else return getInteractions(defaultPlatform);
@@ -49,14 +50,9 @@ public class InteractionBase {
      * @return The element interactions for the specified driver type.
      */
     public PolymorphicUtilities getInteractions(WebElement element) {
-        switch (getGeneralType(getElementDriverType(element))) {
-            case Web -> {
-                return webInteractions;
-            }
-            case Mobile -> {
-                return mobileInteractions;
-            }
-        }
-        return null;
+        if (isAppiumDriver(getElementDriver(element)))
+            return platformInteractions;
+        else
+            return webInteractions;
     }
 }

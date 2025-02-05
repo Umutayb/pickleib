@@ -6,8 +6,15 @@ import io.appium.java_client.AppiumDriver;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import pickleib.driver.DriverFactory;
+import utils.FileUtilities;
 import utils.Printer;
+
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static pickleib.mobile.driver.ServiceFactory.service;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
@@ -16,6 +23,30 @@ public class AppiumDriverFactory implements DriverFactory {
 
     static Printer log = new Printer(AppiumDriverFactory.class);
     static String deviceName;
+
+    /**
+     * Checks if a given string is a valid file path.
+     *
+     * @param path The string representing the file path to validate.
+     * @return true if the string is a valid file path, false otherwise.
+     */
+    public static boolean isValidFilePath(String path) {
+        if (path == null || path.isEmpty()) {
+            return false; // Null or empty strings are not valid file paths
+        }
+
+        try {
+            // Try to create a Path object from the string
+            Path filePath = Paths.get(path);
+
+            // Check if the path exists or is accessible (optional, depends on your needs)
+            filePath.toRealPath();
+
+            return true; // Successfully resolved the path
+        } catch (InvalidPathException | SecurityException | IOException e) {
+            return false; // The string is not a valid file path
+        }
+    }
 
     public static AppiumDriver getDriver(String deviceName, JSONObject capabilitiesJSON, boolean remote){
         AppiumDriverFactory.deviceName = deviceName;
@@ -31,7 +62,11 @@ public class AppiumDriverFactory implements DriverFactory {
             String address = ContextStore.get("address", "0.0.0.0");
             String port = ContextStore.get("port", "4723");
             urlString = "http://" + address + ":" + port + "/wd/hub";
-            capabilities.setCapability("app", contextCheck("UPLOAD-" + capabilitiesJSON.get("app")));
+            String appCapability = isValidFilePath(String.valueOf(capabilitiesJSON.get("app"))) ?
+                    FileUtilities.getAbsolutePath(String.valueOf(capabilitiesJSON.get("app"))) :
+                    String.valueOf(capabilitiesJSON.get("app"));
+
+                    capabilities.setCapability("app", appCapability);
             if (service != null) urlString = service.getUrl().toString();
         }
         return getDriver(capabilities, urlString);

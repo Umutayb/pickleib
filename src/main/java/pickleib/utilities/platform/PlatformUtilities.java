@@ -11,7 +11,6 @@ import pickleib.driver.DriverFactory;
 import java.lang.reflect.InvocationHandler;
 
 import static pickleib.driver.DriverFactory.DriverType.*;
-import static pickleib.driver.DriverFactory.DriverType.getParentType;
 import static utils.reflection.ReflectionUtilities.getField;
 
 public class PlatformUtilities {
@@ -21,20 +20,29 @@ public class PlatformUtilities {
      *
      * @param element The WebElement whose driver type needs to be determined.
      * @return The DriverType associated with the WebElement:
-     * - If the WebElement is associated with an AppiumDriver, returns DriverType.Mobile.
-     * - If the WebElement is associated with a standard WebDriver, returns DriverType.Web.
+     * - If the WebElement is associated with an AppiumDriver, returns DriverType.appium.
+     * - If the WebElement is associated with a standard WebDriver, returns DriverType.selenium.
      */
     public static Platform getElementDriverPlatform(WebElement element) {
-        if (element instanceof java.lang.reflect.Proxy){
+        return ((RemoteWebDriver) getElementDriver(element)).getCapabilities().getPlatformName();
+    }
+
+    /**
+     * Retrieves the WebDriver instance associated with a given WebElement.
+     *
+     * @param element The WebElement whose WebDriver instance is to be retrieved.
+     * @return The WebDriver instance associated with the provided WebElement.
+     * @throws IllegalArgumentException if the element cannot be processed to retrieve its WebDriver.
+     */
+    public static WebDriver getElementDriver(WebElement element) {
+        if (element instanceof java.lang.reflect.Proxy) {
             InvocationHandler proxyInvocationHandler = java.lang.reflect.Proxy.getInvocationHandler(element);
             ElementLocator locator = (ElementLocator) getField("locator", proxyInvocationHandler);
             RemoteWebElement remoteWebElement = (RemoteWebElement) (locator).findElement();
-            return ((RemoteWebDriver) remoteWebElement.getWrappedDriver()).getCapabilities().getPlatformName();
-        }
-        else {
+            return remoteWebElement.getWrappedDriver();
+        } else {
             RemoteWebElement remoteWebElement = ((RemoteWebElement) element);
-            RemoteWebDriver remoteWebDriver = ((RemoteWebDriver) remoteWebElement.getWrappedDriver());
-            return remoteWebDriver.getCapabilities().getPlatformName();
+            return remoteWebElement.getWrappedDriver();
         }
     }
 
@@ -45,7 +53,7 @@ public class PlatformUtilities {
      * @return The DriverType corresponding to the WebElement.
      */
     public static DriverFactory.DriverType getElementDriverType(WebElement element) {
-        return getParentType(getElementDriverPlatform(element));
+        return DriverFactory.DriverType.getDriverType(getElementDriverPlatform(element));
     }
 
     /**
@@ -55,8 +63,8 @@ public class PlatformUtilities {
      * @return true if the WebElement is associated with an AppiumDriver, false otherwise.
      * If a ClassCastException occurs during the check, it returns false.
      */
-    public static boolean isMobileElement(WebElement element) {
-        return getGeneralType(getElementDriverType(element)).equals(Mobile);
+    public static boolean isPlatformElement(WebElement element) {
+        return getElementDriverType(element).equals(appium);
     }
 
     /**
@@ -67,12 +75,8 @@ public class PlatformUtilities {
      * If a ClassCastException occurs during the check, it returns false.
      */
     public static boolean isAppiumDriver(WebDriver driver) {
-        try {
-            return driver.getClass().isAssignableFrom(AppiumDriver.class);
-        }
-        catch (ClassCastException exception) {
-            return false;
-        }
+        try {return driver.getClass().isAssignableFrom(AppiumDriver.class);}
+        catch (ClassCastException exception) {return false;}
     }
 
     /**
@@ -82,7 +86,18 @@ public class PlatformUtilities {
      * @return The DriverType corresponding to the provided WebDriver.
      */
     public static DriverFactory.DriverType getDriverType(WebDriver driver) {
-        return getGeneralType(getParentType(((RemoteWebDriver) driver).getCapabilities().getPlatformName()));
+        return DriverFactory.DriverType.getDriverType(getDriverPlatform(driver));
+    }
+
+    /**
+     * Retrieves the platform name of the WebDriver instance.
+     *
+     * @param driver The WebDriver instance for which the platform is to be retrieved.
+     * @return The platform name as a {@link Platform} object.
+     * @throws ClassCastException if the provided driver is not an instance of {@link RemoteWebDriver}.
+     */
+    public static Platform getDriverPlatform(WebDriver driver) {
+        return ((RemoteWebDriver) driver).getCapabilities().getPlatformName();
     }
 
     /**
@@ -92,37 +107,42 @@ public class PlatformUtilities {
      * @return The DriverType corresponding to the provided WebDriver.
      */
     public static DriverFactory.DriverType getDriverPlatformParentType(WebDriver driver) {
-        return getParentType(((RemoteWebDriver) driver).getCapabilities().getPlatformName());
+        return getDriverType(driver);
     }
 
     /**
      * Gets the input attribute keyword for a specific DriverType.
      *
-     * @param driverType The DriverType for which the input attribute keyword is needed.
+     * @param platform The DriverType for which the input attribute keyword is needed.
      * @return The input attribute keyword corresponding to the given DriverType.
      * @throws EnumConstantNotPresentException If the provided DriverType is not handled in the switch statement.
      */
-    public static String getInputContentAttributeNameFor(DriverFactory.DriverType driverType){
-        return switch (driverType){
-            case Web, iOS -> "value";
-            case Android -> "text";
-            default -> throw new EnumConstantNotPresentException(driverType.getClass(), driverType.name());
+    /*TODO: this feature needs a redesign for compatibility, mobile vs web vs platform approach is not reliable
+        Instead try replacing platform with some other form on indicator. Ex: Android and iOS are different, iOS and
+        WebDriver work the same... Perhaps a new Enum class 'TextAttribute' could solve this issue, but it needs to be
+        assignable from WebElement type.
+     */
+    public static String getInputContentAttributeNameFor(Platform platform){
+        return switch (platform){
+            case ANY, IOS, WINDOWS, MAC -> "value";
+            case ANDROID -> "text";
+            default -> throw new EnumConstantNotPresentException(platform.getClass(), platform.name());
         };
     }
 
     /**
      * Gets the input attribute keyword for a specific DriverType.
      *
-     * @param driverType The DriverType for which the input attribute keyword is needed.
+     * @param platform The DriverType for which the input attribute keyword is needed.
      * @return The input attribute keyword corresponding to the given DriverType.
      * @throws EnumConstantNotPresentException If the provided DriverType is not handled in the switch statement.
      */
-    public static String getTextAttributeNameFor(DriverFactory.DriverType driverType){
-        return switch (driverType){
-            case Android -> "@text";
-            case Web -> "text()";
-            case iOS -> "@value";
-            default -> throw new EnumConstantNotPresentException(driverType.getClass(), driverType.name());
+    public static String getTextAttributeNameFor(Platform platform){
+        return switch (platform){
+            case ANDROID -> "@text";
+            case ANY -> "text()";
+            case IOS -> "@value";
+            default -> throw new EnumConstantNotPresentException(platform.getClass(), platform.name());
         };
     }
 }

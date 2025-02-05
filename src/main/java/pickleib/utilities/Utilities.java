@@ -288,7 +288,7 @@ public abstract class Utilities {
         if (scroll) scroller.scroll(element);
         if (clear) clearInputField(element);
         element.sendKeys(inputText);
-        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverType(element)));
+        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverPlatform(element)));
         assert !verify || inputText.equals(inputValue);
     }
 
@@ -417,7 +417,7 @@ public abstract class Utilities {
      */
     public WebElement clearInputField(@NotNull WebElement element) {
         StringJoiner deletion = new StringJoiner(Keys.BACK_SPACE);
-        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverType(element)));
+        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverPlatform(element)));
         if (inputValue != null)
             for (int i = 0; i <= inputValue.length(); i++)
                 deletion.add("");
@@ -432,7 +432,7 @@ public abstract class Utilities {
      */
     public WebElement getElementByText(String elementText) {
         try {
-            String queryAttribute = getTextAttributeNameFor(getDriverPlatformParentType(driver));
+            String queryAttribute = getTextAttributeNameFor(getDriverPlatform(driver));
             String xpath = "//*[" + queryAttribute + "='" + elementText + "']";
             return wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(xpath)));
         }
