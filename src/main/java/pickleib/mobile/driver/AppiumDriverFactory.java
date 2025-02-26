@@ -62,11 +62,13 @@ public class AppiumDriverFactory implements DriverFactory {
             String address = ContextStore.get("address", "0.0.0.0");
             String port = ContextStore.get("port", "4723");
             urlString = "http://" + address + ":" + port + "/wd/hub";
-            String appCapability = isValidFilePath(String.valueOf(capabilitiesJSON.get("app"))) ?
-                    FileUtilities.getAbsolutePath(String.valueOf(capabilitiesJSON.get("app"))) :
-                    String.valueOf(capabilitiesJSON.get("app"));
 
-                    capabilities.setCapability("app", appCapability);
+            if(capabilitiesJSON.get("app") != null) {
+                String appCapability = isValidFilePath(String.valueOf(capabilitiesJSON.get("app"))) ?
+                        FileUtilities.getAbsolutePath(String.valueOf(capabilitiesJSON.get("app"))) :
+                        String.valueOf(capabilitiesJSON.get("app"));
+                capabilities.setCapability("app", appCapability);
+            }
             if (service != null) urlString = service.getUrl().toString();
         }
         return getDriver(capabilities, urlString);
