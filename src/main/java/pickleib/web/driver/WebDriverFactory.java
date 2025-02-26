@@ -247,11 +247,6 @@ public class WebDriverFactory implements DriverFactory {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println((proxyAddress != null) && proxyAddress.isBlank());
-    }
-
-
     /**
      * Available driver types
      */
