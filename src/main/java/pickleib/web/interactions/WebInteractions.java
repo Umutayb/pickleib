@@ -749,7 +749,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, absoluteFilePath)
         );
-        super.clearFillInput(
+        super.fillInputElement(
                 inputElement,
                 absoluteFilePath,
                 false,
