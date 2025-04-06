@@ -141,14 +141,12 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
      * @param inputName  target element name
      * @param pageName     specified page instance name
      * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
      */
     public void clearFillInput(
             WebElement inputElement,
             String inputName,
             String pageName,
-            String inputText,
-            boolean verify) {
+            String inputText) {
         inputText = contextCheck(inputText);
         log.info("Filling " +
                 highlighted(BLUE, inputName) +
@@ -157,7 +155,7 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.clearFillInput(inputElement, inputText, verify);
+        super.clearFillInput(inputElement, inputText);
     }
 
     /**
@@ -801,7 +799,6 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
         super.clearFillInput(
                 inputElement,
                 absoluteFilePath,
-                false,
                 false
         );
     }
@@ -828,7 +825,7 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.fillInputElement(inputElement, inputText, scroll, clear, verify);
+        super.fillInputElement(inputElement, inputText, scroll, clear);
     }
 
     /**
@@ -877,7 +874,7 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
             switch (interactionType) {
                 case click -> clickElement(bundle.beta(), bundle.alpha(), pageName, scroll);
                 case fill ->
-                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"),false);
+                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"));
                 case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);
                 case verify -> verifyElementContainsAttribute(
                         bundle.beta(),

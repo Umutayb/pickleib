@@ -218,15 +218,13 @@ public class WebDriverFactory implements DriverFactory {
                 case FIREFOX -> {
                     FirefoxOptions options = new FirefoxOptions();
                     if (insecureLocalHost){
-                        options.addArguments("--allow-insecure-localhost");
-                        options.addArguments("--ignore-certificate-errors");
+                        options.addPreference("webdriver.accept.insecure.certs", true);
+                        options.addPreference("webdriver.accept.untrusted.certs", true);
                     }
-                    if (noSandbox) options.addArguments("--no-sandbox");
                     options.setPageLoadStrategy(loadStrategy);
                     options.setAcceptInsecureCerts(insecureLocalHost);
-                    if (allowRemoteOrigin) options.addArguments("--remote-allow-origins=*");
-                    if (disableNotifications) options.addArguments("disable-notifications");
-                    if (headless) options.addArguments("--headless=new");
+                    if (disableNotifications) options.addPreference("dom.webnotifications.enabled", false);
+                    if (headless) options.addArguments("-headless");
                     if (useWDM) WebDriverManager.firefoxdriver().setup();
                     return new FirefoxDriver(options);
                 }

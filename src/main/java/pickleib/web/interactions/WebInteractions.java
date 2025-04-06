@@ -217,15 +217,14 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      * @param pageName     specified page instance name
      * @param inputText    input text
      * @param scroll       scrolls if true
-     * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll, boolean verify) {
+    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, boolean scroll) {
         log.info("Clearing input " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        super.clearFillInput(inputElement, inputText, scroll, verify);
+        super.clearFillInput(inputElement, inputText, scroll);
     }
 
     /**
@@ -235,15 +234,14 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      * @param elementName  target element name
      * @param pageName     specified page instance name
      * @param inputText    input text
-     * @param verify       verifies the input text value equals to an expected text if true
      */
-    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText, boolean verify) {
+    public void clearFillInput(WebElement inputElement, String elementName, String pageName, String inputText) {
         log.info("Clearing input " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
-        super.clearFillInput(inputElement, inputText, false, verify);
+        super.clearFillInput(inputElement, inputText, false);
     }
 
     /**
@@ -778,7 +776,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.fillInputElement(inputElement, inputText, scroll, clear, verify);
+        super.fillInputElement(inputElement, inputText, scroll, clear);
     }
 
     /**
@@ -801,7 +799,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.fillInputElement(inputElement, inputText, false, clear, verify);
+        super.fillInputElement(inputElement, inputText, false, clear);
     }
 
     /**
@@ -850,7 +848,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
             switch (interactionType) {
                 case click -> clickElement(bundle.beta(), bundle.alpha(), pageName, scroll);
                 case fill ->
-                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), scroll, false);
+                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"), scroll);
                 case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);
                 case verify -> verifyElementContainsAttribute(
                         bundle.beta(),
