@@ -707,7 +707,6 @@ public abstract class Utilities {
         expectedText = contextCheck(expectedText);
         if (!expectedText.equals(element.getText()))
             throw new PickleibException("Element text is not \"" + highlighted(BLUE, expectedText) + "\"!");
-        log.success("Text of the element \"" + expectedText + "\" was verified!");
     }
 
     /**
