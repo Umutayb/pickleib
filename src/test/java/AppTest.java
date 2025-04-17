@@ -120,11 +120,11 @@ public class AppTest {
                 "Gender", gender
         ));
 
-        webInteractions.fillInputElement(nameInput, name, true, true, true);
-        webInteractions.fillInputElement(emailInput, email, true, true, true);
+        webInteractions.fillInputElement(nameInput, name, true, true);
+        webInteractions.fillInputElement(emailInput, email, true, true);
         webInteractions.clickElement(genderDropdown);
         webInteractions.clickElement(genderSelection);
-        webInteractions.fillInputElement(mobileInput, mobile, true, true, true);
+        webInteractions.fillInputElement(mobileInput, mobile, true, true);
 
         webInteractions.clickElement(dateOfBirthInput, true);
 
@@ -138,9 +138,9 @@ public class AppTest {
         WebElement datePickerSubmitButton = reflections.getElementFromPage("datePickerSubmitButton", "formsPage");
         webInteractions.clickElement(datePickerSubmitButton);
 
-        webInteractions.fillInputElement(hobbiesInput, hobbies, true, true, true);
-        webInteractions.fillInputElement(addressInput, address, true, true, true);
-        webInteractions.fillInputElement(cityInput, city, true, true, true);
+        webInteractions.fillInputElement(hobbiesInput, hobbies, true, true);
+        webInteractions.fillInputElement(addressInput, address, true, true);
+        webInteractions.fillInputElement(cityInput, city, true, true);
         webInteractions.clickElement(submitButton);
 
         WebElement submissionModal = reflections.getElementFromPage("table", "formsPage");
