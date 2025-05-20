@@ -6,6 +6,8 @@ import lombok.Getter;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -233,9 +235,12 @@ public class WebDriverFactory implements DriverFactory {
                     if (useWDM) WebDriverManager.safaridriver().setup();
                     return new SafariDriver(options);
                 }
-                default -> {
-                    throw new PickleibException("No such driver was defined.");
+                case EDGE -> {
+                    EdgeOptions options = new EdgeOptions();
+                    if (useWDM) WebDriverManager.edgedriver().setup();
+                    return new EdgeDriver(options);
                 }
+                default -> throw new PickleibException("No such driver was defined.");
             }
         }
         catch (SessionNotCreatedException sessionException){
@@ -253,6 +258,7 @@ public class WebDriverFactory implements DriverFactory {
         CHROME("Chrome"),
         FIREFOX("Firefox"),
         SAFARI("Safari"),
+        EDGE("Edge"),
         OPERA("Opera");
 
         final String driverName;
