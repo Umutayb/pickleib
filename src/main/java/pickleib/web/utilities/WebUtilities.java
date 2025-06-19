@@ -126,7 +126,6 @@ public abstract class WebUtilities extends Utilities {
 
     /**
      * Scrolls the view until the specified element is found and visible.
-     *
      * This method continuously scrolls in the 'up' direction and attempts to locate the element using
      * the provided LocateElement strategy. The process is repeated until the element is found and
      * displayed or the time limit is reached.
@@ -172,7 +171,7 @@ public abstract class WebUtilities extends Utilities {
             case down -> "window.scrollBy(0,window.innerHeight * 0.9)";
             case left, right -> null;
         };
-        ((JavascriptExecutor) driver).executeScript(script);
+        driver.executeScript(script);
     }
 
     /**
@@ -201,7 +200,6 @@ public abstract class WebUtilities extends Utilities {
 
     /**
      * Scrolls the view until the specified WebElement is found and visible.
-     *
      * This method continuously scrolls in the 'up' direction and attempts to locate the element
      * using the provided WebElement instance. The process is repeated until the element is found and
      * displayed or the time limit is reached.
@@ -286,7 +284,7 @@ public abstract class WebUtilities extends Utilities {
      * @param webElement element that gets clicked
      */
     public void clickWithJS(WebElement webElement) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", webElement);
+        driver.executeScript("arguments[0].click();", webElement);
     }
 
     /**
@@ -295,7 +293,7 @@ public abstract class WebUtilities extends Utilities {
      * @param webElement element that gets scrolled into the view
      */
     public void scrollWithJS(WebElement webElement) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", webElement);
+        driver.executeScript("arguments[0].scrollIntoView();", webElement);
     }
 
     /**
@@ -310,7 +308,7 @@ public abstract class WebUtilities extends Utilities {
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
                 + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
 
-        ((JavascriptExecutor) driver).executeScript(scrollScript, element);
+        driver.executeScript(scrollScript, element);
 
         waitFor(0.3);
         return element;
@@ -328,7 +326,7 @@ public abstract class WebUtilities extends Utilities {
      */
     //This method returns all the attributes of an element as an object
     public JsonObject getElementJson(WebElement element) {
-        String object = ((JavascriptExecutor) driver).executeScript(
+        String object = driver.executeScript(
                 "var items = {}; " +
                         "for (index = 0; index < arguments[0].attributes.length; ++index) " +
                         "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; " +
@@ -346,7 +344,7 @@ public abstract class WebUtilities extends Utilities {
      */
     public JSONObject getElementJSON(WebElement element) {
         try {
-            String object = ((JavascriptExecutor) driver).executeScript(
+            String object = driver.executeScript(
                     "var items = {}; " +
                             "for (index = 0; index < arguments[0].attributes.length; ++index) " +
                             "{ items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value }; " +
@@ -536,7 +534,7 @@ public abstract class WebUtilities extends Utilities {
      */
     public Object executeScript(String script, Object... args) {
         log.info("Executing script: " + highlighted(BLUE, script));
-        return ((JavascriptExecutor) driver).executeScript(script, args);
+        return driver.executeScript(script, args);
     }
 
     /**
@@ -601,17 +599,6 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Uploads a given file
-     *
-     * @param fileUploadInput upload element
-     * @param directory       absolute file directory (excluding the file name)
-     * @param fileName        file name (including a file extension)
-     */
-    public void uploadFile(@NotNull WebElement fileUploadInput, String directory, String fileName) {
-        fileUploadInput.sendKeys(directory + "/" + fileName);
-    }
-
-    /**
      * Waits actively for the page to load up to 10 seconds
      */
     protected void waitUntilLoads(int waitingTime) {
@@ -651,7 +638,7 @@ public abstract class WebUtilities extends Utilities {
         WebElement targetElement = ElementAcquisition.acquireNamedElementAmongst(elements, targetElementText);
         WebElement firstElement = elements.get(0);
         double distance = Math.abs(firstElement.getLocation().getY() - targetElement.getLocation().getY());
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollBy(0, "+distance+");", container);
+        driver.executeScript("arguments[0].scrollBy(0, "+distance+");", container);
         return  targetElement;
     }
 
@@ -677,7 +664,40 @@ public abstract class WebUtilities extends Utilities {
                 "        rect.right <= (window.innerWidth || document.documentElement.clientWidth)\n" +
                 "    );";
 
-        return Boolean.parseBoolean(((JavascriptExecutor) driver).executeScript(script, element).toString());
+        return Boolean.parseBoolean(driver.executeScript(script, element).toString());
     }
+
+
+    /**
+     * Checks if a given WebElement is fully within the visible viewport.
+     *
+     * @param driver  The WebDriver instance.
+     * @param element The WebElement to check.
+     * @return True if the element is fully in viewport, false otherwise.  Returns false if the element is null or not displayed.
+     */
+    /*
+    public static boolean isElementInViewport(WebDriver driver, WebElement element) {
+        if (element == null || !element.isDisplayed()) {
+            return false;
+        }
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
+        // Get the position of the element relative to the viewport.
+        int x = (int) js.executeScript("return arguments[0].getBoundingClientRect().left;", element);
+        int y = (int) js.executeScript("return arguments[0].getBoundingClientRect().top;", element);
+
+        // Get the width and height of the viewport.
+        int viewportWidth = (int) js.executeScript("return window.innerWidth;");
+        int viewportHeight = (int) js.executeScript("return window.innerHeight;");
+
+        // Get the width and height of the element.
+        int elementWidth = element.getSize().getWidth();
+        int elementHeight = element.getSize().getHeight();
+
+        // Check if the element is fully within the viewport.
+        return (x >= 0 && x + elementWidth <= viewportWidth && y >= 0 && y + elementHeight <= viewportHeight);
+    }
+     */
 
 }
