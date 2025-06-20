@@ -124,9 +124,8 @@ public class PlatformUtilities {
      */
     public static String getInputContentAttributeNameFor(Platform platform){
         return switch (platform){
-            case ANY, IOS, WINDOWS, MAC -> "value";
             case ANDROID -> "text";
-            default -> throw new EnumConstantNotPresentException(platform.getClass(), platform.name());
+            default -> "value";
         };
     }
 

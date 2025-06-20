@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -14,9 +15,11 @@ import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
+import utils.DateUtilities;
 import utils.Printer;
 import utils.StringUtilities;
 import utils.arrays.ArrayUtilities;
+
 import java.util.List;
 import java.util.Map;
 
@@ -150,7 +153,14 @@ public class AppTest {
 
         for (String entryKey : entries.keySet()) {
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
-            Assert.assertEquals("Data mismatch!", entries.get(entryKey), entryValueElement.getText());
+            if (entryKey.equals("Date of Birth"))
+                Assert.assertEquals(
+                        "Data mismatch!",
+                        entries.get(entryKey),
+                        DateUtilities.reformatDateString(entryValueElement.getText(), "yyyy-MM-dd")
+                );
+            else
+                Assert.assertEquals("Data mismatch!", entries.get(entryKey), entryValueElement.getText());
         }
 
         log.success("The completeFormSubmissionTest() passed!");
@@ -236,14 +246,18 @@ public class AppTest {
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
-        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
-        WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window Message");
-        webInteractions.clickElement(newWindowsWithMessageButton);
-        Assert.assertEquals("The window message does not match!", webInteractions.getAlert().getText(), "New window message!");
-        webInteractions.getAlert().dismiss();
-        webInteractions.switchToNextTab();
         webInteractions.verifyCurrentUrl(testWebsiteUrl + "alerts");
-        log.success("dismissAlertTest() pass!");
+        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "Click Me");
+        webInteractions.clickElement(newWindowsWithMessageButton);
+        Assert.assertEquals("The window message does not match!", "Single click!", webInteractions.getAlert().getText());
+        webInteractions.getAlert().dismiss();
+        try {webInteractions.getAlert().dismiss();}
+        catch (Exception exception){
+            if (exception instanceof NoAlertPresentException) log.success("dismissAlertTest() pass!");
+            else Assert.fail("'dismissAlertTest' failed! Exeption: " + exception.getLocalizedMessage());
+        }
+
     }
 
     @Test
