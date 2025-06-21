@@ -2,8 +2,11 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/pickleib?color=brightgreen&label=Pickleib)](https://mvnrepository.com/artifact/io.github.umutayb/pickleib/latest)
 
-### ArtifactId Change!
+### Template Project
+To see Pickleib in action, check out its [template](https://github.com/Umutayb/test-automation-template)!
 
+
+### ArtifactId Change!
 As of version 2.0.1, pickleib has a new artifactId! Artifact id was changed from "Pickleib" to "pickleib".
 
 ### Installation
