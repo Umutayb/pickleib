@@ -85,6 +85,7 @@ public class AppTest {
 
     @Test
     public void completeFormSubmissionTest() {//TODO: Try soft assertions
+
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
@@ -135,7 +136,7 @@ public class AppTest {
         webInteractions.clickElement(dayButton);
 
         WebElement spSelectionPreview = reflections.getElementFromPage("spSelectionPreview", "formsPage");
-        entries.put("Date of Birth", spSelectionPreview.getText());
+        entries.put("Date of Birth", DateUtilities.reformatDateString(spSelectionPreview.getText(), "yyyy-MM-dd"));
 
         WebElement datePickerSubmitButton = reflections.getElementFromPage("datePickerSubmitButton", "formsPage");
         webInteractions.clickElement(datePickerSubmitButton);
@@ -154,7 +155,7 @@ public class AppTest {
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
             if (entryKey.equals("Date of Birth"))
                 Assert.assertEquals(
-                        "Data mismatch!",
+                        "Date mismatch!",
                         entries.get(entryKey),
                         DateUtilities.reformatDateString(entryValueElement.getText(), "yyyy-MM-dd")
                 );
