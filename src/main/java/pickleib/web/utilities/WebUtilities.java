@@ -293,7 +293,7 @@ public abstract class WebUtilities extends Utilities {
      * @param webElement element that gets scrolled into the view
      */
     public void scrollWithJS(WebElement webElement) {
-        driver.executeScript("arguments[0].scrollIntoView();", webElement);
+        driver.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'instant'});", webElement);
     }
 
     /**

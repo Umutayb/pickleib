@@ -66,7 +66,7 @@ public class WebDriverFactory implements DriverFactory {
     /**
      * maximizes a session window if true
      */
-    static boolean maximise = Boolean.parseBoolean(ContextStore.get("driver-maximize", "false"));
+    static boolean maximize = Boolean.parseBoolean(ContextStore.get("driver-maximize", "false"));
 
     /**
      * determines driverTimeout duration
@@ -159,8 +159,10 @@ public class WebDriverFactory implements DriverFactory {
             assert driver != null;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             if (deleteCookies) driver.manage().deleteAllCookies();
-            if (maximise) driver.manage().window().maximize();
-            else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
+            if (!headless) {
+                if (maximize) driver.manage().window().maximize();
+                else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
+            }
             driver.setLogLevel(LogUtilities.getLevel(logLevel));
             log.important(browserType.getDriverName() + GRAY.getValue() + " was selected");
             return driver;
@@ -212,7 +214,10 @@ public class WebDriverFactory implements DriverFactory {
                     options.setPageLoadStrategy(loadStrategy);
 
                     if (allowRemoteOrigin) options.addArguments("--remote-allow-origins=*");
-                    if (headless) options.addArguments("--headless=new");
+                    if (headless) {
+                        options.addArguments("--headless=new");
+                        options.addArguments(String.format("--window-size=%d,%d", frameWidth, frameHeight));
+                    }
                     if (useWDM) WebDriverManager.chromedriver().setup();
                     if (mobileMode) options.setExperimentalOption("mobileEmulation", preferredDevice.emulate());
                     return new ChromeDriver(options);
@@ -226,7 +231,11 @@ public class WebDriverFactory implements DriverFactory {
                     options.setPageLoadStrategy(loadStrategy);
                     options.setAcceptInsecureCerts(insecureLocalHost);
                     if (disableNotifications) options.addPreference("dom.webnotifications.enabled", false);
-                    if (headless) options.addArguments("-headless");
+                    if (headless) {
+                        options.addArguments("-headless");
+                        options.addArguments(String.format("--width=%d", frameWidth));
+                        options.addArguments(String.format("--height=%d", frameHeight));
+                    }
                     if (useWDM) WebDriverManager.firefoxdriver().setup();
                     return new FirefoxDriver(options);
                 }
@@ -237,6 +246,10 @@ public class WebDriverFactory implements DriverFactory {
                 }
                 case EDGE -> {
                     EdgeOptions options = new EdgeOptions();
+                    if (headless) {
+                        options.addArguments("--headless=new");
+                        options.addArguments(String.format("--window-size=%d,%d", frameWidth, frameHeight));
+                    }
                     if (useWDM) WebDriverManager.edgedriver().setup();
                     return new EdgeDriver(options);
                 }
@@ -297,8 +310,8 @@ public class WebDriverFactory implements DriverFactory {
         WebDriverFactory.headless = headless;
     }
 
-    public static void setMaximise(boolean maximise) {
-        WebDriverFactory.maximise = maximise;
+    public static void setMaximize(boolean maximize) {
+        WebDriverFactory.maximize = maximize;
     }
 
     public static void setDriverTimeout(long driverTimeout) {
@@ -359,8 +372,8 @@ public class WebDriverFactory implements DriverFactory {
         return headless;
     }
 
-    public static boolean isMaximise() {
-        return maximise;
+    public static boolean isMaximize() {
+        return maximize;
     }
 
     public static long getDriverTimeout() {
