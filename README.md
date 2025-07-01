@@ -1,6 +1,6 @@
 # Pickleib
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/pickleib?color=brightgreen&label=Pickleib)](https://mvnrepository.com/artifact/io.github.umutayb/pickleib/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/pickleib?color=brightgreen&label=pickleib)](https://mvnrepository.com/artifact/io.github.umutayb/pickleib/latest)
 
 ### Template Project
 To see Pickleib in action, check out the [test-automation-template](https://github.com/Umutayb/test-automation-template)!
