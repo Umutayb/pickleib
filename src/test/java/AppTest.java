@@ -1,7 +1,6 @@
 import common.ObjectRepository;
 import common.StatusWatcher;
 import context.ContextStore;
-import org.junit.Assert;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.NoAlertPresentException;
@@ -55,9 +54,16 @@ public class AppTest {
     }
 
     @AfterEach
-    public void after() {
-        if (Boolean.parseBoolean(ContextStore.get("takes-snapshots", "false")))
-            captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
+    public void after(TestInfo testInfo) {
+        if (StatusWatcher.TestStatus.isFailed())
+            captureScreen(StringUtilities.generateRandomString(
+                            testInfo.getDisplayName() + "-",
+                    6,
+                    false,
+                    true),
+                    "jpg",
+                    (RemoteWebDriver) driver
+            );
         PickleibWebDriver.terminate();
     }
 

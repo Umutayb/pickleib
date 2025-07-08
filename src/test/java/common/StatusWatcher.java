@@ -4,9 +4,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestExecutionExceptionHandler;
 import org.junit.jupiter.api.extension.TestWatcher;
 import utils.Printer;
-import utils.StringUtilities;
 
-import java.util.Objects;
 
 public class StatusWatcher implements TestWatcher, TestExecutionExceptionHandler {
 
@@ -20,7 +18,6 @@ public class StatusWatcher implements TestWatcher, TestExecutionExceptionHandler
     @Override
     public void testFailed(ExtensionContext context, Throwable cause) {
         log.warning("FAILED: " + context.getDisplayName());
-        log.info(StringUtilities.highlighted(StringUtilities.Color.RED, Objects.requireNonNull(context.getExecutionException().orElse(null)).getMessage()));
     }
 
     @Override
