@@ -223,6 +223,20 @@ public class AppTest {
     }
 
     @Test
+    public void scrollWithJSTest() {
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
+        webInteractions.clickElement(dropdownTool);
+        WebElement logo = reflections.getElementFromPage("logo", "tallPage");
+        Assertions.assertFalse(webInteractions.elementIsInView(logo), "Logo is already in view!");
+        webInteractions.scrollWithJS(logo);
+        Assertions.assertTrue(webInteractions.elementIsInView(logo), "Logo is not in view!");
+    }
+
+    @Test
     public void openNewTabTest(){
         List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
@@ -396,16 +410,6 @@ public class AppTest {
 //        log.success("The webInteractions.clickWithJS(page.clickMeButton) test pass!");
 //    }
 //
-//    @Test
-//    public void scrollWithJSTest() {
-//        log.info("webInteractions.scrollWithJS(page.interactionsAccordionBar) test");
-//        webInteractions.getUrl(baseUrl + "elements");
-//        WebElement element = this.getAcquisition(Web).acquireElementFromPage("interactionsAccordionBar", "pages.PageClass");
-//
-//        webInteractions.scrollWithJS(element);
-//        Assert.assertTrue("webInteractions.scrollWithJS(page.interactionsAccordionBar) test failed!", element.isDisplayed());
-//        log.success("The webInteractions.scrollWithJS(page.interactionsAccordionBar) test pass!");
-//    }
 //
 //    @Test
 //    public void acquireNamedElementAmongstTest() {
