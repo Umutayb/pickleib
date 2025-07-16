@@ -38,6 +38,12 @@ public class PickleibWebDriver {
 		return driver;
 	}
 
+	public static RemoteWebDriver set(RemoteWebDriver localDriver) {
+		driver = localDriver;
+		log.important("RemoteWebDriver instance has been assigned as the active local driver");
+		return driver;
+	}
+
 	static PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
 	public static Printer log = new Printer(PickleibWebDriver.class);
 
