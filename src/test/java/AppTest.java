@@ -1,9 +1,8 @@
 import common.ObjectRepository;
+import common.StatusWatcher;
 import context.ContextStore;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -26,6 +25,7 @@ import static pickleib.enums.ElementState.displayed;
 import static pickleib.enums.Navigation.backwards;
 import static pickleib.utilities.screenshot.ScreenCaptureUtility.captureScreen;
 
+@ExtendWith(StatusWatcher.class)
 public class AppTest {
     String testWebsiteUrl = "http://127.0.0.1:8080/";
     WebDriver driver;
@@ -37,11 +37,15 @@ public class AppTest {
      * Constructs an instance of the CommonStepUtilities class with the specific object repository.
      */
 
-    @Before
-    public void before() {
+    @BeforeAll
+    public static void setup() {
         ContextStore.loadProperties("test.properties", "pickleib.properties");
         WebDriverFactory.setHeadless(Boolean.parseBoolean(ContextStore.get("headless", "true")));
         WebDriverFactory.setUseWDM(false);
+    }
+
+    @BeforeEach
+    public void before() {
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
         reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
@@ -49,10 +53,17 @@ public class AppTest {
         webInteractions.getUrl(testWebsiteUrl);
     }
 
-    @After
-    public void after() {
-        if (Boolean.parseBoolean(ContextStore.get("takes-snapshots", "false")))
-            captureScreen(StringUtilities.generateRandomString("failure#", 6, false, true), "jpg", (RemoteWebDriver) driver);
+    @AfterEach
+    public void after(TestInfo testInfo) {
+        if (StatusWatcher.TestStatus.isFailed())
+            captureScreen(StringUtilities.generateRandomString(
+                            testInfo.getDisplayName() + "-",
+                    6,
+                    false,
+                    true),
+                    "jpg",
+                    (RemoteWebDriver) driver
+            );
         PickleibWebDriver.terminate();
     }
 
@@ -60,7 +71,7 @@ public class AppTest {
     public void navigateTest() {
         log.important(ContextStore.items().toString());
         log.info("webInteractions.navigate(page.trainingUrl) test");
-        Assert.assertEquals("\"webInteractions.navigate(page.trainingUrl) test failed!", testWebsiteUrl, driver.getCurrentUrl());
+        Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "\"webInteractions.navigate(page.trainingUrl) test failed!");
         log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
     }
 
@@ -69,7 +80,7 @@ public class AppTest {
         log.info("webInteractions.navigateBrowser(backwards) test");
         webInteractions.toPage("elements");
         webInteractions.navigateBrowser(backwards);
-        Assert.assertEquals("webInteractions.navigateBrowser(backwards) test failed!", testWebsiteUrl, driver.getCurrentUrl());
+        Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "webInteractions.navigateBrowser(backwards) test failed!");
         log.success("The webInteractions.navigateBrowser(backwards) test pass!");
     }
 
@@ -79,7 +90,7 @@ public class AppTest {
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
         WebElement title = reflections.getElementFromPage("title", "formsPage");
-        Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
+        Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
         log.success("The formTest test pass!");
     }
 
@@ -102,7 +113,7 @@ public class AppTest {
         WebElement cityInput = reflections.getElementFromPage("cityInput", "formsPage");
         WebElement submitButton = reflections.getElementFromPage("submitButton", "formsPage");
 
-        Assert.assertEquals("formTest test failed!", "Forms Page", title.getText());
+        Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
 
         WebElement genderSelection = ArrayUtilities.getRandomItemFrom(genderOptions);
 
@@ -154,13 +165,9 @@ public class AppTest {
         for (String entryKey : entries.keySet()) {
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
             if (entryKey.equals("Date of Birth"))
-                Assert.assertEquals(
-                        "Date mismatch!",
-                        entries.get(entryKey),
-                        DateUtilities.reformatDateString(entryValueElement.getText(), "yyyy-MM-dd")
-                );
+                Assertions.assertEquals(entries.get(entryKey), DateUtilities.reformatDateString(entryValueElement.getText(), "yyyy-MM-dd"), "Date mismatch!");
             else
-                Assert.assertEquals("Data mismatch!", entries.get(entryKey), entryValueElement.getText());
+                Assertions.assertEquals(entries.get(entryKey), entryValueElement.getText(), "Data mismatch!");
         }
 
         log.success("The completeFormSubmissionTest() passed!");
@@ -180,9 +187,9 @@ public class AppTest {
         List<WebElement> countriesList = reflections.getElementsFromPage("countriesList", "dropDownPage");
         String countrySelection = "Ukraine";
         WebElement preSelection = ElementAcquisition.acquireNamedElementAmongst(countriesList, countrySelection);
-        Assert.assertFalse("Selected country is already in view!!", webInteractions.elementIsInView(preSelection));
+        Assertions.assertFalse(webInteractions.elementIsInView(preSelection), "Selected country is already in view!!");
         WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
-        Assert.assertTrue("Selected country is not in view!!", webInteractions.elementIsInView(country));
+        Assertions.assertTrue(webInteractions.elementIsInView(country), "Selected country is not in view!!");
         log.success("scrollInContainerTest() pass!");
     }
 
@@ -195,10 +202,10 @@ public class AppTest {
         WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
         webInteractions.clickElement(dropdownTool);
         WebElement logo = reflections.getElementFromPage("logo", "tallPage");
-        Assert.assertFalse("Logo is already in view!", webInteractions.elementIsInView(logo));
+        Assertions.assertFalse(webInteractions.elementIsInView(logo), "Logo is already in view!");
         while (!webInteractions.elementIsInView(logo))
             webInteractions.scrollInDirection(Direction.down);
-        Assert.assertTrue("Logo is not in view!", webInteractions.elementIsInView(logo));
+        Assertions.assertTrue(webInteractions.elementIsInView(logo), "Logo is not in view!");
     }
 
     @Test
@@ -210,9 +217,9 @@ public class AppTest {
         WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
         webInteractions.clickElement(dropdownTool);
         WebElement logo = reflections.getElementFromPage("logo", "tallPage");
-        Assert.assertFalse("Logo is already in view!", webInteractions.elementIsInView(logo));
+        Assertions.assertFalse(webInteractions.elementIsInView(logo), "Logo is already in view!");
         webInteractions.centerElement(logo);
-        Assert.assertTrue("Logo is not in view!", webInteractions.elementIsInView(logo));
+        Assertions.assertTrue(webInteractions.elementIsInView(logo), "Logo is not in view!");
     }
 
     @Test
@@ -250,12 +257,12 @@ public class AppTest {
         List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "Click Me");
         webInteractions.clickElement(newWindowsWithMessageButton);
-        Assert.assertEquals("The window message does not match!", "Single click!", webInteractions.getAlert().getText());
+        Assertions.assertEquals("Single click!", webInteractions.getAlert().getText(), "The window message does not match!");
         webInteractions.getAlert().dismiss();
         try {webInteractions.getAlert().dismiss();}
         catch (Exception exception){
             if (exception instanceof NoAlertPresentException) log.success("dismissAlertTest() pass!");
-            else Assert.fail("'dismissAlertTest' failed! Exeption: " + exception.getLocalizedMessage());
+            else Assertions.fail("'dismissAlertTest' failed! Exeption: " + exception.getLocalizedMessage());
         }
 
     }
@@ -268,7 +275,7 @@ public class AppTest {
         List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window Message");
         webInteractions.clickElement(newWindowsWithMessageButton);
-        Assert.assertEquals("The window message does not match!", webInteractions.getAlert().getText(), "New window message!");
+        Assertions.assertEquals(webInteractions.getAlert().getText(), "New window message!", "The window message does not match!");
         webInteractions.getAlert().accept();
         webInteractions.waitUntilPageLoads(5);
         webInteractions.switchToNextTab();
