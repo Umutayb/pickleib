@@ -11,8 +11,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
 import pickleib.enums.Direction;
-import pickleib.exceptions.PickleibVerificationException;
-import pickleib.utilities.Utilities;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
@@ -75,7 +73,6 @@ public class AppTest {
         log.important(ContextStore.items().toString());
         log.info("webInteractions.navigate(page.trainingUrl) test");
         Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "\"webInteractions.navigate(page.trainingUrl) test failed!");
-        log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
     }
 
     @Test
@@ -84,7 +81,6 @@ public class AppTest {
         webInteractions.toPage("elements");
         webInteractions.navigateBrowser(backwards);
         Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "webInteractions.navigateBrowser(backwards) test failed!");
-        log.success("The webInteractions.navigateBrowser(backwards) test pass!");
     }
 
     @Test
@@ -94,7 +90,6 @@ public class AppTest {
         webInteractions.clickElement(forms);
         WebElement title = reflections.getElementFromPage("title", "formsPage");
         Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
-        log.success("The formTest test pass!");
     }
 
     @Test
@@ -172,8 +167,6 @@ public class AppTest {
             else
                 Assertions.assertEquals(entries.get(entryKey), entryValueElement.getText(), "Data mismatch!");
         }
-
-        log.success("The completeFormSubmissionTest() passed!");
     }
 
     @Test
@@ -193,7 +186,6 @@ public class AppTest {
         Assertions.assertFalse(webInteractions.elementIsInView(preSelection), "Selected country is already in view!!");
         WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
         Assertions.assertTrue(webInteractions.elementIsInView(country), "Selected country is not in view!!");
-        log.success("scrollInContainerTest() pass!");
     }
 
     @Test
@@ -235,7 +227,6 @@ public class AppTest {
         webInteractions.clickElement(newTabButton);
         webInteractions.switchToNextTab();
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("openNewTabTest() pass!");
     }
 
     @Test
@@ -248,7 +239,6 @@ public class AppTest {
         webInteractions.clickElement(newWindowButton);
         webInteractions.switchWindowByIndex(1);
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("openNewWindowTest() pass!");
     }
 
     @Test
@@ -283,7 +273,6 @@ public class AppTest {
         webInteractions.waitUntilPageLoads(5);
         webInteractions.switchToNextTab();
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("acceptAlertTest() pass!");
     }
 
     @Test
@@ -337,8 +326,6 @@ public class AppTest {
         log.success("Second element of firstListElements text is verified as Item B");
         Assertions.assertEquals("Item A", firstListElements.get(2).getText());
         log.success("Second element of firstListElements text is verified as Item A");
-
-        log.success("sortableTest() passed!");
   }
 
     @Test
