@@ -349,12 +349,12 @@ public class AppTest {
         WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
         webInteractions.clickElement(lameFrame);
 
-        WebElement innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "IframePage");
-        WebElement iframe = reflections.getElementFromPage("iframe", "IframePage");
+        WebElement innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "LameFramePage");
+        WebElement iframe = reflections.getElementFromPage("iframe", "LameFramePage");
         webInteractions.verifyIframeElementAttributeEqualsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "toggle-inner-switch");
 
         webInteractions.clickIframeButton(iframe, innerDarkModeButton);
-        innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "IframePage");
+        innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "LameFramePage");
         webInteractions.verifyIframeElementAttributeContainsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "dark-mode");
         webInteractions.verifyIframeElementAttributeEqualsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "toggle-inner-switch dark-mode");
     }
@@ -367,12 +367,12 @@ public class AppTest {
         WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
         webInteractions.clickElement(lameFrame);
 
-        WebElement iframe = reflections.getElementFromPage("iframe", "IframePage");
-        WebElement userInput = reflections.getElementFromPage("userInput", "IframePage");
-        WebElement submitButton = reflections.getElementFromPage("submitButton", "IframePage");
-        webInteractions.fillIframeInput(iframe, userInput, "userInput", "IframePage", "yes");
+        WebElement iframe = reflections.getElementFromPage("iframe", "LameFramePage");
+        WebElement userInput = reflections.getElementFromPage("userInput", "LameFramePage");
+        WebElement submitButton = reflections.getElementFromPage("submitButton", "LameFramePage");
+        webInteractions.fillIframeInput(iframe, userInput, "userInput", "LameFramePage", "yes");
         webInteractions.clickIframeButton(iframe, submitButton);
-        WebElement submittedText = reflections.getElementFromPage("submittedText", "IframePage");
+        WebElement submittedText = reflections.getElementFromPage("submittedText", "LameFramePage");
         webInteractions.verifyIframeElementAttributeEqualsValue(submittedText, "innerText", "submittedText", iframe, "yes");
     }
 
