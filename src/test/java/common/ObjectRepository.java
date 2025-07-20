@@ -12,5 +12,6 @@ public class ObjectRepository implements PageRepository {
     DropDownPage dropDownPage;
     TallPage tallPage;
     AlertAndWindowsPage alertAndWindowsPage;
+    IframePage iframePage;
 
 }

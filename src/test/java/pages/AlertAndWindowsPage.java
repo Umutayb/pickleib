@@ -11,4 +11,7 @@ public class AlertAndWindowsPage extends PickleibPageObject {
     @FindBy(css = ".button")
     public List<WebElement> buttons;
 
+    @FindBy(name = "LameFrame")
+    WebElement lameFrame;
+
 }

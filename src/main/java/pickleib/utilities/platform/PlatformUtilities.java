@@ -139,9 +139,8 @@ public class PlatformUtilities {
     public static String getTextAttributeNameFor(Platform platform){
         return switch (platform){
             case ANDROID -> "@text";
-            case ANY -> "text()";
             case IOS -> "@value";
-            default -> throw new EnumConstantNotPresentException(platform.getClass(), platform.name());
+            default -> "text()";
         };
     }
 }

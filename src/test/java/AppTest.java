@@ -3,6 +3,7 @@ import common.StatusWatcher;
 import context.ContextStore;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -10,6 +11,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
 import pickleib.enums.Direction;
+import pickleib.exceptions.PickleibVerificationException;
+import pickleib.utilities.Utilities;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
@@ -283,6 +286,95 @@ public class AppTest {
         log.success("acceptAlertTest() pass!");
     }
 
+    @Test
+    public void sortableTest() {
+        List<WebElement> firstListElements;
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        WebElement sortableTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Sortable");
+        webInteractions.clickElement(sortableTool);
+
+        firstListElements = driver.findElements(By.cssSelector("[class='drop-zone']:first-of-type [class='drag-el']"));
+        Assertions.assertEquals(2, firstListElements.size());
+        log.success("firstListElements size verified as 2");
+
+        Assertions.assertEquals("Item A", firstListElements.get(0).getText());
+        log.success("First element of firstListElements text is verified as Item A");
+        Assertions.assertEquals("Item B", firstListElements.get(1).getText());
+        log.success("Second element of firstListElements text is verified as Item B");
+
+        List<WebElement> secondListElements = driver.findElements(By.cssSelector("[class='drop-zone']:last-of-type [class='drag-el']"));
+        Assertions.assertEquals(1, secondListElements.size());
+        log.success("secondListElements size verified as 1");
+        Assertions.assertEquals("Item C", secondListElements.get(0).getText());
+        log.success("First element of secondListElements text is verified as Item C");
+
+        WebElement itemA = webInteractions.getElementByText("Item A");
+        WebElement itemB = webInteractions.getElementByText("Item B");
+        WebElement itemC = webInteractions.getElementByText("Item C");
+
+        log.info("Moving Item B to the top of the firstListElements");
+        webInteractions.dragDropToAction(itemB, itemA);
+
+        firstListElements = driver.findElements(By.cssSelector("[class='drop-zone']:first-of-type [class='drag-el']"));
+        Assertions.assertEquals("Item B", firstListElements.get(0).getText());
+        log.success("First element of firstListElements text is verified as Item B");
+        Assertions.assertEquals("Item A", firstListElements.get(1).getText());
+        log.success("Second element of firstListElements text is verified as Item A");
+
+        log.info("Moving Item C to the top of the firstListElements");
+        webInteractions.dragDropToAction(itemC, itemA);
+
+        firstListElements = driver.findElements(By.cssSelector("[class='drop-zone']:first-of-type [class='drag-el']"));
+        Assertions.assertEquals(3, firstListElements.size());
+        log.success("firstListElements size verified as 3");
+
+        Assertions.assertEquals("Item C", firstListElements.get(0).getText());
+        log.success("First element of firstListElements text is verified as Item C");
+        Assertions.assertEquals("Item B", firstListElements.get(1).getText());
+        log.success("Second element of firstListElements text is verified as Item B");
+        Assertions.assertEquals("Item A", firstListElements.get(2).getText());
+        log.success("Second element of firstListElements text is verified as Item A");
+
+        log.success("sortableTest() passed!");
+  }
+
+    @Test
+    public void iframeClickAndAttributeVerificationsTest() {
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
+        webInteractions.clickElement(lameFrame);
+
+        WebElement innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "IframePage");
+        WebElement iframe = reflections.getElementFromPage("iframe", "IframePage");
+        webInteractions.verifyIframeElementAttributeEqualsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "toggle-inner-switch");
+
+        webInteractions.clickIframeButton(iframe, innerDarkModeButton);
+        innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "IframePage");
+        webInteractions.verifyIframeElementAttributeContainsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "dark-mode");
+        webInteractions.verifyIframeElementAttributeEqualsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "toggle-inner-switch dark-mode");
+    }
+
+    @Test
+    public void iframeFillAndVerifyTest() {
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
+        webInteractions.clickElement(lameFrame);
+
+        WebElement iframe = reflections.getElementFromPage("iframe", "IframePage");
+        WebElement userInput = reflections.getElementFromPage("userInput", "IframePage");
+        WebElement submitButton = reflections.getElementFromPage("submitButton", "IframePage");
+        webInteractions.fillIframeInput(iframe, userInput, "userInput", "IframePage", "yes");
+        webInteractions.clickIframeButton(iframe, submitButton);
+        WebElement submittedText = reflections.getElementFromPage("submittedText", "IframePage");
+        webInteractions.verifyIframeElementAttributeEqualsValue(submittedText, "innerText", "submittedText", iframe, "yes");
+    }
 
 //  @Test
 //  public void clickTest() {

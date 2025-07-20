@@ -24,6 +24,7 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
+import pickleib.exceptions.PickleibVerificationException;
 import pickleib.utilities.Utilities;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.functions.LocateElement;
@@ -441,6 +442,62 @@ public abstract class WebUtilities extends Utilities {
         }
         driver.switchTo().parentFrame();
     }
+
+    /**
+     * Verifies that an attribute {attribute name} of element {element name} in an iframe {} on the {page name} contains a specific {value}.
+     *
+     * @param attributeName the name of the attribute to be verified
+     * @param elementName   the name of the element to be verified
+     * @param value         the expected part of value of the attribute
+     */
+    public void verifyIframeElementAttributeContainsValue(WebElement element, String attributeName, String elementName, WebElement iframe, String value) {
+        log.info("Verifying that " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " contains ") +
+                highlighted(BLUE, value) +
+                highlighted(GRAY, " in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " attribute.")
+        );
+
+        driver.switchTo().frame(iframe);
+        if (!super.elementAttributeContainsValue(element, attributeName, value))
+            throw new PickleibVerificationException(
+                    "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                            "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName)
+            );
+        log.success("The " + attributeName + " attribute of element " + elementName + " contains: " + value);
+        driver.switchTo().parentFrame();
+    }
+
+    /**
+     * Verifies that an attribute {attribute name} of element {element name} in an iframe {} on the {page name} equals a specific {value}.
+     *
+     * @param attributeName the name of the attribute to be verified
+     * @param elementName   the name of the element to be verified
+     * @param value         the expected part of value of the attribute
+     */
+    public void verifyIframeElementAttributeEqualsValue(WebElement element, String attributeName, String elementName, WebElement iframe, String value) {
+        log.info("Verifying that " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " equals ") +
+                highlighted(BLUE, value) +
+                highlighted(GRAY, " in its ") +
+                highlighted(BLUE, attributeName) +
+                highlighted(GRAY, " attribute.")
+        );
+
+        driver.switchTo().frame(iframe);
+        if (!super.elementAttributeEqualsValue(element, attributeName, value))
+            throw new PickleibVerificationException(
+                    "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
+                            "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName)
+            );
+        log.success("The " + attributeName + " attribute of element " + elementName + " equals: " + value);
+
+        driver.switchTo().parentFrame();
+    }
+
 
     /**
      * Hovers cursor over of a given element

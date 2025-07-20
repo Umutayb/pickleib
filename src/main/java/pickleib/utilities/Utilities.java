@@ -15,6 +15,7 @@ import pickleib.utilities.interfaces.functions.ScrollFunction;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import utils.Printer;
 import utils.StringUtilities;
+import utils.reflection.ReflectionUtilities;
 
 import java.time.Duration;
 import java.util.List;
@@ -832,34 +833,32 @@ public abstract class Utilities {
         String caughtException = null;
         int counter = 0;
         value = contextCheck(value);
-        //TODO replace do-while with iterativeConditionalInvocation() method
-        do {
-            try {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-                return elementName.getAttribute(attributeName).contains(value);
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                waitFor(0.5);
-                counter++;
-            } finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(elementTimeout));
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning("Element attribute does not contain " +
-                highlighted(BLUE, attributeName) +
-                highlighted(GRAY, " -> ") +
-                highlighted(BLUE, value) +
-                highlighted(GRAY, " value.")
+        String finalValue = value;
+        return ReflectionUtilities.iterativeConditionalInvocation(
+                (int) elementTimeout/1000,
+                () -> elementName.getAttribute(attributeName).contains(finalValue)
         );
-        log.warning(caughtException);
-        return false;
+    }
+    /**
+     * Verify that an attribute {attribute name} of element {element name} equals to a specific {value}.
+     *
+     * @param elementName   the name of the element to be verified
+     * @param attributeName the name of the attribute to be verified
+     * @param value         the expected part of value of the attribute
+     */
+    public boolean elementAttributeEqualsValue(
+            WebElement elementName,
+            String attributeName,
+            String value) {
+
+        long initialTime = System.currentTimeMillis();
+        String caughtException = null;
+        int counter = 0;
+        value = contextCheck(value);
+        String finalValue = value;
+        return ReflectionUtilities.iterativeConditionalInvocation(
+                (int) elementTimeout/1000,
+                () -> elementName.getAttribute(attributeName).equals(finalValue)
+        );
     }
 }
