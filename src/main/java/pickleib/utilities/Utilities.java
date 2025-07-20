@@ -828,10 +828,6 @@ public abstract class Utilities {
             WebElement elementName,
             String attributeName,
             String value) {
-
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        int counter = 0;
         value = contextCheck(value);
         String finalValue = value;
         return ReflectionUtilities.iterativeConditionalInvocation(
@@ -850,10 +846,6 @@ public abstract class Utilities {
             WebElement elementName,
             String attributeName,
             String value) {
-
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        int counter = 0;
         value = contextCheck(value);
         String finalValue = value;
         return ReflectionUtilities.iterativeConditionalInvocation(
