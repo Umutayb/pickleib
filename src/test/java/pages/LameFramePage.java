@@ -12,6 +12,9 @@ public class LameFramePage extends PickleibPageObject {
     @FindBy(id = "toggle-inner-dark")
     WebElement innerDarkModeButton;
 
+    @FindBy(id = "data-inner-dark")
+    WebElement innerDarkModeData;
+
     @FindBy(id = "userInput")
     WebElement userInput;
 

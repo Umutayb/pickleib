@@ -341,6 +341,13 @@ public class AppTest {
         webInteractions.verifyIframeElementAttributeEqualsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "toggle-inner-switch");
 
         webInteractions.clickIframeButton(iframe, innerDarkModeButton);
+        WebElement innerDarkModeData = reflections.getElementFromPage("innerDarkModeData", "LameFramePage");
+        webInteractions.verifyElementAttributeContainsValue(innerDarkModeData, "innerText", "innerDarkModeData", "LameFramePage", "Inner Dark Mode: ON");
+
+        webInteractions.clickIframeButton(iframe, innerDarkModeButton);
+        webInteractions.verifyElementAttributeContainsValue(innerDarkModeData, "innerText", "innerDarkModeData", "LameFramePage", "Inner Dark Mode: OFF");
+
+        webInteractions.clickIframeButton(iframe, innerDarkModeButton);
         innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "LameFramePage");
         webInteractions.verifyIframeElementAttributeContainsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "dark-mode");
         webInteractions.verifyIframeElementAttributeEqualsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "toggle-inner-switch dark-mode");
