@@ -394,6 +394,21 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
+     * Click iFrame element {element name} in {iframe name} on the {page name}
+     *
+     * @param mainIframe  main iframe that hold the target child iframe
+     * @param childIframe  target child iframe
+     * @param element target element
+     */
+    public void clickNestedIframeButton(WebElement mainIframe, WebElement childIframe, WebElement element) {
+        driver.switchTo().frame(mainIframe);
+        driver.switchTo().frame(childIframe);
+        centerElement(element);
+        clickElement(element);
+        driver.switchTo().parentFrame();
+    }
+
+    /**
      * Fill iFrame element {element name} of {iframe name} on the {page name} with text: {input text}
      *
      * @param iframe    target iframe

@@ -582,7 +582,6 @@ public abstract class Utilities {
      *
      * @param seconds duration as a double
      */
-    //This method makes the thread wait for a certain while
     public static void waitFor(double seconds) {
         Printer log = new Printer(Utilities.class);
         if (seconds > 1) log.info("Waiting for " + markup(BLUE, String.valueOf(seconds)) + " seconds");

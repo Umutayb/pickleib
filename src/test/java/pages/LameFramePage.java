@@ -7,7 +7,10 @@ import pickleib.web.PickleibPageObject;
 public class LameFramePage extends PickleibPageObject {
 
     @FindBy(css = "iframe#lameframe-test-id")
-    WebElement iframe;
+    WebElement mainIframe;
+
+    @FindBy(css = "iframe#lame-cc-iframe")
+    WebElement lameCCIframe;
 
     @FindBy(id = "toggle-inner-dark")
     WebElement innerDarkModeButton;
@@ -23,5 +26,20 @@ public class LameFramePage extends PickleibPageObject {
 
     @FindBy(id = "savedDisplay")
     WebElement submittedText;
+
+    @FindBy(id = "cardNumber")
+    WebElement cardNumber;
+
+    @FindBy(id = "expiry")
+    WebElement cardExpiryDate;
+
+    @FindBy(id = "cvc")
+    WebElement cardCVC;
+
+    @FindBy(id = "submit")
+    WebElement cardSubmitButton;
+
+    @FindBy(id = "submittedMsg")
+    WebElement cardSubmitMessage;
 
 }

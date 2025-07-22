@@ -1,3 +1,4 @@
+import collections.Bundle;
 import common.ObjectRepository;
 import common.StatusWatcher;
 import context.ContextStore;
@@ -257,7 +258,6 @@ public class AppTest {
             if (exception instanceof NoAlertPresentException) log.success("dismissAlertTest() pass!");
             else Assertions.fail("'dismissAlertTest' failed! Exeption: " + exception.getLocalizedMessage());
         }
-
     }
 
     @Test
@@ -326,7 +326,7 @@ public class AppTest {
         log.success("Second element of firstListElements text is verified as Item B");
         Assertions.assertEquals("Item A", firstListElements.get(2).getText());
         log.success("Second element of firstListElements text is verified as Item A");
-  }
+    }
 
     @Test
     public void iframeClickAndAttributeVerificationsTest() {
@@ -361,13 +361,37 @@ public class AppTest {
         WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
         webInteractions.clickElement(lameFrame);
 
-        WebElement iframe = reflections.getElementFromPage("iframe", "LameFramePage");
+        WebElement mainIframe = reflections.getElementFromPage("mainIframe", "LameFramePage");
         WebElement userInput = reflections.getElementFromPage("userInput", "LameFramePage");
         WebElement submitButton = reflections.getElementFromPage("submitButton", "LameFramePage");
-        webInteractions.fillIframeInput(iframe, userInput, "userInput", "LameFramePage", "yes");
-        webInteractions.clickIframeButton(iframe, submitButton);
+        webInteractions.fillIframeInput(mainIframe, userInput, "userInput", "LameFramePage", "yes");
+        webInteractions.clickIframeButton(mainIframe, submitButton);
         WebElement submittedText = reflections.getElementFromPage("submittedText", "LameFramePage");
-        webInteractions.verifyIframeElementAttributeEqualsValue(submittedText, "innerText", "submittedText", iframe, "yes");
+        webInteractions.verifyIframeElementAttributeEqualsValue(submittedText, "innerText", "submittedText", mainIframe, "yes");
+    }
+
+    @Test
+    public void nestedIframeFillTest() {
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
+        webInteractions.clickElement(lameFrame);
+
+        WebElement mainIframe = reflections.getElementFromPage("mainIframe", "LameFramePage");
+        WebElement lameCCIframe = reflections.getElementFromPage("lameCCIframe", "LameFramePage");
+
+        WebElement cardNumber = reflections.getElementFromPage("cardNumber", "LameFramePage");
+        WebElement cardExpiryDate = reflections.getElementFromPage("cardExpiryDate", "LameFramePage");
+        WebElement cardCVC = reflections.getElementFromPage("cardCVC", "LameFramePage");
+        WebElement cardSubmitButton = reflections.getElementFromPage("cardSubmitButton", "LameFramePage");
+
+        webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardNumber, "userInput", "LameFramePage", "4111 1111 4555 1142");
+        webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardExpiryDate, "userInput", "LameFramePage", "03/33");
+        webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardCVC, "userInput", "LameFramePage", "333");
+        webInteractions.clickNestedIframeButton(mainIframe, lameCCIframe, cardSubmitButton);
+        WebElement cardSubmitMessage = reflections.getElementFromPage("cardSubmitMessage", "LameFramePage");
+        webInteractions.verifyIframeElementAttributeEqualsValue(cardSubmitMessage, "innerText", "submittedText", lameCCIframe, "✅ Fake payment submitted!");
     }
 
 //  @Test

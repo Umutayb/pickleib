@@ -1112,6 +1112,35 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     }
 
     /**
+     * Fill iFrame element {element name} of {iframe name} on the {page name} with text: {input text}
+     *
+     * @param mainIframe main iframe that holds the target child iframe
+     * @param childIframe target child iframe
+     * @param element   target element
+     * @param inputName target element name
+     * @param pageName  specified page instance name
+     * @param inputText input text
+     */
+    public void fillNestedIframeInput(
+            WebElement mainIframe,
+            WebElement childIframe,
+            WebElement element,
+            String inputName,
+            String pageName,
+            String inputText) {
+        log.info("Filling " +
+                highlighted(BLUE, inputName) +
+                highlighted(GRAY, " i-frame element input on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, inputText)
+        );
+        driver.switchTo().frame(mainIframe);
+        super.fillIframeInputElement(childIframe, element, inputText);
+        driver.switchTo().parentFrame();
+    }
+
+    /**
      * Fill {iframe name} iframe form input on the {page name}
      *
      * @param bundles    list of bundles where input element, input name and input texts are stored
