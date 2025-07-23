@@ -448,25 +448,25 @@ public abstract class WebUtilities extends Utilities {
      *
      * @param attributeName the name of the attribute to be verified
      * @param elementName   the name of the element to be verified
-     * @param value         the expected part of value of the attribute
+     * @param attributeValue         the expected part of value of the attribute
      */
-    public void verifyIframeElementAttributeContainsValue(WebElement element, String attributeName, String elementName, WebElement iframe, String value) {
+    public void verifyIframeElementAttributeContainsValue(WebElement element, String attributeName, String elementName, WebElement iframe, String attributeValue) {
         log.info("Verifying that " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " contains ") +
-                highlighted(BLUE, value) +
+                highlighted(BLUE, attributeValue) +
                 highlighted(GRAY, " in its ") +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute.")
         );
 
         driver.switchTo().frame(iframe);
-        if (!super.elementAttributeContainsValue(element, attributeName, value))
+        if (!super.elementAttributeContainsValue(element, attributeName, attributeValue))
             throw new PickleibVerificationException(
                     "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
-                            "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName)
+                            "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName)
             );
-        log.success("The " + attributeName + " attribute of element " + elementName + " contains: " + value);
+        log.success("The " + attributeName + " attribute of element " + elementName + " contains: " + attributeValue);
         driver.switchTo().parentFrame();
     }
 
@@ -475,25 +475,25 @@ public abstract class WebUtilities extends Utilities {
      *
      * @param attributeName the name of the attribute to be verified
      * @param elementName   the name of the element to be verified
-     * @param value         the expected part of value of the attribute
+     * @param attributeValue         the expected part of value of the attribute
      */
-    public void verifyIframeElementAttributeEqualsValue(WebElement element, String attributeName, String elementName, WebElement iframe, String value) {
+    public void verifyIframeElementAttributeEqualsValue(WebElement element, String attributeName, String elementName, WebElement iframe, String attributeValue) {
         log.info("Verifying that " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " equals ") +
-                highlighted(BLUE, value) +
+                highlighted(BLUE, attributeValue) +
                 highlighted(GRAY, " in its ") +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " attribute.")
         );
 
         driver.switchTo().frame(iframe);
-        if (!super.elementAttributeEqualsValue(element, attributeName, value))
+        if (!super.elementAttributeEqualsValue(element, attributeName, attributeValue))
             throw new PickleibVerificationException(
                     "The " + attributeName + " attribute of element " + elementName + " could not be verified." +
-                            "\nExpected value: " + value + "\nActual value: " + element.getAttribute(attributeName)
+                            "\nExpected value: " + attributeValue + "\nActual value: " + element.getAttribute(attributeName)
             );
-        log.success("The " + attributeName + " attribute of element " + elementName + " equals: " + value);
+        log.success("The " + attributeName + " attribute of element " + elementName + " equals: " + attributeValue);
 
         driver.switchTo().parentFrame();
     }
