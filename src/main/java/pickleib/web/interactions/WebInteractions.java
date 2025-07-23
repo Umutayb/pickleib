@@ -751,6 +751,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 inputElement,
                 absoluteFilePath,
                 false,
+                false,
                 false
         );
     }
@@ -776,7 +777,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.fillInputElement(inputElement, inputText, scroll, clear);
+        super.fillInputElement(inputElement, inputText, scroll, clear, verify);
     }
 
     /**
@@ -799,7 +800,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.fillInputElement(inputElement, inputText, false, clear);
+        super.fillInputElement(inputElement, inputText, false, clear, verify);
     }
 
     /**

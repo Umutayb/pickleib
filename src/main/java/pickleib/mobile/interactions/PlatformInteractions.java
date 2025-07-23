@@ -825,7 +825,27 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
                 highlighted(GRAY, " with the text: ") +
                 highlighted(BLUE, inputText)
         );
-        super.fillInputElement(inputElement, inputText, scroll, clear);
+        super.fillInputElement(inputElement, inputText, scroll, clear, verify);
+    }
+
+    /**
+     * @param inputElement The WebElement representing the input field.
+     * @param elementName  The target element name.
+     * @param pageName     The specified page instance name.
+     * @param inputText    The text to be entered into the input field.
+     * @param clear        If true, clears the input field before entering text. If false, does not clear.
+     * @param verify       If true, verifies that the entered text matches the value attribute of the inputElement. If false, skips verification.
+     */
+    public void fillInputElement(WebElement inputElement, String elementName, String pageName, String inputText, boolean clear, boolean verify) {
+        inputText = contextCheck(inputText);
+        log.info("Filling " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY," on the ") +
+                highlighted(BLUE, pageName) +
+                highlighted(GRAY, " with the text: ") +
+                highlighted(BLUE, inputText)
+        );
+        super.fillInputElement(inputElement, inputText, false, clear, verify);
     }
 
     /**
