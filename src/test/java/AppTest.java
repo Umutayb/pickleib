@@ -389,7 +389,8 @@ public class AppTest {
         webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardNumber, "userInput", "LameFramePage", "4111 1111 4555 1142");
         webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardExpiryDate, "userInput", "LameFramePage", "03/33");
         webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardCVC, "userInput", "LameFramePage", "333");
-        webInteractions.clickNestedIframeButton(mainIframe, lameCCIframe, cardSubmitButton);
+        driver.switchTo().frame(mainIframe);
+        webInteractions.clickIframeButton(lameCCIframe, cardSubmitButton);
         WebElement cardSubmitMessage = reflections.getElementFromPage("cardSubmitMessage", "LameFramePage");
         webInteractions.verifyIframeElementAttributeEqualsValue(cardSubmitMessage, "innerText", "submittedText", lameCCIframe, "✅ Fake payment submitted!");
     }
