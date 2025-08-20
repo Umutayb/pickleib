@@ -300,6 +300,18 @@ public abstract class Utilities {
      * @param clear        If true, clears the input field before entering text. If false, does not clear.
      * @param verify       verifies the input text value equals to an expected text if true
      */
+    public void fillInputElement(WebElement inputElement, String inputText, boolean scroll, boolean clear, boolean verify) {
+        fillAndVerify(inputElement, inputText, scroll, clear, verify);
+    }
+
+    /**
+     * Clears and fills a given input
+     *
+     * @param inputElement target input element
+     * @param inputText    input text
+     * @param clear        If true, clears the input field before entering text. If false, does not clear.
+     * @param verify       verifies the input text value equals to an expected text if true
+     */
     public void fillInputElement(WebElement inputElement, String inputText, boolean clear, boolean verify) {
         fillAndVerify(inputElement, inputText, false, clear, verify);
     }
