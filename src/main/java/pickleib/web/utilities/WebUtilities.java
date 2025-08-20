@@ -498,7 +498,6 @@ public abstract class WebUtilities extends Utilities {
         driver.switchTo().parentFrame();
     }
 
-
     /**
      * Hovers cursor over of a given element
      *
