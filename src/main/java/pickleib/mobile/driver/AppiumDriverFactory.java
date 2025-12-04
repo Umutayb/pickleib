@@ -52,16 +52,17 @@ public class AppiumDriverFactory implements DriverFactory {
         AppiumDriverFactory.deviceName = deviceName;
         DesiredCapabilities capabilities = getConfig(capabilitiesJSON);
         String urlString;
+        String extension = ContextStore.get("appium-service-uri", "");
         if (remote) {
             String userName = ContextStore.get("remote-mobile-username");
             String accessKey = ContextStore.get("remote-mobile-access-key");
             String server = ContextStore.get("remote-mobile-server");
-            urlString = String.format("https://%s:%s@%s/wd/hub", userName , accessKey, server);
+            urlString = String.format("https://%s:%s@%s%s", userName , accessKey, server, extension);
         }
         else {
             String address = ContextStore.get("address", "0.0.0.0");
             String port = ContextStore.get("port", "4723");
-            urlString = "http://" + address + ":" + port + "/wd/hub";
+            urlString = String.format("http://%s:%s%s", address, port, extension);
 
             if(capabilitiesJSON.get("app") != null) {
                 String appCapability = isValidFilePath(String.valueOf(capabilitiesJSON.get("app"))) ?
