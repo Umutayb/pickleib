@@ -1,8 +1,10 @@
+import collections.Bundle;
 import common.ObjectRepository;
 import common.StatusWatcher;
 import context.ContextStore;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -72,7 +74,6 @@ public class AppTest {
         log.important(ContextStore.items().toString());
         log.info("webInteractions.navigate(page.trainingUrl) test");
         Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "\"webInteractions.navigate(page.trainingUrl) test failed!");
-        log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
     }
 
     @Test
@@ -81,7 +82,6 @@ public class AppTest {
         webInteractions.toPage("elements");
         webInteractions.navigateBrowser(backwards);
         Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "webInteractions.navigateBrowser(backwards) test failed!");
-        log.success("The webInteractions.navigateBrowser(backwards) test pass!");
     }
 
     @Test
@@ -91,7 +91,6 @@ public class AppTest {
         webInteractions.clickElement(forms);
         WebElement title = reflections.getElementFromPage("title", "formsPage");
         Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
-        log.success("The formTest test pass!");
     }
 
     @Test
@@ -169,8 +168,6 @@ public class AppTest {
             else
                 Assertions.assertEquals(entries.get(entryKey), entryValueElement.getText(), "Data mismatch!");
         }
-
-        log.success("The completeFormSubmissionTest() passed!");
     }
 
     @Test
@@ -190,7 +187,6 @@ public class AppTest {
         Assertions.assertFalse(webInteractions.elementIsInView(preSelection), "Selected country is already in view!!");
         WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
         Assertions.assertTrue(webInteractions.elementIsInView(country), "Selected country is not in view!!");
-        log.success("scrollInContainerTest() pass!");
     }
 
     @Test
@@ -232,7 +228,6 @@ public class AppTest {
         webInteractions.clickElement(newTabButton);
         webInteractions.switchToNextTab();
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("openNewTabTest() pass!");
     }
 
     @Test
@@ -245,7 +240,6 @@ public class AppTest {
         webInteractions.clickElement(newWindowButton);
         webInteractions.switchWindowByIndex(1);
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("openNewWindowTest() pass!");
     }
 
     @Test
@@ -264,7 +258,6 @@ public class AppTest {
             if (exception instanceof NoAlertPresentException) log.success("dismissAlertTest() pass!");
             else Assertions.fail("'dismissAlertTest' failed! Exeption: " + exception.getLocalizedMessage());
         }
-
     }
 
     @Test
@@ -280,9 +273,127 @@ public class AppTest {
         webInteractions.waitUntilPageLoads(5);
         webInteractions.switchToNextTab();
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("acceptAlertTest() pass!");
     }
 
+    @Test
+    public void sortableTest() {
+        List<WebElement> firstListElements;
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        WebElement sortableTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Sortable");
+        webInteractions.clickElement(sortableTool);
+
+        firstListElements = driver.findElements(By.cssSelector("[class='drop-zone']:first-of-type [class='drag-el']"));
+        Assertions.assertEquals(2, firstListElements.size());
+        log.success("firstListElements size verified as 2");
+
+        Assertions.assertEquals("Item A", firstListElements.get(0).getText());
+        log.success("First element of firstListElements text is verified as Item A");
+        Assertions.assertEquals("Item B", firstListElements.get(1).getText());
+        log.success("Second element of firstListElements text is verified as Item B");
+
+        List<WebElement> secondListElements = driver.findElements(By.cssSelector("[class='drop-zone']:last-of-type [class='drag-el']"));
+        Assertions.assertEquals(1, secondListElements.size());
+        log.success("secondListElements size verified as 1");
+        Assertions.assertEquals("Item C", secondListElements.get(0).getText());
+        log.success("First element of secondListElements text is verified as Item C");
+
+        WebElement itemA = webInteractions.getElementByText("Item A");
+        WebElement itemB = webInteractions.getElementByText("Item B");
+        WebElement itemC = webInteractions.getElementByText("Item C");
+
+        log.info("Moving Item B to the top of the firstListElements");
+        webInteractions.dragDropToAction(itemB, itemA);
+
+        firstListElements = driver.findElements(By.cssSelector("[class='drop-zone']:first-of-type [class='drag-el']"));
+        Assertions.assertEquals("Item B", firstListElements.get(0).getText());
+        log.success("First element of firstListElements text is verified as Item B");
+        Assertions.assertEquals("Item A", firstListElements.get(1).getText());
+        log.success("Second element of firstListElements text is verified as Item A");
+
+        log.info("Moving Item C to the top of the firstListElements");
+        webInteractions.dragDropToAction(itemC, itemA);
+
+        firstListElements = driver.findElements(By.cssSelector("[class='drop-zone']:first-of-type [class='drag-el']"));
+        Assertions.assertEquals(3, firstListElements.size());
+        log.success("firstListElements size verified as 3");
+
+        Assertions.assertEquals("Item C", firstListElements.get(0).getText());
+        log.success("First element of firstListElements text is verified as Item C");
+        Assertions.assertEquals("Item B", firstListElements.get(1).getText());
+        log.success("Second element of firstListElements text is verified as Item B");
+        Assertions.assertEquals("Item A", firstListElements.get(2).getText());
+        log.success("Second element of firstListElements text is verified as Item A");
+    }
+
+    @Test
+    public void iframeClickAndAttributeVerificationsTest() {
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
+        webInteractions.clickElement(lameFrame);
+
+        WebElement innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "LameFramePage");
+        WebElement iframe = reflections.getElementFromPage("iframe", "LameFramePage");
+        webInteractions.verifyIframeElementAttributeEqualsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "toggle-inner-switch");
+
+        webInteractions.clickIframeButton(iframe, innerDarkModeButton);
+        WebElement innerDarkModeData = reflections.getElementFromPage("innerDarkModeData", "LameFramePage");
+        webInteractions.verifyElementAttributeContainsValue(innerDarkModeData, "innerText", "innerDarkModeData", "LameFramePage", "Inner Dark Mode: ON");
+
+        webInteractions.clickIframeButton(iframe, innerDarkModeButton);
+        webInteractions.verifyElementAttributeContainsValue(innerDarkModeData, "innerText", "innerDarkModeData", "LameFramePage", "Inner Dark Mode: OFF");
+
+        webInteractions.clickIframeButton(iframe, innerDarkModeButton);
+        innerDarkModeButton = reflections.getElementFromPage("innerDarkModeButton", "LameFramePage");
+        webInteractions.verifyIframeElementAttributeContainsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "dark-mode");
+        webInteractions.verifyIframeElementAttributeEqualsValue(innerDarkModeButton, "class", "innerDarkModeButton", iframe, "toggle-inner-switch dark-mode");
+    }
+
+    @Test
+    public void iframeFillAndVerifyTest() {
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
+        webInteractions.clickElement(lameFrame);
+
+        WebElement mainIframe = reflections.getElementFromPage("mainIframe", "LameFramePage");
+        WebElement userInput = reflections.getElementFromPage("userInput", "LameFramePage");
+        WebElement submitButton = reflections.getElementFromPage("submitButton", "LameFramePage");
+        webInteractions.fillIframeInput(mainIframe, userInput, "userInput", "LameFramePage", "yes");
+        webInteractions.clickIframeButton(mainIframe, submitButton);
+        WebElement submittedText = reflections.getElementFromPage("submittedText", "LameFramePage");
+        webInteractions.verifyIframeElementAttributeEqualsValue(submittedText, "innerText", "submittedText", mainIframe, "yes");
+    }
+
+    @Test
+    public void nestedIframeFillTest() {
+        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
+        webInteractions.clickElement(alertsAndWindows);
+        WebElement lameFrame = reflections.getElementFromPage("lameFrame", "AlertAndWindowsPage");
+        webInteractions.clickElement(lameFrame);
+
+        WebElement mainIframe = reflections.getElementFromPage("mainIframe", "LameFramePage");
+        WebElement lameCCIframe = reflections.getElementFromPage("lameCCIframe", "LameFramePage");
+
+        WebElement cardNumber = reflections.getElementFromPage("cardNumber", "LameFramePage");
+        WebElement cardExpiryDate = reflections.getElementFromPage("cardExpiryDate", "LameFramePage");
+        WebElement cardCVC = reflections.getElementFromPage("cardCVC", "LameFramePage");
+        WebElement cardSubmitButton = reflections.getElementFromPage("cardSubmitButton", "LameFramePage");
+
+        webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardNumber, "userInput", "LameFramePage", "4111 1111 4555 1142");
+        webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardExpiryDate, "userInput", "LameFramePage", "03/33");
+        webInteractions.fillNestedIframeInput(mainIframe, lameCCIframe, cardCVC, "userInput", "LameFramePage", "333");
+        driver.switchTo().frame(mainIframe);
+        webInteractions.clickIframeButton(lameCCIframe, cardSubmitButton);
+        WebElement cardSubmitMessage = reflections.getElementFromPage("cardSubmitMessage", "LameFramePage");
+        webInteractions.verifyIframeElementAttributeEqualsValue(cardSubmitMessage, "innerText", "submittedText", lameCCIframe, "✅ Fake payment submitted!");
+    }
 
 //  @Test
 //  public void clickTest() {
