@@ -6,7 +6,7 @@
 
   <groupId>io.github.umutayb</groupId>
   <artifactId>pickleib</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2</version>
   <packaging>jar</packaging>
   <name>Pickleib</name>
   <description>Pickleib helps automate tests for WebUI, MobileUI, Desktop UI, API, Email, DataBase, Localisation and more!</description>
@@ -47,6 +47,13 @@
         <name>Fady Michel</name>
         <email>fady.michel5@gmail.com</email>
         <organizationUrl>https://github.com/fadymichel5</organizationUrl>
+      </developer>
+
+      <!-- Feyza -->
+      <developer>
+        <name>Feyza Bora</name>
+        <email>kahya.feyza@gmail.com</email>
+        <organizationUrl>https://github.com/feyzabora</organizationUrl>
       </developer>
 
   </developers>
