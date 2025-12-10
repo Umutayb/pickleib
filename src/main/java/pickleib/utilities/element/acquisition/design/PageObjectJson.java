@@ -4,6 +4,7 @@ import collections.Pair;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.appium.java_client.AppiumBy;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.AppiumFluentWait;
 import org.openqa.selenium.NoSuchElementException;
@@ -28,6 +29,7 @@ import org.openqa.selenium.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static pickleib.utilities.platform.PlatformUtilities.isAppiumDriver;
 import static utils.StringUtilities.Color.BLUE;
 import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.highlighted;
@@ -191,13 +193,15 @@ public class PageObjectJson implements PageRepository {
                 highlighted(GRAY," from the ") +
                 highlighted(BLUE, pageName)
         );
+
         JsonObject pageJson = getPageJson(pageName, objectRepository);
         JsonObject elementJson = getElementJson(elementName, pageJson);
-        assert elementJson != null;
 
-        ByAll byAll = getElementByAll(elementJson, selectorTypes);
+        RemoteWebDriver driver = getDriverForPage(pageJson);
+
+        ByAll byAll = getElementByAll(elementJson, driver, selectorTypes);
         getWaitForPage(pageJson).until(ExpectedConditions.presenceOfElementLocated(byAll));
-        return getDriverForPage(pageJson).findElement(byAll);
+        return driver.findElement(byAll);
     }
 
     /**
@@ -215,13 +219,15 @@ public class PageObjectJson implements PageRepository {
                 highlighted(GRAY," from the ") +
                 highlighted(BLUE, pageName)
         );
+
         JsonObject pageJson = getPageJson(pageName, objectRepository);
         JsonObject elementJson = getElementJson(elementName, pageJson);
 
-        assert elementJson != null;
-        ByAll byAll = getElementByAll(elementJson, selectorTypes);
+        RemoteWebDriver driver = getDriverForPage(pageJson);
+
+        ByAll byAll = getElementByAll(elementJson, driver, selectorTypes);
         getWaitForPage(pageJson).until(ExpectedConditions.presenceOfAllElementsLocatedBy(byAll));
-        return getDriverForPage(pageJson).findElements(byAll);
+        return driver.findElements(byAll);
     }
 
     /**
@@ -236,48 +242,81 @@ public class PageObjectJson implements PageRepository {
      * @see org.openqa.selenium.By
      * @see SelectorType
      */
-    public ByAll getElementByAll(JsonObject elementJson, SelectorType... selectorTypes){
+    public ByAll getElementByAll(JsonObject elementJson, RemoteWebDriver driver, SelectorType... selectorTypes){
         List<By> locators = new ArrayList<>();
         if (selectorTypes.length > 0)
             for (SelectorType selectorType:selectorTypes) {
                 try {
                     By locator;
                     switch (selectorType){
-                        case id ->
-                                locator = By.id(elementJson.get("id").getAsJsonPrimitive().getAsString());
-                        case name ->
-                                locator = By.name(elementJson.get("name").getAsJsonPrimitive().getAsString());
-                        case tagName ->
-                                locator = By.tagName(elementJson.get("tagName").getAsJsonPrimitive().getAsString());
-                        case className ->
-                                locator = By.className(elementJson.get("class").getAsJsonPrimitive().getAsString());
-                        case css ->
-                                locator = By.cssSelector(elementJson.get("css").getAsJsonPrimitive().getAsString());
-                        case xpath ->
-                                locator = By.xpath(elementJson.get("xpath").getAsJsonPrimitive().getAsString());
+                        case id -> locator =
+                                By.id(getPlatformSelector(elementJson, driver, selectorType));
+                        case xpath -> locator =
+                                By.xpath(getPlatformSelector(elementJson, driver, selectorType));
+                        case css -> locator =
+                                By.cssSelector(getPlatformSelector(elementJson, driver, selectorType));
+                        case className -> locator =
+                                By.className(getPlatformSelector(elementJson, driver, selectorType));
+                        case tagName -> locator =
+                                By.tagName(getPlatformSelector(elementJson, driver, selectorType));
+                        case name -> locator =
+                                By.name(getPlatformSelector(elementJson, driver, selectorType));
+                        case accessibilityId -> locator =
+                                AppiumBy.accessibilityId(getPlatformSelector(elementJson, driver, selectorType));
+                        case androidDataMatcher -> locator =
+                                AppiumBy.androidDataMatcher(getPlatformSelector(elementJson, driver, selectorType));
+                        case androidViewMatcher -> locator =
+                                AppiumBy.androidViewMatcher(getPlatformSelector(elementJson, driver, selectorType));
+                        case androidViewTag -> locator =
+                                AppiumBy.androidViewTag(getPlatformSelector(elementJson, driver, selectorType));
+                        case androidUIAutomator -> locator =
+                                AppiumBy.androidUIAutomator(getPlatformSelector(elementJson, driver, selectorType));
+                        case iOSClassChain -> locator =
+                                AppiumBy.iOSClassChain(getPlatformSelector(elementJson, driver, selectorType));
+                        case iOSNsPredicateString -> locator =
+                                AppiumBy.iOSNsPredicateString(getPlatformSelector(elementJson, driver, selectorType));
                         case text -> {
                             String text = elementJson.get("text").getAsJsonPrimitive().getAsString();
-                            locator = By.xpath("//*[text()='" + text + "']");//TODO: text locator method might vary depending on platform! Implement dynamic text locator name
+                            //TODO: text locator method might vary depending on platform! Implement dynamic text locator name
+                            locator = By.xpath("//*[text()='" + text + "']");
                         }
                         default -> throw new EnumConstantNotPresentException(SelectorType.class, selectorType.name());
-
                     }
                     locators.add(locator);
                 }
-                catch (NullPointerException | IllegalStateException ignored){}
-
+                catch (NullPointerException | IllegalArgumentException | IllegalStateException ignored){}
             }
         else return getElementByAll(
                 elementJson,
-                SelectorType.id,
-                SelectorType.name,
-                SelectorType.tagName,
-                SelectorType.className,
-                SelectorType.css,
-                SelectorType.xpath,
-                SelectorType.text
+                driver,
+                SelectorType.values()
         );
         return new ByAll(locators.toArray(new By[0]));
+    }
+
+    /**
+     * Retrieves a platform-specific selector string from the page repository JSON object.
+     *
+     * @param elementJson The JSON object containing the selector definitions.  It is expected to have a "selectors" field which is a JSON object.
+     *                    This inner object should contain keys representing platform names (lowercase) and values that are JSON arrays of selector strings.
+     * @param driver The {@link RemoteWebDriver} instance. Used to determine the platform (e.g., Windows, iOS, Android, Web).
+     * @param selectorType The type of selector to retrieve.
+     * @return The selector string for the specified platform and selector type, or {@code null} if no matching selector is found.
+     * @throws IllegalArgumentException if `elementJson` does not contain a "selectors" field,
+     *                                  or if the "selectors" field is not a JSON object,
+     *                                  or if the platform key is not found within the "selectors" object,
+     *                                  or if the value associated with the platform key is not a JSON array.
+     */
+    String getPlatformSelector(JsonObject elementJson, RemoteWebDriver driver, SelectorType selectorType){
+        JsonObject elementSelectors = elementJson.get("selectors").getAsJsonObject();
+        Platform platform = driver.getCapabilities().getPlatformName();
+        String platformName = isAppiumDriver(driver) ? platform.name() : "web";
+        JsonArray selectors =  elementSelectors.get(platformName).getAsJsonArray();
+        for (JsonElement selector : selectors){
+            if (selector.getAsJsonObject().has(selectorType.getKey()))
+                return selector.getAsJsonObject().get(selectorType.getKey()).getAsJsonPrimitive().getAsString();
+        }
+        return null;
     }
 
     /**
@@ -379,8 +418,13 @@ public class PageObjectJson implements PageRepository {
     public JsonObject getElementJson(String elementName, JsonObject pageJson){
         JsonArray elements = pageJson.getAsJsonArray("elements");
         for (JsonElement elementJson:elements)
-            if (elementJson.getAsJsonObject().get("elementName").getAsJsonPrimitive().getAsString().equals(elementName))
-                return elementJson.getAsJsonObject();
+            if (elementJson
+                    .getAsJsonObject()
+                    .get("elementName")
+                    .getAsJsonPrimitive()
+                    .getAsString()
+                    .equalsIgnoreCase(elementName)
+            ) return elementJson.getAsJsonObject();
 
         return null;
     }
@@ -402,7 +446,7 @@ public class PageObjectJson implements PageRepository {
                                 .get("name")
                                 .getAsJsonPrimitive()
                                 .getAsString()
-                                .equals(pageName)
+                                .equalsIgnoreCase(pageName)
                 ).findAny().orElse(null)
         ).getAsJsonObject();
     }
