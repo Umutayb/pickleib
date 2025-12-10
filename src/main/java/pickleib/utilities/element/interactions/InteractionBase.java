@@ -29,17 +29,23 @@ public class InteractionBase {
     }
 
     public PolymorphicUtilities getInteractions(DriverFactory.DriverType driverType) {
+        if (webInteractions == null && platformInteractions == null)
+            log.warning("Neither web nor platform interactions are instantiated!");
         if (!StringUtilities.isBlank(driverType))
             switch (driverType) {
                 case selenium -> {
+                    if (webInteractions == null)
+                        log.warning("Web interactions requested without beings instantiated!");
                     return webInteractions;
                 }
                 case appium -> {
+                    if (platformInteractions == null)
+                        log.warning("Platform interactions requested without beings instantiated!");
                     return platformInteractions;
                 }
+                default -> throw new EnumConstantNotPresentException(DriverFactory.DriverType.class, driverType.name());
             }
         else return getInteractions(defaultPlatform);
-        return null;
     }
 
     /**

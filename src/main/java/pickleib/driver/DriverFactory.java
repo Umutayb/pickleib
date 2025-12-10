@@ -19,14 +19,6 @@ public interface DriverFactory {
         }
 
         public static DriverType getType(String text) {
-            try {
-                Platform.fromString(text);
-                return appium;
-            }
-            catch (WebDriverException ignored){
-                if (text != null && text.equalsIgnoreCase("web")) return selenium;
-                else if (text != null && text.equalsIgnoreCase("mobile")) return appium;
-            }
             return fromString(text);
         }
     }
