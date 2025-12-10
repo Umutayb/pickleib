@@ -4,10 +4,14 @@ import collections.Pair;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.AppiumFluentWait;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.pagefactory.ByAll;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
@@ -16,6 +20,8 @@ import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.repository.PageRepository;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.Printer;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import org.openqa.selenium.*;
@@ -30,19 +36,36 @@ public class PageObjectJson implements PageRepository {
 
     RemoteWebDriver webDriver;
     RemoteWebDriver platformDriver;
+    FluentWait<RemoteWebDriver> webWait;
+    AppiumFluentWait<RemoteWebDriver> platformWait;
     JsonObject objectRepository;
     Printer log = new Printer(PageObjectJson.class);
 
-    public PageObjectJson(RemoteWebDriver webDriver, RemoteWebDriver platformDriver, JsonObject objectRepository) {
+    public PageObjectJson(
+            RemoteWebDriver webDriver,
+            RemoteWebDriver platformDriver,
+            JsonObject objectRepository,
+            int elementTimeout
+    ) {
         this.webDriver = webDriver;
         this.platformDriver = platformDriver;
         this.objectRepository = objectRepository;
+
+        webWait = new FluentWait<>(webDriver)
+                .withTimeout(Duration.ofSeconds(elementTimeout))
+                .pollingEvery(Duration.ofMillis(500))
+                .withMessage("Waiting for web element visibility...")
+                .ignoring(WebDriverException.class);
+
+        platformWait = (AppiumFluentWait<RemoteWebDriver>) new AppiumFluentWait<>(platformDriver)
+                .withTimeout(Duration.ofSeconds(elementTimeout))
+                .pollingEvery(Duration.ofMillis(500))
+                .withMessage("Waiting for platform element visibility...")
+                .ignoring(WebDriverException.class);
     }
 
     public PageObjectJson(JsonObject objectRepository) {
-        this.webDriver = PickleibWebDriver.get();
-        this.platformDriver = PickleibAppiumDriver.get();
-        this.objectRepository = objectRepository;
+        this(PickleibWebDriver.get(), PickleibAppiumDriver.get(), objectRepository, 30);
     }
 
     /**
@@ -173,6 +196,7 @@ public class PageObjectJson implements PageRepository {
         assert elementJson != null;
 
         ByAll byAll = getElementByAll(elementJson, selectorTypes);
+        getWaitForPage(pageJson).until(ExpectedConditions.presenceOfElementLocated(byAll));
         return getDriverForPage(pageJson).findElement(byAll);
     }
 
@@ -196,6 +220,7 @@ public class PageObjectJson implements PageRepository {
 
         assert elementJson != null;
         ByAll byAll = getElementByAll(elementJson, selectorTypes);
+        getWaitForPage(pageJson).until(ExpectedConditions.presenceOfAllElementsLocatedBy(byAll));
         return getDriverForPage(pageJson).findElements(byAll);
     }
 
@@ -274,6 +299,7 @@ public class PageObjectJson implements PageRepository {
             case xpath ->   locator = By.xpath(generateXPathByAttributes(attributePairs));
             default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
         }
+        getWaitForType(driverType).until(ExpectedConditions.presenceOfElementLocated(locator));
         return getDriverForType(driverType).findElement(locator);
     }
 
@@ -296,6 +322,7 @@ public class PageObjectJson implements PageRepository {
             case xpath ->   locator = By.xpath(generateXPathByAttributes(attributePairs));
             default -> throw new EnumConstantNotPresentException(PrimarySelectorType.class, selectorType.name());
         }
+        getWaitForType(driverType).until(ExpectedConditions.presenceOfAllElementsLocatedBy(locator));
         return getDriverForType(driverType).findElements(locator);
     }
 
@@ -410,6 +437,41 @@ public class PageObjectJson implements PageRepository {
             }
             case selenium -> {
                 return webDriver;
+            }
+            default -> throw new EnumConstantNotPresentException(DriverFactory.DriverType.class, driverType.name());
+        }
+    }
+
+    /**
+     * Retrieves a RemoteWebDriver instance for a given page JSON object.
+     *
+     * @param pageJson The JSON object representing the page.  Must contain a "platform" field.
+     * @return The RemoteWebDriver instance for the specified platform.
+     */
+    public FluentWait<RemoteWebDriver> getWaitForPage(JsonObject pageJson) {
+        DriverFactory.DriverType driverType = DriverFactory.DriverType.getType(
+                pageJson
+                        .get("platform")
+                        .getAsJsonPrimitive()
+                        .getAsString()
+        );
+        return getWaitForType(driverType);
+    }
+
+    /**
+     * Retrieves a RemoteWebDriver instance for a given DriverType.
+     *
+     * @param driverType The DriverType to retrieve the driver for.
+     * @return The RemoteWebDriver instance for the specified DriverType.
+     * @throws EnumConstantNotPresentException if the DriverType is not supported.
+     */
+    public FluentWait<RemoteWebDriver> getWaitForType(DriverFactory.DriverType driverType){
+        switch (driverType){
+            case appium -> {
+                return platformWait;
+            }
+            case selenium -> {
+                return webWait;
             }
             default -> throw new EnumConstantNotPresentException(DriverFactory.DriverType.class, driverType.name());
         }
