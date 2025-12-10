@@ -1,24 +1,29 @@
 package pickleib.utilities.steps;
 
 import com.google.gson.JsonObject;
-import pickleib.utilities.element.acquisition.ElementAcquisition;
+import pickleib.utilities.element.acquisition.design.PageObjectJson;
 import pickleib.utilities.element.interactions.InteractionBase;
-import pickleib.web.driver.PickleibWebDriver;
+import pickleib.utilities.interfaces.StepUtilities;
 
-public class PageJsonStepUtilities extends InteractionBase {
+public class PageJsonStepUtilities extends InteractionBase implements StepUtilities {
 
-    public ElementAcquisition.PageObjectJson pageJson;
+    public PageObjectJson objectRepository;
 
     public PageJsonStepUtilities(JsonObject pageJson){
         super();
-        this.pageJson = new ElementAcquisition.PageObjectJson(PickleibWebDriver.get(), pageJson);
+        this.objectRepository = new PageObjectJson(pageJson);
     }
 
     public PageJsonStepUtilities(
             JsonObject pageJson,
-            boolean mobileDriverActive,
+            boolean platformDriverActive,
             boolean webDriverActive) {
-        super(mobileDriverActive, webDriverActive);
-        this.pageJson = new ElementAcquisition.PageObjectJson(PickleibWebDriver.get(), pageJson);
+        super(platformDriverActive, webDriverActive);
+        this.objectRepository = new PageObjectJson(pageJson);
+    }
+
+    @Override
+    public PageObjectJson getObjectRepository() {
+        return objectRepository;
     }
 }

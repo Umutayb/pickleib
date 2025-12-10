@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.utilities.Utilities;
+import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.functions.LocateElement;
 
 import java.util.List;
@@ -483,7 +484,7 @@ public interface PolymorphicUtilities {
      *                 (true - if the input text value equals to an expected text) are stored
      * @param pageName specified page instance name
      */
-    void fillForm(List<Bundle<WebElement, String, String>> bundles, String pageName);
+    void fillForm(List<ElementBundle<String>> bundles, String pageName);
 
     /**
      * Verifies the text of {element name} on the {page name} to be: {expected text}
@@ -495,7 +496,6 @@ public interface PolymorphicUtilities {
      */
     void verifyText(WebElement element, String elementName, String pageName, String expectedText);
 
-
     /**
      * Verifies the text of {element name} on the {page name} to contain: {expected text}
      *
@@ -504,15 +504,28 @@ public interface PolymorphicUtilities {
      * @param pageName     specified page instance name
      * @param expectedText expected text
      */
-    void verifyContainsText(WebElement element, String elementName, String pageName, String expectedText);
+    void verifyElementContainsText(WebElement element, String elementName, String pageName, String expectedText);
 
     /**
-     * Verifies the text of an element from the list on the {page name}.
+     * Verifies the text of an element from a list on the {page name}.
      *
      * @param bundles  list of bundles where element text, element name and expected text are stored
      * @param pageName specified page instance name
      */
-    void verifyListedText(List<Bundle<WebElement, String, String>> bundles, String pageName);
+    void verifyListedElementText(List<ElementBundle<String>> bundles, String pageName);
+
+    /**
+     * Verifies the text of an element from a list on the {page name}.
+     *
+     * @param elements  list of elements
+     * @param pageName specified page instance name
+     */
+    void verifyListContainsElementByText(
+            List<WebElement> elements,
+            String expectedText,
+            String listName,
+            String pageName
+    );
 
     /**
      * Verifies the presence of an element {element name} on the {page name}
@@ -636,7 +649,7 @@ public interface PolymorphicUtilities {
      * @param pageName The name of the page object.
      * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
      */
-    void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName);
+    void bundleInteraction(List<ElementBundle<Map<String, String>>> bundles, String pageName);
 
     /**
      * Scrolls through a list of elements until an element with the specified text is found and displayed.

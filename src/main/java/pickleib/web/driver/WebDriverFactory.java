@@ -253,7 +253,6 @@ public class WebDriverFactory implements DriverFactory {
     /**
      * Available driver types
      */
-    @Getter
     public enum BrowserType {
         CHROME("Chrome"),
         FIREFOX("Firefox"),
@@ -282,6 +281,10 @@ public class WebDriverFactory implements DriverFactory {
                     if (browserType.name().equalsIgnoreCase(text))
                         return browserType;
             return null;
+        }
+
+        public String getDriverName() {
+            return driverName;
         }
     }
 

@@ -27,21 +27,18 @@ import static pickleib.utilities.screenshot.ScreenCaptureUtility.captureScreen;
 
 @ExtendWith(StatusWatcher.class)
 public class AppTest {
-    String testWebsiteUrl = "http://127.0.0.1:8080/";
+    static String testWebsiteUrl;
     WebDriver driver;
     WebInteractions webInteractions;
     Printer log = new Printer(AppTest.class);
     ElementAcquisition.Reflections<ObjectRepository> reflections;
-
-    /**
-     * Constructs an instance of the CommonStepUtilities class with the specific object repository.
-     */
 
     @BeforeAll
     public static void setup() {
         ContextStore.loadProperties("test.properties", "pickleib.properties");
         WebDriverFactory.setHeadless(Boolean.parseBoolean(ContextStore.get("headless", "true")));
         WebDriverFactory.setUseWDM(false);
+        testWebsiteUrl = ContextStore.get("test-url", "http://127.0.0.1:8080/");
     }
 
     @BeforeEach
@@ -275,7 +272,7 @@ public class AppTest {
         List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window Message");
         webInteractions.clickElement(newWindowsWithMessageButton);
-        Assertions.assertEquals(webInteractions.getAlert().getText(), "New window message!", "The window message does not match!");
+        Assertions.assertEquals("New window message!", webInteractions.getAlert().getText(), "The window message does not match!");
         webInteractions.getAlert().accept();
         webInteractions.waitUntilPageLoads(5);
         webInteractions.switchToNextTab();

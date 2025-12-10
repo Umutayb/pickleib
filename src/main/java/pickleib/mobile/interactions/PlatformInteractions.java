@@ -15,6 +15,7 @@ import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
 import pickleib.mobile.driver.PickleibAppiumDriver;
 import pickleib.mobile.utilities.MobileUtilities;
+import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 
@@ -514,7 +515,7 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
      *                 (true - if the input text value equals to an expected text) are stored
      * @param pageName specified page instance name
      */
-    public void fillForm(List<Bundle<WebElement, String, String>> bundles, String pageName) {
+    public void fillForm(List<ElementBundle<String>> bundles, String pageName) {
         log.info("Filling form on " + highlighted(BLUE, pageName));
         super.fillInputForm(bundles, pageName);
         log.success("Form was filled on " + pageName);
@@ -536,38 +537,6 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
         );
         super.verifyElementText(element, expectedText);
         log.success("Text of element " + elementName + " is " + expectedText + " on " + pageName);
-    }
-
-    /**
-     * Verifies the text of {element name} on the {page name} to contain: {expected text}
-     *
-     * @param element      target element
-     * @param elementName  target element name
-     * @param pageName     specified page instance name
-     * @param expectedText expected text
-     */
-    public void verifyContainsText(WebElement element, String elementName, String pageName, String expectedText) {
-        log.info("Verifying that text of element " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " contains ") +
-                highlighted(BLUE, expectedText) +
-                highlighted(GRAY, " on ") +
-                highlighted(BLUE, pageName)
-        );
-        super.verifyElementContainsText(element, expectedText);
-        log.success("Text of element " + elementName + " contains " + expectedText + " on " + pageName);
-    }
-
-    /**
-     * Verifies the text of an element from the list on the {page name}.
-     *
-     * @param bundles  list of bundles where element text, element name and expected text are stored
-     * @param pageName specified page instance name
-     */
-    public void verifyListedText(List<Bundle<WebElement, String, String>> bundles, String pageName) {
-        log.info("Verifying the text of elements on " + highlighted(BLUE, pageName));
-        super.verifyListedElementText(bundles, pageName);
-        log.success("Text of the elements was verified on " + pageName);
     }
 
     /**
@@ -858,7 +827,7 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
      * @param pageName The name of the page object.
      * @throws EnumConstantNotPresentException if an invalid interaction type is specified in the element bundle.
      */
-    public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName) {
+    public void bundleInteraction(List<ElementBundle<Map<String, String>>> bundles, String pageName) {
         log.info("Executing bundle interactions on " + pageName);
         bundleInteraction(bundles, pageName, true);
     }
@@ -888,20 +857,20 @@ public class PlatformInteractions extends MobileUtilities implements Polymorphic
      * @param scroll   Scrolls if true
      * @throws EnumConstantNotPresentException If an unsupported interaction type is encountered in the bundle.
      */
-    public void bundleInteraction(List<Bundle<String, WebElement, Map<String, String>>> bundles, String pageName, boolean scroll) {
-        for (Bundle<String, WebElement, Map<String, String>> bundle : bundles) {
-            InteractionType interactionType = InteractionType.valueOf(bundle.theta().get("Interaction Type"));
+    public void bundleInteraction(List<ElementBundle<Map<String, String>>> bundles, String pageName, boolean scroll) {
+        for (ElementBundle<Map<String, String>> bundle : bundles) {
+            InteractionType interactionType = InteractionType.valueOf(bundle.data().get("Interaction Type"));
             switch (interactionType) {
-                case click -> clickElement(bundle.beta(), bundle.alpha(), pageName, scroll);
+                case click -> clickElement(bundle.element(), bundle.elementName(), pageName, scroll);
                 case fill ->
-                        clearFillInput(bundle.beta(), bundle.alpha(), pageName, bundle.theta().get("Input"));
-                case center -> centerElement(bundle.beta(), bundle.alpha(), pageName);
+                        clearFillInput(bundle.element(), bundle.elementName(), pageName, bundle.data().get("Input"));
+                case center -> centerElement(bundle.element(), bundle.elementName(), pageName);
                 case verify -> verifyElementContainsAttribute(
-                        bundle.beta(),
-                        bundle.alpha(),
+                        bundle.element(),
+                        bundle.elementName(),
                         pageName,
-                        bundle.theta().get("Attribute Name"),
-                        contextCheck(bundle.theta().get("Attribute Value"))
+                        bundle.data().get("Attribute Name"),
+                        contextCheck(bundle.data().get("Attribute Value"))
                 );
                 default -> throw new EnumConstantNotPresentException(InteractionType.class, interactionType.name());
             }

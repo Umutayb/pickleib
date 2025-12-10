@@ -8,8 +8,6 @@ import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;
 
-import static pickleib.driver.DriverFactory.DriverType.appium;
-import static pickleib.driver.DriverFactory.DriverType.getDriverType;
 import static pickleib.utilities.platform.PlatformUtilities.*;
 
 public class InteractionBase {

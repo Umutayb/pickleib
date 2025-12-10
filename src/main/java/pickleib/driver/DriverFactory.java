@@ -2,6 +2,7 @@ package pickleib.driver;
 
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.Platform;
+import org.openqa.selenium.WebDriverException;
 
 
 public interface DriverFactory {
@@ -18,6 +19,14 @@ public interface DriverFactory {
         }
 
         public static DriverType getType(@Nullable String text) {
+            try {
+                Platform.fromString(text);
+                return appium;
+            }
+            catch (WebDriverException ignored){
+                if (text != null && text.equalsIgnoreCase("web")) return selenium;
+                else if (text != null && text.equalsIgnoreCase("mobile")) return appium;
+            }
             return fromString(text);
         }
 
