@@ -11,7 +11,7 @@ import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
-import pickleib.mobile.driver.PickleibAppiumDriver;
+import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.repository.PageRepository;
 import pickleib.web.driver.PickleibWebDriver;

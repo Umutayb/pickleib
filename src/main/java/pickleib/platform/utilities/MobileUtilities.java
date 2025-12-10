@@ -1,4 +1,4 @@
-package pickleib.mobile.utilities;
+package pickleib.platform.utilities;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Point;
@@ -10,7 +10,7 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.enums.Direction;
-import pickleib.mobile.driver.PickleibAppiumDriver;
+import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
 import pickleib.utilities.interfaces.functions.LocateElement;
 import java.time.Duration;

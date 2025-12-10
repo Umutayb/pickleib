@@ -2,7 +2,7 @@ package pickleib.utilities.element.interactions;
 
 import org.openqa.selenium.WebElement;
 import pickleib.driver.DriverFactory;
-import pickleib.mobile.interactions.PlatformInteractions;
+import pickleib.platform.interactions.PlatformInteractions;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.web.interactions.WebInteractions;
 import utils.Printer;

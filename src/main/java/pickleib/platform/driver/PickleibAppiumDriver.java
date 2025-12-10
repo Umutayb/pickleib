@@ -1,12 +1,10 @@
-package pickleib.mobile.driver;
+package pickleib.platform.driver;
 
 import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.AppiumFluentWait;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.utilities.PropertyLoader;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import properties.PropertiesReader;

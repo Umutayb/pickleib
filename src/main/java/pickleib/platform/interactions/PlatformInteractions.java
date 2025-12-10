@@ -1,4 +1,4 @@
-package pickleib.mobile.interactions;
+package pickleib.platform.interactions;
 
 import collections.Bundle;
 import context.ContextStore;
@@ -13,8 +13,8 @@ import pickleib.enums.ElementState;
 import pickleib.enums.InteractionType;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
-import pickleib.mobile.driver.PickleibAppiumDriver;
-import pickleib.mobile.utilities.MobileUtilities;
+import pickleib.platform.driver.PickleibAppiumDriver;
+import pickleib.platform.utilities.MobileUtilities;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
