@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import static pickleib.utilities.platform.PlatformUtilities.isAppiumDriver;
 import static utils.StringUtilities.Color.BLUE;
 import static utils.StringUtilities.Color.GRAY;
+import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.highlighted;
 
 public class PageObjectJson implements PageRepository {
@@ -105,6 +106,7 @@ public class PageObjectJson implements PageRepository {
             String listName,
             String pageName)
     {
+        attributeValue = contextCheck(attributeValue);
         List<WebElement> elements = elementsFromPage(listName, pageName);
 
         for (WebElement element : elements) {
@@ -310,7 +312,7 @@ public class PageObjectJson implements PageRepository {
     String getPlatformSelector(JsonObject elementJson, RemoteWebDriver driver, SelectorType selectorType){
         JsonObject elementSelectors = elementJson.get("selectors").getAsJsonObject();
         Platform platform = driver.getCapabilities().getPlatformName();
-        String platformName = isAppiumDriver(driver) ? platform.name() : "web";
+        String platformName = isAppiumDriver(driver) ? platform.name().toLowerCase() : "web";
         JsonArray selectors =  elementSelectors.get(platformName).getAsJsonArray();
         for (JsonElement selector : selectors){
             if (selector.getAsJsonObject().has(selectorType.getKey()))
