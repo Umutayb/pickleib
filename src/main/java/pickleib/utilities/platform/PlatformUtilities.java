@@ -53,7 +53,7 @@ public class PlatformUtilities {
      * @return The DriverType corresponding to the WebElement.
      */
     public static DriverFactory.DriverType getElementDriverType(WebElement element) {
-        return DriverFactory.DriverType.getDriverType(getElementDriverPlatform(element));
+        return DriverFactory.DriverType.getType(getElementDriverPlatform(element).name());
     }
 
     /**
@@ -86,7 +86,7 @@ public class PlatformUtilities {
      * @return The DriverType corresponding to the provided WebDriver.
      */
     public static DriverFactory.DriverType getDriverType(WebDriver driver) {
-        return DriverFactory.DriverType.getDriverType(getDriverPlatform(driver));
+        return DriverFactory.DriverType.getType(getDriverPlatform(driver).name());
     }
 
     /**
