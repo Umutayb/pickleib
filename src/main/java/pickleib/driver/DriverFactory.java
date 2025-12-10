@@ -2,6 +2,7 @@ package pickleib.driver;
 
 import org.jetbrains.annotations.Nullable;
 import org.openqa.selenium.Platform;
+import org.openqa.selenium.WebDriverException;
 
 
 public interface DriverFactory {
@@ -17,15 +18,11 @@ public interface DriverFactory {
             return null;
         }
 
-        public static DriverType getType(@Nullable String text) {
-            return fromString(text);
-        }
-
-        public static DriverType getDriverType(Platform platform){
-            return switch (platform) {
-                case WINDOWS, ANDROID, IOS, LINUX, UNIX, SONOMA, VENTURA, MONTEREY, BIG_SUR, CATALINA, MOJAVE, HIGH_SIERRA, SIERRA, EL_CAPITAN, YOSEMITE, MAVERICKS, MOUNTAIN_LION, SNOW_LEOPARD, MAC, WIN11, WIN10, WIN8_1, WIN8, WIN7, VISTA, XP -> appium;
-                case ANY -> selenium;
-            };
+        public static DriverType getType(String text) {
+            assert  text != null;
+            if (text.equalsIgnoreCase("web")) return selenium;
+            else if (text.equalsIgnoreCase("mobile")) return appium;
+            else return fromString(text);
         }
     }
 }

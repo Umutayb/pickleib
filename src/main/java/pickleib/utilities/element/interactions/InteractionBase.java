@@ -2,14 +2,12 @@ package pickleib.utilities.element.interactions;
 
 import org.openqa.selenium.WebElement;
 import pickleib.driver.DriverFactory;
-import pickleib.mobile.interactions.PlatformInteractions;
+import pickleib.platform.interactions.PlatformInteractions;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.web.interactions.WebInteractions;
 import utils.Printer;
 import utils.StringUtilities;
 
-import static pickleib.driver.DriverFactory.DriverType.appium;
-import static pickleib.driver.DriverFactory.DriverType.getDriverType;
 import static pickleib.utilities.platform.PlatformUtilities.*;
 
 public class InteractionBase {
@@ -31,17 +29,23 @@ public class InteractionBase {
     }
 
     public PolymorphicUtilities getInteractions(DriverFactory.DriverType driverType) {
+        if (webInteractions == null && platformInteractions == null)
+            log.warning("Neither web nor platform interactions are instantiated!");
         if (!StringUtilities.isBlank(driverType))
             switch (driverType) {
                 case selenium -> {
+                    if (webInteractions == null)
+                        log.warning("Web interactions requested without beings instantiated!");
                     return webInteractions;
                 }
                 case appium -> {
+                    if (platformInteractions == null)
+                        log.warning("Platform interactions requested without beings instantiated!");
                     return platformInteractions;
                 }
+                default -> throw new EnumConstantNotPresentException(DriverFactory.DriverType.class, driverType.name());
             }
         else return getInteractions(defaultPlatform);
-        return null;
     }
 
     /**

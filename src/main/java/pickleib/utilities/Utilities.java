@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
+import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import utils.Printer;
@@ -727,7 +728,14 @@ public abstract class Utilities {
      * @param element      target element
      * @param expectedText expected text
      */
-    public void verifyElementContainsText(WebElement element, String expectedText) {
+    public void verifyElementContainsText(WebElement element, String elementName, String pageName, String expectedText) {
+        log.info("Verifying that text of element " +
+                highlighted(BLUE, elementName) +
+                highlighted(GRAY, " contains ") +
+                highlighted(BLUE, expectedText) +
+                highlighted(GRAY, " on ") +
+                highlighted(BLUE, pageName)
+        );
         expectedText = contextCheck(expectedText);
         elementIs(element, displayed);
         if (!element.getText().contains(expectedText))
@@ -741,11 +749,11 @@ public abstract class Utilities {
      * @param pageName specified page instance name
      */
     public void verifyListedElementText(
-            List<Bundle<WebElement, String, String>> bundles,
+            List<ElementBundle<String>> bundles,
             String pageName) {
-        for (Bundle<WebElement, String, String> bundle : bundles) {
-            String elementName = bundle.beta();
-            String expectedText = bundle.theta();
+        for (ElementBundle<String> bundle : bundles) {
+            String elementName = bundle.elementName();
+            String expectedText = contextCheck(bundle.data());
             log.info("Performing text verification for " +
                     highlighted(BLUE, elementName) +
                     highlighted(GRAY, " on the ") +
@@ -753,10 +761,28 @@ public abstract class Utilities {
                     highlighted(GRAY, " with the text: ") +
                     highlighted(BLUE, expectedText)
             );
-            if (!expectedText.equals(bundle.alpha().getText()))
-                throw new PickleibException("The " + bundle.alpha().getText() + " does not contain text '");
-            log.success("Text of the element" + bundle.alpha().getText() + " was verified!");
+            if (!expectedText.equals(bundle.element().getText()))
+                throw new PickleibException("The " + bundle.elementName() + " does not contain text '");
+            log.success("Text of the element" + bundle.elementName() + " was verified!");
         }
+    }
+
+    /**
+     * Verify the text of an element from the list on the {page name}
+     *
+     * @param pageName specified page instance name
+     */
+    public void verifyListContainsElementByText(
+            List<WebElement> elements,
+            String expectedText,
+            String listName,
+            String pageName) {
+        if (elements.stream().anyMatch(element -> element.getText().contains(expectedText)))
+            log.success("The " + listName + " list contains an element with " + expectedText + " text!");
+        else
+            throw new PickleibException(
+                    "The " + listName + " list does not contains an element with " + expectedText + " text!"
+            );
     }
 
     /**
@@ -765,20 +791,21 @@ public abstract class Utilities {
      * @param bundles  list of bundles where input element, input name and input texts are stored
      * @param pageName specified page instance name
      */
-    public void fillInputForm(List<Bundle<WebElement, String, String>> bundles, String pageName) {
+    public void fillInputForm(List<ElementBundle<String>> bundles, String pageName) {
         String inputName;
         String input;
-        for (Bundle<WebElement, String, String> bundle : bundles) {
+        for (ElementBundle<String> bundle : bundles) {
             log.info("Filling " +
-                    highlighted(BLUE, bundle.theta()) +
+                    highlighted(BLUE, bundle.elementName()) +
                     highlighted(GRAY, " on the ") +
                     highlighted(BLUE, pageName) +
                     highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, bundle.beta())
+                    highlighted(BLUE, bundle.data())
             );
             pageName = firstLetterDeCapped(pageName);
-            clearFillInput(bundle.alpha(), //Input Element
-                    bundle.beta(), //Input Text
+            clearFillInput(
+                    bundle.element(),
+                    bundle.data(),
                     true
             );
         }

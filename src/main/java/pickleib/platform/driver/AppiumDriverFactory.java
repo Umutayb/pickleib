@@ -1,6 +1,5 @@
-package pickleib.mobile.driver;
+package pickleib.platform.driver;
 
-import com.google.gson.JsonObject;
 import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
 import org.json.simple.JSONObject;
@@ -15,7 +14,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static pickleib.mobile.driver.ServiceFactory.service;
+import static pickleib.platform.driver.ServiceFactory.service;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
 

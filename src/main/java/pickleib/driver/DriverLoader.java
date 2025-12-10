@@ -1,9 +1,8 @@
 package pickleib.driver;
 
-import collections.Pair;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import pickleib.mobile.driver.PickleibAppiumDriver;
+import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.web.driver.PickleibWebDriver;
 
 public class DriverLoader {

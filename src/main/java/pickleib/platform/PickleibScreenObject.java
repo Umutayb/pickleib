@@ -1,12 +1,12 @@
-package pickleib.mobile;
+package pickleib.platform;
 
 import context.ContextStore;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
-import pickleib.mobile.driver.PickleibAppiumDriver;
-import pickleib.mobile.utilities.MobileUtilities;
+import pickleib.platform.driver.PickleibAppiumDriver;
+import pickleib.platform.utilities.MobileUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 
 import java.time.Duration;

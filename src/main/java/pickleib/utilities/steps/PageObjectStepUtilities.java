@@ -1,7 +1,10 @@
 package pickleib.utilities.steps;
 
-import pickleib.utilities.element.acquisition.ElementAcquisition;
+import pickleib.driver.DriverFactory;
+import pickleib.utilities.element.acquisition.design.PageObjectModel;
 import pickleib.utilities.element.interactions.InteractionBase;
+import pickleib.utilities.interfaces.StepUtilities;
+import pickleib.utilities.interfaces.repository.PageObjectRepository;
 import pickleib.utilities.interfaces.repository.PageRepository;
 
 /**
@@ -18,10 +21,17 @@ import pickleib.utilities.interfaces.repository.PageRepository;
  * @author Umut Ay Bora
  * @since 1.8.7
  */
-public class PageObjectStepUtilities<ObjectRepository extends PageRepository> extends InteractionBase {
+public class PageObjectStepUtilities<ObjectRepository extends PageObjectRepository>
+        extends InteractionBase
+        implements StepUtilities
+{
 
-    public ElementAcquisition.PageObjectModel<ObjectRepository> objectRepository;
-    public ElementAcquisition.Reflections<ObjectRepository> pageObjectReflections;
+    @Override
+    public PageObjectModel<ObjectRepository> getObjectRepository() {
+        return objectRepository;
+    }
+
+    public PageObjectModel<ObjectRepository> objectRepository;
 
     /**
      * Constructs an instance of the PageObjectStepUtilities class with the specific object repository.
@@ -34,8 +44,7 @@ public class PageObjectStepUtilities<ObjectRepository extends PageRepository> ex
             boolean mobileDriverActive,
             boolean webDriverActive) {
         super(mobileDriverActive, webDriverActive);
-        objectRepository = new ElementAcquisition.PageObjectModel<>(objectRepositoryClass);
-        pageObjectReflections = new ElementAcquisition.Reflections<>(objectRepositoryClass);
+        objectRepository = new PageObjectModel<>(objectRepositoryClass);
     }
 
     /**
@@ -46,7 +55,6 @@ public class PageObjectStepUtilities<ObjectRepository extends PageRepository> ex
      */
     public PageObjectStepUtilities(Class<ObjectRepository> objectRepositoryClass) {
         super();
-        objectRepository = new ElementAcquisition.PageObjectModel<>(objectRepositoryClass);
-        pageObjectReflections = new ElementAcquisition.Reflections<>(objectRepositoryClass);
+        objectRepository = new PageObjectModel<>(objectRepositoryClass);
     }
 }
