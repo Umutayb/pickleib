@@ -19,7 +19,10 @@ public interface DriverFactory {
         }
 
         public static DriverType getType(String text) {
-            return fromString(text);
+            assert  text != null;
+            if (text.equalsIgnoreCase("web")) return selenium;
+            else if (text.equalsIgnoreCase("mobile")) return appium;
+            else return fromString(text);
         }
     }
 }
