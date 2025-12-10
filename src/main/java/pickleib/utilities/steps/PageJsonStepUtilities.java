@@ -1,17 +1,18 @@
 package pickleib.utilities.steps;
 
 import com.google.gson.JsonObject;
+import pickleib.mobile.interactions.PlatformInteractions;
 import pickleib.utilities.element.acquisition.design.PageObjectJson;
 import pickleib.utilities.element.interactions.InteractionBase;
 import pickleib.utilities.interfaces.StepUtilities;
 
 public class PageJsonStepUtilities extends InteractionBase implements StepUtilities {
 
-    public PageObjectJson objectRepository;
+    protected PageObjectJson objectRepository;
 
     public PageJsonStepUtilities(JsonObject pageJson){
         super();
-        this.objectRepository = new PageObjectJson(pageJson);
+        this.platformInteractions = new PlatformInteractions();
     }
 
     public PageJsonStepUtilities(
