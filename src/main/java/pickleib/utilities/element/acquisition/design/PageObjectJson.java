@@ -312,7 +312,7 @@ public class PageObjectJson implements PageRepository {
     String getPlatformSelector(JsonObject elementJson, RemoteWebDriver driver, SelectorType selectorType){
         JsonObject elementSelectors = elementJson.get("selectors").getAsJsonObject();
         Platform platform = driver.getCapabilities().getPlatformName();
-        String platformName = isAppiumDriver(driver) ? platform.name() : "web";
+        String platformName = isAppiumDriver(driver) ? platform.name().toLowerCase() : "web";
         JsonArray selectors =  elementSelectors.get(platformName).getAsJsonArray();
         for (JsonElement selector : selectors){
             if (selector.getAsJsonObject().has(selectorType.getKey()))
