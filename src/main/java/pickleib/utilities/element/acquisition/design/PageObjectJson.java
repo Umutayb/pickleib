@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.AppiumFluentWait;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
@@ -92,7 +91,7 @@ public class PageObjectJson implements PageRepository {
     public WebElement acquireListedElementFromPage(String elementName, String listName, String pageName) {
         List<WebElement> all = elementsFromPage(listName, pageName);
         return all.stream()
-                .filter(e -> elementMatches(e, elementName))
+                .filter(e -> checkElementTextMatch(e, elementName))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Element " + elementName + " not found in list " + listName));
     }
@@ -172,7 +171,21 @@ public class PageObjectJson implements PageRepository {
                 .collect(Collectors.toList());
     }
 
-    private boolean elementMatches(WebElement element, String expected) {
+    /**
+     * Determines if the specified WebElement matches the expected text value, accounting for 
+     * potential asynchronous content loading. The method first checks the element's visible text, 
+     * falling back to its 'value' attribute if empty. Matches are case-insensitive and may include 
+     * substring matches. If a NullPointerException occurs during initial checks, the method waits 
+     * for the expected text to be present in the element.
+     *
+     * @param element The WebElement to evaluate for a text match.
+     * @param expected The text string to compare against the element's content.
+     * @return {@code true} if the element's text matches or contains the expected text 
+     *         (case-insensitive), or if the text becomes present after waiting; {@code false} otherwise.
+     * @throws NullPointerException Not propagated. Internally logged as a warning, and the method 
+     *         falls back to waiting for text presence via WebDriverWait.
+     */
+    private boolean checkElementTextMatch(WebElement element, String expected) {
         try {
             if (element == null)
                 return false;
