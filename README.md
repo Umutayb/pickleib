@@ -141,7 +141,7 @@ public class HomePage extends PickleibPageObject {
 
     public void selectCategory(String categoryName){
         clickElement(
-            acquireNamedElementAmongst(categories, categoryName, "Home Page")
+                acquireNamedElementAmongst(categories, categoryName, "Home Page")
         );
     }
 }
@@ -183,7 +183,7 @@ import pickleib.utilities.interfaces.repository.PageObjectRepository;
 
 public class ObjectRepository implements PageObjectRepository {
     public HomePage homePage = new HomePage();
-    public FormsPage formsPage = new FormsPage();
+    public FormsPage formsPage;
 }
 ```
 
@@ -208,12 +208,39 @@ public class CommonSteps extends PageObjectStepUtilities<ObjectRepository> {
     }
 }
 ```
+or for page object JSON design:
+
+```java
+import common.ObjectRepository;
+import pickleib.utilities.steps.PageObjectStepUtilities;
+import org.openqa.selenium.WebElement;
+
+public class CommonSteps extends PageJsonStepUtilities {
+
+    public CommonSteps() {
+        super(
+                FileUtilities.Json.parseJsonFile("src/test/resources/page-repository.json"),
+                Hooks.initialiseAppiumDriver,
+                Hooks.initialiseBrowser
+        );
+    }
+
+    @When("I click the {string} on the {string} page")
+    public void clickTheButton(String buttonName, String pageName){
+        log.info("Clicking the " + buttonName + " on the " + pageName);
+        WebElement button = objectRepository.acquireElementFromPage(buttonName, pageName);
+        webInteractions.clickElement(button);
+    }
+    
+    ...
+}
+```
 
 **Usage in Feature File**
 
 ```gherkin
 Scenario: Dynamically click an element
-  When I click the "submitButton" on the "FormsPage" page
+When I click the "submitButton" on the "FormsPage" page
 ```
 
 ---
