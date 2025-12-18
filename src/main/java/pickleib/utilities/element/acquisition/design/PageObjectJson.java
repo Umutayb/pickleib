@@ -20,7 +20,6 @@ import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.repository.PageRepository;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.Printer;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
