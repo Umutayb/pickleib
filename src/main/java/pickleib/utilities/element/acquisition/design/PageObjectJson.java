@@ -180,8 +180,8 @@ public class PageObjectJson implements PageRepository {
             String elementText = !element.getText().isEmpty() ? element.getText() : element.getAttribute("value");
             return elementText.equalsIgnoreCase(expected) || elementText.contains(expected);
         }
-        catch (NullPointerException nullElement){
-            log.warning(nullElement.getLocalizedMessage());
+        catch (NullPointerException nullPointer){
+            log.warning(nullPointer.getLocalizedMessage());
             return getWaitForType(getElementDriverType(element))
                     .until(ExpectedConditions.textToBePresentInElement(element, expected));
         }
