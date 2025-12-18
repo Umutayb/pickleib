@@ -29,6 +29,7 @@ import org.openqa.selenium.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static pickleib.utilities.platform.PlatformUtilities.getElementDriverType;
 import static pickleib.utilities.platform.PlatformUtilities.isAppiumDriver;
 import static utils.StringUtilities.Color.BLUE;
 import static utils.StringUtilities.Color.GRAY;
@@ -173,11 +174,18 @@ public class PageObjectJson implements PageRepository {
     }
 
     private boolean elementMatches(WebElement element, String expected) {
-        if (element == null)
-            return false;
+        try {
+            if (element == null)
+                return false;
 
-        String elementText = !element.getText().isEmpty() ? element.getText() : element.getAttribute("value");
-        return elementText.equalsIgnoreCase(expected) || elementText.contains(expected);
+            String elementText = !element.getText().isEmpty() ? element.getText() : element.getAttribute("value");
+            return elementText.equalsIgnoreCase(expected) || elementText.contains(expected);
+        }
+        catch (NullPointerException nullElement){
+            log.warning(nullElement.getLocalizedMessage());
+            return getWaitForType(getElementDriverType(element))
+                    .until(ExpectedConditions.textToBePresentInElement(element, expected));
+        }
     }
 
     /**
