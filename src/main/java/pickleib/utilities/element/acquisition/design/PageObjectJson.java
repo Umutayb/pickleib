@@ -91,7 +91,6 @@ public class PageObjectJson implements PageRepository {
      */
     public WebElement acquireListedElementFromPage(String elementName, String listName, String pageName) {
         List<WebElement> all = elementsFromPage(listName, pageName);
-        all.forEach(element -> System.out.println("Element text: " + element.getText()));
         return all.stream()
                 .filter(e -> elementMatches(e, elementName))
                 .findFirst()
