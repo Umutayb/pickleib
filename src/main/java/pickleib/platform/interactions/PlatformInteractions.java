@@ -14,7 +14,7 @@ import pickleib.enums.InteractionType;
 import pickleib.exceptions.PickleibException;
 import pickleib.exceptions.PickleibVerificationException;
 import pickleib.platform.driver.PickleibAppiumDriver;
-import pickleib.platform.utilities.MobileUtilities;
+import pickleib.platform.utilities.PlatformUtilities;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
@@ -29,7 +29,7 @@ import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.*;
 
 @SuppressWarnings("unused")
-public class PlatformInteractions extends MobileUtilities implements PolymorphicUtilities {
+public class PlatformInteractions extends PlatformUtilities implements PolymorphicUtilities {
 
     public PlatformInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         super(driver);

@@ -21,19 +21,19 @@ import static java.util.Collections.singletonList;
 import static utils.StringUtilities.highlighted;
 import static utils.StringUtilities.Color.*;
 
-public abstract class MobileUtilities extends Utilities {
+public abstract class PlatformUtilities extends Utilities {
 
     /**
      * MobileUtilities for frameworks that use the Pickleib driver
      */
-    public MobileUtilities() {
+    public PlatformUtilities() {
         super(PickleibAppiumDriver.get(), (element) -> centerElement(element, PickleibAppiumDriver.get()));
     }
 
     /**
      * MobileUtilities for frameworks that do not use the Pickleib driver
      */
-    public MobileUtilities(RemoteWebDriver driver) {
+    public PlatformUtilities(RemoteWebDriver driver) {
         super(driver, (element) -> centerElement(element, driver));
     }
 
