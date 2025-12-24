@@ -37,10 +37,10 @@ After updating your project, Pickleib is ready to use 🚀
 Pickleib is a **comprehensive automation utility library** designed to streamline software testing across multiple platforms.
 It leverages **Selenium** and **Appium** to provide a robust framework for:
 
-* 🌐 Web UI testing
-* 📱 Mobile UI testing
+* 🌐 Web UI automation
+* 📱 Mobile UI automation
 * 🖥️ Desktop UI automation
-* 🔌 API testing
+* 🔌 API automation
 * 🗄️ Database validation
 * 📧 Email verification
 * 📊 Data-layer validation
@@ -59,14 +59,14 @@ Pickleib simplifies test design and execution by offering **ready-to-use driver 
 
     * Click, fill, scroll, hover
     * Element state & attribute verification
-      Available via `WebUtilities` and `MobileUtilities`.
+      Available via `WebUtilities` and `PlatformUtilities`.
 
 * **Flexible Element Acquisition**
 
     * Classic **Page Object Model (POM)** by extending:
 
         * `PickleibPageObject` (Web)
-        * `PickleibScreenObject` (Mobile)
+        * `PickleibScreenObject` (Mobile/Desktop)
     * **Reflection-based steps** for dynamic interaction
     * **JSON-based Page Object Repository** using `PageObjectJson` for fully decoupled element definitions
 
@@ -106,7 +106,7 @@ public class Hooks {
         // Web tests
         PickleibWebDriver.initialize();
 
-        // Mobile tests
+        // Mobile/Desktop tests
         // PickleibAppiumDriver.initialize();
     }
 
@@ -115,7 +115,7 @@ public class Hooks {
         // Web tests
         PickleibWebDriver.terminate();
 
-        // Mobile tests
+        // Mobile/Desktop tests
         // PickleibAppiumDriver.terminate();
     }
 }
@@ -125,7 +125,7 @@ public class Hooks {
 
 ### Page Objects
 
-Create page classes by extending `PickleibPageObject` (Web) or `PickleibScreenObject` (Mobile).
+Create page classes by extending `PickleibPageObject` (Web) or `PickleibScreenObject` (Mobile/Desktop).
 This automatically initializes elements via `PageFactory` and exposes all interaction utilities.
 
 ```java
@@ -191,17 +191,17 @@ public class ObjectRepository implements PageObjectRepository {
 
 ```java
 import common.ObjectRepository;
-import pickleib.utilities.steps.PageObjectStepUtilities;
+import pickleib.utilities.steps.PageObjectDesign;
 import org.openqa.selenium.WebElement;
 
-public class CommonSteps extends PageObjectStepUtilities<ObjectRepository> {
+public class CommonSteps extends PageObjectDesign<ObjectRepository> {
 
     public CommonSteps() {
         super(ObjectRepository.class);
     }
 
     @When("I click the {string} on the {string} page")
-    public void clickTheButton(String buttonName, String pageName){
+    public void clickTheButton(String buttonName, String pageName) {
         log.info("Clicking the " + buttonName + " on the " + pageName);
         WebElement button = objectRepository.acquireElementFromPage(buttonName, pageName);
         webInteractions.clickElement(button);
@@ -212,7 +212,6 @@ or for page object Json design:
 
 ```java
 import common.ObjectRepository;
-import pickleib.utilities.steps.PageObjectStepUtilities;
 import org.openqa.selenium.WebElement;
 
 public class CommonSteps extends PageJsonStepUtilities {
@@ -226,7 +225,7 @@ public class CommonSteps extends PageJsonStepUtilities {
     }
 
     @When("I click the {string} on the {string} page")
-    public void clickTheButton(String buttonName, String pageName){
+    public void clickTheButton(String buttonName, String pageName) {
         log.info("Clicking the " + buttonName + " on the " + pageName);
         WebElement button = objectRepository.acquireElementFromPage(buttonName, pageName);
         webInteractions.clickElement(button);

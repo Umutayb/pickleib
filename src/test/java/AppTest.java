@@ -10,11 +10,16 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
 import pickleib.enums.Direction;
+import pickleib.enums.PageRepositoryDesign;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
+import pickleib.utilities.interfaces.repository.ElementRepository;
+import pickleib.utilities.steps.PageJsonDesign;
+import pickleib.utilities.steps.PageObjectDesign;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
 import utils.DateUtilities;
+import utils.FileUtilities;
 import utils.Printer;
 import utils.StringUtilities;
 import utils.arrays.ArrayUtilities;
@@ -24,18 +29,20 @@ import java.util.Map;
 import static pickleib.enums.ElementState.displayed;
 import static pickleib.enums.Navigation.backwards;
 import static pickleib.utilities.screenshot.ScreenCaptureUtility.captureScreen;
+import static utils.StringUtilities.highlighted;
 
 @ExtendWith(StatusWatcher.class)
 public class AppTest {
+
     static String testWebsiteUrl;
     WebDriver driver;
     WebInteractions webInteractions;
     Printer log = new Printer(AppTest.class);
-    ElementAcquisition.Reflections<ObjectRepository> reflections;
+    ElementRepository objectRepository;
+    PageRepositoryDesign design;
 
     @BeforeAll
     public static void setup() {
-        ContextStore.loadProperties("test.properties", "pickleib.properties");
         WebDriverFactory.setHeadless(Boolean.parseBoolean(ContextStore.get("headless", "true")));
         WebDriverFactory.setUseWDM(false);
         testWebsiteUrl = ContextStore.get("test-url", "http://127.0.0.1:8080/");
@@ -45,7 +52,15 @@ public class AppTest {
     public void before() {
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
-        reflections = new ElementAcquisition.Reflections<>(ObjectRepository.class);
+        design = PageRepositoryDesign.getDesign(ContextStore.get("page-repository-design", "json"));
+        log.info("Page repository design: " + highlighted(StringUtilities.Color.PURPLE, design.name()));
+        objectRepository = switch (design){
+            case json -> new PageJsonDesign(
+                    FileUtilities.Json.parseJsonFile("src/test/resources/page-repository.json")
+            ).getElementRepository();
+
+            case pom -> new PageObjectDesign<>(ObjectRepository.class).getElementRepository();
+        };
         webInteractions = new WebInteractions();
         webInteractions.getUrl(testWebsiteUrl);
     }
@@ -66,7 +81,6 @@ public class AppTest {
 
     @Test
     public void navigateTest() {
-        log.important(ContextStore.items().toString());
         log.info("webInteractions.navigate(page.trainingUrl) test");
         Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "\"webInteractions.navigate(page.trainingUrl) test failed!");
         log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
@@ -83,10 +97,10 @@ public class AppTest {
 
     @Test
     public void formTitleTest() {
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
-        WebElement title = reflections.getElementFromPage("title", "formsPage");
+        WebElement title = objectRepository.acquireElementFromPage("title", "formsPage");
         Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
         log.success("The formTest test pass!");
     }
@@ -94,21 +108,21 @@ public class AppTest {
     @Test
     public void completeFormSubmissionTest() {//TODO: Try soft assertions
 
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
 
-        WebElement title = reflections.getElementFromPage("title", "formsPage");
-        WebElement nameInput = reflections.getElementFromPage("nameInput", "formsPage");
-        WebElement emailInput = reflections.getElementFromPage("emailInput", "formsPage");
-        WebElement genderDropdown = reflections.getElementFromPage("genderDropdown", "formsPage");
-        List<WebElement> genderOptions = reflections.getElementsFromPage("genderOptions", "formsPage");
-        WebElement mobileInput = reflections.getElementFromPage("mobileInput", "formsPage");
-        WebElement dateOfBirthInput = reflections.getElementFromPage("dateOfBirthInput", "formsPage");
-        WebElement hobbiesInput = reflections.getElementFromPage("hobbiesInput", "formsPage");
-        WebElement addressInput = reflections.getElementFromPage("addressInput", "formsPage");
-        WebElement cityInput = reflections.getElementFromPage("cityInput", "formsPage");
-        WebElement submitButton = reflections.getElementFromPage("submitButton", "formsPage");
+        WebElement title = objectRepository.acquireElementFromPage("title", "formsPage");
+        WebElement nameInput = objectRepository.acquireElementFromPage("nameInput", "formsPage");
+        WebElement emailInput = objectRepository.acquireElementFromPage("emailInput", "formsPage");
+        WebElement genderDropdown = objectRepository.acquireElementFromPage("genderDropdown", "formsPage");
+        List<WebElement> genderOptions = objectRepository.acquireElementsFromPage("genderOptions", "formsPage");
+        WebElement mobileInput = objectRepository.acquireElementFromPage("mobileInput", "formsPage");
+        WebElement dateOfBirthInput = objectRepository.acquireElementFromPage("dateOfBirthInput", "formsPage");
+        WebElement hobbiesInput = objectRepository.acquireElementFromPage("hobbiesInput", "formsPage");
+        WebElement addressInput = objectRepository.acquireElementFromPage("addressInput", "formsPage");
+        WebElement cityInput = objectRepository.acquireElementFromPage("cityInput", "formsPage");
+        WebElement submitButton = objectRepository.acquireElementFromPage("submitButton", "formsPage");
 
         Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
 
@@ -139,14 +153,14 @@ public class AppTest {
 
         webInteractions.clickElement(dateOfBirthInput, true);
 
-        WebElement dayButton = reflections.getElementFromPage("todayCell", "formsPage");
+        WebElement dayButton = objectRepository.acquireElementFromPage("todayCell", "formsPage");
         webInteractions.elementIs(dayButton, displayed);
         webInteractions.clickElement(dayButton);
 
-        WebElement spSelectionPreview = reflections.getElementFromPage("spSelectionPreview", "formsPage");
+        WebElement spSelectionPreview = objectRepository.acquireElementFromPage("spSelectionPreview", "formsPage");
         entries.put("Date of Birth", DateUtilities.reformatDateString(spSelectionPreview.getText(), "yyyy-MM-dd"));
 
-        WebElement datePickerSubmitButton = reflections.getElementFromPage("datePickerSubmitButton", "formsPage");
+        WebElement datePickerSubmitButton = objectRepository.acquireElementFromPage("datePickerSubmitButton", "formsPage");
         webInteractions.clickElement(datePickerSubmitButton);
 
         webInteractions.fillInputElement(hobbiesInput, hobbies, true, true);
@@ -154,10 +168,10 @@ public class AppTest {
         webInteractions.fillInputElement(cityInput, city, true, true);
         webInteractions.clickElement(submitButton);
 
-        WebElement submissionModal = reflections.getElementFromPage("table", "formsPage");
+        WebElement submissionModal = objectRepository.acquireElementFromPage("table", "formsPage");
         webInteractions.wait.until(ExpectedConditions.visibilityOf(submissionModal));
 
-        List<WebElement> submissionEntries = reflections.getElementsFromPage("submissionEntries", "formsPage");
+        List<WebElement> submissionEntries = objectRepository.acquireElementsFromPage("submissionEntries", "formsPage");
 
         for (String entryKey : entries.keySet()) {
             WebElement entryValueElement = FormsPage.getEntryValue(entryKey, submissionEntries);
@@ -172,19 +186,20 @@ public class AppTest {
 
     @Test
     public void scrollInContainerTest() {//TODO: Try soft assertions
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
-        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
         WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Dropdown");
         webInteractions.clickElement(dropdownTool);
-        WebElement countriesDropDown = reflections.getElementFromPage("countriesDropDown", "dropDownPage");
+        WebElement countriesDropDown = objectRepository.acquireElementFromPage("countriesDropDown", "dropDownPage");
         webInteractions.clickElement(countriesDropDown);
-        WebElement countriesContainer = reflections.getElementFromPage("countriesContainer", "dropDownPage");
-        List<WebElement> countriesList = reflections.getElementsFromPage("countriesList", "dropDownPage");
+        List<WebElement> countriesList = objectRepository.acquireElementsFromPage("countriesList", "dropDownPage");
         String countrySelection = "Ukraine";
         WebElement preSelection = ElementAcquisition.acquireNamedElementAmongst(countriesList, countrySelection);
         Assertions.assertFalse(webInteractions.elementIsInView(preSelection), "Selected country is already in view!!");
+
+        WebElement countriesContainer = objectRepository.acquireElementFromPage("countriesContainer", "dropDownPage");
         WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
         Assertions.assertTrue(webInteractions.elementIsInView(country), "Selected country is not in view!!");
         log.success("scrollInContainerTest() pass!");
@@ -192,13 +207,13 @@ public class AppTest {
 
     @Test
     public void scrollInDirectionTest(){
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
-        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
         WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
         webInteractions.clickElement(dropdownTool);
-        WebElement logo = reflections.getElementFromPage("logo", "tallPage");
+        WebElement logo = objectRepository.acquireElementFromPage("logo", "tallPage");
         Assertions.assertFalse(webInteractions.elementIsInView(logo), "Logo is already in view!");
         while (!webInteractions.elementIsInView(logo))
             webInteractions.scrollInDirection(Direction.down);
@@ -207,13 +222,13 @@ public class AppTest {
 
     @Test
     public void centerElementTest() {
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
         webInteractions.clickElement(interactions);
-        List<WebElement> tools = reflections.getElementsFromPage("tools", "interactionsPage");
+        List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
         WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
         webInteractions.clickElement(dropdownTool);
-        WebElement logo = reflections.getElementFromPage("logo", "tallPage");
+        WebElement logo = objectRepository.acquireElementFromPage("logo", "tallPage");
         Assertions.assertFalse(webInteractions.elementIsInView(logo), "Logo is already in view!");
         webInteractions.centerElement(logo);
         Assertions.assertTrue(webInteractions.elementIsInView(logo), "Logo is not in view!");
@@ -221,10 +236,10 @@ public class AppTest {
 
     @Test
     public void openNewTabTest(){
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
-        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        List<WebElement> buttons = objectRepository.acquireElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newTabButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Tab");
         webInteractions.clickElement(newTabButton);
         webInteractions.switchToNextTab();
@@ -234,10 +249,10 @@ public class AppTest {
 
     @Test
     public void openNewWindowTest(){
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
-        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        List<WebElement> buttons = objectRepository.acquireElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newWindowButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window");
         webInteractions.clickElement(newWindowButton);
         webInteractions.switchWindowByIndex(1);
@@ -247,11 +262,11 @@ public class AppTest {
 
     @Test
     public void dismissAlertTest(){
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
         webInteractions.verifyCurrentUrl(testWebsiteUrl + "alerts");
-        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        List<WebElement> buttons = objectRepository.acquireElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "Click Me");
         webInteractions.clickElement(newWindowsWithMessageButton);
         Assertions.assertEquals("Single click!", webInteractions.getAlert().getText(), "The window message does not match!");
@@ -266,10 +281,10 @@ public class AppTest {
 
     @Test
     public void acceptAlertTest(){
-        List<WebElement> categories = reflections.getElementsFromPage("categories", "homePage");
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
         WebElement alertsAndWindows = ElementAcquisition.acquireNamedElementAmongst(categories, "Alerts, Frame & Windows");
         webInteractions.clickElement(alertsAndWindows);
-        List<WebElement> buttons = reflections.getElementsFromPage("buttons", "AlertAndWindowsPage");
+        List<WebElement> buttons = objectRepository.acquireElementsFromPage("buttons", "AlertAndWindowsPage");
         WebElement newWindowsWithMessageButton = ElementAcquisition.acquireNamedElementAmongst(buttons, "New Window Message");
         webInteractions.clickElement(newWindowsWithMessageButton);
         Assertions.assertEquals("New window message!", webInteractions.getAlert().getText(), "The window message does not match!");
@@ -283,7 +298,7 @@ public class AppTest {
 
 //  @Test
 //  public void clickTest() {
-//      List<WebElement> categories = pageObjectReflections.getElementsFromPage("clickMeButton", "pages.PageClass");
+//      List<WebElement> categories = pageObjectReflections.acquireElementsFromPage("clickMeButton", "pages.PageClass");
 //      WebElement dynamicClickMessage = this.getAcquisition(Web).acquireElementFromPage("dynamicClickMessage", "pages.PageClass");
 
 //      log.info("interactions.clickInteraction(page.clickMeButton) test");

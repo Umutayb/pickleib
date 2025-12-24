@@ -8,21 +8,15 @@ import org.openqa.selenium.devtools.v85.network.Network;
 import org.openqa.selenium.devtools.v85.network.model.Headers;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import pickleib.utilities.PropertyLoader;
 import properties.PropertiesReader;
 import utils.Printer;
 import utils.StringUtilities;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static utils.StringUtilities.*;
 
 @SuppressWarnings("unused")
 public class PickleibWebDriver {
-
-	static {PropertyLoader.load();}
 
 	/**
 	 * RemoteWebDriver instance

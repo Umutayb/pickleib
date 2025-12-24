@@ -17,7 +17,7 @@ import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
 import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.utilities.element.ElementBundle;
-import pickleib.utilities.interfaces.repository.PageRepository;
+import pickleib.utilities.interfaces.repository.ElementRepository;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.Printer;
 import java.time.Duration;
@@ -34,7 +34,7 @@ import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.highlighted;
 
-public class PageObjectJson implements PageRepository {
+public class PageObjectJson implements ElementRepository {
 
     RemoteWebDriver webDriver;
     RemoteWebDriver platformDriver;

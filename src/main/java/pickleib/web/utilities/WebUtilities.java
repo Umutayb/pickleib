@@ -19,6 +19,7 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -638,7 +639,7 @@ public abstract class WebUtilities extends Utilities {
         WebElement targetElement = ElementAcquisition.acquireNamedElementAmongst(elements, targetElementText);
         WebElement firstElement = elements.get(0);
         double distance = Math.abs(firstElement.getLocation().getY() - targetElement.getLocation().getY());
-        driver.executeScript("arguments[0].scrollBy(0, "+distance+");", container);
+        driver.executeScript("arguments[0].scrollBy(0, " + distance + ");", container);
         return  targetElement;
     }
 

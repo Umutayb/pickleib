@@ -4,8 +4,8 @@ import collections.Bundle;
 import org.openqa.selenium.WebElement;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
+import pickleib.utilities.interfaces.repository.ElementRepository;
 import pickleib.utilities.interfaces.repository.PageObjectRepository;
-import pickleib.utilities.interfaces.repository.PageRepository;
 import utils.Printer;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.firstLetterDeCapped;
 import static utils.StringUtilities.highlighted;
 
-public class PageObjectModel <ObjectRepository extends PageObjectRepository> implements PageRepository {
+public class PageObjectModel <ObjectRepository extends PageObjectRepository> implements ElementRepository {
 
     Reflections<ObjectRepository> reflections;
     Printer log = new Printer(ElementAcquisition.class);

@@ -7,7 +7,7 @@ public enum SelectorType {
     id("id"),
     name("name"),
     tagName("tagName"),
-    className("class"),
+    className("className"),
     css("css"),
     xpath("xpath"),
     accessibilityId("accessibilityId"),

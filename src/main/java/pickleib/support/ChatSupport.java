@@ -3,7 +3,7 @@ package pickleib.support;
 import api_assured.Caller;
 import context.ContextStore;
 import gpt.api.GPT;
-import pickleib.utilities.PropertyLoader;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,7 +11,6 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public class ChatSupport {
-    static {PropertyLoader.load();}
 
     public static void main(String[] args) {
         try {

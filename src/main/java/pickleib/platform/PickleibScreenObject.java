@@ -6,12 +6,12 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import pickleib.platform.driver.PickleibAppiumDriver;
-import pickleib.platform.utilities.MobileUtilities;
+import pickleib.platform.utilities.PlatformUtilities;
 import pickleib.web.driver.PickleibWebDriver;
 
 import java.time.Duration;
 
-public abstract class PickleibScreenObject extends MobileUtilities {
+public abstract class PickleibScreenObject extends PlatformUtilities {
     /**
      * PickleibScreenObject for frameworks that use the Pickleib driver
      *
