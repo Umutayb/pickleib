@@ -9,21 +9,21 @@ import utils.FileUtilities;
 /**
  * Utility that provides step utilities based on Page Objects defined as JSON files.
  *
- * <p>This class is part of the interaction layer between Selenium (or any WebDriver‑based)
+ * <p>This class is part of the interaction layer between Selenium (or any WebDriver-based)
  * automation and a JSON representation of page objects. It implements {@link PageRepository}
  * so it can be used in step definitions, offering convenient access to the underlying
  * {@link PageObjectJson} repository.</p>
  *
- * <h3>Key responsibilities</h3>
+ * <h2>Key responsibilities</h2>
  * <ul>
- *   <li>Loads a {@code PageObjectJson}</code> instance from either an already‑parsed JSON
+ *   <li>Loads a {@code PageObjectJson} instance from either an already-parsed JSON
  *       object or from a directory containing a JSON file.</li>
  *   <li>Exposes the repository via {@link #getElementRepository()} for use by step classes.</li>
- *   <li>Optionally activates platform‑specific drivers (web, iOS, Android, Windows) based on
- *       configuration flags passed to its constructors.</li>
+ *   <li>Optionally activates platform-specific drivers (web, iOS, Android, Windows)
+ *       based on configuration flags passed to its constructors.</li>
  * </ul>
  *
- * @author  Umut Ay Bora
+ * @author Umut Ay Bora
  * @since 2.0.6
  */
 public class PageJsonDesign extends InteractionBase implements PageRepository {
