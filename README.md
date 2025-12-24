@@ -208,7 +208,7 @@ public class CommonSteps extends PageObjectStepUtilities<ObjectRepository> {
     }
 }
 ```
-or for page object JSON design:
+or for page object Json design:
 
 ```java
 import common.ObjectRepository;
