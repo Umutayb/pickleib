@@ -1,6 +1,5 @@
 package pickleib.utilities;
 
-import collections.Bundle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
 import org.jetbrains.annotations.NotNull;
@@ -13,10 +12,8 @@ import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
-import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import utils.Printer;
 import utils.StringUtilities;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
@@ -31,10 +28,6 @@ import static utils.StringUtilities.*;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class Utilities {
-
-    static {
-        PropertyLoader.load();
-    }
 
     public ObjectMapper objectMapper = new ObjectMapper();
     public Printer log = new Printer(this.getClass());

@@ -5,7 +5,6 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.AppiumFluentWait;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import pickleib.utilities.PropertyLoader;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
 import properties.PropertiesReader;
 import utils.*;
@@ -15,13 +14,8 @@ import java.net.ServerSocket;
 @SuppressWarnings("unused")
 public abstract class PickleibAppiumDriver {
 
-	public static ScreenCaptureUtility capture = new ScreenCaptureUtility();
-
-	static {PropertyLoader.load();}
-
 	private static AppiumDriver driver;
 	private static AppiumFluentWait<RemoteWebDriver> wait;
-
 	public static AppiumDriver get(){
 		return driver;
 	}
@@ -71,7 +65,7 @@ public abstract class PickleibAppiumDriver {
 	public static void captureAndTerminate(boolean success, String screenshotTag){
 		log.info("Finalizing driver...");
 		try {
-			capture.captureScreen(screenshotTag, "png", driver);
+			ScreenCaptureUtility.captureScreen(screenshotTag, "png", driver);
 			driver.quit();
 		}
 		catch (Exception exception){exception.printStackTrace();}

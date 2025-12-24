@@ -549,6 +549,15 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on the ") +
                 highlighted(BLUE, pageName)
         );
+        waitUntilVisible(element);
+    }
+
+    /**
+     * Waits for element {element name} on the {page name} to be visible
+     *
+     * @param element     target element
+     */
+    public void waitUntilVisible(WebElement element) {
         boolean visible = super.elementIs(element, ElementState.displayed);
         log.info("Element is visible ? " + highlighted(BLUE, String.valueOf(visible)));
     }

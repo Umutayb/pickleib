@@ -191,17 +191,17 @@ public class ObjectRepository implements PageObjectRepository {
 
 ```java
 import common.ObjectRepository;
-import pickleib.utilities.steps.PageObjectStepUtilities;
+import pickleib.utilities.steps.PageObjectDesign;
 import org.openqa.selenium.WebElement;
 
-public class CommonSteps extends PageObjectStepUtilities<ObjectRepository> {
+public class CommonSteps extends PageObjectDesign<ObjectRepository> {
 
     public CommonSteps() {
         super(ObjectRepository.class);
     }
 
     @When("I click the {string} on the {string} page")
-    public void clickTheButton(String buttonName, String pageName){
+    public void clickTheButton(String buttonName, String pageName) {
         log.info("Clicking the " + buttonName + " on the " + pageName);
         WebElement button = objectRepository.acquireElementFromPage(buttonName, pageName);
         webInteractions.clickElement(button);
@@ -212,7 +212,6 @@ or for page object JSON design:
 
 ```java
 import common.ObjectRepository;
-import pickleib.utilities.steps.PageObjectStepUtilities;
 import org.openqa.selenium.WebElement;
 
 public class CommonSteps extends PageJsonStepUtilities {
@@ -226,7 +225,7 @@ public class CommonSteps extends PageJsonStepUtilities {
     }
 
     @When("I click the {string} on the {string} page")
-    public void clickTheButton(String buttonName, String pageName){
+    public void clickTheButton(String buttonName, String pageName) {
         log.info("Clicking the " + buttonName + " on the " + pageName);
         WebElement button = objectRepository.acquireElementFromPage(buttonName, pageName);
         webInteractions.clickElement(button);

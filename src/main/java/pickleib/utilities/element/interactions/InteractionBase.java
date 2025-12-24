@@ -24,8 +24,7 @@ public class InteractionBase {
     }
 
     public InteractionBase() {
-        webInteractions = new WebInteractions();
-        platformInteractions = new PlatformInteractions();
+        this(true, true);
     }
 
     public PolymorphicUtilities getInteractions(DriverFactory.DriverType driverType) {
