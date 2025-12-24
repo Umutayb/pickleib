@@ -22,9 +22,9 @@ jobs:
       - name: Start Unit Test Website
         run: |
           docker compose up --build -d
-      - name: Test with POM
+      - name: Test with POM page repository design
         run: mvn clean test -Dpage-repository-design=pom
-      - name: Build with JSON
+      - name: Test with JSON page repository design
         run: mvn clean test -Dpage-repository-design=json
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
