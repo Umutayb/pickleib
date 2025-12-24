@@ -80,7 +80,6 @@ public class AppTest {
 
     @Test
     public void navigateTest() {
-        log.important(ContextStore.items().toString());
         log.info("webInteractions.navigate(page.trainingUrl) test");
         Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "\"webInteractions.navigate(page.trainingUrl) test failed!");
         log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
