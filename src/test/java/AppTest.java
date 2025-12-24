@@ -29,6 +29,7 @@ import java.util.Map;
 import static pickleib.enums.ElementState.displayed;
 import static pickleib.enums.Navigation.backwards;
 import static pickleib.utilities.screenshot.ScreenCaptureUtility.captureScreen;
+import static utils.StringUtilities.highlighted;
 
 @ExtendWith(StatusWatcher.class)
 public class AppTest {
@@ -52,7 +53,7 @@ public class AppTest {
         PickleibWebDriver.initialize();
         this.driver = PickleibWebDriver.get();
         design = PageRepositoryDesign.getDesign(ContextStore.get("page-repository-design", "json"));
-        log.info("Page repository design: " + design.name());
+        log.info("Page repository design: " + highlighted(StringUtilities.Color.PURPLE, design.name()));
         objectRepository = switch (design){
             case json -> new PageJsonDesign(
                     FileUtilities.Json.parseJsonFile("src/test/resources/page-repository.json")
