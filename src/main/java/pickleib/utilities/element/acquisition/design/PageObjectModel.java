@@ -107,7 +107,6 @@ public class PageObjectModel <ObjectRepository extends PageObjectRepository> imp
         );
 
         pageName = firstLetterDeCapped(pageName);
-        listName = firstLetterDeCapped(listName);
         elementName = contextCheck(elementName);
         List<WebElement> elements = reflections.getElementsFromPage(
                 listName,
