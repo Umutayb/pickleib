@@ -7,17 +7,17 @@ import pickleib.web.driver.PickleibWebDriver;
 
 public class DriverLoader {
     
-    public RemoteWebDriver loadWebDriver(){
+    public static RemoteWebDriver loadWebDriver(){
         PickleibWebDriver.initialize();
         return PickleibWebDriver.get();
     }
     
-    public AppiumDriver loadMobileDriver(){
+    public static AppiumDriver loadMobileDriver(){
         PickleibAppiumDriver.initialize();
         return PickleibAppiumDriver.get();
     }
     
-    public void load(DriverFactory.DriverType... driverTypes){
+    public static void load(DriverFactory.DriverType... driverTypes){
         for (DriverFactory.DriverType type:driverTypes) {
             switch (type){
                 case appium -> PickleibAppiumDriver.initialize();

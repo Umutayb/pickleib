@@ -9,6 +9,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
+import pickleib.driver.DriverFactory;
+import pickleib.driver.DriverLoader;
 import pickleib.enums.Direction;
 import pickleib.enums.PageRepositoryDesign;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
@@ -50,8 +52,7 @@ public class AppTest {
 
     @BeforeEach
     public void before() {
-        PickleibWebDriver.initialize();
-        this.driver = PickleibWebDriver.get();
+        this.driver = DriverLoader.loadWebDriver();
         design = PageRepositoryDesign.getDesign(ContextStore.get("page-repository-design", "json"));
         log.info("Page repository design: " + highlighted(StringUtilities.Color.PURPLE, design.name()));
         objectRepository = switch (design){
