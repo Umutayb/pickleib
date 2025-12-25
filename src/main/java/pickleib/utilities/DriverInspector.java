@@ -47,7 +47,6 @@ public class DriverInspector {
      * <li>Force a {@code findElement()} call to get the concrete {@link RemoteWebElement}.</li>
      * <li>Retrieve the wrapped driver from the concrete element.</li>
      * </ol>
-     * </p>
      *
      *
      * @param element The WebElement (Proxy or Concrete) to inspect.
@@ -141,7 +140,6 @@ public class DriverInspector {
      * <li><b>Android:</b> Uses the "text" attribute.</li>
      * <li><b>Web/iOS:</b> Typically uses the "value" attribute.</li>
      * </ul>
-     * </p>
      *
      * @param platform The target platform.
      * @return The attribute name string.

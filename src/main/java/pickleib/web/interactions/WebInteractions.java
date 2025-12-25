@@ -31,12 +31,10 @@ import static utils.StringUtilities.highlighted;
 
 /**
  * Concrete implementation of {@link PolymorphicUtilities} tailored for Web UI automation using Selenium.
- * <p>
  * This class extends {@link WebUtilities} to provide high-level action methods.
  * Its primary purpose is to act as a <b>Verbose Decorator</b>: it performs the raw Selenium actions
  * defined in the parent class but adds detailed logging (e.g., "Clicking element X on page Y")
  * to ensure readable test execution logs.
- * </p>
  *
  * @author Umut Ay Bora
  */
@@ -728,11 +726,9 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     /**
      * Fills the specified input element with the content of a file.
      *
-     * <p>
      * This method fills the provided {@code inputElement} with the content of a file specified by {@code absoluteFilePath}.
      * The method logs information about the input name, page name, and the absolute file path being used.
      * Before filling the input, it clears the existing content if specified.
-     * </p>
      *
      * @param inputElement     The {@code WebElement} representing the input field to be filled.
      * @param inputName        The name of the input field for logging purposes.

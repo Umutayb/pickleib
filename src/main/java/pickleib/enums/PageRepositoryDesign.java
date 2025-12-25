@@ -8,7 +8,6 @@ package pickleib.enums;
  * <li><b>POM</b>: Uses Java classes and reflection (Classic approach).</li>
  * <li><b>JSON</b>: Uses an external JSON file for element definitions (Low-Code approach).</li>
  * </ul>
- * </p>
  */
 public enum PageRepositoryDesign {
 

@@ -39,7 +39,6 @@ import static utils.StringUtilities.*;
 
 /**
  * A specialized utility class for Web UI automation that extends the generic {@link Utilities}.
- * <p>
  * This class provides Web-specific implementations for interactions that require direct access to
  * the {@link RemoteWebDriver} or JavaScript execution. Key features include:
  * <ul>
@@ -48,7 +47,6 @@ import static utils.StringUtilities.*;
  * <li><b>DOM Traversal:</b> Handling iFrames and shadow roots (implicitly via JS).</li>
  * <li><b>Browser Storage:</b> Managing Cookies and Local Storage.</li>
  * </ul>
- * </p>
  *
  * @author Umut Ay Bora
  */

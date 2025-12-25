@@ -36,7 +36,6 @@ import static utils.StringUtilities.*;
  * <li><b>Synchronization:</b> Intelligent waiting using {@link FluentWait} and implicit wait toggling.</li>
  * <li><b>Verification:</b> Assertions for element text, attributes, and states.</li>
  * </ul>
- * </p>
  *
  * @author  Umut Ay Bora
  */

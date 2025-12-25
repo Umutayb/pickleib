@@ -34,7 +34,6 @@ import static utils.StringUtilities.highlighted;
  * <li><b>Configuration:</b> Extensive customization via {@link ContextStore} keys (e.g., timeouts, screen size, proxy).</li>
  * <li><b>Dependency Management:</b> Optional integration with {@code WebDriverManager} (WDM).</li>
  * </ul>
- * </p>
  *
  * @author Umut Ay Bora
  */
@@ -167,15 +166,13 @@ public class WebDriverFactory implements DriverFactory {
 
     /**
      * Initializes and returns a fully configured {@link RemoteWebDriver} instance.
-     * <p>
      * This method handles the logic for:
      * <ul>
-     * <li>Connecting to a Grid vs. Local execution.</li>
-     * <li>Setting implicit wait timeouts.</li>
-     * <li>Configuring window size/maximization.</li>
-     * <li>Managing cookies and logging levels.</li>
+     *   <li>Connecting to a Grid vs. Local execution.</li>
+     *   <li>Setting implicit wait timeouts.</li>
+     *   <li>Configuring window size/maximization.</li>
+     *   <li>Managing cookies and logging levels.</li>
      * </ul>
-     * </p>
      *
      * @param browserType The specific {@link BrowserType} to initialize. If null, falls back to the "browser" config.
      * @return A configured RemoteWebDriver instance.

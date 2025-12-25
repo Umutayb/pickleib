@@ -38,7 +38,6 @@ public class ServiceFactory {
 
     /**
      * Builds and starts a local Appium server service on the specified address and port.
-     * <p>
      * This method configures the service using {@link AppiumServiceBuilder} with the following behaviors:
      * <ul>
      * <li><b>Timeout:</b> Reads {@code "appium-server-launch-timeout"} from {@link ContextStore}
@@ -46,7 +45,6 @@ public class ServiceFactory {
      * <li><b>Logging:</b> Reads {@code "detailed-logging"} from {@link ContextStore}.
      * If {@code false} (default), server output streams are cleared to reduce console clutter.</li>
      * </ul>
-     * </p>
      *
      * @param address The IP address to bind the server to (e.g., "0.0.0.0" or "127.0.0.1").
      * @param port    The port number to listen on (e.g., 4723).

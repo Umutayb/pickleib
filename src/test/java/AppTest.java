@@ -9,6 +9,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
+import pickleib.driver.DriverLoader;
 import pickleib.enums.Direction;
 import pickleib.enums.PageRepositoryDesign;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
@@ -43,15 +44,14 @@ public class AppTest {
 
     @BeforeAll
     public static void setup() {
-        WebDriverFactory.setHeadless(Boolean.parseBoolean(ContextStore.get("headless", "true")));
+        WebDriverFactory.setHeadless(ContextStore.getBoolean("headless", true));
         WebDriverFactory.setUseWDM(false);
         testWebsiteUrl = ContextStore.get("test-url", "http://127.0.0.1:8080/");
     }
 
     @BeforeEach
     public void before() {
-        PickleibWebDriver.initialize();
-        this.driver = PickleibWebDriver.get();
+        this.driver = DriverLoader.loadWebDriver();
         design = PageRepositoryDesign.getDesign(ContextStore.get("page-repository-design", "json"));
         log.info("Page repository design: " + highlighted(StringUtilities.Color.PURPLE, design.name()));
         objectRepository = switch (design){

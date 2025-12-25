@@ -24,7 +24,6 @@ import static utils.StringUtilities.*;
  * <li>Providing global access to the active driver instance via {@link #get()}.</li>
  * <li>Safe termination of the driver session.</li>
  * </ul>
- * </p>
  *
  * @author  Umut Ay Bora
  */
@@ -65,14 +64,12 @@ public class PickleibWebDriver {
 
     /**
      * Smart initialization of the driver based on the environment configuration.
-     * <p>
      * The method determines which browser to launch based on the following priority order:
      * <ol>
      * <li><b>Maven Property:</b> Checks `properties-from-pom.properties` for a "browser" key.</li>
      * <li><b>Context Store:</b> Checks {@link ContextStore} for a "browser" key (useful for runtime overrides).</li>
      * <li><b>Default:</b> Falls back to {@link WebDriverFactory.BrowserType#CHROME} if no configuration is found.</li>
      * </ol>
-     * </p>
      */
     public static void initialize(){
         String driverName = firstLetterCapped(reader.getProperty("browser"));

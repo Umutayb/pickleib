@@ -9,22 +9,31 @@ import pickleib.web.utilities.WebUtilities;
 
 /**
  * The abstract base class for all Web Page Objects in the Pickleib framework.
+ *
  * <p>
  * This class serves two main purposes:
- * <ol>
- * <li>It inherits all the powerful interaction methods from {@link WebUtilities} (e.g., click, fill, scroll).</li>
- * <li>It automatically initializes {@link org.openqa.selenium.WebElement} fields annotated with {@link FindBy}
- * using Selenium's {@link PageFactory}.</li>
- * </ol>
  * </p>
+ * <ol>
+ *   <li>
+ *     It inherits all the powerful interaction methods from {@link WebUtilities}
+ *     (e.g., click, fill, scroll).
+ *   </li>
+ *   <li>
+ *     It automatically initializes {@link org.openqa.selenium.WebElement} fields
+ *     annotated with {@link FindBy} using Selenium's {@link PageFactory}.
+ *   </li>
+ * </ol>
+ *
  * <p>
  * <b>Usage:</b><br>
  * Extend this class when creating a new Page Object representing a web page.
  * </p>
+ *
  * <pre>
  * public class LoginPage extends PickleibPageObject {
- * @FindBy(id = "username")
- * public WebElement usernameInput;
+ *
+ *     &#64;FindBy(id = "username")
+ *     public WebElement usernameInput;
  * }
  * </pre>
  *

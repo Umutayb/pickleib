@@ -24,7 +24,6 @@ import static utils.StringUtilities.Color.*;
  * <li><b>List Filtering:</b> Finding a specific element within a list of elements based on text or attributes (with built-in waiting logic).</li>
  * <li><b>Reflection:</b> Dynamically locating Page Objects and their fields based on String names (used by the POM design).</li>
  * </ol>
- * </p>
  *
  * @author  Umut Ay Bora
  */

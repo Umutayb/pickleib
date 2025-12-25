@@ -12,7 +12,6 @@ import java.net.ServerSocket;
 
 /**
  * A static utility class that manages the lifecycle of the {@link AppiumDriver}.
- * <p>
  * This class handles:
  * <ul>
  * <li>Starting the local Appium server service.</li>
@@ -21,7 +20,6 @@ import java.net.ServerSocket;
  * <li>Terminating the session and stopping the service.</li>
  * <li>Capturing screenshots upon termination (useful for test failures).</li>
  * </ul>
- * </p>
  */
 @SuppressWarnings("unused")
 public abstract class PickleibAppiumDriver {
@@ -66,7 +64,6 @@ public abstract class PickleibAppiumDriver {
 
     /**
      * Initializes the Appium driver based on the configuration provided.
-     * <p>
      * The initialization process involves:
      * <ol>
      * <li>Identifying the target device name from properties or {@link ContextStore}.</li>
@@ -74,7 +71,6 @@ public abstract class PickleibAppiumDriver {
      * <li>Parsing capabilities from the JSON file.</li>
      * <li>Creating the driver via {@link AppiumDriverFactory}, supporting both local and remote (cloud) executions.</li>
      * </ol>
-     * </p>
      */
     public static void initialize() {
         log.info("Initializing appium driver");
