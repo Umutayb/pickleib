@@ -29,6 +29,17 @@ import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.highlighted;
 
+/**
+ * Concrete implementation of {@link PolymorphicUtilities} tailored for Web UI automation using Selenium.
+ * <p>
+ * This class extends {@link WebUtilities} to provide high-level action methods.
+ * Its primary purpose is to act as a <b>Verbose Decorator</b>: it performs the raw Selenium actions
+ * defined in the parent class but adds detailed logging (e.g., "Clicking element X on page Y")
+ * to ensure readable test execution logs.
+ * </p>
+ *
+ * @author Umut Ay Bora
+ */
 @SuppressWarnings("unused")
 public class WebInteractions extends WebUtilities implements PolymorphicUtilities {
 
@@ -64,8 +75,8 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     /**
      * Updates given cookies
      *
-     * @param cookieValue
-     * @param cookieName
+     * @param cookieValue The new value.
+     * @param cookieName  The name of the cookie to update.
      */
     public void updateCookies(String cookieValue, String cookieName) {
         log.info("Updating cookies ... ");

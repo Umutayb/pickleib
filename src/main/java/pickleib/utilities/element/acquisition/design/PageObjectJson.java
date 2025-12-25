@@ -19,7 +19,6 @@ import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.repository.ElementRepository;
 import pickleib.web.driver.PickleibWebDriver;
-import utils.Printer;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +26,31 @@ import org.openqa.selenium.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static pickleib.utilities.platform.PlatformUtilities.getElementDriverType;
-import static pickleib.utilities.platform.PlatformUtilities.isAppiumDriver;
+import static pickleib.utilities.DriverInspector.getElementDriverType;
+import static pickleib.utilities.DriverInspector.isAppiumDriver;
 import static utils.StringUtilities.Color.BLUE;
 import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.highlighted;
 
+/**
+ * Concrete implementation of {@link ElementRepository} designed for the <b>Low-Code JSON</b> pattern.
+ * <p>
+ * This class acts as a bridge between a JSON-based Object Repository and the underlying WebDriver.
+ * Instead of looking up Java fields annotated with {@code @FindBy}, it parses a JSON object
+ * (representing the {@code page-repository.json} file) to locate elements dynamically at runtime.
+ * </p>
+ *
+ *
+ *
+ * <p>
+ * It supports multi-platform execution by automatically selecting the correct driver (Web or Appium)
+ * based on the "platform" key defined in the page JSON.
+ * </p>
+ *
+ * @author  Umut Ay Bora
+ * @since   2.0.6
+ */
 public class PageObjectJson implements ElementRepository {
 
     RemoteWebDriver webDriver;
@@ -41,8 +58,15 @@ public class PageObjectJson implements ElementRepository {
     FluentWait<RemoteWebDriver> webWait;
     AppiumFluentWait<RemoteWebDriver> platformWait;
     JsonObject objectRepository;
-    Printer log = new Printer(PageObjectJson.class);
 
+    /**
+     * Full constructor for dependency injection.
+     *
+     * @param webDriver        The driver instance for Web UI testing.
+     * @param platformDriver   The driver instance for Mobile/Desktop testing (Appium).
+     * @param objectRepository The parsed JSON object containing page and element definitions.
+     * @param elementTimeout   The timeout duration (in seconds) for finding elements.
+     */
     public PageObjectJson(
             RemoteWebDriver webDriver,
             RemoteWebDriver platformDriver,
@@ -66,26 +90,59 @@ public class PageObjectJson implements ElementRepository {
                 .ignoring(WebDriverException.class);
     }
 
+    /**
+     * Convenience constructor using Singleton drivers from {@link PickleibWebDriver} and {@link PickleibAppiumDriver}.
+     * Defaults the element timeout to 30 seconds.
+     *
+     * @param objectRepository The parsed JSON object containing page and element definitions.
+     */
     public PageObjectJson(JsonObject objectRepository) {
         this(PickleibWebDriver.get(), PickleibAppiumDriver.get(), objectRepository, 30);
     }
 
     /**
-     * Acquire element from page (default selectors: xpath, css, text)
+     * Acquires a single element from a page using the definition in the JSON repository.
+     * <p>
+     * This method looks up the page in the JSON object, finds the element definition,
+     * determines the correct driver/platform, and uses {@link #elementFromPage(String, String, SelectorType...)}
+     * to locate it.
+     * </p>
+     *
+     * @param elementName The name of the element as defined in the JSON (e.g., "submitButton").
+     * @param pageName    The name of the page as defined in the JSON (e.g., "LoginPage").
+     * @return The located {@link WebElement}.
+     * @throws org.openqa.selenium.TimeoutException if the element is not found within the timeout period.
      */
     public WebElement acquireElementFromPage(String elementName, String pageName) {
         return elementFromPage(elementName, pageName);
     }
 
     /**
-     * Acquire element from page (default selectors: xpath, css, text)
+     * Acquires a list of elements from a page using the definition in the JSON repository.
+     * <p>
+     * Useful for elements that share the same selector (e.g., a list of menu items).
+     * </p>
+     *
+     * @param elementName The name of the element list definition in the JSON.
+     * @param pageName    The name of the page in the JSON.
+     * @return A list of located {@link WebElement}s.
      */
     public List<WebElement> acquireElementsFromPage(String elementName, String pageName) {
         return elementsFromPage(elementName, pageName);
     }
 
     /**
-     * Acquire a listed element from a list on a page
+     * Acquires a specific element from a list based on its text content.
+     * <p>
+     * This method fetches a list of elements matching the definition and filters them
+     * to find the one whose text matches {@code elementName}.
+     * </p>
+     *
+     * @param elementName The text content to search for within the list (e.g., "Product A").
+     * @param listName    The name of the list element in the JSON repository.
+     * @param pageName    The name of the page in the JSON repository.
+     * @return The matching {@link WebElement}.
+     * @throws NoSuchElementException If no element in the list matches the text.
      */
     public WebElement acquireListedElementFromPage(String elementName, String listName, String pageName) {
         List<WebElement> all = elementsFromPage(listName, pageName);
@@ -96,7 +153,18 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Acquire a listed element by attribute value.
+     * Acquires a listed element by matching a specific attribute value.
+     * <p>
+     * This iterates through the elements found by {@code listName} and checks the value
+     * of {@code attributeName}.
+     * </p>
+     *
+     * @param attributeName  The HTML attribute to inspect (e.g., "href", "class", "id").
+     * @param attributeValue The expected value of the attribute.
+     * @param listName       The name of the list element in the JSON repository.
+     * @param pageName       The name of the page in the JSON repository.
+     * @return The matching {@link WebElement}.
+     * @throws NoSuchElementException If no element matches the attribute criteria.
      */
     public WebElement acquireListedElementByAttribute(
             String attributeName,
@@ -121,7 +189,15 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Acquire element list with bundle structure.
+     * Converts a Cucumber Data Table of inputs into a list of {@link ElementBundle}s.
+     * <p>
+     * This allows iterating over a form definition in a feature file and automatically
+     * mapping the "Input Element" column to actual WebElements found via JSON.
+     * </p>
+     *
+     * @param signForms A list of maps from a Cucumber DataTable (keys: "Input Element", "Input").
+     * @param pageName  The name of the page where these elements exist.
+     * @return A list of bundles linking the element to the data to be entered.
      */
     public List<ElementBundle<String>> acquireElementList(
             List<Map<String, String>> signForms, String pageName
@@ -143,7 +219,12 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Acquire a single element bundle from a page
+     * Acquires a single element bundle containing the element, its name, platform, and specification map.
+     *
+     * @param elementFieldName The name of the element in the JSON.
+     * @param pageName         The name of the page in the JSON.
+     * @param specifications   A map of additional data related to the element.
+     * @return An {@link ElementBundle} wrapping the element and its metadata.
      */
     public ElementBundle<Map<String, String>> acquireElementBundleFromPage(
             String elementFieldName, String pageName, Map<String, String> specifications
@@ -158,7 +239,11 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Acquire multiple element bundles from a page
+     * Bulk acquisition of element bundles based on a list of specifications.
+     *
+     * @param pageName       The name of the page in the JSON.
+     * @param specifications A list of maps, where each map must contain an "Element Name" key.
+     * @return A list of element bundles.
      */
     public List<ElementBundle<Map<String, String>>> acquireElementBundlesFromPage(
             String pageName, List<Map<String, String>> specifications
@@ -171,18 +256,17 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Determines if the specified WebElement matches the expected text value, accounting for 
-     * potential asynchronous content loading. The method first checks the element's visible text, 
-     * falling back to its 'value' attribute if empty. Matches are case-insensitive and may include 
-     * substring matches. If a NullPointerException occurs during initial checks, the method waits 
-     * for the expected text to be present in the element.
+     * Determines if the specified WebElement matches the expected text value, accounting for
+     * potential asynchronous content loading.
+     * <p>
+     * The method first checks the element's visible text, falling back to its 'value' attribute if empty.
+     * Matches are case-insensitive and may include substring matches. If a NullPointerException occurs
+     * (e.g., element stale), it waits for the text to be present.
+     * </p>
      *
-     * @param element The WebElement to evaluate for a text match.
+     * @param element  The WebElement to evaluate for a text match.
      * @param expected The text string to compare against the element's content.
-     * @return {@code true} if the element's text matches or contains the expected text 
-     *         (case-insensitive), or if the text becomes present after waiting; {@code false} otherwise.
-     * @throws NullPointerException Not propagated. Internally logged as a warning, and the method 
-     *         falls back to waiting for text presence via WebDriverWait.
+     * @return {@code true} if the element's text matches or contains the expected text.
      */
     private boolean checkElementTextMatch(WebElement element, String expected) {
         try {
@@ -200,13 +284,17 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
+     * Core method: Locates a single element defined in the JSON repository.
+     * <p>
+     * It reads the specific {@link SelectorType}s from the JSON, constructs a {@link ByAll} locator,
+     * waits for the element's presence, and then returns it.
+     * </p>
      *
-     * Acquires an element selector by desired selector types from a given Json file
-     *
-     * @param elementName target element name
-     * @param pageName page name that includes target element selectors
-     * @param selectorTypes desired selector types
-     * @return target element
+     * @param elementName   The unique name of the element within the page JSON.
+     * @param pageName      The name of the page in the JSON.
+     * @param selectorTypes Optional filter to only use specific selector types (e.g., only CSS).
+     * If empty, all available selectors in the JSON are used.
+     * @return The found {@link WebElement}.
      */
     public WebElement elementFromPage(String elementName, String pageName, SelectorType... selectorTypes){
         log.info("Acquiring element " +
@@ -226,13 +314,12 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
+     * Core method: Locates a list of elements defined in the JSON repository.
      *
-     * Acquires an element list selector by desired selector types from a given Json file
-     *
-     * @param elementName target element name
-     * @param pageName page name that includes target element selectors
-     * @param selectorTypes desired selector types
-     * @return target element list
+     * @param elementName   The unique name of the element within the page JSON.
+     * @param pageName      The name of the page in the JSON.
+     * @param selectorTypes Optional filter for selector types.
+     * @return A list of {@link WebElement}s found.
      */
     public List<WebElement> elementsFromPage(String elementName, String pageName, SelectorType... selectorTypes){
         log.info("Acquiring element " +
@@ -252,16 +339,17 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Constructs a compound {@link org.openqa.selenium.By} object based on the provided JSON representation
-     * of a web element and one or more {@link SelectorType}s. Each provided SelectorType is used to generate
-     * a corresponding Selenium {@link org.openqa.selenium.By} locator for the specified type within the element's JSON.
+     * Constructs a compound {@link org.openqa.selenium.By} object based on the provided JSON representation.
+     * <p>
+     * This method iterates through the requested {@link SelectorType}s, retrieves the raw string
+     * from the JSON via {@link #getPlatformSelector}, and creates the appropriate Selenium/Appium {@link By} locator.
+     * </p>
      *
-     * @param elementJson The JSON representation of the web element containing various locator information.
-     * @param selectorTypes One or more SelectorType enums specifying the types of locators to be generated.
-     * @return A compound By object, formed by combining individual locators based on the specified SelectorTypes.
+     * @param elementJson   The JSON representation of the web element.
+     * @param driver        The driver instance (used to determine platform specifics).
+     * @param selectorTypes One or more SelectorType enums specifying which locators to generate.
+     * @return A compound {@link ByAll} object.
      * @throws EnumConstantNotPresentException If an unsupported SelectorType is provided.
-     * @see org.openqa.selenium.By
-     * @see SelectorType
      */
     public ByAll getElementByAll(JsonObject elementJson, RemoteWebDriver driver, SelectorType... selectorTypes){
         List<By> locators = new ArrayList<>();
@@ -316,17 +404,21 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Retrieves a platform-specific selector string from the page repository JSON object.
+     * Extracts the raw selector string from the JSON structure for a specific platform and selector type.
+     * <p>
+     * The JSON structure is expected to be:
+     * <pre>
+     * "selectors": {
+     * "web": [ { "css": "#myId" } ],
+     * "android": [ { "accessibilityId": "myId" } ]
+     * }
+     * </pre>
+     * </p>
      *
-     * @param elementJson The JSON object containing the selector definitions.  It is expected to have a "selectors" field which is a JSON object.
-     *                    This inner object should contain keys representing platform names (lowercase) and values that are JSON arrays of selector strings.
-     * @param driver The {@link RemoteWebDriver} instance. Used to determine the platform (e.g., Windows, iOS, Android, Web).
-     * @param selectorType The type of selector to retrieve.
-     * @return The selector string for the specified platform and selector type, or {@code null} if no matching selector is found.
-     * @throws IllegalArgumentException if `elementJson` does not contain a "selectors" field,
-     *                                  or if the "selectors" field is not a JSON object,
-     *                                  or if the platform key is not found within the "selectors" object,
-     *                                  or if the value associated with the platform key is not a JSON array.
+     * @param elementJson  The JSON object for the element.
+     * @param driver       The driver, used to identify the current platform (web, android, ios).
+     * @param selectorType The type of selector to retrieve (e.g., css, xpath).
+     * @return The selector string, or null if not found.
      */
     String getPlatformSelector(JsonObject elementJson, RemoteWebDriver driver, SelectorType selectorType){
         JsonObject elementSelectors = elementJson.get("selectors").getAsJsonObject();
@@ -341,11 +433,15 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Generates an element using a primary selector by given element attributes (css or xpath)
+     * Generates a WebElement dynamically using a primary selector type (CSS or XPath) and a set of attribute pairs.
+     * <p>
+     * This is useful for finding elements that are not in the repository but have known attributes.
+     * </p>
      *
-     * @param selectorType desired primary selector type
-     * @param attributePairs target element attributes as 'label = value'
-     * @return target element
+     * @param selectorType   The strategy to use (CSS or XPath).
+     * @param driverType     The driver to use (Selenium or Appium).
+     * @param attributePairs Variable arguments of Key-Value pairs (e.g., "id", "submit").
+     * @return The located WebElement.
      */
     @SafeVarargs
     public final WebElement getElementByAttributes(
@@ -364,11 +460,12 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
+     * Generates a list of WebElements dynamically using attributes.
      *
-     * Generates an element list using a primary selector by given element attributes (css or xpath)
-     *
-     * @param attributePairs target element attributes as 'label = value'
-     * @return target element list
+     * @param selectorType   The strategy to use (CSS or XPath).
+     * @param driverType     The driver to use.
+     * @param attributePairs Key-Value pairs of attributes.
+     * @return A list of located WebElements.
      */
     @SafeVarargs
     public final List<WebElement> getElementsByAttributes(
@@ -387,11 +484,12 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     *
-     * Generates cssSelector by element attributes
-     *
-     * @param attributePairs target element attributes as 'label = value'
-     * @return target element selector
+     * Helper method to build a CSS selector string from attribute pairs.
+     * <p>
+     * Example input: {@code ("type", "submit"), ("class", "btn")}
+     * <br>
+     * Example output: {@code [type='submit'][class='btn']}
+     * </p>
      */
     @SafeVarargs
     public final String generateCssByAttributes(Pair<String, String>... attributePairs){
@@ -408,11 +506,12 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     *
-     * Generates xPath by element attributes
-     *
-     * @param attributePairs target element attributes as 'label = value'
-     * @return target element selector
+     * Helper method to build an XPath selector string from attribute pairs.
+     * <p>
+     * Example input: {@code ("type", "submit")}
+     * <br>
+     * Example output: {@code //*[@type='submit']}
+     * </p>
      */
     @SafeVarargs
     public final String generateXPathByAttributes(Pair<String, String>... attributePairs){
@@ -430,11 +529,11 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Acquires specified selectors for target element from a given Json file.
-     * Json file includes specified page names with element selectors.
+     * Locates the specific JSON object definition for an element within a page JSON.
      *
-     * @param elementName specified target element name
-     * @return target element selectors as JsonObject
+     * @param elementName The name of the element to find.
+     * @param pageJson    The JSON object representing the page.
+     * @return The JSON object for the element, or null if not found.
      */
     public JsonObject getElementJson(String elementName, JsonObject pageJson){
         JsonArray elements = pageJson.getAsJsonArray("elements");
@@ -451,12 +550,12 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Retrieves a JSON object representing a page from the object repository based on the page name.
+     * Retrieves a JSON object representing a page from the main object repository.
      *
-     * @param pageName The name of the page to retrieve.
-     * @param objectRepository The JSON object repository containing page configurations.  Assumes the repository has a "pages" array.
-     * @return The JSON object representing the page, or null if the page is not found.  Throws a NullPointerException if the page is not found.
-     * @throws NullPointerException if the page with the given name is not found in the 'pages' array.
+     * @param pageName         The name of the page to retrieve (e.g., "LoginPage").
+     * @param objectRepository The main JSON object repository containing a "pages" array.
+     * @return The JSON object representing the page.
+     * @throws NullPointerException if the page with the given name is not found.
      */
     public JsonObject getPageJson(String pageName, JsonObject objectRepository) {
         JsonArray pages = objectRepository.getAsJsonArray("pages");
@@ -473,10 +572,7 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Retrieves a RemoteWebDriver instance for a given page JSON object.
-     *
-     * @param pageJson The JSON object representing the page.  Must contain a "platform" field.
-     * @return The RemoteWebDriver instance for the specified platform.
+     * Helper method to get the correct driver instance (Web vs Appium) based on the "platform" key in the page JSON.
      */
     public RemoteWebDriver getDriverForPage(JsonObject pageJson) {
         DriverFactory.DriverType driverType = DriverFactory.DriverType.getType(
@@ -489,11 +585,7 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Retrieves a RemoteWebDriver instance for a given DriverType.
-     *
-     * @param driverType The DriverType to retrieve the driver for.
-     * @return The RemoteWebDriver instance for the specified DriverType.
-     * @throws EnumConstantNotPresentException if the DriverType is not supported.
+     * Helper method to return the active driver instance for a specific driver type.
      */
     public RemoteWebDriver getDriverForType(DriverFactory.DriverType driverType){
         switch (driverType){
@@ -508,10 +600,7 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Retrieves a RemoteWebDriver instance for a given page JSON object.
-     *
-     * @param pageJson The JSON object representing the page.  Must contain a "platform" field.
-     * @return The RemoteWebDriver instance for the specified platform.
+     * Helper method to get the correct FluentWait instance based on the "platform" key in the page JSON.
      */
     public FluentWait<RemoteWebDriver> getWaitForPage(JsonObject pageJson) {
         DriverFactory.DriverType driverType = DriverFactory.DriverType.getType(
@@ -524,11 +613,7 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Retrieves a RemoteWebDriver instance for a given DriverType.
-     *
-     * @param driverType The DriverType to retrieve the driver for.
-     * @return The RemoteWebDriver instance for the specified DriverType.
-     * @throws EnumConstantNotPresentException if the DriverType is not supported.
+     * Helper method to return the active FluentWait instance for a specific driver type.
      */
     public FluentWait<RemoteWebDriver> getWaitForType(DriverFactory.DriverType driverType){
         switch (driverType){
@@ -541,5 +626,4 @@ public class PageObjectJson implements ElementRepository {
             default -> throw new EnumConstantNotPresentException(DriverFactory.DriverType.class, driverType.name());
         }
     }
-
 }

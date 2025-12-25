@@ -19,7 +19,6 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -30,7 +29,6 @@ import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.functions.LocateElement;
 import pickleib.web.driver.PickleibWebDriver;
 import utils.StringUtilities;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,17 +37,37 @@ import java.util.Map;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
 
+/**
+ * A specialized utility class for Web UI automation that extends the generic {@link Utilities}.
+ * <p>
+ * This class provides Web-specific implementations for interactions that require direct access to
+ * the {@link RemoteWebDriver} or JavaScript execution. Key features include:
+ * <ul>
+ * <li><b>JavaScript Injection:</b> For scrolling, clicking, and event listening.</li>
+ * <li><b>Window Management:</b> Tab switching, resizing, and navigation history.</li>
+ * <li><b>DOM Traversal:</b> Handling iFrames and shadow roots (implicitly via JS).</li>
+ * <li><b>Browser Storage:</b> Managing Cookies and Local Storage.</li>
+ * </ul>
+ * </p>
+ *
+ * @author Umut Ay Bora
+ */
 public abstract class WebUtilities extends Utilities {
 
     /**
-     * WebUtilities for frameworks that use the Pickleib driver
+     * Constructor for frameworks that rely on the Singleton {@link PickleibWebDriver}.
+     * <p>
+     * Initializes the Scroller lambda to use {@link #centerElement(WebElement, RemoteWebDriver)}.
+     * </p>
      */
     public WebUtilities() {
         super(PickleibWebDriver.get(), (element) -> centerElement(element, PickleibWebDriver.get()));
     }
 
     /**
-     * WebUtilities for frameworks that do not use the Pickleib driver
+     * Constructor for frameworks using a custom or transient {@link RemoteWebDriver}.
+     *
+     * @param driver The active driver instance.
      */
     public WebUtilities(RemoteWebDriver driver) {
         super(driver, (element) -> centerElement(element, driver));
@@ -60,9 +78,11 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Navigates to a given url
+     * Navigates to a specific URL, ensuring the protocol is present.
      *
-     * @param url target url
+     * @param url The target URL (e.g., "google.com" or "https://google.com").
+     * @return The processed URL.
+     * @throws PickleibException If navigation fails.
      */
     @SuppressWarnings("UnusedReturnValue")
     public String navigate(String url) {
@@ -90,9 +110,9 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Navigates browsers in a given direction
+     * Navigates the browser history.
      *
-     * @param direction backwards or forwards
+     * @param direction {@link Navigation#backwards} or {@link Navigation#forwards}.
      */
     public void navigateBrowser(Navigation direction) {
         try {
@@ -109,10 +129,12 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Scrolls through a list of elements until an element containing a given text is found
+     * Iterates through a list of elements, centering each one, until an element containing the text is found.
      *
-     * @param elementText target element text
-     * @param elements    target element list
+     * @param elementText The text to search for.
+     * @param elements    The list of elements to check.
+     * @return The matching WebElement.
+     * @throws RuntimeException If the element is not found.
      */
     public WebElement scrollInList(String elementText, List<WebElement> elements) {
         log.info("Scrolling the list to element with text: " + highlighted(BLUE, elementText));
@@ -126,17 +148,14 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Scrolls the view until the specified element is found and visible.
-     * This method continuously scrolls in the 'up' direction and attempts to locate the element using
-     * the provided LocateElement strategy. The process is repeated until the element is found and
-     * displayed or the time limit is reached.
+     * Scrolls the view downwards repeatedly until the locator finds a visible element.
+     * <p>
+     * <b>Timeout:</b> This method waits up to 5x the standard {@code elementTimeout}.
+     * </p>
      *
-     * @param locator The LocateElement strategy used to find the target WebElement.
-     * @return The located WebElement if found and displayed.
-     * @throws RuntimeException if the element is not found within the specified timeout.
-     *
-     * @see LocateElement
-     * @see Direction
+     * @param locator A functional interface {@link LocateElement} that attempts to find the element.
+     * @return The located element.
+     * @throws RuntimeException If the element is not found within the extended timeout.
      */
     public WebElement scrollUntilFound(LocateElement locator) {
         log.info("Scrolling until an element is found");
@@ -155,15 +174,9 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Scrolls the viewport in the specified direction.
+     * Scrolls the browser viewport using JavaScript.
      *
-     * <p>
-     * This method scrolls the viewport in the specified direction.
-     * It scrolls the page content based on the direction specified.
-     * </p>
-     *
-     * @param direction The direction in which to scroll the viewport.
-     * @throws NullPointerException if the direction parameter is null.
+     * @param direction {@link Direction#up} or {@link Direction#down}.
      */
     public void scrollInDirection(@NotNull Direction direction) {
         log.info("Scrolling " + highlighted(BLUE, direction.name().toLowerCase()));
@@ -215,9 +228,10 @@ public abstract class WebUtilities extends Utilities {
         }
 
     /**
-     * Switches driver focus by using a tab handle
+     * Switches the driver's focus to a specific window/tab handle.
      *
-     * @param handle target tab/window
+     * @param handle The window handle ID. If null, switches to the next available window.
+     * @return The handle of the parent window (before switching).
      */
     public String switchWindowByHandle(@Nullable String handle) {
         log.info("Switching to the next tab");
@@ -232,9 +246,10 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Switches driver focus by using tab index
+     * Switches the driver's focus to a tab based on its index.
      *
-     * @param tabIndex target tab/window
+     * @param tabIndex The 0-based index of the tab.
+     * @return The handle of the parent window.
      */
     public String switchWindowByIndex(Integer tabIndex) {
         log.info("Switching the tab with the window index: " + tabIndex);
@@ -280,28 +295,38 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Click an element into view by using javascript
+     * Forces a click on an element using JavaScript.
+     * <p>
+     * Useful when elements are obscured by overlays or not interactive according to Selenium's standard checks.
+     * </p>
      *
-     * @param webElement element that gets clicked
+     * @param webElement The element to click.
      */
     public void clickWithJS(WebElement webElement) {
         driver.executeScript("arguments[0].click();", webElement);
     }
 
     /**
-     * Scrolls element into view by using javascript
+     * Forces an element into view using JavaScript's {@code scrollIntoView()}.
      *
-     * @param webElement element that gets scrolled into the view
+     * @param webElement The element to scroll to.
      */
     public void scrollWithJS(WebElement webElement) {
         driver.executeScript("arguments[0].scrollIntoView();", webElement);
     }
 
     /**
-     * Scrolls an element to the center of the view
+     * Scrolls the element to the exact center of the viewport using JavaScript calculations.
+     * <p>
+     * This is often more reliable than {@code scrollIntoView} for keeping elements away from
+     * sticky headers or footers.
+     * </p>
      *
-     * @param element target element
-     * @return returns the targeted element
+     *
+     *
+     * @param element The element to center.
+     * @param driver  The driver to execute the script.
+     * @return The element.
      */
     //This method scrolls an element to the center of the view
     public static WebElement centerElement(WebElement element, RemoteWebDriver driver) {
@@ -315,17 +340,27 @@ public abstract class WebUtilities extends Utilities {
         return element;
     }
 
+    /**
+     * Scrolls the element to the exact center of the viewport using JavaScript calculations, using the instance driver.
+     * <p>
+     * This is often more reliable than {@code scrollIntoView} for keeping elements away from
+     * sticky headers or footers.
+     * </p>
+     *
+     *
+     *
+     * @param element The element to center.
+     * @return The element.     */
     public WebElement centerElement(WebElement element) {
         return centerElement(element, driver);
     }
 
     /**
-     * Transform a given element to a JsonObject using javascript and JsonParser
+     * Extracts all attributes of an element and converts them to a {@link JsonObject}.
      *
-     * @param element target element
-     * @return returns an object with the attributes of a given element
+     * @param element The target element.
+     * @return A JsonObject containing all HTML attributes.
      */
-    //This method returns all the attributes of an element as an object
     public JsonObject getElementJson(WebElement element) {
         String object = driver.executeScript(
                 "var items = {}; " +
@@ -338,10 +373,10 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Transform a given element to a JSONObject using javascript and JSONParser
+     * Extracts all attributes of an element and converts them to a {@link JSONObject}.
      *
-     * @param element target element
-     * @return returns an object with the attributes of a given element
+     * @param element The target element.
+     * @return A JsonObject containing all HTML attributes.
      */
     public JSONObject getElementJSON(WebElement element) {
         try {
@@ -370,9 +405,9 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Click button includes {button text} text with css locator
+     * Locates an element by CSS, centers it, and clicks it.
      *
-     * @param cssSelector target text
+     * @param cssSelector The CSS selector string.
      */
     public void clickButtonByCssSelector(String cssSelector) {
         WebElement element = driver.findElement(By.cssSelector(cssSelector));
@@ -381,10 +416,15 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Click iFrame element {element name} in {iframe name} on the {page name}
+     * Clicks an element located inside an iframe.
+     * <p>
+     * Handles the context switch to the frame and back to parent.
+     * </p>
      *
-     * @param iframe  target iframe
-     * @param element target element
+     *
+     *
+     * @param iframe  The iframe WebElement.
+     * @param element The element inside the iframe.
      */
     public void clickIframeButton(WebElement iframe, WebElement element) {
         driver.switchTo().frame(iframe);
@@ -444,10 +484,13 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Hovers cursor over of a given element
+     * Simulates a hover action (Mouse Over) on an element.
+     * <p>
+     * Includes a retry mechanism for stability.
+     * </p>
      *
-     * @param element target element
-     * @return returns the selected element
+     * @param element The element to hover over.
+     * @return The element.
      */
     public WebElement hoverOver(WebElement element) {
         long initialTime = System.currentTimeMillis();
@@ -488,13 +531,19 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Checks if an event was fired
-     * Create a custom script to listen for an event by generating a unique event key and catches this key in the console
+     * Listens for a JavaScript event on the frontend.
+     * <p>
+     * Injects a script that listens for the specific {@code eventName} and logs a unique key to the console.
+     * The method then reads the browser logs to verify if the event fired.
+
      * Ex: "dataLayerObject.listen(eventName, function(){console.warn(eventKey)});"
+     * </p>
      *
-     * @param eventName      event name of the event that is expected to be fired
-     * @param listenerScript script for calling the listener, ex: "dataLayerObject.listen( eventName );"
-     * @return true if the specified event was fired.
+     *
+     *
+     * @param eventName      The name of the event (e.g., "gtm.load").
+     * @param listenerScript The JS code to attach the listener (must contain the placeholder for event name).
+     * @return {@code true} if the event fired.
      */
     public boolean isEventFired(String eventName, String listenerScript) {
         log.info("Listening to '" + eventName + "' event");
@@ -565,10 +614,10 @@ public abstract class WebUtilities extends Utilities {
     }
 
     /**
-     * Updates given cookies
+     * Updates a specific cookie by deleting the old one and adding a new one with the same properties.
      *
-     * @param cookieValue
-     * @param cookieName
+     * @param cookieValue The new value.
+     * @param cookieName  The name of the cookie.
      */
     public void updateCookies(String cookieValue, String cookieName) {
         Cookie cookie = driver.manage().getCookieNamed(cookieName);
@@ -645,16 +694,14 @@ public abstract class WebUtilities extends Utilities {
 
     /**
      * Checks if the specified WebElement is fully in view within the current browser window.
-     *          * The script calculates the element's bounding rectangle and checks if its
-     *          * top, left, bottom, and right coordinates are within the viewport.
-     *          * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect">getBoundingClientRect()</a>
+     * <p>
+     * The script calculates the element's bounding rectangle and checks if its
+     * top, left, bottom, and right coordinates are within the viewport.
+     * </p>
      *
      * @param element The WebElement to be checked for visibility.
      * @return {@code true} if the element is fully in view, {@code false} otherwise.
-     * @throws org.openqa.selenium.JavascriptException If a JavaScript error occurs during the execution of the script.
-     * @throws java.lang.ClassCastException If the WebDriver is not able to execute JavaScript.
-     * @throws java.lang.NullPointerException If the provided WebElement is null.
-     * @since 2.0.0
+     * @see <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect">getBoundingClientRect()</a>
      */
     public boolean elementIsInView(WebElement element) {
         String script = "var rect = arguments[0].getBoundingClientRect();" +
@@ -667,38 +714,4 @@ public abstract class WebUtilities extends Utilities {
 
         return Boolean.parseBoolean(driver.executeScript(script, element).toString());
     }
-
-
-    /**
-     * Checks if a given WebElement is fully within the visible viewport.
-     *
-     * @param driver  The WebDriver instance.
-     * @param element The WebElement to check.
-     * @return True if the element is fully in viewport, false otherwise.  Returns false if the element is null or not displayed.
-     */
-    /*
-    public static boolean isElementInViewport(WebDriver driver, WebElement element) {
-        if (element == null || !element.isDisplayed()) {
-            return false;
-        }
-
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-
-        // Get the position of the element relative to the viewport.
-        int x = (int) js.executeScript("return arguments[0].getBoundingClientRect().left;", element);
-        int y = (int) js.executeScript("return arguments[0].getBoundingClientRect().top;", element);
-
-        // Get the width and height of the viewport.
-        int viewportWidth = (int) js.executeScript("return window.innerWidth;");
-        int viewportHeight = (int) js.executeScript("return window.innerHeight;");
-
-        // Get the width and height of the element.
-        int elementWidth = element.getSize().getWidth();
-        int elementHeight = element.getSize().getHeight();
-
-        // Check if the element is fully within the viewport.
-        return (x >= 0 && x + elementWidth <= viewportWidth && y >= 0 && y + elementHeight <= viewportHeight);
-    }
-     */
-
 }

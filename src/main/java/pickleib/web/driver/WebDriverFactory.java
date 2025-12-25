@@ -2,7 +2,6 @@ package pickleib.web.driver;
 
 import context.ContextStore;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import lombok.Getter;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -25,112 +24,139 @@ import java.time.Duration;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.highlighted;
 
+/**
+ * A factory class responsible for creating and configuring Selenium WebDriver instances.
+ * <p>
+ * This class serves as the central hub for browser instantiation. It supports:
+ * <ul>
+ * <li><b>Multiple Browsers:</b> Chrome, Firefox, Safari, Edge, Opera.</li>
+ * <li><b>Execution Modes:</b> Headless, Mobile Emulation, Selenium Grid.</li>
+ * <li><b>Configuration:</b> Extensive customization via {@link ContextStore} keys (e.g., timeouts, screen size, proxy).</li>
+ * <li><b>Dependency Management:</b> Optional integration with {@code WebDriverManager} (WDM).</li>
+ * </ul>
+ * </p>
+ *
+ * @author Umut Ay Bora
+ */
 @SuppressWarnings("unused")
 public class WebDriverFactory implements DriverFactory {
 
     /**
-     * determines frameWidth value
+     * Determines the width of the browser window in pixels.
+     * Default: 1920.
      */
     static int frameWidth = Integer.parseInt(ContextStore.get("frame-width","1920"));
 
     /**
-     * determines frameWidth value
+     * The address of the proxy server to use (optional).
      */
     static String proxyAddress = ContextStore.get("proxy-address");
 
     /**
-     * determines frameWidth value
+     * The port of the proxy server to use.
+     * Default: 0 (disabled).
      */
     static int proxyPort = Integer.parseInt(ContextStore.get("proxy-port", "0"));
 
     /**
-     * determines frameHeight value
+     * Determines the height of the browser window in pixels.
+     * Default: 1080.
      */
     static int frameHeight = Integer.parseInt(ContextStore.get("frame-height","1080"));
 
     /**
-     * session runs headless if true
+     * If true, runs the browser in headless mode (no UI).
+     * Default: false.
      */
     static boolean headless = Boolean.parseBoolean(ContextStore.get("headless", "false"));
 
     /**
-     * session runs in mobile mode if true
+     * If true, enables mobile emulation mode in Chrome.
+     * Default: false.
      */
     static boolean mobileMode = Boolean.parseBoolean(ContextStore.get("mobile-mode", "false"));
 
     /**
-     * Preferred EmulatedDevice
+     * The preferred device configuration for mobile emulation.
+     * Default: iPhone12Pro.
      */
     static EmulatedDevice preferredDevice = EmulatedDevice.getType(ContextStore.get("emulated-device", "iPhone12Pro"));
 
     /**
-     * maximizes a session window if true
+     * If true, maximizes the browser window on startup.
+     * Default: false.
      */
     static boolean maximise = Boolean.parseBoolean(ContextStore.get("driver-maximize", "false"));
 
     /**
-     * determines driverTimeout duration
+     * Global timeout for the driver (implicit wait) in seconds.
+     * Calculated by dividing "driver-timeout" (ms) by 1000.
+     * Default: 15 seconds.
      */
     static long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
 
     /**
-     * cookies are deleted if true
+     * If true, deletes all cookies upon driver initialization.
+     * Default: false.
      */
     static boolean deleteCookies = Boolean.parseBoolean(ContextStore.get("delete-cookies", "false"));
 
     /**
-     * Selenium Grid is used if true
+     * If true, connects to a remote Selenium Grid hub instead of a local driver.
+     * Default: false.
      */
     static boolean useSeleniumGrid = Boolean.parseBoolean(ContextStore.get("selenium-grid", "false"));
 
     /**
-     * enables insecure local host if true
+     * If true, accepts insecure SSL certificates (e.g., self-signed).
+     * Default: false.
      */
     static boolean insecureLocalHost = Boolean.parseBoolean(ContextStore.get("insecure-localhost", "false"));
 
     /**
-     * enables insecure local host if true
+     * If true, adds the "--no-sandbox" argument (often required for CI/Docker environments).
+     * Default: false.
      */
     static boolean noSandbox = Boolean.parseBoolean(ContextStore.get("driver-no-sandbox", "false"));
 
     /**
-     * disables browser notifications if true
+     * If true, disables browser notifications (e.g., "Show notifications").
+     * Default: true.
      */
     static boolean disableNotifications = Boolean.parseBoolean(ContextStore.get("disable-notifications", "true"));
 
     /**
-     * determines page load strategy
+     * Determines the page load strategy (normal, eager, none).
+     * Default: normal.
      */
     static PageLoadStrategy loadStrategy = PageLoadStrategy.fromString(ContextStore.get("load-strategy", "normal"));
 
     /**
-     * determines usage of web driver manager
+     * If true, uses WebDriverManager to automatically download/setup driver binaries.
+     * Default: false.
      */
     static Boolean useWDM = Boolean.parseBoolean(ContextStore.get("web-driver-manager", "false"));
 
     /**
-     * determines usage of web driver manager
+     * If true, allows remote origins (fixes "Connection Refused" issues in newer Chrome versions).
+     * Default: true.
      */
     static Boolean allowRemoteOrigin = Boolean.parseBoolean(ContextStore.get("allow-remote-origin", "true"));
 
     /**
-     * The logging level used by Pickleib.
-     * This value can be set in the properties file with the key "selenium-log-level".
-     * If not specified in the properties file, the default value is "off".
+     * The logging level used by the underlying Selenium driver.
+     * Default: "off".
      */
     static String logLevel = ContextStore.get("selenium-log-level", "off");
 
     /**
-     * The URL of the Selenium Grid hub.
-     * This value can be set in the properties file with the key "hub-url".
-     * If not specified in the properties file, the default value is an empty string.
+     * The URL of the Selenium Grid hub. Required if {@code useSeleniumGrid} is true.
      */
     static String hubUrl = ContextStore.get("hub-url","");
 
     /**
-     * The browser used for tests.
-     * This value can be set in the properties file with the key "browser".
-     * If not specified in the properties file, the default value is "chrome".
+     * The default browser to use if no specific type is requested.
+     * Default: "chrome".
      */
     static String browser = ContextStore.get("browser", "chrome");
 
@@ -140,9 +166,20 @@ public class WebDriverFactory implements DriverFactory {
     private static final Printer log = new Printer(WebDriverFactory.class);
 
     /**
-     * Initializes and returns a driver of specified type
-     * @param browserType driver type
-     * @return returns driver
+     * Initializes and returns a fully configured {@link RemoteWebDriver} instance.
+     * <p>
+     * This method handles the logic for:
+     * <ul>
+     * <li>Connecting to a Grid vs. Local execution.</li>
+     * <li>Setting implicit wait timeouts.</li>
+     * <li>Configuring window size/maximization.</li>
+     * <li>Managing cookies and logging levels.</li>
+     * </ul>
+     * </p>
+     *
+     * @param browserType The specific {@link BrowserType} to initialize. If null, falls back to the "browser" config.
+     * @return A configured RemoteWebDriver instance.
+     * @throws RuntimeException If the driver cannot be initialized (e.g., Malformed URL for Grid, Connection refused).
      */
     public static RemoteWebDriver getDriver(BrowserType browserType){
         RemoteWebDriver driver;
@@ -177,15 +214,23 @@ public class WebDriverFactory implements DriverFactory {
     }
 
     /**
-     * Selects the driver type and assigns desired capabilities
+     * Internal helper method to instantiate the correct driver class with specific options.
+     * <p>
+     * This method applies browser-specific settings (like ChromeOptions, FirefoxOptions)
+     * based on the provided configuration flags. It also handles the optional setup of WebDriverManager.
+     * </p>
      *
-     * @param headless session runs headless if true
-     * @param useWDM WebDriverManager is used if true
-     * @param insecureLocalHost enables insecure local host if true
-     * @param disableNotifications disables browser notifications if true
-     * @param loadStrategy determines page load strategy
-     * @param browserType driver type
-     * @return returns the configured driver
+     * @param headless             Run in headless mode.
+     * @param useWDM               Use WebDriverManager.
+     * @param insecureLocalHost    Accept insecure certs.
+     * @param noSandbox            Disable sandbox.
+     * @param disableNotifications Disable browser notifications.
+     * @param allowRemoteOrigin    Allow remote origins (Chrome).
+     * @param loadStrategy         Page loading strategy.
+     * @param browserType          Target browser.
+     * @param mobileMode           Enable mobile emulation.
+     * @param preferredDevice      Target mobile device for emulation.
+     * @return A new instance of the requested driver.
      */
     static RemoteWebDriver driverSwitch(
             Boolean headless,
@@ -251,7 +296,7 @@ public class WebDriverFactory implements DriverFactory {
     }
 
     /**
-     * Available driver types
+     * Enumeration of supported browser types.
      */
     public enum BrowserType {
         CHROME("Chrome"),
@@ -271,9 +316,10 @@ public class WebDriverFactory implements DriverFactory {
         }
 
         /**
-         * Returns a driver type matching a given text (Non-case-sensitive)
-         * @param text desired driver
-         * @return returns matching a driver type
+         * Returns a driver type matching a given text (Non-case-sensitive).
+         *
+         * @param text The desired driver name (e.g., "chrome", "FIREFOX").
+         * @return The matching BrowserType, or null if not found.
          */
         public static BrowserType fromString(String text) {
             if (text != null)
@@ -287,6 +333,8 @@ public class WebDriverFactory implements DriverFactory {
             return driverName;
         }
     }
+
+    // Setters for static configuration (useful for runtime adjustments)
 
     public static void setFrameWidth(int frameWidth) {
         WebDriverFactory.frameWidth = frameWidth;
@@ -350,6 +398,8 @@ public class WebDriverFactory implements DriverFactory {
 
     public static void setNoSandbox(boolean noSandbox) {WebDriverFactory.noSandbox = noSandbox;}
 
+    // Getters for configuration values
+
     public static int getFrameWidth() {
         return frameWidth;
     }
@@ -411,5 +461,4 @@ public class WebDriverFactory implements DriverFactory {
     }
 
     public static boolean isNoSandbox() {return noSandbox;}
-
 }
