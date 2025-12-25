@@ -29,6 +29,15 @@ import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.highlighted;
 
+/**
+ * Concrete implementation of {@link PolymorphicUtilities} tailored for Web UI automation using Selenium.
+ * This class extends {@link WebUtilities} to provide high-level action methods.
+ * Its primary purpose is to act as a <b>Verbose Decorator</b>: it performs the raw Selenium actions
+ * defined in the parent class but adds detailed logging (e.g., "Clicking element X on page Y")
+ * to ensure readable test execution logs.
+ *
+ * @author Umut Ay Bora
+ */
 @SuppressWarnings("unused")
 public class WebInteractions extends WebUtilities implements PolymorphicUtilities {
 
@@ -64,8 +73,8 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     /**
      * Updates given cookies
      *
-     * @param cookieValue
-     * @param cookieName
+     * @param cookieValue The new value.
+     * @param cookieName  The name of the cookie to update.
      */
     public void updateCookies(String cookieValue, String cookieName) {
         log.info("Updating cookies ... ");
@@ -717,11 +726,9 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     /**
      * Fills the specified input element with the content of a file.
      *
-     * <p>
      * This method fills the provided {@code inputElement} with the content of a file specified by {@code absoluteFilePath}.
      * The method logs information about the input name, page name, and the absolute file path being used.
      * Before filling the input, it clears the existing content if specified.
-     * </p>
      *
      * @param inputElement     The {@code WebElement} representing the input field to be filled.
      * @param inputName        The name of the input field for logging purposes.

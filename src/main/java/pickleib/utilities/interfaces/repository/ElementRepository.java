@@ -2,6 +2,9 @@ package pickleib.utilities.interfaces.repository;
 
 import org.openqa.selenium.WebElement;
 import pickleib.utilities.element.ElementBundle;
+import pickleib.utilities.element.acquisition.design.PageObjectJson;
+import utils.Printer;
+
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +20,8 @@ import java.util.Map;
  * @since   2.0.6
  */
 public interface ElementRepository {
+
+    Printer log = new Printer(ElementRepository.class);
 
     /**
      * Acquire element {element name} from {page name}.

@@ -21,11 +21,24 @@ import java.util.StringJoiner;
 
 import static pickleib.enums.ElementState.absent;
 import static pickleib.enums.ElementState.displayed;
-import static pickleib.utilities.platform.PlatformUtilities.*;
+import static pickleib.utilities.DriverInspector.*;
 import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
 
+/**
+ * Abstract base class containing the core logic for WebDriver interactions.
+ * <p>
+ * This class provides robust wrappers around standard Selenium/Appium actions. It includes built-in
+ * mechanisms for:
+ * <ul>
+ * <li><b>Resilience:</b> Automatic retries for {@link WebDriverException} (e.g., StaleElementReference).</li>
+ * <li><b>Synchronization:</b> Intelligent waiting using {@link FluentWait} and implicit wait toggling.</li>
+ * <li><b>Verification:</b> Assertions for element text, attributes, and states.</li>
+ * </ul>
+ *
+ * @author  Umut Ay Bora
+ */
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class Utilities {
 
@@ -35,7 +48,7 @@ public abstract class Utilities {
     public FluentWait<RemoteWebDriver> wait;
     public ScrollFunction scroller;
 
-    public long elementTimeout = Long.parseLong(ContextStore.get("element-timeout", "15000"));
+    public long elementTimeout = ContextStore.getInt("element-timeout", 15000);
 
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         this.driver = driver;

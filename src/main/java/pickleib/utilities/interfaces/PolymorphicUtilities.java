@@ -11,10 +11,22 @@ import pickleib.enums.ElementState;
 import pickleib.utilities.Utilities;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.functions.LocateElement;
-
+import pickleib.web.interactions.WebInteractions;
+import pickleib.platform.interactions.PlatformInteractions;
+import pickleib.utilities.element.interactions.InteractionBase;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Defines the contract for interaction methods that must be supported across all platforms (Web and Mobile).
+ * <p>
+ * This interface allows the framework to treat Web (Selenium) and Mobile (Appium) interactions polymorphically.
+ * The {@link InteractionBase} class determines at runtime whether
+ * to delegate these calls to {@link WebInteractions} or {@link PlatformInteractions}.
+ * </p>
+ * *
+ * @author  Umut Ay Bora
+ */
 @SuppressWarnings("unused")
 public interface PolymorphicUtilities {
 
