@@ -14,7 +14,6 @@ import pickleib.web.driver.PickleibWebDriver;
  * @see DriverFactory.DriverType for supported driver types
  */
 public class DriverLoader {
-    
 
     /**
      * Initializes and returns a Selenium WebDriver instance for web browser automation.
