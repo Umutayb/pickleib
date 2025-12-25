@@ -9,7 +9,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pages.FormsPage;
-import pickleib.driver.DriverFactory;
 import pickleib.driver.DriverLoader;
 import pickleib.enums.Direction;
 import pickleib.enums.PageRepositoryDesign;
