@@ -25,6 +25,10 @@ jobs:
       - name: Start Unit Test Website
         run: |
           docker compose up --build -d
+      - name: Test with POM page repository design
+        run: mvn clean test -Dpage-repository-design=pom
+      - name: Test with JSON page repository design
+        run: mvn clean test -Dpage-repository-design=json
       - name: Build, Test & Release
         uses: ncipollo/release-action@v1
         with:
