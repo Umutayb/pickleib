@@ -1,186 +1,302 @@
 # Pickleib
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/Pickleib?color=brightgreen&label=Pickleib)](https://mvnrepository.com/artifact/io.github.umutayb/Pickleib/latest)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/pickleib?color=brightgreen&label=pickleib)](https://mvnrepository.com/artifact/io.github.umutayb/pickleib/latest)
 
-### Description
+**Pickleib** is a comprehensive, polymorphic test automation utility library designed to streamline **Web (Selenium)**, **Mobile (Appium)**, **Desktop (Appium)**, and **API** testing.
 
-Pickleib is a utility library for software automation projects. It helps you design and run tests with Selenium WebDriver in a simple and efficient way. It provides a set of utilities and ready to go driver setup that provide great convenience for designing test automations.
+It acts as a robust wrapper around Selenium and Appium, allowing you to write interaction-agnostic code that works across platforms. It offers a unique **"Hybrid" Page Object Model** approach, letting you choose between a classic Java implementation or a "Low-Code" JSON-based element definition.
 
-Some features and benefits of using Pickleib are:
-* **Easy configuration**: You can set up your test environment with minimal code! Pickleib supports different browsers, drivers, timeouts, etc.
-* **Utilities**: Pickleib has various utilities that can help you interact with WebElements in a consistent/non-flaky way. Check basic interaction methods such as click, fill, scroll, or more advanced utilities like element state, element attribute verifications. Find these at `WebUtilities.java`
-* **Page Object Model**: Pickleib can be use the Page Object Model pattern to organize your web elements and actions in separate classes. Pickleib provides classes and methods to simplify this process.
-* **API support**: Pickleib has built in api capabilities that enable defining calls to endpoints, model request & response bodies as well as verifying response details, testing frontend interactions against backends
-* **Emails**: It has email capabilities that enable sending or receiving emails directly in the framework. This feature is further supported by utilities that acquire email HTML and test email design, content and structure using the web driver.
-* **Database**: Pickleib provides database connection capabilities with JDBC. Database utilities can be used to establish an SQL connection, pass queries and map the results.
-* **Data Layer**: Built in data layer desting capabilities allow verifying specific events or data stored in the data layer.
+---
 
-### Installation
+## 🚀 Key Features
 
-To use Pickleib in your Maven project, add the following dependency to your pom.xml file:
+Pickleib simplifies test design by offering ready-to-use driver management, powerful utilities, and flexible design patterns.
+
+* **🌐 Polymorphic Interactions:** Write tests that run on web, mobile & desktop platforms using a unified interface (`PolymorphicUtilities`).
+* **🏗️ Hybrid Page Object Model:**
+    * **Classic POM:** Use standard Java classes with `@FindBy` annotations.
+    * **Low-Code POM:** Define your pages and selectors in a single `page-repository.json` file—no page classes required!
+* **🚗 Smart Driver Management:** Automated handling of `WebDriver` and `AppiumDriver` lifecycles (Singleton pattern).
+* **❤️‍🩹 Self-Healing Utilities:** Built-in retry mechanisms for `StaleElementReferenceException` and intelligent `FluentWait` synchronization.
+* **🧳 Context Management:** A global `ContextStore` for sharing data between steps and configuring run-time environment variables.
+* **📝 Verbose Logging:** Automatically logs interactions (e.g., "Clicking 'loginButton' on 'LoginPage'") for easier debugging.
+* **🛠️ Cross-Functional Testing:**
+    * 🔌 API testing via **Wasapi** (Retrofit)
+    * 🗄️ Database interactions using **JDBC**
+    * 📧 Advanced email sending, receiving & HTML verification
+    * 📊 **Web Data Layer Validation:** Verify events, values, and structures directly.
+
+---
+
+### ⚠️ Important: ArtifactId Change
+
+As of version **2.0.1**, the Artifact ID has changed to lowercase.
+* Old: `Pickleib`
+* New: **`pickleib`**
+
+---
+
+## 📦 Installation
+
+Add the following dependency to your `pom.xml`:
+
 ```xml
 <dependency>
-    <groupId>com.github.umutayb</groupId>
+    <groupId>io.github.umutayb</groupId>
     <artifactId>pickleib</artifactId>
-    <version>1.x.x</version>
+    <version>2.0.8</version>
 </dependency>
 ```
 
-To use Pickleib in your Gradle project, add the following dependency to your build.gradle file:
-```
-dependencies {
-    implementation 'com.github.umutayb:picklelib:1.x.x'
+## 🏗️ Architecture & Usage
+Pickleib is designed for **quick integration**. It provides ready-to-use drivers, database connections, and API clients
+while remaining fully compatible with the Page Object Model design. It allows you to structure your tests in two ways.
+---
+
+## Driver Setup (Test Hooks)
+
+Manage the driver lifecycle using hooks.
+
+```java
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import pickleib.web.driver.PickleibWebDriver;
+
+public class Hooks {
+
+    @BeforeEach
+    public void start() {
+        // Initialize Web Driver
+        PickleibWebDriver.initialize();
+
+        // OR Initialize Mobile/Desktop Driver
+        // PickleibAppiumDriver.initialize();
+    }
+
+    @AfterEach
+    public void kill(Scenario scenario) {
+        // Terminate Web Driver
+        PickleibWebDriver.terminate();
+
+        // OR Terminate Mobile/Desktop Driver
+        // PickleibAppiumDriver.terminate();
+    }
 }
-
-```
-Project can also be cloned and built into the target framework;
-```shell
-mvn clean package -DbuildDirectory=/Users/{user}/Web-Automation-Sample-Cucumber/lib
-```
-There, the imported jar file should be added as a dependency in `pom.xml file of that project:
-```xml
-    <!-- Framework -->
-        <dependency>
-            <groupId>bora</groupId>
-            <artifactId>Pickleib-1.x.x.jar</artifactId>
-            <version>1.x.x</version>
-            <systemPath>${project.basedir}/lib/Pickleib-1.x.x.jar</systemPath>
-            <scope>system</scope>
-            <type>jar</type>
-        </dependency>
 ```
 
-After updating your project, the quickstart library is ready to use. 
-___
-### Usage
+## Step Definitions
 
-The quickstart library consists of many utility methods and a ready to use web driver, database connection & api handling.
-It is compatible with page object model design. The infrastructure allows easy initialization of elements by initializing them
-within a constructor inside the **WebUtilities** class. In order to initialize elements inside a page class, all it takes is
-to extend the **WebUtilities** class. This also extends the **Driver** class, allowing usage of driver inside page classes.
+### Direct Approach
 
-#### Step 1: Create a pages package
-Implement page objects, add elements (use @FindBy annotation) & page methods. _**Remember** extending **WebUtilities** class, 
- initializing all elements within the page class._
+Instantiate page objects and call their methods directly.
 
-````java
-import utils.WebUtilities;
+```java
+import pages.HomePage;
 
-public class HomePage extends WebUtilities {...}
-```` 
-
-#### Step 2: Create a steps package
-Create page step classes, instantiate page classes, create step definitions & access page methods within these step 
- definitions as:
- ````java
 public class HomePageSteps {
-    
+
     HomePage homePage = new HomePage();
 
-    @Given("Click category card named {}")
-    public void clickCategoryCard(String cardName) {
-        homePage.clickCategoryCardNamed(cardName);
+    @Given("I select the {string} category")
+    public void selectCategory(String categoryName) {
+        homePage.selectCategory(categoryName);
     }
- }
- ````
-**Alternatively**, use the reflection steps found in **PickleibSteps** class.
->
->Create an ObjectRepository class, instantiate all page objects in it;
->
->```java
->public class ObjectRepository {
->
->    HomePage homePage = new HomePage();
->
->}
->```
->Then input a new instance of ObjectRepository object to PickleibSteps methods;
->```java
->import steps.PickleibSteps;
->import utils.driver.Driver;
->
->public class CommonSteps extends PickleibSteps {
->    @Given("If present, click the {} on the {}")
->    public void clickIfPresent(String buttonName, String pageName){
->        log.new Info("Clicking " +
->                highlighted(BLUE, buttonName) +
->                highlighted(GRAY," on the ") +
->                highlighted(BLUE, pageName) +
->                highlighted(GRAY, ", if present...")
->        );
->        pageName = strUtils.firstLetterDeCapped(pageName);
->        try {
->            WebElement element = getElementFromPage(buttonName, pageName, new ObjectRepository());
->            if (elementIs(element, ElementState.DISPLAYED)) clickElement(element, true);
->        }
->        catch (WebDriverException ignored){log.new Warning("The " + buttonName + " was not present");}
->    }
->}    
->```
->
->If using cucumber, set **@Before** & **@After** steps as:
->
->```java
->import utils.driver.Driver;
->
->public class CommonSteps {
->    @Before
->    public void start() {
->        Driver.initialize();
->    }
->
->    @After
->    public void kill(Scenario scenario) {
->        Driver.terminate();
->    }
->}    
->```
-
-Use your reflection step to interact with the element;
-```gherkin
-@TestEnv @Web-UI @SCN-Click-If-Present
-Scenario: Test cookie accept button 
-  * Navigate to the test page
-  * If present, click the cookieAcceptButton on the HomePage
-```
-
-Set up your test runner
-```java
-@RunWith(Cucumber.class)
-@CucumberOptions(
-        features = {"src/test/java/features"},
-        plugin = {"json:target/reports/Cucumber.json"},
-        glue = {"steps"},
-        publish = true
-)
-public class TestRunner {
-
-    @BeforeClass
-    public static void initialSequence(){...}
-
-    @AfterClass
-    public static void finalSequence(){...}
 }
 ```
 
- This will initialize the driver before each run, and kill it after each scenario is done. 
+---
 
-#### Execution
-In order to execute a specific feature file on a given browser, use:
-```shell
-mvn clean test -q -Dcucumber.filter.tags="@TestEnv and @SCN-Click-If-Present" -Dbrowser=chrome
+### Dynamic Approach
+Use Pickleib’s reflection utilities to interact with any element dynamically.
+
+### Method 1: The "Low-Code" JSON Repository (Recommended)
+
+Define your elements in a JSON file. Pickleib will parse this file at runtime to locate elements, reducing Java boilerplate.
+
+**1. Create `src/test/resources/page-repository.json`:**
+
+```json
+{
+  "pages": [
+    {
+      "name": "LoginPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "usernameInput",
+          "selectors": { "web": [{ "css": "#user-name" }] }
+        },
+        {
+          "elementName": "loginButton",
+          "selectors": { "web": [{ "id": "login-button" }] }
+        }
+      ]
+    }
+  ]
+}
 ```
 
-###### It is recommended to use Pickleib as designed in **Web-Automation-Smaple-Cucumber** project
-To create a cucumber project from scratch instead, run the following command in your command line:
-````shell
+**2. Initialize `PickleibSteps` in your Step Definition:**
+
+```java
+import common.ObjectRepository;
+import pickleib.utilities.steps.PickleibSteps;
+import org.openqa.selenium.WebElement;
+
+public class CommonSteps extends PickleibSteps {
+
+    public CommonSteps() {
+        super("src/test/resources/page-repository.json");
+    }
+
+    @When("I click the {string} on the {string} page")
+    public void clickTheButton(String buttonName, String pageName) {
+        log.info("Clicking the " + buttonName + " on the " + pageName);
+        WebElement button = getElementRepository().acquireElementFromPage(buttonName, pageName);
+        getInteractions(button).clickElement(button);
+    }
+}
+```
+
+---
+
+### Method 2: Classic Page Object Model
+
+Use standard Java classes extending `PickleibPageObject` and register them in a central repository class.
+
+**1. Create a Page Class:**
+
+```java
+package pages;
+
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import pickleib.web.PickleibPageObject;
+
+public class LoginPage extends PickleibPageObject {
+    
+    @FindBy(id = "user-name")
+    public WebElement usernameInput;
+
+    @FindBy(id = "login-button")
+    public WebElement loginButton;
+}
+```
+
+**2. Register in an Object Repository:**
+
+Create a class that implements `PageObjectRepository`. Declare your page classes as fields here. Pickleib uses reflection to scan this class.
+
+```java
+package common;
+
+import pages.LoginPage;
+import pickleib.utilities.interfaces.repository.PageObjectRepository;
+
+public class ObjectRepository implements PageObjectRepository {
+    
+    // The framework will detect these fields via reflection
+    public LoginPage loginPage;
+    
+    // Optional: Define environments
+    public enum Environment {
+        test("test-url"),
+        dev("dev-url");
+
+        final String urlKey;
+        Environment(String urlKey){ this.urlKey = urlKey; }
+    }
+}
+```
+
+**3. Initialize `PickleibSteps` with the Class Repository:**
+
+```java
+import common.ObjectRepository;
+import pickleib.utilities.steps.PickleibSteps;
+import org.openqa.selenium.WebElement;
+
+public class CommonSteps extends PickleibSteps {
+
+    public CommonSteps() {
+        super(ObjectRepository.class);
+    }
+
+    @When("I click the {string} on the {string} page")
+    public void clickTheButton(String buttonName, String pageName) {
+        log.info("Clicking the " + buttonName + " on the " + pageName);
+        WebElement button = getElementRepository().acquireElementFromPage(buttonName, pageName);
+        getInteractions(button).clickElement(button);
+    }
+}
+```
+**Usage in a Feature File**
+
+```gherkin
+Background: Context user
+  * Navigate to the test page
+
+@Web-UI @Scenario-1
+Scenario: Click interactions
+  * I click the submitButton on the FormsPage page
+```
+
+---
+
+### Test Runner
+
+```java
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = {"src/test/resources/features"},
+        glue = {"steps", "hooks"},
+        plugin = {"json:target/reports/Cucumber.json"},
+        publish = true
+)
+public class TestRunner {}
+```
+
+---
+
+### Execution
+
+Run tests via Maven, filtering by tags and browser:
+
+```shell
+mvn clean test -Dcucumber.filter.tags="@Regression and @Web" -Dbrowser=chrome
+```
+
+---
+
+### Creating a Cucumber Project from Scratch
+
+```shell
 mvn archetype:generate                      \
 "-DarchetypeGroupId=io.cucumber"            \
 "-DarchetypeArtifactId=cucumber-archetype"  \
 "-DarchetypeVersion=6.10.4"                 \
-"-DgroupId=hellocucumber"                   \
-"-DartifactId=hellocucumber"                \
-"-Dpackage=hellocucumber"                   \
-"-Dversion=1.0.0-SNAPSHOT"                  \
+"-DgroupId=example"                         \
+"-DartifactId=my-project"                  \
+"-Dpackage=example"                        \
+"-Dversion=1.0.0-SNAPSHOT"                 \
 "-DinteractiveMode=false"
-````
+```
+
+---
+
+### Local Development
+
+This repository includes a sample test website.
+
+Run it locally using Docker:
+
+```shell
+docker-compose up --build -d
+```
+
+The test website will be available at:
+👉 **[http://localhost:8080](http://localhost:8080)**
