@@ -1,4 +1,4 @@
-package pickleib.utilities.steps;
+package pickleib.utilities.steps.design;
 
 import pickleib.utilities.element.acquisition.design.PageObjectModel;
 import pickleib.utilities.element.interactions.InteractionBase;

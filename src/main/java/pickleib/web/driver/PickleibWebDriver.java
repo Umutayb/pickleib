@@ -40,7 +40,7 @@ public class PickleibWebDriver {
      */
     private static FluentWait<RemoteWebDriver> wait;
 
-    static PropertiesReader reader = new PropertiesReader("properties-from-pom.properties");
+    static PropertiesReader reader = new PropertiesReader("pom.properties");
     public static Printer log = new Printer(PickleibWebDriver.class);
 
     /**
