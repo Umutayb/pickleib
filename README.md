@@ -6,6 +6,10 @@
 
 It acts as a robust wrapper around Selenium and Appium, allowing you to write interaction-agnostic code that works across platforms. It offers a unique **"Hybrid" Page Object Model** approach, letting you choose between a classic Java implementation or a "Low-Code" JSON-based element definition.
 
+
+### Template Project
+To see **Pickleib** in action, and to use it as a no code solution, check out the 👉 **[test-automation-template](https://github.com/Umutayb/test-automation-template)**
+
 ---
 
 ## 🚀 Key Features
