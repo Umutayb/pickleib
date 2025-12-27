@@ -1,0 +1,184 @@
+{
+  "pages": [
+    {
+      "name": "DropDownPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "title",
+          "selectors": { "web": [{ "css": "[id='title']" }] }
+        },
+        {
+          "elementName": "countriesDropDown",
+          "selectors": { "web": [{ "className": "vs__search" }] }
+        },
+        {
+          "elementName": "countriesContainer",
+          "selectors": { "web": [{ "css": "[role='listbox']" }] }
+        },
+        {
+          "elementName": "countriesList",
+          "selectors": { "web": [{ "css": "#vs1__listbox .vs__dropdown-option" }] }
+        },
+        {
+          "elementName": "selection",
+          "selectors": { "web": [{ "css": "#countriesDropDown .vs__selected" }] }
+        }
+      ]
+    },
+    {
+      "name": "ElementsPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "questionBoxTitle",
+          "selectors": { "web": [{ "css": ".question-box h2" }] }
+        },
+        {
+          "elementName": "checkMarkMessage",
+          "selectors": { "web": [{ "css": ".question-box form p" }] }
+        },
+        {
+          "elementName": "checkMarks",
+          "selectors": { "web": [{ "css": ".radio-group label" }] }
+        }
+      ]
+    },
+    {
+      "name": "HomePage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "categories",
+          "selectors": { "web": [{ "css": "#category-card" }] }
+        }
+      ]
+    },
+    {
+      "name": "FormsPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "title",
+          "selectors": { "web": [{ "css": "[id='title']" }] }
+        },
+        {
+          "elementName": "nameInput",
+          "selectors": { "web": [{ "css": "[id='name']" }] }
+        },
+        {
+          "elementName": "emailInput",
+          "selectors": { "web": [{ "css": "[id='email']" }] }
+        },
+        {
+          "elementName": "genderDropdown",
+          "selectors": { "web": [{ "css": "[id='gender']" }] }
+        },
+        {
+          "elementName": "genderOptions",
+          "selectors": { "web": [{ "css": "#gender option:not([disabled])" }] }
+        },
+        {
+          "elementName": "mobileInput",
+          "selectors": { "web": [{ "css": "[id='mobile']" }] }
+        },
+        {
+          "elementName": "dateOfBirthInput",
+          "selectors": { "web": [{ "css": "[id='dob']" }] }
+        },
+        {
+          "elementName": "hobbiesInput",
+          "selectors": { "web": [{ "css": "[id='hobbies']" }] }
+        },
+        {
+          "elementName": "addressInput",
+          "selectors": { "web": [{ "css": "[id='currentAddress']" }] }
+        },
+        {
+          "elementName": "cityInput",
+          "selectors": { "web": [{ "css": "[id='city']" }] }
+        },
+        {
+          "elementName": "submitButton",
+          "selectors": { "web": [{ "css": "[id='submit']" }] }
+        },
+        {
+          "elementName": "submissionEntries",
+          "selectors": { "web": [{ "css": ".submitted-info-table tr" }] }
+        },
+        {
+          "elementName": "table",
+          "selectors": { "web": [{ "className": "submitted-info-table" }] }
+        },
+        {
+          "elementName": "datePickerYearsButton",
+          "selectors": { "web": [{ "css": "[aria-label='Open years overlay']" }] }
+        },
+        {
+          "elementName": "datePickerMonthsButton",
+          "selectors": {
+            "web": [
+              {
+                "css": "[aria-label='Open months overlay']"
+              }
+            ]
+          }
+        },
+        {
+          "elementName": "datePickerSubmitButton",
+          "selectors": { "web": [{ "css": ".dp__action_row .dp__action_select" }] }
+        },
+        {
+          "elementName": "todayCell",
+          "selectors": { "web": [{ "css": ".dp__today" }] }
+        },
+        {
+          "elementName": "spSelectionPreview",
+          "selectors": { "web": [{ "css": ".dp__selection_preview" }] }
+        },
+        {
+          "elementName": "datePickerCells",
+          "selectors": { "web": [{ "css": "[role='gridcell']" }] }
+        }
+      ]
+    },
+    {
+      "name": "AlertAndWindowsPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "buttons",
+          "selectors": { "web": [{ "css": ".button" }] }
+        }
+      ]
+    },
+    {
+      "name": "InteractionsPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "title",
+          "selectors": { "web": [{ "id": "title" }] }
+        },
+        {
+          "elementName": "tools",
+          "selectors": { "web": [{ "id": "tool" }] }
+        }
+      ]
+    },
+    {
+      "name": "TallPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "title",
+          "selectors": { "web": [{ "id": "title" }] }
+        },
+        {
+          "elementName": "logo",
+          "selectors": { "web": [{ "id": "logo" }] }
+        }
+      ]
+    }
+  ]
+}
