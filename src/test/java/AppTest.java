@@ -14,8 +14,8 @@ import pickleib.enums.Direction;
 import pickleib.enums.PageRepositoryDesign;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.repository.ElementRepository;
-import pickleib.utilities.steps.PageJsonDesign;
-import pickleib.utilities.steps.PageObjectDesign;
+import pickleib.utilities.steps.design.PageJsonDesign;
+import pickleib.utilities.steps.design.PageObjectDesign;
 import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
@@ -55,11 +55,11 @@ public class AppTest {
         design = PageRepositoryDesign.getDesign(ContextStore.get("page-repository-design", "json"));
         log.info("Page repository design: " + highlighted(StringUtilities.Color.PURPLE, design.name()));
         objectRepository = switch (design){
-            case json -> new PageJsonDesign(
-                    FileUtilities.Json.parseJsonFile("src/test/resources/page-repository.json")
-            ).getElementRepository();
+            case json -> new PageJsonDesign("src/test/resources/page-repository.json")
+                    .getElementRepository();
 
-            case pom -> new PageObjectDesign<>(ObjectRepository.class).getElementRepository();
+            case pom -> new PageObjectDesign<>(ObjectRepository.class)
+                    .getElementRepository();
         };
         webInteractions = new WebInteractions();
         webInteractions.getUrl(testWebsiteUrl);

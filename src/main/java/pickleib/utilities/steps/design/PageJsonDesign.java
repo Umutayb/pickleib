@@ -1,4 +1,4 @@
-package pickleib.utilities.steps;
+package pickleib.utilities.steps.design;
 
 import com.google.gson.JsonObject;
 import pickleib.utilities.element.acquisition.design.PageObjectJson;
