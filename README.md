@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/pickleib?color=brightgreen&label=pickleib)](https://mvnrepository.com/artifact/io.github.umutayb/pickleib/latest)
 
-**Pickleib** is a comprehensive, polymorphic test automation utility library designed to streamline **Web (Selenium)**, **Mobile (Appium)**, **Desktop (Appium)**, and **API** testing.
+**Pickleib** is a comprehensive, polymorphic test automation utility library designed to streamline **Web**, **Mobile**, **Desktop**, and **API** testing.
 
 It acts as a robust wrapper around Selenium and Appium, allowing you to write interaction-agnostic code that works across platforms. It offers a unique **"Hybrid" Page Object Model** approach, letting you choose between a classic Java implementation or a "Low-Code" JSON-based element definition.
 
@@ -210,7 +210,7 @@ public class CommonSteps extends PickleibSteps {
 }
 ```
 
-**You can alternatively instantiate page objects and call their methods directly.**
+**Alternatively, you can instantiate page objects and call their methods directly.**
 
 ```java
 import pages.HomePage;
@@ -342,11 +342,11 @@ These properties control the `WebDriverFactory`. They cover everything from basi
 
 ### 📱 Mobile & Desktop Configuration (Appium)
 
-Mobile driver initialization is split into two parts: **Server Connection** (defined in properties) and **Device Capabilities** (defined in JSON).
+Mobile driver initialization is split into two parts: **Appium Service Connection** (defined in properties) and **Device Capabilities** (defined in JSON).
 
 #### 1. Connection Properties (`pickleib.properties`)
 
-These settings tell Pickleib how to connect to the Appium server (Local or Remote/Cloud).
+These settings tell Pickleib how to connect to the Appium service (Local or Remote/Cloud).
 
 | Property | Description | Default |
 | :--- | :--- | :--- |
