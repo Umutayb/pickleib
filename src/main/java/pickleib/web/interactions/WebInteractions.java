@@ -419,7 +419,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
                 highlighted(GRAY, " on ") +
                 highlighted(BLUE, pageName)
         );
-        return super.getElementByText(elementText);
+        return super.waitAndGetElementByText(elementText);
     }
 
     /**

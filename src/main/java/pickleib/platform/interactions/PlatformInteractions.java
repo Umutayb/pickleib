@@ -305,7 +305,7 @@ public class PlatformInteractions extends PlatformUtilities implements Polymorph
                 highlighted(GRAY, " on ") +
                 highlighted(BLUE, pageName)
         );
-        return super.getElementByText(elementText);
+        return super.waitAndGetElementByText(elementText);
     }
 
     /**

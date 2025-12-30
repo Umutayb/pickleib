@@ -447,7 +447,7 @@ public abstract class Utilities {
      * @param scroll     If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
     public void clickButtonWithText(String buttonText, boolean scroll) {
-        clickElement(getElementByText(buttonText), scroll);
+        clickElement(waitAndGetElementByText(buttonText), scroll);
     }
 
     /**
@@ -470,7 +470,7 @@ public abstract class Utilities {
      *
      * @param elementText target element text
      */
-    public WebElement getElementByText(String elementText) {
+    public WebElement waitAndGetElementByText(String elementText) {
         try {
             String queryAttribute = getTextAttributeNameFor(getDriverPlatform(driver));
             String xpath = "//*[" + queryAttribute + "='" + elementText + "']";
@@ -478,6 +478,28 @@ public abstract class Utilities {
         }
         catch (NoSuchElementException exception) {
             throw new NoSuchElementException(GRAY + exception.getMessage() + RESET);
+        }
+    }
+
+    /**
+     * Acquires an element by its text
+     *
+     * @param elementText target element text
+     */
+    public WebElement getElementByText(String elementText) {
+        String queryAttribute = getTextAttributeNameFor(getDriverPlatform(driver));
+        String xpath = "//*[" + queryAttribute + "='" + elementText + "']";
+        try {
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+
+            return driver.findElement(By.xpath(xpath));
+        }
+        catch (WebDriverException exception) {
+            log.warning("Failed to locate element containing text: '" + elementText);
+            return null;
+        }
+        finally {
+            driver.manage().timeouts().implicitlyWait(Duration.ofMillis(elementTimeout));
         }
     }
 
