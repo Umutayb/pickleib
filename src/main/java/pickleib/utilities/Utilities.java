@@ -494,7 +494,7 @@ public abstract class Utilities {
             return driver.findElement(By.xpath(xpath));
         }
         catch (WebDriverException exception) {
-            log.warning("Failed to locate element containing text: '" + elementText);
+            log.warning("Failed to locate element containing text: '" + elementText + "'");
             return null;
         }
         finally {
