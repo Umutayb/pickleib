@@ -22,7 +22,6 @@ import java.util.StringJoiner;
 import static pickleib.enums.ElementState.absent;
 import static pickleib.enums.ElementState.displayed;
 import static pickleib.utilities.DriverInspector.*;
-import static pickleib.web.driver.WebDriverFactory.getDriverTimeout;
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.*;
 
@@ -49,7 +48,7 @@ public abstract class Utilities {
     public ScrollFunction scroller;
 
     public long elementTimeout = ContextStore.getInt("element-timeout", 15000);
-
+    public long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         this.driver = driver;
         this.wait = wait;
@@ -413,7 +412,7 @@ public abstract class Utilities {
                     return true;
                 counter++;
             } finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(getDriverTimeout()));
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             }
         }
         while (!(System.currentTimeMillis() - initialTime > elementTimeout));
