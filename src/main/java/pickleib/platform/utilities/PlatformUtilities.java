@@ -10,6 +10,7 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.enums.Direction;
+import pickleib.enums.ElementState;
 import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.utilities.Utilities;
 import pickleib.utilities.interfaces.functions.LocateElement;
@@ -124,9 +125,10 @@ public abstract class PlatformUtilities extends Utilities {
         do {
             try {
                 WebElement element = locator.locate();
-                if (element.isDisplayed()) return element;
+                boolean elementFound = element.isDisplayed();
+                if (elementFound) {return element;}
                 else scrollInDirection(Direction.up);
-            } catch (WebDriverException ignored) {
+            } catch (WebDriverException | NullPointerException ignored) {
                 scrollInDirection(Direction.up);
             }
         }
@@ -203,7 +205,7 @@ public abstract class PlatformUtilities extends Utilities {
         long initialTime = System.currentTimeMillis();
         do {
             try {
-                WebElement element = getElementByText(elementText);
+                WebElement element = waitAndGetElementByText(elementText);
                 if (element.isDisplayed())
                     return element;
                 else
@@ -383,9 +385,12 @@ public abstract class PlatformUtilities extends Utilities {
      * @return returns the swiped element
      */
     public WebElement swipeFromTo(WebElement element, WebElement destinationElement) {
-        Point from = new Point(element.getLocation().x, element.getLocation().y);
-        Point to = new Point(destinationElement.getLocation().x, destinationElement.getLocation().y);
-        swipe(from, to);
+        try {
+            Point from = new Point(element.getLocation().x, element.getLocation().y);
+            Point to = new Point(destinationElement.getLocation().x, destinationElement.getLocation().y);
+            swipe(from, to);
+        }
+        catch (WebDriverException exception){log.warning(exception.getMessage());}
         return element;
     }
 }

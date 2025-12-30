@@ -207,7 +207,7 @@ public abstract class WebUtilities extends Utilities {
                     highlighted(BLUE, elementText) +
                     highlighted(GRAY, " is found.")
             );
-            return scrollUntilFound(() -> getElementByText(elementText));
+            return scrollUntilFound(() -> waitAndGetElementByText(elementText));
         }
 
     /**
