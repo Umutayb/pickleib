@@ -8,7 +8,6 @@ import org.openqa.selenium.devtools.v85.network.Network;
 import org.openqa.selenium.devtools.v85.network.model.Headers;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
-import properties.PropertiesReader;
 import utils.Printer;
 import utils.StringUtilities;
 import java.util.*;
@@ -40,7 +39,6 @@ public class PickleibWebDriver {
      */
     private static FluentWait<RemoteWebDriver> wait;
 
-    static PropertiesReader reader = new PropertiesReader("pom.properties");
     public static Printer log = new Printer(PickleibWebDriver.class);
 
     /**
@@ -72,10 +70,8 @@ public class PickleibWebDriver {
      * </ol>
      */
     public static void initialize(){
-        String driverName = firstLetterCapped(reader.getProperty("browser"));
-        String driverProperty = firstLetterCapped(ContextStore.get("browser"));
+        String driverName = firstLetterCapped(ContextStore.get("browser-name", "chrome"));
         if (driverName != null) initialize(WebDriverFactory.BrowserType.fromString(driverName));
-        else if (driverProperty != null) initialize(WebDriverFactory.BrowserType.fromString(driverProperty));
         else initialize(WebDriverFactory.BrowserType.CHROME);
     }
 
