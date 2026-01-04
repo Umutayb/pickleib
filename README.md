@@ -40,13 +40,13 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>io.github.umutayb</groupId>
     <artifactId>pickleib</artifactId>
-    <version>2.0.8</version>
+    <version>2.0.9</version>
 </dependency>
 ```
 
 or if you are using gradle:
 ```groovy
-implementation 'io.github.umutayb:pickleib:2.0.8'
+implementation 'io.github.umutayb:pickleib:2.0.9'
 ```
 
 ---
