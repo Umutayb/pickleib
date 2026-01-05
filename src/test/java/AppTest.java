@@ -20,7 +20,6 @@ import pickleib.web.driver.PickleibWebDriver;
 import pickleib.web.driver.WebDriverFactory;
 import pickleib.web.interactions.WebInteractions;
 import utils.DateUtilities;
-import utils.FileUtilities;
 import utils.Printer;
 import utils.StringUtilities;
 import utils.arrays.ArrayUtilities;
