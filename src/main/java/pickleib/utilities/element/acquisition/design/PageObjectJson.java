@@ -147,7 +147,7 @@ public class PageObjectJson implements ElementRepository {
     public WebElement acquireListedElementFromPage(String elementName, String listName, String pageName) {
         List<WebElement> all = elementsFromPage(listName, pageName);
         return all.stream()
-                .filter(e -> checkElementTextMatch(e, elementName))
+                .filter(e -> checkElementTextMatch(e, contextCheck(elementName)))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Element " + elementName + " not found in list " + listName));
     }
