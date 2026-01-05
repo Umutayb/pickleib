@@ -20,7 +20,7 @@ Pickleib simplifies test design by offering ready-to-use driver management, powe
 * **🏗️ Hybrid Page Object Model:**
   * **Classic POM:** Use standard Java classes with `@FindBy` annotations.
   * **Low-Code POM:** Define your pages and selectors in a single `page-repository.json` file—no page classes required!
-* **🚗 Smart Driver Management:** Automated handling of `WebDriver` and `AppiumDriver` lifecycles (Singleton pattern).
+* **🚗 Smart Driver Management:** Automated handling of `WebDriver` and `AppiumDriver` lifecycles.
 * **❤️‍🩹 Self-Healing Utilities:** Built-in retry mechanisms for `StaleElementReferenceException` and intelligent `FluentWait` synchronization.
 * **🧳 Context Management:** A global `ContextStore` for sharing data between steps and configuring run-time environment variables.
 * **📝 Verbose Logging:** Automatically logs interactions (e.g., "Clicking 'loginButton' on 'LoginPage'") for easier debugging.
