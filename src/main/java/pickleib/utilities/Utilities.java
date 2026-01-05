@@ -756,6 +756,7 @@ public abstract class Utilities {
      * @param expectedText expected text
      */
     public void verifyElementContainsText(WebElement element, String elementName, String pageName, String expectedText) {
+        expectedText = contextCheck(expectedText);
         log.info("Verifying that text of element " +
                 highlighted(BLUE, elementName) +
                 highlighted(GRAY, " contains ") +
@@ -763,7 +764,6 @@ public abstract class Utilities {
                 highlighted(GRAY, " on ") +
                 highlighted(BLUE, pageName)
         );
-        expectedText = contextCheck(expectedText);
         elementIs(element, displayed);
         if (!element.getText().contains(expectedText))
             throw new PickleibException("Element text does not contain \"" + highlighted(BLUE, expectedText) + "\"!");
