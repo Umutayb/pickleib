@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.FluentWait;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.PrimarySelectorType;
 import pickleib.enums.SelectorType;
+import pickleib.exceptions.PickleibException;
 import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.interfaces.repository.ElementRepository;
@@ -400,7 +401,7 @@ public class PageObjectJson implements ElementRepository {
                 driver,
                 SelectorType.values()
         );
-        return new ByAll(locators.toArray(new By[0]));
+        return !locators.isEmpty() ? new ByAll(locators.toArray(new By[0])) : null;
     }
 
     /**
@@ -537,16 +538,24 @@ public class PageObjectJson implements ElementRepository {
      */
     public JsonObject getElementJson(String elementName, JsonObject pageJson){
         JsonArray elements = pageJson.getAsJsonArray("elements");
-        for (JsonElement elementJson:elements)
-            if (elementJson
-                    .getAsJsonObject()
-                    .get("elementName")
-                    .getAsJsonPrimitive()
-                    .getAsString()
-                    .equalsIgnoreCase(elementName)
-            ) return elementJson.getAsJsonObject();
-
-        return null;
+        if (elements == null || !elements.isJsonArray()) {
+            throw new PickleibException("\"elements\" is missing or not a json array in " + pageJson.get("name") + "!");
+        }
+        return elements
+                .asList()
+                .stream().
+                filter(
+                        element ->
+                                element
+                                        .getAsJsonObject()
+                                        .get("elementName")
+                                        .getAsJsonPrimitive()
+                                        .getAsString()
+                                        .equalsIgnoreCase(elementName)
+                )
+                .findAny()
+                .orElseThrow(() -> new PickleibException(String.format("\"%s\" does not exist, or has no locators in %s!", elementName, pageJson.get("name"))))
+                .getAsJsonObject();
     }
 
     /**
@@ -559,16 +568,24 @@ public class PageObjectJson implements ElementRepository {
      */
     public JsonObject getPageJson(String pageName, JsonObject objectRepository) {
         JsonArray pages = objectRepository.getAsJsonArray("pages");
-        return Objects.requireNonNull(
-                pages.asList().stream().filter(
-                        page -> page
-                                .getAsJsonObject()
-                                .get("name")
-                                .getAsJsonPrimitive()
-                                .getAsString()
-                                .equalsIgnoreCase(pageName)
-                ).findAny().orElse(null)
-        ).getAsJsonObject();
+        if (pages == null || !pages.isJsonArray())
+            throw new PickleibException("\"pages\" is missing or not a json array in the page object repository!");
+
+        return pages
+                .asList()
+                .stream()
+                .filter(
+                        page ->
+                                page
+                                        .getAsJsonObject()
+                                        .get("name")
+                                        .getAsJsonPrimitive()
+                                        .getAsString()
+                                        .equalsIgnoreCase(pageName)
+                )
+                .findAny()
+                .orElseThrow(() -> new PickleibException(String.format("\"%s\" does not exist in page object repository json!", pageName)))
+                .getAsJsonObject();
     }
 
     /**

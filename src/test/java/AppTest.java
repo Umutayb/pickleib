@@ -12,6 +12,7 @@ import pages.FormsPage;
 import pickleib.driver.DriverLoader;
 import pickleib.enums.Direction;
 import pickleib.enums.PageRepositoryDesign;
+import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.repository.ElementRepository;
 import pickleib.utilities.steps.design.PageJsonDesign;
@@ -82,7 +83,6 @@ public class AppTest {
     public void navigateTest() {
         log.info("webInteractions.navigate(page.trainingUrl) test");
         Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "\"webInteractions.navigate(page.trainingUrl) test failed!");
-        log.success("The webInteractions.navigate(page.trainingUrl) test pass!");
     }
 
     @Test
@@ -91,7 +91,6 @@ public class AppTest {
         webInteractions.toPage("elements");
         webInteractions.navigateBrowser(backwards);
         Assertions.assertEquals(testWebsiteUrl, driver.getCurrentUrl(), "webInteractions.navigateBrowser(backwards) test failed!");
-        log.success("The webInteractions.navigateBrowser(backwards) test pass!");
     }
 
     @Test
@@ -101,7 +100,6 @@ public class AppTest {
         webInteractions.clickElement(forms);
         WebElement title = objectRepository.acquireElementFromPage("title", "formsPage");
         Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
-        log.success("The formTest test pass!");
     }
 
     @Test
@@ -179,8 +177,6 @@ public class AppTest {
             else
                 Assertions.assertEquals(entries.get(entryKey), entryValueElement.getText(), "Data mismatch!");
         }
-
-        log.success("The completeFormSubmissionTest() passed!");
     }
 
     @Test
@@ -201,7 +197,6 @@ public class AppTest {
         WebElement countriesContainer = objectRepository.acquireElementFromPage("countriesContainer", "dropDownPage");
         WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
         Assertions.assertTrue(webInteractions.elementIsInView(country), "Selected country is not in view!!");
-        log.success("scrollInContainerTest() pass!");
     }
 
     @Test
@@ -243,7 +238,6 @@ public class AppTest {
         webInteractions.clickElement(newTabButton);
         webInteractions.switchToNextTab();
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("openNewTabTest() pass!");
     }
 
     @Test
@@ -256,7 +250,6 @@ public class AppTest {
         webInteractions.clickElement(newWindowButton);
         webInteractions.switchWindowByIndex(1);
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("openNewWindowTest() pass!");
     }
 
     @Test
@@ -272,10 +265,8 @@ public class AppTest {
         webInteractions.getAlert().dismiss();
         try {webInteractions.getAlert().dismiss();}
         catch (Exception exception){
-            if (exception instanceof NoAlertPresentException) log.success("dismissAlertTest() pass!");
-            else Assertions.fail("'dismissAlertTest' failed! Exeption: " + exception.getLocalizedMessage());
+            if (!(exception instanceof NoAlertPresentException)) Assertions.fail("'dismissAlertTest' failed! Exeption: " + exception.getLocalizedMessage());
         }
-
     }
 
     @Test
@@ -291,7 +282,40 @@ public class AppTest {
         webInteractions.waitUntilPageLoads(5);
         webInteractions.switchToNextTab();
         webInteractions.verifyCurrentUrl(testWebsiteUrl);
-        log.success("acceptAlertTest() pass!");
+    }
+
+    @Test
+    public void pseudoElementJsonTest(){
+        if (design.equals(PageRepositoryDesign.json)){
+            try {
+                objectRepository.acquireElementsFromPage("PSEUDO_ELEMENT", "homePage");
+            } catch (PickleibException exception) {
+                log.warning(exception.getMessage());
+                Assertions.assertEquals(
+                        "\"PSEUDO_ELEMENT\" does not exist, or has no locators in \"HomePage\"!",
+                        exception.getMessage(),
+                        "Unexpected exception!"
+                );
+            }
+        }
+        else log.info("Skipping json design specific test.");
+    }
+
+    @Test
+    public void pseudoPageJsonTest(){
+        if (design.equals(PageRepositoryDesign.json)){
+            try {
+                objectRepository.acquireElementsFromPage("PSEUDO_ELEMENT", "PSEUDO_PAGE");
+            } catch (PickleibException exception) {
+                log.warning(exception.getMessage());
+                Assertions.assertEquals(
+                        "\"PSEUDO_PAGE\" does not exist in page object repository json!",
+                        exception.getMessage(),
+                        "Unexpected exception!"
+                );
+            }
+        }
+        else log.info("Skipping json design specific test.");
     }
 
 
