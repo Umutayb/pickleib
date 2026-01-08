@@ -821,19 +821,21 @@ public abstract class Utilities {
     public void fillInputForm(List<ElementBundle<String>> bundles, String pageName) {
         String inputName;
         String input;
+        String inputText;
         for (ElementBundle<String> bundle : bundles) {
+            inputText = contextCheck(bundle.data());
             log.info("Filling " +
                     highlighted(BLUE, bundle.elementName()) +
                     highlighted(GRAY, " on the ") +
                     highlighted(BLUE, pageName) +
                     highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, bundle.data())
+                    highlighted(BLUE, inputText)
             );
             pageName = firstLetterDeCapped(pageName);
             clearFillInput(
                     bundle.element(),
-                    bundle.data(),
-                    true
+                    inputText,
+                    !isPlatformElement(bundle.element())
             );
         }
     }
