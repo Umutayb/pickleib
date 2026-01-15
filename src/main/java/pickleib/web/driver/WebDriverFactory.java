@@ -44,7 +44,7 @@ public class WebDriverFactory implements DriverFactory {
      * Determines the width of the browser window in pixels.
      * Default: 1920.
      */
-    static int frameWidth = Integer.parseInt(ContextStore.get("frame-width","1920"));
+    static int frameWidth = ContextStore.getInt("frame-width",1920);
 
     /**
      * The address of the proxy server to use (optional).
@@ -55,25 +55,25 @@ public class WebDriverFactory implements DriverFactory {
      * The port of the proxy server to use.
      * Default: 0 (disabled).
      */
-    static int proxyPort = Integer.parseInt(ContextStore.get("proxy-port", "0"));
+    static int proxyPort = ContextStore.getInt("proxy-port", 0);
 
     /**
      * Determines the height of the browser window in pixels.
      * Default: 1080.
      */
-    static int frameHeight = Integer.parseInt(ContextStore.get("frame-height","1080"));
+    static int frameHeight = ContextStore.getInt("frame-height",1080);
 
     /**
      * If true, runs the browser in headless mode (no UI).
      * Default: false.
      */
-    static boolean headless = Boolean.parseBoolean(ContextStore.get("headless", "false"));
+    static boolean headless = ContextStore.getBoolean("headless", false);
 
     /**
      * If true, enables mobile emulation mode in Chrome.
      * Default: false.
      */
-    static boolean mobileMode = Boolean.parseBoolean(ContextStore.get("mobile-mode", "false"));
+    static boolean mobileMode = ContextStore.getBoolean("mobile-mode", false);
 
     /**
      * The preferred device configuration for mobile emulation.
@@ -92,7 +92,7 @@ public class WebDriverFactory implements DriverFactory {
      * Calculated by dividing "driver-timeout" (ms) by 1000.
      * Default: 15 seconds.
      */
-    static long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
+    static long driverTimeout = ContextStore.getInt("driver-timeout", 15000)/1000;
 
     /**
      * If true, deletes all cookies upon driver initialization.
@@ -104,25 +104,25 @@ public class WebDriverFactory implements DriverFactory {
      * If true, connects to a remote Selenium Grid hub instead of a local driver.
      * Default: false.
      */
-    static boolean useSeleniumGrid = Boolean.parseBoolean(ContextStore.get("selenium-grid", "false"));
+    static boolean useSeleniumGrid = ContextStore.getBoolean("selenium-grid", false);
 
     /**
      * If true, accepts insecure SSL certificates (e.g., self-signed).
      * Default: false.
      */
-    static boolean insecureLocalHost = Boolean.parseBoolean(ContextStore.get("insecure-localhost", "false"));
+    static boolean insecureLocalHost = ContextStore.getBoolean("insecure-localhost", false);
 
     /**
      * If true, adds the "--no-sandbox" argument (often required for CI/Docker environments).
      * Default: false.
      */
-    static boolean noSandbox = Boolean.parseBoolean(ContextStore.get("driver-no-sandbox", "false"));
+    static boolean noSandbox = ContextStore.getBoolean("driver-no-sandbox", false);
 
     /**
      * If true, disables browser notifications (e.g., "Show notifications").
      * Default: true.
      */
-    static boolean disableNotifications = Boolean.parseBoolean(ContextStore.get("disable-notifications", "true"));
+    static boolean disableNotifications = ContextStore.getBoolean("disable-notifications", true);
 
     /**
      * Determines the page load strategy (normal, eager, none).
@@ -134,13 +134,13 @@ public class WebDriverFactory implements DriverFactory {
      * If true, uses WebDriverManager to automatically download/setup driver binaries.
      * Default: false.
      */
-    static Boolean useWDM = Boolean.parseBoolean(ContextStore.get("web-driver-manager", "false"));
+    static Boolean useWDM = ContextStore.getBoolean("web-driver-manager", false);
 
     /**
      * If true, allows remote origins (fixes "Connection Refused" issues in newer Chrome versions).
      * Default: true.
      */
-    static Boolean allowRemoteOrigin = Boolean.parseBoolean(ContextStore.get("allow-remote-origin", "true"));
+    static Boolean allowRemoteOrigin = ContextStore.getBoolean("allow-remote-origin", true);
 
     /**
      * The logging level used by the underlying Selenium driver.
