@@ -193,7 +193,7 @@ public class WebDriverFactory implements DriverFactory {
             assert driver != null;
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             if (deleteCookies) driver.manage().deleteAllCookies();
-            if (maximise) driver.manage().window().maximize();
+            if (maximise && !headless) driver.manage().window().maximize();
             else driver.manage().window().setSize(new Dimension(frameWidth, frameHeight));
             driver.setLogLevel(LogUtilities.getLevel(logLevel));
             log.important(browserType.getDriverName() + GRAY.getValue() + " was selected");
