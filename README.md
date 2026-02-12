@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/pickleib?color=brightgreen&label=pickleib)](https://mvnrepository.com/artifact/io.github.umutayb/pickleib/latest)
 
-**Pickleib** is a comprehensive, polymorphic test automation utility library designed to streamline **Web**, **Mobile**, **Desktop**, and **API** testing.
+**Pickleib** is a comprehensive, polymorphic test automation utility library designed to streamline **Web**, **Mobile**, **Desktop**, **API** and **Database** testing.
 
 It acts as a robust wrapper around Selenium and Appium, allowing you to write interaction-agnostic code that works across platforms. It offers a unique **"Hybrid" Page Object Model** approach, letting you choose between a classic Java implementation or a "Low-Code" JSON-based element definition.
 
