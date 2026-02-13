@@ -19,6 +19,8 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -326,13 +328,18 @@ public abstract class WebUtilities extends Utilities {
      * @param driver  The driver to execute the script.
      * @return The element.
      */
-    //This method scrolls an element to the center of the view
     public static WebElement centerElement(WebElement element, RemoteWebDriver driver) {
         String scrollScript = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
                 + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
 
-        driver.executeScript(scrollScript, element);
+        try {
+            new FluentWait<>(driver)
+                    .ignoring(StaleElementReferenceException.class)
+                    .until(ExpectedConditions.visibilityOf(element));
+            driver.executeScript(scrollScript, element);
+        }
+        catch (WebDriverException ignored){}
 
         waitFor(0.3);
         return element;
