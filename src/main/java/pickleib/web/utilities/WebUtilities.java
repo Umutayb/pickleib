@@ -19,6 +19,8 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.html5.RemoteWebStorage;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -138,9 +140,12 @@ public abstract class WebUtilities extends Utilities {
         log.info("Scrolling the list to element with text: " + highlighted(BLUE, elementText));
         for (WebElement element : elements) {
             centerElement(element);
-            if (element.getText().contains(elementText)) {
+            wait.ignoring(StaleElementReferenceException.class)
+                    .withTimeout(Duration.ofSeconds(5))
+                    .pollingEvery(Duration.ofMillis(100))
+                    .until(ExpectedConditions.textToBePresentInElement(element, ""));
+            if (element.getText().contains(elementText))
                 return element;
-            }
         }
         throw new RuntimeException("Element '" + elementText + "' could not be located!");
     }

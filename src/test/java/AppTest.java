@@ -318,6 +318,33 @@ public class AppTest {
         else log.info("Skipping json design specific test.");
     }
 
+    @Test
+    public void scrollInListTest() {
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
+
+        String targetText = "Dropdown";
+
+        WebElement foundElement = webInteractions.scrollInList(targetText, tools);
+        Assertions.assertNotNull(foundElement, "Element not found");
+        Assertions.assertTrue(foundElement.getText().contains(targetText), "Incorrect element found");
+    }
+
+    @Test
+    public void scrollInList_elementNotFound() {
+        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
+        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
+        webInteractions.clickElement(interactions);
+        List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
+
+        String targetText = "NonExistentText";
+
+        Assertions.assertThrows(RuntimeException.class, () ->
+                webInteractions.scrollInList(targetText, tools), "Expected RuntimeException was not thrown"
+        );
+    }
 
 //  @Test
 //  public void clickTest() {
