@@ -140,9 +140,12 @@ public abstract class WebUtilities extends Utilities {
         log.info("Scrolling the list to element with text: " + highlighted(BLUE, elementText));
         for (WebElement element : elements) {
             centerElement(element);
-            if (element.getText().contains(elementText)) {
+            wait.ignoring(StaleElementReferenceException.class)
+                    .withTimeout(Duration.ofSeconds(5))
+                    .pollingEvery(Duration.ofMillis(100))
+                    .until(ExpectedConditions.textToBePresentInElement(element, ""));
+            if (element.getText().contains(elementText))
                 return element;
-            }
         }
         throw new RuntimeException("Element '" + elementText + "' could not be located!");
     }
@@ -328,18 +331,13 @@ public abstract class WebUtilities extends Utilities {
      * @param driver  The driver to execute the script.
      * @return The element.
      */
+    //This method scrolls an element to the center of the view
     public static WebElement centerElement(WebElement element, RemoteWebDriver driver) {
         String scrollScript = "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
                 + "var elementTop = arguments[0].getBoundingClientRect().top;"
                 + "window.scrollBy(0, elementTop-(viewPortHeight/2));";
 
-        try {
-            new FluentWait<>(driver)
-                    .ignoring(StaleElementReferenceException.class)
-                    .until(ExpectedConditions.visibilityOf(element));
-            driver.executeScript(scrollScript, element);
-        }
-        catch (WebDriverException ignored){}
+        driver.executeScript(scrollScript, element);
 
         waitFor(0.3);
         return element;
