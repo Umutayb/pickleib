@@ -1,4 +1,4 @@
-# Pickleib
+# Pickleib 🥒
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.umutayb/pickleib?color=brightgreen&label=pickleib)](https://mvnrepository.com/artifact/io.github.umutayb/pickleib/latest)
 
