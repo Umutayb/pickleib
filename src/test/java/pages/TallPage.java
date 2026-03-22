@@ -6,9 +6,9 @@ import pickleib.web.PickleibPageObject;
 
 public class TallPage extends PickleibPageObject {
 
-    @FindBy(id = "title")
+    @FindBy(css = "h1")
     WebElement title;
 
-    @FindBy(id = "logo")
+    @FindBy(css = "[data-testid='tall-section-10']")
     WebElement logo;
 }
