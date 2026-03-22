@@ -46,7 +46,7 @@ public class AppTest {
     public static void setup() {
         WebDriverFactory.setHeadless(ContextStore.getBoolean("headless", true));
         WebDriverFactory.setUseWDM(false);
-        testWebsiteUrl = ContextStore.get("test-url", "http://127.0.0.1:8080/");
+        testWebsiteUrl = ContextStore.get("test-url", "https://umutayb.github.io/vue-test-app/");
     }
 
     @BeforeEach
@@ -99,7 +99,7 @@ public class AppTest {
         WebElement forms = ElementAcquisition.acquireNamedElementAmongst(categories, "Forms");
         webInteractions.clickElement(forms);
         WebElement title = objectRepository.acquireElementFromPage("title", "formsPage");
-        Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
+        Assertions.assertEquals("Submission Form", title.getText(), "formTest test failed!");
     }
 
     @Test
@@ -121,7 +121,7 @@ public class AppTest {
         WebElement cityInput = objectRepository.acquireElementFromPage("cityInput", "formsPage");
         WebElement submitButton = objectRepository.acquireElementFromPage("submitButton", "formsPage");
 
-        Assertions.assertEquals("Forms Page", title.getText(), "formTest test failed!");
+        Assertions.assertEquals("Submission Form", title.getText(), "formTest test failed!");
 
         WebElement genderSelection = ArrayUtilities.getRandomItemFrom(genderOptions);
 
@@ -181,32 +181,24 @@ public class AppTest {
 
     @Test
     public void scrollInContainerTest() {//TODO: Try soft assertions
-        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
-        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
-        webInteractions.clickElement(interactions);
         List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
-        WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Dropdown");
-        webInteractions.clickElement(dropdownTool);
-        WebElement countriesDropDown = objectRepository.acquireElementFromPage("countriesDropDown", "dropDownPage");
-        webInteractions.clickElement(countriesDropDown);
-        List<WebElement> countriesList = objectRepository.acquireElementsFromPage("countriesList", "dropDownPage");
-        String countrySelection = "Ukraine";
-        WebElement preSelection = ElementAcquisition.acquireNamedElementAmongst(countriesList, countrySelection);
-        Assertions.assertFalse(webInteractions.elementIsInView(preSelection), "Selected country is already in view!!");
+        WebElement longListLink = ElementAcquisition.acquireNamedElementAmongst(tools, "Long List");
+        webInteractions.clickElement(longListLink);
+        List<WebElement> listItems = objectRepository.acquireElementsFromPage("listItems", "longListPage");
+        String targetItem = "Item 200";
+        WebElement preSelection = ElementAcquisition.acquireNamedElementAmongst(listItems, targetItem);
+        Assertions.assertFalse(webInteractions.elementIsInView(preSelection), "Target item is already in view!!");
 
-        WebElement countriesContainer = objectRepository.acquireElementFromPage("countriesContainer", "dropDownPage");
-        WebElement country = webInteractions.scrollInContainer(countriesContainer, countriesList, countrySelection);
-        Assertions.assertTrue(webInteractions.elementIsInView(country), "Selected country is not in view!!");
+        WebElement listContainer = objectRepository.acquireElementFromPage("listContainer", "longListPage");
+        WebElement item = webInteractions.scrollInContainer(listContainer, listItems, targetItem);
+        Assertions.assertTrue(webInteractions.elementIsInView(item), "Target item is not in view!!");
     }
 
     @Test
     public void scrollInDirectionTest(){
-        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
-        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
-        webInteractions.clickElement(interactions);
         List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
-        WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
-        webInteractions.clickElement(dropdownTool);
+        WebElement tallPageLink = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
+        webInteractions.clickElement(tallPageLink);
         WebElement logo = objectRepository.acquireElementFromPage("logo", "tallPage");
         Assertions.assertFalse(webInteractions.elementIsInView(logo), "Logo is already in view!");
         while (!webInteractions.elementIsInView(logo))
@@ -216,12 +208,9 @@ public class AppTest {
 
     @Test
     public void centerElementTest() {
-        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
-        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
-        webInteractions.clickElement(interactions);
         List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
-        WebElement dropdownTool = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
-        webInteractions.clickElement(dropdownTool);
+        WebElement tallPageLink = ElementAcquisition.acquireNamedElementAmongst(tools, "Tall Page");
+        webInteractions.clickElement(tallPageLink);
         WebElement logo = objectRepository.acquireElementFromPage("logo", "tallPage");
         Assertions.assertFalse(webInteractions.elementIsInView(logo), "Logo is already in view!");
         webInteractions.centerElement(logo);
@@ -320,9 +309,6 @@ public class AppTest {
 
     @Test
     public void scrollInListTest() {
-        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
-        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
-        webInteractions.clickElement(interactions);
         List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
 
         String targetText = "Dropdown";
@@ -334,9 +320,6 @@ public class AppTest {
 
     @Test
     public void scrollInList_elementNotFound() {
-        List<WebElement> categories = objectRepository.acquireElementsFromPage("categories", "homePage");
-        WebElement interactions = ElementAcquisition.acquireNamedElementAmongst(categories, "Interactions");
-        webInteractions.clickElement(interactions);
         List<WebElement> tools = objectRepository.acquireElementsFromPage("tools", "interactionsPage");
 
         String targetText = "NonExistentText";

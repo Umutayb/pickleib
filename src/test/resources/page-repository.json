@@ -50,7 +50,7 @@
       "elements": [
         {
           "elementName": "categories",
-          "selectors": { "web": [{ "css": "#category-card" }] }
+          "selectors": { "web": [{ "css": "[data-testid^='home-card-']" }] }
         }
       ]
     },
@@ -162,7 +162,7 @@
         },
         {
           "elementName": "tools",
-          "selectors": { "web": [{ "id": "tool" }] }
+          "selectors": { "web": [{ "css": ".nav-item" }] }
         }
       ]
     },
@@ -172,11 +172,25 @@
       "elements": [
         {
           "elementName": "title",
-          "selectors": { "web": [{ "id": "title" }] }
+          "selectors": { "web": [{ "css": "h1" }] }
         },
         {
           "elementName": "logo",
-          "selectors": { "web": [{ "id": "logo" }] }
+          "selectors": { "web": [{ "css": "[data-testid='tall-section-10']" }] }
+        }
+      ]
+    },
+    {
+      "name": "LongListPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "listContainer",
+          "selectors": { "web": [{ "css": ".list-container" }] }
+        },
+        {
+          "elementName": "listItems",
+          "selectors": { "web": [{ "css": "[data-testid^='long-list-item-']" }] }
         }
       ]
     }

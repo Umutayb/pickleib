@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: ⚙️ Java CI with Maven
 
 on:
   pull_request:
@@ -7,26 +7,33 @@ on:
 
 jobs:
   regression-tests:
+    name: ✅ Regression Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: 🗂️ Checkout repository
         uses: actions/checkout@v4
-      - name: Set up JDK 17
+
+      - name: ☕ Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Set up Docker Buildx
+
+      - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Start Unit Test Website
+
+      - name: 🌐 Start Unit Test Website
         run: |
           docker compose up --build -d
-      - name: Test with POM page repository design
+
+      - name: 🧪 Test with POM page repository design
         run: mvn clean test -Dpage-repository-design=pom
-      - name: Test with JSON page repository design
+
+      - name: 🧪 Test with JSON page repository design
         run: mvn clean test -Dpage-repository-design=json
-      - name: Upload screenshots
+
+      - name: 📸 Upload screenshots
         uses: actions/upload-artifact@v4
         if: failure()
         with:
