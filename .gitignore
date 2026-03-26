@@ -7,4 +7,5 @@ POM-Framework.iml
 .DS_Store
 /lib/
 screenshots/
+.worktrees/
 src/test/resources/pickleib.properties
