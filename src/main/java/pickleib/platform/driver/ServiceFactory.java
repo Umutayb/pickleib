@@ -21,10 +21,10 @@ public class ServiceFactory {
     static Printer log = new Printer(ServiceFactory.class);
 
     /**
-     * The active instance of the local Appium service.
+     * The active instance of the local Appium service, scoped per thread for parallel execution.
      * Can be used to check the status, stop the service, or retrieve the URL.
      */
-    public static AppiumDriverLocalService service;
+    public static final ThreadLocal<AppiumDriverLocalService> service = new ThreadLocal<>();
 
     /**
      * The IP address where the service is currently running.
@@ -54,7 +54,7 @@ public class ServiceFactory {
         ServiceFactory.address = address;
         ServiceFactory.port = port;
 
-        service = new AppiumServiceBuilder()
+        AppiumDriverLocalService svc = new AppiumServiceBuilder()
                 .withIPAddress(address)
                 .usingPort(port)
                 .withTimeout(Duration.ofSeconds(ContextStore.getInt("appium-server-launch-timeout", 45)))
@@ -62,8 +62,9 @@ public class ServiceFactory {
 
         // Suppress Appium server logs in the console unless detailed logging is requested
         if(!Boolean.parseBoolean(ContextStore.get("detailed-logging", "false")))
-            ServiceFactory.service.clearOutPutStreams();
+            svc.clearOutPutStreams();
 
-        service.start();
+        svc.start();
+        service.set(svc);
     }
 }

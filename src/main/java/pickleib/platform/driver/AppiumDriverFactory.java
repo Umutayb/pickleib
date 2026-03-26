@@ -68,7 +68,7 @@ public class AppiumDriverFactory implements DriverFactory {
             }
             // Note: 'service' needs to be defined in the class scope for this to work.
             // Assuming 'service' is a static AppiumDriverLocalService field in the full implementation.
-            if (service != null) urlString = service.getUrl().toString();
+            if (service.get() != null) urlString = service.get().getUrl().toString();
         }
         return getDriver(capabilities, urlString);
     }

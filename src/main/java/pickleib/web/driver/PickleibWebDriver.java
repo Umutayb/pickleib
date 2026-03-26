@@ -1,11 +1,6 @@
 package pickleib.web.driver;
 
 import context.ContextStore;
-import org.bouncycastle.util.encoders.Base64;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v85.network.Network;
-import org.openqa.selenium.devtools.v85.network.model.Headers;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import utils.Printer;
@@ -30,24 +25,24 @@ import static utils.StringUtilities.*;
 public class PickleibWebDriver {
 
     /**
-     * The active RemoteWebDriver instance.
+     * The active RemoteWebDriver instance, scoped per thread for parallel execution.
      */
-    private static RemoteWebDriver driver;
+    private static final ThreadLocal<RemoteWebDriver> driver = new ThreadLocal<>();
 
     /**
-     * The FluentWait instance associated with the active driver.
+     * The FluentWait instance associated with the active driver, scoped per thread.
      */
-    private static FluentWait<RemoteWebDriver> wait;
+    private static final ThreadLocal<FluentWait<RemoteWebDriver>> wait = new ThreadLocal<>();
 
     public static Printer log = new Printer(PickleibWebDriver.class);
 
     /**
-     * Retrieves the active {@link RemoteWebDriver} instance.
+     * Retrieves the active {@link RemoteWebDriver} instance for the current thread.
      *
      * @return The current driver instance, or null if not initialized.
      */
     public static RemoteWebDriver get(){
-        return driver;
+        return driver.get();
     }
 
     /**
@@ -57,7 +52,7 @@ public class PickleibWebDriver {
      */
     public static void initialize(WebDriverFactory.BrowserType browserType){
         log.info("Initializing " + markup(StringUtilities.Color.PURPLE, browserType.getDriverName()) + " driver...");
-        driver = WebDriverFactory.getDriver(browserType);
+        driver.set(WebDriverFactory.getDriver(browserType));
     }
 
     /**
@@ -76,26 +71,6 @@ public class PickleibWebDriver {
     }
 
     /**
-     * Initializes a Chrome driver with Basic Authentication headers injected via DevTools.
-     *
-     * @param id          The username for Basic Auth.
-     * @param password    The password for Basic Auth.
-     * @param browserType The browser type (Must be Chrome-based).
-     * @deprecated As of 1.5.6. This method relies on specific DevTools versions and is not maintained.
-     * Prefer using standard URL encoding (https://user:pass@site.com) or proxy utilities.
-     */
-    @Deprecated(since = "1.5.6")
-    public static void initialize(String id, String password, WebDriverFactory.BrowserType browserType){ //Only works with chrome!
-        initialize(browserType);
-        DevTools dev = ((ChromeDriver) driver).getDevTools();
-        dev.createSession();
-        dev.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
-        Map<String, Object> map = new HashMap<>();
-        map.put("Authorization", "Basic " + (Arrays.toString(Base64.encode((id + ":" + password).getBytes()))));
-        dev.send(Network.setExtraHTTPHeaders(new Headers(map)));
-    }
-
-    /**
      * Terminates the current driver session and closes the browser window.
      * <p>
      * This method is typically called in the `@After` hook of the test framework.
@@ -103,8 +78,10 @@ public class PickleibWebDriver {
      */
     public static void terminate(){
         log.info("Terminating driver...");
-        if (driver != null) {
-            driver.quit();
+        RemoteWebDriver current = driver.get();
+        if (current != null) {
+            current.quit();
+            driver.remove();
         }
     }
 }
