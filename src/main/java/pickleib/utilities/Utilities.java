@@ -12,6 +12,7 @@ import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.helpers.ClickHelper;
+import pickleib.utilities.helpers.DragDropHelper;
 import pickleib.utilities.helpers.ElementStateHelper;
 import pickleib.utilities.helpers.InputHelper;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
@@ -54,6 +55,7 @@ public abstract class Utilities {
     protected ClickHelper clickHelper;
     protected InputHelper inputHelper;
     protected ElementStateHelper elementStateHelper;
+    protected DragDropHelper dragDropHelper;
 
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         this.driver = driver;
@@ -61,6 +63,7 @@ public abstract class Utilities {
         this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
         this.inputHelper = new InputHelper(driver, wait, scroller, elementTimeout);
         this.elementStateHelper = new ElementStateHelper(driver, elementTimeout, driverTimeout);
+        this.dragDropHelper = new DragDropHelper(driver);
     }
 
     public Utilities(RemoteWebDriver driver, ScrollFunction scroller) {
@@ -75,6 +78,7 @@ public abstract class Utilities {
         this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
         this.inputHelper = new InputHelper(driver, wait, scroller, elementTimeout);
         this.elementStateHelper = new ElementStateHelper(driver, elementTimeout, driverTimeout);
+        this.dragDropHelper = new DragDropHelper(driver);
     }
 
     /**
@@ -416,14 +420,7 @@ public abstract class Utilities {
      * @param destinationElement target element
      */
     public void dragDropToAction(WebElement element, WebElement destinationElement) {
-        Actions action = new Actions(driver);
-        action.moveToElement(element)
-                .clickAndHold(element)
-                .moveToElement(destinationElement)
-                .release()
-                .build()
-                .perform();
-        waitFor(0.5);
+        dragDropHelper.dragDropToAction(element, destinationElement);
     }
 
     /**
@@ -435,13 +432,7 @@ public abstract class Utilities {
      */
     //This method performs click, hold, dragAndDropBy action on at a certain offset
     public void dragDropByAction(WebElement element, int xOffset, int yOffset) {
-        Actions action = new Actions(driver);
-        action.moveToElement(element)
-                .clickAndHold(element)
-                .dragAndDropBy(element, xOffset, yOffset)
-                .build()
-                .perform();
-        waitFor(0.5);
+        dragDropHelper.dragDropByAction(element, xOffset, yOffset);
     }
 
     /**
@@ -453,14 +444,7 @@ public abstract class Utilities {
      * @param yOffset y offset from the center of the element
      */
     public void dragDropAction(WebElement element, int xOffset, int yOffset) {
-        Actions action = new Actions(driver);
-        action.moveToElement(element)
-                .clickAndHold(element)
-                .moveToElement(element, xOffset, yOffset)
-                .release()
-                .build()
-                .perform();
-        waitFor(0.5);
+        dragDropHelper.dragDropAction(element, xOffset, yOffset);
     }
 
     /**
