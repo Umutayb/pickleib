@@ -26,6 +26,7 @@ import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibException;
+import pickleib.utilities.RetryPolicy;
 import pickleib.utilities.Utilities;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.functions.LocateElement;
@@ -496,30 +497,11 @@ public abstract class WebUtilities extends Utilities {
      * @return The element.
      */
     public WebElement hoverOver(WebElement element) {
-        long initialTime = System.currentTimeMillis();
         Actions actions = new Actions(driver);
-        String caughtException = null;
-        boolean timeout;
-        int counter = 0;
-        do {
-            try {
-                centerElement(element);
-                actions.moveToElement(element).build().perform();
-                break;
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                    counter++;
-                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                    counter++;
-                }
-            }
-            timeout = System.currentTimeMillis() - initialTime > elementTimeout;
-        }
-        while (timeout);
+        RetryPolicy.execute(() -> {
+            centerElement(element);
+            actions.moveToElement(element).build().perform();
+        }, elementTimeout);
         return element;
     }
 

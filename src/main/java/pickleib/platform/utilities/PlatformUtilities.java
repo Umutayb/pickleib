@@ -12,6 +12,7 @@ import org.openqa.selenium.support.pagefactory.ByAll;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
 import pickleib.platform.driver.PickleibAppiumDriver;
+import pickleib.utilities.RetryPolicy;
 import pickleib.utilities.Utilities;
 import pickleib.utilities.interfaces.functions.LocateElement;
 import java.time.Duration;
@@ -121,19 +122,19 @@ public abstract class PlatformUtilities extends Utilities {
      */
     public WebElement scrollUntilFound(LocateElement locator) {
         log.info("Scrolling until the element is found.");
-        long initialTime = System.currentTimeMillis();
-        do {
+        return RetryPolicy.execute(() -> {
             try {
                 WebElement element = locator.locate();
-                boolean elementFound = element.isDisplayed();
-                if (elementFound) {return element;}
-                else scrollInDirection(Direction.up);
-            } catch (WebDriverException | NullPointerException ignored) {
+                if (element.isDisplayed()) return element;
+                else throw new WebDriverException("Element is not displayed (yet)!");
+            } catch (NullPointerException e) {
                 scrollInDirection(Direction.up);
+                throw new WebDriverException("NullPointerException while locating element", e);
+            } catch (WebDriverException e) {
+                scrollInDirection(Direction.up);
+                throw e;
             }
-        }
-        while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
-        throw new RuntimeException("Element could not be located!");
+        }, elementTimeout * 5);
     }
 
     /**
@@ -202,22 +203,17 @@ public abstract class PlatformUtilities extends Utilities {
      */
     public WebElement scrollInList(String elementText, List<WebElement> elements) {
         log.info("Scrolling the list to element with text: " + highlighted(BLUE, elementText));
-        long initialTime = System.currentTimeMillis();
-        do {
+        return RetryPolicy.execute(() -> {
             try {
                 WebElement element = waitAndGetElementByText(elementText);
-                if (element.isDisplayed())
-                    return element;
-                else
-                    throw new WebDriverException("Element is not displayed!");
-            }
-            catch (WebDriverException ignored) {
+                if (element.isDisplayed()) return element;
+                throw new WebDriverException("Element is not displayed!");
+            } catch (WebDriverException e) {
                 log.info("Swiping...");
                 swipeFromTo(elements.get(elements.size() - 1), elements.get(0));
+                throw e;
             }
-        }
-        while (System.currentTimeMillis() - initialTime < elementTimeout * 5);
-        throw new RuntimeException("Element '" + elementText + "' could not be located!");
+        }, elementTimeout * 5);
     }
 
     /**
@@ -309,13 +305,7 @@ public abstract class PlatformUtilities extends Utilities {
      *                            If the retry timeout is exceeded, the WebDriverException is thrown.
      */
     public static void performSequence(Sequence sequence, long initialTime, RemoteWebDriver driver) {
-        try {
-            driver.perform(singletonList(sequence));
-        } catch (WebDriverException exception) {
-            if (!(System.currentTimeMillis() - initialTime > 15000)) {
-                performSequence(sequence, initialTime, driver);
-            } else throw exception;
-        }
+        RetryPolicy.execute(() -> driver.perform(singletonList(sequence)), 15000);
     }
 
     /**
