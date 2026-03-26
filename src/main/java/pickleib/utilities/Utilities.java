@@ -12,14 +12,13 @@ import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.helpers.ClickHelper;
+import pickleib.utilities.helpers.InputHelper;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
 import utils.Printer;
 import utils.StringUtilities;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
-import java.util.function.Predicate;
 
 import static pickleib.enums.ElementState.absent;
 import static pickleib.enums.ElementState.displayed;
@@ -52,11 +51,13 @@ public abstract class Utilities {
     public long elementTimeout = ContextStore.getInt("element-timeout", 15000);
     public long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
     protected ClickHelper clickHelper;
+    protected InputHelper inputHelper;
 
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         this.driver = driver;
         this.wait = wait;
         this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
+        this.inputHelper = new InputHelper(driver, wait, scroller, elementTimeout);
     }
 
     public Utilities(RemoteWebDriver driver, ScrollFunction scroller) {
@@ -69,6 +70,7 @@ public abstract class Utilities {
                     .withMessage("Waiting for element visibility...")
                     .ignoring(WebDriverException.class);
         this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
+        this.inputHelper = new InputHelper(driver, wait, scroller, elementTimeout);
     }
 
     /**
@@ -182,8 +184,7 @@ public abstract class Utilities {
      * @param inputText    input text
      */
     public void fillInput(WebElement inputElement, String inputText) {
-        // This method clears the input field before filling it
-        clearFillInput(inputElement, inputText, false);
+        inputHelper.fillInput(inputElement, inputText);
     }
 
     /**
@@ -193,8 +194,7 @@ public abstract class Utilities {
      * @param inputText    input text
      */
     public void fillAndVerifyInput(WebElement inputElement, String inputText) {
-        // This method clears the input field before filling it
-        clearFillInput(inputElement, inputText, true);
+        inputHelper.fillAndVerifyInput(inputElement, inputText);
     }
 
     /**
@@ -204,8 +204,7 @@ public abstract class Utilities {
      * @param inputText    input text
      */
     public void fillAndVerifyInput(WebElement inputElement, String inputText, boolean scroll) {
-        // This method clears the input field before filling it
-        clearFillInput(inputElement, inputText, scroll);
+        inputHelper.fillAndVerifyInput(inputElement, inputText, scroll);
     }
 
     /**
@@ -215,7 +214,7 @@ public abstract class Utilities {
      * @param inputText    input text
      */
     public void clearFillInput(WebElement inputElement, String inputText) {
-        fillAndVerify(inputElement, inputText, false, true, false);
+        inputHelper.clearFillInput(inputElement, inputText);
     }
 
     /**
@@ -226,7 +225,7 @@ public abstract class Utilities {
      * @param scroll       If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
     public void clearFillInput(WebElement inputElement, String inputText, boolean scroll) {
-        fillAndVerify(inputElement, inputText, scroll, true, false);
+        inputHelper.clearFillInput(inputElement, inputText, scroll);
     }
 
     /**
@@ -238,7 +237,7 @@ public abstract class Utilities {
      * @param verify       verifies the input text value equals to an expected text if true
      */
     public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify) {
-        fillAndVerify(inputElement, inputText, scroll, true, verify);
+        inputHelper.clearFillInput(inputElement, inputText, scroll, verify);
     }
 
     /**
@@ -249,7 +248,7 @@ public abstract class Utilities {
      * @param clear        If true, clears the input field before entering text. If false, does not clear.
      */
     public void fillInputElement(WebElement inputElement, String inputText, boolean clear) {
-        fillAndVerify(inputElement, inputText, false, clear, false);
+        inputHelper.fillInputElement(inputElement, inputText, clear);
     }
 
     /**
@@ -261,7 +260,7 @@ public abstract class Utilities {
      * @param verify       verifies the input text value equals to an expected text if true
      */
     public void fillInputElement(WebElement inputElement, String inputText, boolean scroll, boolean clear, boolean verify) {
-        fillAndVerify(inputElement, inputText, scroll, clear, verify);
+        inputHelper.fillInputElement(inputElement, inputText, scroll, clear, verify);
     }
 
     /**
@@ -273,7 +272,7 @@ public abstract class Utilities {
      * @param verify       verifies the input text value equals to an expected text if true
      */
     public void fillInputElement(WebElement inputElement, String inputText, boolean clear, boolean verify) {
-        fillAndVerify(inputElement, inputText, false, clear, verify);
+        inputHelper.fillInputElement(inputElement, inputText, clear, verify);
     }
 
     /**
@@ -286,16 +285,10 @@ public abstract class Utilities {
      * @param verify If true, verifies that the entered text matches the value attribute of the inputElement. If false, skips verification.
      *
      * @throws TimeoutException if the inputElement is not visible within the specified timeout.
-     * @throws AssertionError if verification fails (inputText does not match the value attribute of inputElement).
+     * @throws PickleibException if verification fails (inputText does not match the value attribute of inputElement).
      */
     public void fillAndVerify(WebElement element, String inputText, boolean scroll, boolean clear, boolean verify) {
-        wait.until(ExpectedConditions.visibilityOf(element));
-        inputText = contextCheck(inputText);
-        if (scroll) scroller.scroll(element);
-        if (clear) clearInputField(element);
-        element.sendKeys(inputText);
-        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverPlatform(element)));
-        assert !verify || inputText.equals(inputValue);
+        inputHelper.fillAndVerify(element, inputText, scroll, clear, verify);
     }
 
     /**
@@ -375,13 +368,7 @@ public abstract class Utilities {
      * @param element target element
      */
     public WebElement clearInputField(@NotNull WebElement element) {
-        StringJoiner deletion = new StringJoiner(Keys.BACK_SPACE);
-        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverPlatform(element)));
-        if (inputValue != null)
-            for (int i = 0; i <= inputValue.length(); i++)
-                deletion.add("");
-        element.sendKeys(deletion.toString());
-        return element;
+        return inputHelper.clearInputField(element);
     }
 
     /**
@@ -732,25 +719,7 @@ public abstract class Utilities {
      * @param pageName specified page instance name
      */
     public void fillInputForm(List<ElementBundle<String>> bundles, String pageName) {
-        String inputName;
-        String input;
-        String inputText;
-        for (ElementBundle<String> bundle : bundles) {
-            inputText = contextCheck(bundle.data());
-            log.info("Filling " +
-                    highlighted(BLUE, bundle.elementName()) +
-                    highlighted(GRAY, " on the ") +
-                    highlighted(BLUE, pageName) +
-                    highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, inputText)
-            );
-            pageName = firstLetterDeCapped(pageName);
-            clearFillInput(
-                    bundle.element(),
-                    inputText,
-                    !isPlatformElement(bundle.element())
-            );
-        }
+        inputHelper.fillInputForm(bundles, pageName);
     }
 
     /**
