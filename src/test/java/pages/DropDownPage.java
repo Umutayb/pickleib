@@ -6,20 +6,35 @@ import pickleib.web.PickleibPageObject;
 
 import java.util.List;
 
-public class DropDownPage extends PickleibPageObject {
+public class DropdownPage extends PickleibPageObject {
 
-    @FindBy(id = "title")
+    @FindBy(css = "main h1")
     WebElement title;
 
-    @FindBy(css = "#countriesDropDown")
-    WebElement countriesDropDown;
+    @FindBy(css = "[data-testid='dropdown-single']")
+    WebElement singleSelect;
 
-    @FindBy(css = "[role='listbox']")
-    WebElement countriesContainer;
+    @FindBy(css = "[data-testid='dropdown-single'] option:not([value=''])")
+    List<WebElement> singleSelectOptions;
 
-    @FindBy(css = "#vs1__listbox .vs__dropdown-option")
-    List<WebElement> countriesList;
+    @FindBy(css = "[data-testid='dropdown-single-value']")
+    WebElement singleSelectValue;
 
-    @FindBy(css = "#countriesDropDown .vs__selected")
-    WebElement selection;
+    @FindBy(css = "[data-testid='dropdown-multi']")
+    WebElement multiSelect;
+
+    @FindBy(css = "[data-testid='dropdown-multi'] option")
+    List<WebElement> multiSelectOptions;
+
+    @FindBy(css = "[data-testid='dropdown-multi-value']")
+    WebElement multiSelectValue;
+
+    @FindBy(css = "[data-testid='dropdown-custom']")
+    WebElement customDropdownButton;
+
+    @FindBy(css = "[data-testid='dropdown-custom-list']")
+    WebElement customDropdownList;
+
+    @FindBy(css = ".custom-dd-option")
+    List<WebElement> customDropdownOptions;
 }

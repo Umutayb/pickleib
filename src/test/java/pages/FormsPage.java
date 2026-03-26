@@ -49,20 +49,14 @@ public class FormsPage extends PickleibPageObject {
     @FindBy(className = "submitted-info-table")
     WebElement table;
 
-    @FindBy(css = "[aria-label='Open years overlay']")
-    WebElement datePickerYearsButton;
-
-    @FindBy(css = "[aria-label='Open months overlay']")
-    WebElement datePickerMonthsButton;
-
-    @FindBy(css = ".dp__action_row .dp__action_select")
-    WebElement datePickerSubmitButton;
-
     @FindBy(css = ".dp__today")
     WebElement todayCell;
 
     @FindBy(css = ".dp__selection_preview")
     WebElement spSelectionPreview;
+
+    @FindBy(css = ".dp__action_row .dp__action_select")
+    WebElement datePickerSubmitButton;
 
     @FindBy(css = "[role='gridcell']")
     List<WebElement> datePickerCells;

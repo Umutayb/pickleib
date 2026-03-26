@@ -1,56 +1,16 @@
 {
   "pages": [
     {
-      "name": "DropDownPage",
-      "platform": "web",
-      "elements": [
-        {
-          "elementName": "title",
-          "selectors": { "web": [{ "css": "[id='title']" }] }
-        },
-        {
-          "elementName": "countriesDropDown",
-          "selectors": { "web": [{ "className": "vs__search" }] }
-        },
-        {
-          "elementName": "countriesContainer",
-          "selectors": { "web": [{ "css": "[role='listbox']" }] }
-        },
-        {
-          "elementName": "countriesList",
-          "selectors": { "web": [{ "css": "#vs1__listbox .vs__dropdown-option" }] }
-        },
-        {
-          "elementName": "selection",
-          "selectors": { "web": [{ "css": "#countriesDropDown .vs__selected" }] }
-        }
-      ]
-    },
-    {
-      "name": "ElementsPage",
-      "platform": "web",
-      "elements": [
-        {
-          "elementName": "questionBoxTitle",
-          "selectors": { "web": [{ "css": ".question-box h2" }] }
-        },
-        {
-          "elementName": "checkMarkMessage",
-          "selectors": { "web": [{ "css": ".question-box form p" }] }
-        },
-        {
-          "elementName": "checkMarks",
-          "selectors": { "web": [{ "css": ".radio-group label" }] }
-        }
-      ]
-    },
-    {
       "name": "HomePage",
       "platform": "web",
       "elements": [
         {
           "elementName": "categories",
-          "selectors": { "web": [{ "css": "#category-card" }] }
+          "selectors": { "web": [{ "css": ".category-grid .home-card" }] }
+        },
+        {
+          "elementName": "pageTitle",
+          "selectors": { "web": [{ "css": ".home-page h1" }] }
         }
       ]
     },
@@ -60,19 +20,19 @@
       "elements": [
         {
           "elementName": "title",
-          "selectors": { "web": [{ "css": "[id='title']" }] }
+          "selectors": { "web": [{ "css": "#title" }] }
         },
         {
           "elementName": "nameInput",
-          "selectors": { "web": [{ "css": "[id='name']" }] }
+          "selectors": { "web": [{ "css": "#name" }] }
         },
         {
           "elementName": "emailInput",
-          "selectors": { "web": [{ "css": "[id='email']" }] }
+          "selectors": { "web": [{ "css": "#email" }] }
         },
         {
           "elementName": "genderDropdown",
-          "selectors": { "web": [{ "css": "[id='gender']" }] }
+          "selectors": { "web": [{ "css": "#gender" }] }
         },
         {
           "elementName": "genderOptions",
@@ -80,27 +40,27 @@
         },
         {
           "elementName": "mobileInput",
-          "selectors": { "web": [{ "css": "[id='mobile']" }] }
+          "selectors": { "web": [{ "css": "#mobile" }] }
         },
         {
           "elementName": "dateOfBirthInput",
-          "selectors": { "web": [{ "css": "[id='dob']" }] }
+          "selectors": { "web": [{ "css": "#dob" }] }
         },
         {
           "elementName": "hobbiesInput",
-          "selectors": { "web": [{ "css": "[id='hobbies']" }] }
+          "selectors": { "web": [{ "css": "#hobbies" }] }
         },
         {
           "elementName": "addressInput",
-          "selectors": { "web": [{ "css": "[id='currentAddress']" }] }
+          "selectors": { "web": [{ "css": "#currentAddress" }] }
         },
         {
           "elementName": "cityInput",
-          "selectors": { "web": [{ "css": "[id='city']" }] }
+          "selectors": { "web": [{ "css": "#city" }] }
         },
         {
           "elementName": "submitButton",
-          "selectors": { "web": [{ "css": "[id='submit']" }] }
+          "selectors": { "web": [{ "css": "#submit" }] }
         },
         {
           "elementName": "submissionEntries",
@@ -111,24 +71,6 @@
           "selectors": { "web": [{ "className": "submitted-info-table" }] }
         },
         {
-          "elementName": "datePickerYearsButton",
-          "selectors": { "web": [{ "css": "[aria-label='Open years overlay']" }] }
-        },
-        {
-          "elementName": "datePickerMonthsButton",
-          "selectors": {
-            "web": [
-              {
-                "css": "[aria-label='Open months overlay']"
-              }
-            ]
-          }
-        },
-        {
-          "elementName": "datePickerSubmitButton",
-          "selectors": { "web": [{ "css": ".dp__action_row .dp__action_select" }] }
-        },
-        {
           "elementName": "todayCell",
           "selectors": { "web": [{ "css": ".dp__today" }] }
         },
@@ -137,32 +79,146 @@
           "selectors": { "web": [{ "css": ".dp__selection_preview" }] }
         },
         {
+          "elementName": "datePickerSubmitButton",
+          "selectors": { "web": [{ "css": ".dp__action_row .dp__action_select" }] }
+        },
+        {
           "elementName": "datePickerCells",
           "selectors": { "web": [{ "css": "[role='gridcell']" }] }
         }
       ]
     },
     {
-      "name": "AlertAndWindowsPage",
-      "platform": "web",
-      "elements": [
-        {
-          "elementName": "buttons",
-          "selectors": { "web": [{ "css": ".button" }] }
-        }
-      ]
-    },
-    {
-      "name": "InteractionsPage",
+      "name": "AlertsPage",
       "platform": "web",
       "elements": [
         {
           "elementName": "title",
-          "selectors": { "web": [{ "id": "title" }] }
+          "selectors": { "web": [{ "css": "main h2" }] }
         },
         {
-          "elementName": "tools",
-          "selectors": { "web": [{ "id": "tool" }] }
+          "elementName": "clickMeButton",
+          "selectors": { "web": [{ "css": "#click-me" }] }
+        },
+        {
+          "elementName": "rightClickMeButton",
+          "selectors": { "web": [{ "css": "#right-click-me" }] }
+        },
+        {
+          "elementName": "doubleClickMeButton",
+          "selectors": { "web": [{ "css": "#double-click-me" }] }
+        },
+        {
+          "elementName": "buttons",
+          "selectors": { "web": [{ "css": "main .button" }] }
+        },
+        {
+          "elementName": "windowButtons",
+          "selectors": { "web": [{ "css": "#tabs .button" }] }
+        }
+      ]
+    },
+    {
+      "name": "DropdownPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "title",
+          "selectors": { "web": [{ "css": "main h1" }] }
+        },
+        {
+          "elementName": "singleSelect",
+          "selectors": { "web": [{ "css": "[data-testid='dropdown-single']" }] }
+        },
+        {
+          "elementName": "singleSelectOptions",
+          "selectors": { "web": [{ "css": "[data-testid='dropdown-single'] option:not([value=''])" }] }
+        },
+        {
+          "elementName": "singleSelectValue",
+          "selectors": { "web": [{ "css": "[data-testid='dropdown-single-value']" }] }
+        },
+        {
+          "elementName": "multiSelect",
+          "selectors": { "web": [{ "css": "[data-testid='dropdown-multi']" }] }
+        },
+        {
+          "elementName": "multiSelectOptions",
+          "selectors": { "web": [{ "css": "[data-testid='dropdown-multi'] option" }] }
+        },
+        {
+          "elementName": "multiSelectValue",
+          "selectors": { "web": [{ "css": "[data-testid='dropdown-multi-value']" }] }
+        },
+        {
+          "elementName": "customDropdownButton",
+          "selectors": { "web": [{ "css": "[data-testid='dropdown-custom']" }] }
+        },
+        {
+          "elementName": "customDropdownList",
+          "selectors": { "web": [{ "css": "[data-testid='dropdown-custom-list']" }] }
+        },
+        {
+          "elementName": "customDropdownOptions",
+          "selectors": { "web": [{ "css": ".custom-dd-option" }] }
+        }
+      ]
+    },
+    {
+      "name": "ButtonsPage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "title",
+          "selectors": { "web": [{ "css": "main h1" }] }
+        },
+        {
+          "elementName": "primaryButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-primary']" }] }
+        },
+        {
+          "elementName": "secondaryButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-secondary']" }] }
+        },
+        {
+          "elementName": "dangerButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-danger']" }] }
+        },
+        {
+          "elementName": "ghostButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-ghost']" }] }
+        },
+        {
+          "elementName": "outlineButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-outline']" }] }
+        },
+        {
+          "elementName": "smallButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-small']" }] }
+        },
+        {
+          "elementName": "mediumButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-medium']" }] }
+        },
+        {
+          "elementName": "largeButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-large']" }] }
+        },
+        {
+          "elementName": "disabledButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-disabled']" }] }
+        },
+        {
+          "elementName": "loadingButton",
+          "selectors": { "web": [{ "css": "[data-testid='btn-loading']" }] }
+        },
+        {
+          "elementName": "resultText",
+          "selectors": { "web": [{ "css": "[data-testid='btn-result']" }] }
+        },
+        {
+          "elementName": "variantButtons",
+          "selectors": { "web": [{ "css": ".section:first-child .btn-row .btn" }] }
         }
       ]
     },
@@ -172,11 +228,49 @@
       "elements": [
         {
           "elementName": "title",
-          "selectors": { "web": [{ "id": "title" }] }
+          "selectors": { "web": [{ "css": ".tall-page h1" }] }
         },
         {
-          "elementName": "logo",
-          "selectors": { "web": [{ "id": "logo" }] }
+          "elementName": "sections",
+          "selectors": { "web": [{ "css": ".tall-section" }] }
+        },
+        {
+          "elementName": "sectionHeadings",
+          "selectors": { "web": [{ "css": ".tall-section h2" }] }
+        },
+        {
+          "elementName": "scrollPosition",
+          "selectors": { "web": [{ "css": "[data-testid='tall-scroll-position']" }] }
+        },
+        {
+          "elementName": "lastSection",
+          "selectors": { "web": [{ "css": "[data-testid='tall-section-10']" }] }
+        }
+      ]
+    },
+    {
+      "name": "DroppablePage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "title",
+          "selectors": { "web": [{ "css": "main h1" }] }
+        },
+        {
+          "elementName": "sourceItems",
+          "selectors": { "web": [{ "css": ".drag-item" }] }
+        },
+        {
+          "elementName": "dropZones",
+          "selectors": { "web": [{ "css": ".drop-zone" }] }
+        },
+        {
+          "elementName": "statusText",
+          "selectors": { "web": [{ "css": ".status-text" }] }
+        },
+        {
+          "elementName": "resetButton",
+          "selectors": { "web": [{ "css": "button" }] }
         }
       ]
     }
