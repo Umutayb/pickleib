@@ -464,7 +464,7 @@ public class AppTest {
     public void acquireListedElementByAttributeTest() {
         log.info("objectRepository.acquireListedElementByAttribute() test");
         WebElement formsCard = objectRepository.acquireListedElementByAttribute(
-                "href", "/forms", "categories", "homePage"
+                "href", testWebsiteUrl + "forms", "categories", "homePage"
         );
         Assertions.assertTrue(formsCard.getText().contains("Forms"), "acquireListedElementByAttribute() test failed!");
     }
