@@ -28,7 +28,6 @@ import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.*;
 
-@SuppressWarnings("unused")
 public class PlatformInteractions extends PlatformUtilities implements PolymorphicUtilities {
 
     public PlatformInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {

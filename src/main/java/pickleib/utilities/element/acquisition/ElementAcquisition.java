@@ -28,7 +28,6 @@ import static utils.StringUtilities.Color.*;
  *
  * @author  Umut Ay Bora
  */
-@SuppressWarnings("unused")
 public class ElementAcquisition {
 
     /**

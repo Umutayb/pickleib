@@ -37,7 +37,6 @@ import static utils.StringUtilities.highlighted;
  *
  * @author Umut Ay Bora
  */
-@SuppressWarnings("unused")
 public class WebDriverFactory implements DriverFactory {
 
     /**
@@ -190,7 +189,7 @@ public class WebDriverFactory implements DriverFactory {
             }
             else {driver = driverSwitch(headless, useWDM, insecureLocalHost, noSandbox, disableNotifications, allowRemoteOrigin, loadStrategy, browserType, mobileMode, preferredDevice);}
 
-            assert driver != null;
+            if (driver == null) throw new PickleibException("Driver initialization failed — driverSwitch returned null");
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
             if (deleteCookies) driver.manage().deleteAllCookies();
             if (maximise && !headless) driver.manage().window().maximize();
@@ -333,66 +332,146 @@ public class WebDriverFactory implements DriverFactory {
 
     // Setters for static configuration (useful for runtime adjustments)
 
+    /**
+     * Sets the browser window width in pixels.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setFrameWidth(int frameWidth) {
         WebDriverFactory.frameWidth = frameWidth;
     }
 
+    /**
+     * Sets the browser window height in pixels.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setFrameHeight(int frameHeight) {
         WebDriverFactory.frameHeight = frameHeight;
     }
 
+    /**
+     * Enables or disables headless mode.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setHeadless(boolean headless) {
         WebDriverFactory.headless = headless;
     }
 
+    /**
+     * Enables or disables window maximization on driver startup.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setMaximise(boolean maximise) {
         WebDriverFactory.maximise = maximise;
     }
 
+    /**
+     * Sets the implicit wait timeout (in seconds) for the driver.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setDriverTimeout(long driverTimeout) {
         WebDriverFactory.driverTimeout = driverTimeout;
     }
 
+    /**
+     * Enables or disables cookie deletion on driver initialization.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setDeleteCookies(boolean deleteCookies) {
         WebDriverFactory.deleteCookies = deleteCookies;
     }
 
+    /**
+     * Enables or disables Selenium Grid usage.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setUseSeleniumGrid(boolean useSeleniumGrid) {
         WebDriverFactory.useSeleniumGrid = useSeleniumGrid;
     }
 
+    /**
+     * Enables or disables acceptance of insecure SSL certificates.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setInsecureLocalHost(boolean insecureLocalHost) {
         WebDriverFactory.insecureLocalHost = insecureLocalHost;
     }
 
+    /**
+     * Enables or disables browser notifications.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setDisableNotifications(boolean disableNotifications) {
         WebDriverFactory.disableNotifications = disableNotifications;
     }
 
+    /**
+     * Sets the page load strategy for the driver.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setLoadStrategy(PageLoadStrategy loadStrategy) {
         WebDriverFactory.loadStrategy = loadStrategy;
     }
 
+    /**
+     * Enables or disables WebDriverManager for automatic driver binary management.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setUseWDM(Boolean useWDM) {
         WebDriverFactory.useWDM = useWDM;
     }
 
+    /**
+     * Enables or disables allowing remote origins (fixes connection issues in newer Chrome).
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setAllowRemoteOrigin(Boolean allowRemoteOrigin) {
         WebDriverFactory.allowRemoteOrigin = allowRemoteOrigin;
     }
 
+    /**
+     * Sets the Selenium log level (e.g., "off", "info", "debug").
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setLogLevel(String logLevel) {
         WebDriverFactory.logLevel = logLevel;
     }
 
+    /**
+     * Sets the Selenium Grid hub URL.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setHubUrl(String hubUrl) {
         WebDriverFactory.hubUrl = hubUrl;
     }
 
+    /**
+     * Sets the default browser type (e.g., "chrome", "firefox").
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setBrowser(String browser) {
         WebDriverFactory.browser = browser;
     }
 
+    /**
+     * Enables or disables the --no-sandbox browser argument.
+     * <p><b>Thread Safety:</b> This setter modifies shared static state.
+     * It must be called before parallel driver initialization, not during.</p>
+     */
     public static void setNoSandbox(boolean noSandbox) {WebDriverFactory.noSandbox = noSandbox;}
 
     // Getters for configuration values
