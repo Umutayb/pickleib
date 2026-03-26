@@ -12,6 +12,7 @@ import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.helpers.ClickHelper;
+import pickleib.utilities.helpers.ElementStateHelper;
 import pickleib.utilities.helpers.InputHelper;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
 import utils.Printer;
@@ -52,12 +53,14 @@ public abstract class Utilities {
     public long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
     protected ClickHelper clickHelper;
     protected InputHelper inputHelper;
+    protected ElementStateHelper elementStateHelper;
 
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         this.driver = driver;
         this.wait = wait;
         this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
         this.inputHelper = new InputHelper(driver, wait, scroller, elementTimeout);
+        this.elementStateHelper = new ElementStateHelper(driver, elementTimeout, driverTimeout);
     }
 
     public Utilities(RemoteWebDriver driver, ScrollFunction scroller) {
@@ -71,6 +74,7 @@ public abstract class Utilities {
                     .ignoring(WebDriverException.class);
         this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
         this.inputHelper = new InputHelper(driver, wait, scroller, elementTimeout);
+        this.elementStateHelper = new ElementStateHelper(driver, elementTimeout, driverTimeout);
     }
 
     /**
@@ -299,9 +303,7 @@ public abstract class Utilities {
      * @return returns the element if its in expected state
      */
     public WebElement verifyElementState(WebElement element, ElementState state) {
-        if (!elementIs(element, state)) throw new PickleibException("Element is not in " + state.name() + " state!");
-        log.success("Element state is verified to be: " + state.name());
-        return element;
+        return elementStateHelper.verifyElementState(element, state);
     }
 
     /**
@@ -312,25 +314,7 @@ public abstract class Utilities {
      * @return returns true if an element is in the expected state
      */
     public Boolean elementIs(WebElement element, @NotNull ElementState state) {
-        return RetryPolicy.pollUntil(
-            () -> checkElementState(element, state),
-            elementTimeout,
-            () -> driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500)),
-            () -> driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout)),
-            ex -> state.equals(absent) && ex instanceof StaleElementReferenceException
-        );
-    }
-
-    private boolean checkElementState(WebElement element, ElementState state) {
-        return switch (state) {
-            case enabled -> element.isEnabled();
-            case displayed -> element.isDisplayed();
-            case selected -> element.isSelected();
-            case disabled -> !element.isEnabled();
-            case unselected -> !element.isSelected();
-            case absent -> !element.isDisplayed();
-            default -> throw new EnumConstantNotPresentException(ElementState.class, state.name());
-        };
+        return elementStateHelper.elementIs(element, state);
     }
 
     /**
@@ -644,9 +628,7 @@ public abstract class Utilities {
      * @param expectedText expected text
      */
     public void verifyElementText(WebElement element, String expectedText) {
-        expectedText = contextCheck(expectedText);
-        if (!expectedText.equals(element.getText()))
-            throw new PickleibException("Element text is not \"" + highlighted(BLUE, expectedText) + "\"!");
+        elementStateHelper.verifyElementText(element, expectedText);
     }
 
     /**
@@ -656,18 +638,7 @@ public abstract class Utilities {
      * @param expectedText expected text
      */
     public void verifyElementContainsText(WebElement element, String elementName, String pageName, String expectedText) {
-        expectedText = contextCheck(expectedText);
-        log.info("Verifying that text of element " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " contains ") +
-                highlighted(BLUE, expectedText) +
-                highlighted(GRAY, " on ") +
-                highlighted(BLUE, pageName)
-        );
-        elementIs(element, displayed);
-        if (!element.getText().contains(expectedText))
-            throw new PickleibException("Element text does not contain \"" + highlighted(BLUE, expectedText) + "\"!");
-        log.success("The element text does contain \"" + expectedText + "\" text!");
+        elementStateHelper.verifyElementContainsText(element, elementName, pageName, expectedText);
     }
 
     /**
@@ -678,20 +649,7 @@ public abstract class Utilities {
     public void verifyListedElementText(
             List<ElementBundle<String>> bundles,
             String pageName) {
-        for (ElementBundle<String> bundle : bundles) {
-            String elementName = bundle.elementName();
-            String expectedText = contextCheck(bundle.data());
-            log.info("Performing text verification for " +
-                    highlighted(BLUE, elementName) +
-                    highlighted(GRAY, " on the ") +
-                    highlighted(BLUE, pageName) +
-                    highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, expectedText)
-            );
-            if (!expectedText.equals(bundle.element().getText()))
-                throw new PickleibException("The " + bundle.elementName() + " does not contain text '");
-            log.success("Text of the element" + bundle.elementName() + " was verified!");
-        }
+        elementStateHelper.verifyListedElementText(bundles, pageName);
     }
 
     /**
@@ -704,12 +662,7 @@ public abstract class Utilities {
             String expectedText,
             String listName,
             String pageName) {
-        if (elements.stream().anyMatch(element -> element.getText().contains(expectedText)))
-            log.success("The " + listName + " list contains an element with " + expectedText + " text!");
-        else
-            throw new PickleibException(
-                    "The " + listName + " list does not contains an element with " + expectedText + " text!"
-            );
+        elementStateHelper.verifyListContainsElementByText(elements, expectedText, listName, pageName);
     }
 
     /**
@@ -733,22 +686,7 @@ public abstract class Utilities {
             WebElement element,
             String attributeName,
             String attributeValue) {
-
-        attributeValue = contextCheck(attributeValue);
-        final String checkedValue = attributeValue;
-        boolean result = RetryPolicy.pollUntil(
-            () -> Objects.equals(element.getAttribute(attributeName), checkedValue),
-            elementTimeout
-        );
-        if (!result) {
-            log.warning("Element does not contain " +
-                highlighted(BLUE, attributeName) +
-                highlighted(GRAY, " -> ") +
-                highlighted(BLUE, checkedValue) +
-                highlighted(GRAY, " attribute pair.")
-            );
-        }
-        return result;
+        return elementStateHelper.elementContainsAttribute(element, attributeName, attributeValue);
     }
 
     /**
@@ -762,27 +700,6 @@ public abstract class Utilities {
             WebElement elementName,
             String attributeName,
             String value) {
-
-        value = contextCheck(value);
-        final String checkedValue = value;
-        boolean result = RetryPolicy.pollUntil(
-            () -> {
-                String attr = elementName.getAttribute(attributeName);
-                return attr != null && attr.contains(checkedValue);
-            },
-            elementTimeout,
-            () -> driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500)),
-            () -> driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout)),
-            null
-        );
-        if (!result) {
-            log.warning("Element attribute does not contain " +
-                highlighted(BLUE, attributeName) +
-                highlighted(GRAY, " -> ") +
-                highlighted(BLUE, checkedValue) +
-                highlighted(GRAY, " value.")
-            );
-        }
-        return result;
+        return elementStateHelper.elementAttributeContainsValue(elementName, attributeName, value);
     }
 }
