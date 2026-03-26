@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
+import java.util.function.Predicate;
 
 import static pickleib.enums.ElementState.absent;
 import static pickleib.enums.ElementState.displayed;
@@ -93,31 +94,11 @@ public abstract class Utilities {
      * @throws TimeoutException if the element is not clickable within the specified timeout.
      */
     public void clickElement(WebElement element, boolean scroll) {
-        WebDriverException caughtException = null;
-        int counter = 0;
-        long initialTime = System.currentTimeMillis();
-        do {
-            try {
-                wait.until(ExpectedConditions.elementToBeClickable(element));
-                if (scroll) this.scroller.scroll(element).click();
-                else element.click();
-                return;
-            }
-            catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                } else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                counter++;
-            }
-        }
-        while (System.currentTimeMillis() - initialTime < elementTimeout);
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning(caughtException.getMessage());
-        throw new PickleibException(caughtException);
+        RetryPolicy.execute(() -> {
+            wait.until(ExpectedConditions.elementToBeClickable(element));
+            if (scroll) this.scroller.scroll(element).click();
+            else element.click();
+        }, elementTimeout);
     }
 
     public boolean isElementInViewPort(WebElement element) {
@@ -362,62 +343,27 @@ public abstract class Utilities {
      * @param element target element
      * @param state   expected state
      * @return returns true if an element is in the expected state
-     */ //TODO: elementIs should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
+     */
     public Boolean elementIs(WebElement element, @NotNull ElementState state) {
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        boolean timeout;
-        boolean condition = false;
-        boolean negativeCheck = false;
-        int counter = 0;
-        do { //TODO: Replace this with iterativeConditionalInvocation
-            if (condition || (counter > 1 && negativeCheck)) return true;
-            try {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-                switch (state) {
-                    case enabled -> {
-                        negativeCheck = false;
-                        condition = element.isEnabled();
-                    }
-                    case displayed -> {
-                        negativeCheck = false;
-                        condition = element.isDisplayed();
-                    }
-                    case selected -> {
-                        negativeCheck = false;
-                        condition = element.isSelected();
-                    }
-                    case disabled -> {
-                        negativeCheck = true;
-                        condition = !element.isEnabled();
-                    }
-                    case unselected -> {
-                        negativeCheck = true;
-                        condition = !element.isSelected();
-                    }
-                    case absent -> {
-                        negativeCheck = true;
-                        condition = !element.isDisplayed();
-                    }
-                    default -> throw new EnumConstantNotPresentException(ElementState.class, state.name());
-                }
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (state.equals(absent) && webDriverException.getClass().getName().equals("StaleElementReferenceException"))
-                    return true;
-                counter++;
-            } finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        return false;
+        return RetryPolicy.pollUntil(
+            () -> checkElementState(element, state),
+            elementTimeout,
+            () -> driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500)),
+            () -> driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout)),
+            ex -> state.equals(absent) && ex instanceof StaleElementReferenceException
+        );
+    }
+
+    private boolean checkElementState(WebElement element, ElementState state) {
+        return switch (state) {
+            case enabled -> element.isEnabled();
+            case displayed -> element.isDisplayed();
+            case selected -> element.isSelected();
+            case disabled -> !element.isEnabled();
+            case unselected -> !element.isSelected();
+            case absent -> !element.isDisplayed();
+            default -> throw new EnumConstantNotPresentException(ElementState.class, state.name());
+        };
     }
 
     /**
@@ -852,36 +798,21 @@ public abstract class Utilities {
             String attributeName,
             String attributeValue) {
 
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        int counter = 0;
         attributeValue = contextCheck(attributeValue);
-        do {
-            try {
-                if (Objects.equals(element.getAttribute(attributeName), attributeValue))
-                    return element.getAttribute(attributeName).contains(attributeValue);
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                waitFor(0.5);
-                counter++;
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning("Element does not contain " +
+        final String checkedValue = attributeValue;
+        boolean result = RetryPolicy.pollUntil(
+            () -> Objects.equals(element.getAttribute(attributeName), checkedValue),
+            elementTimeout
+        );
+        if (!result) {
+            log.warning("Element does not contain " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " -> ") +
-                highlighted(BLUE, attributeValue) +
+                highlighted(BLUE, checkedValue) +
                 highlighted(GRAY, " attribute pair.")
-        );
-        log.warning(caughtException);
-        return false;
+            );
+        }
+        return result;
     }
 
     /**
@@ -896,38 +827,26 @@ public abstract class Utilities {
             String attributeName,
             String value) {
 
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        int counter = 0;
         value = contextCheck(value);
-        //TODO replace do-while with iterativeConditionalInvocation() method
-        do {
-            try {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-                return elementName.getAttribute(attributeName).contains(value);
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                waitFor(0.5);
-                counter++;
-            } finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(elementTimeout));
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning("Element attribute does not contain " +
+        final String checkedValue = value;
+        boolean result = RetryPolicy.pollUntil(
+            () -> {
+                String attr = elementName.getAttribute(attributeName);
+                return attr != null && attr.contains(checkedValue);
+            },
+            elementTimeout,
+            () -> driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500)),
+            () -> driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout)),
+            null
+        );
+        if (!result) {
+            log.warning("Element attribute does not contain " +
                 highlighted(BLUE, attributeName) +
                 highlighted(GRAY, " -> ") +
-                highlighted(BLUE, value) +
+                highlighted(BLUE, checkedValue) +
                 highlighted(GRAY, " value.")
-        );
-        log.warning(caughtException);
-        return false;
+            );
+        }
+        return result;
     }
 }
