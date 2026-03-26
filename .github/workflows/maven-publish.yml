@@ -1,4 +1,5 @@
-name: Release & Push New Version to Maven Central
+name: 🚀 Release & Push New Version to Maven Central
+
 on:
   push:
     tags:
@@ -6,11 +7,14 @@ on:
       
 jobs:
   maven-central-deploy:
+    name: 📤 Maven Central Deploy
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Java for publishing to Maven Central Repository
+      - name: 🗂️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up Java for Maven Central
         uses: actions/setup-java@v4
         with:
           java-version: 17
@@ -20,22 +24,28 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
-      - name: Set up Docker Buildx
+
+      - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Start Unit Test Website
+
+      - name: 🌐 Start Unit Test Website
         run: |
           docker compose up --build -d
-      - name: Test with POM page repository design
+
+      - name: 🧪 Test with POM page repository design
         run: mvn clean test -Dpage-repository-design=pom
-      - name: Test with JSON page repository design
+
+      - name: 🧪 Test with JSON page repository design
         run: mvn clean test -Dpage-repository-design=json
-      - name: Build, Test & Release
+
+      - name: 📦 Build, Test & Release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
           artifacts: "${{ github.workspace }}/target/*.jar"
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Publish to the Maven Central Repository
+
+      - name: 🚀 Publish to the Maven Central Repository
         run: |
           mvn \
             --no-transfer-progress \

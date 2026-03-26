@@ -9,3 +9,5 @@ POM-Framework.iml
 screenshots/
 .worktrees/
 src/test/resources/pickleib.properties
+/.vscode
+/.playwright-mcp
