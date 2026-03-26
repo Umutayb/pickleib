@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.FluentWait;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.ElementBundle;
+import pickleib.utilities.helpers.ClickHelper;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
 import utils.Printer;
 import utils.StringUtilities;
@@ -50,9 +51,12 @@ public abstract class Utilities {
 
     public long elementTimeout = ContextStore.getInt("element-timeout", 15000);
     public long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
+    protected ClickHelper clickHelper;
+
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         this.driver = driver;
         this.wait = wait;
+        this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
     }
 
     public Utilities(RemoteWebDriver driver, ScrollFunction scroller) {
@@ -64,6 +68,7 @@ public abstract class Utilities {
                     .pollingEvery(Duration.ofMillis(500))
                     .withMessage("Waiting for element visibility...")
                     .ignoring(WebDriverException.class);
+        this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
     }
 
     /**
@@ -82,9 +87,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickElement(WebElement element) {
-        clickElement(element, false);
-    }
+    public void clickElement(WebElement element) { clickHelper.clickElement(element); }
 
     /**
      * Clicks on the specified WebElement.
@@ -93,13 +96,7 @@ public abstract class Utilities {
      * @param scroll  If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      * @throws TimeoutException if the element is not clickable within the specified timeout.
      */
-    public void clickElement(WebElement element, boolean scroll) {
-        RetryPolicy.execute(() -> {
-            wait.until(ExpectedConditions.elementToBeClickable(element));
-            if (scroll) this.scroller.scroll(element).click();
-            else element.click();
-        }, elementTimeout);
-    }
+    public void clickElement(WebElement element, boolean scroll) { clickHelper.clickElement(element, scroll); }
 
     public boolean isElementInViewPort(WebElement element) {
         int windowHeight = driver.manage().window().getSize().getHeight();
@@ -124,9 +121,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickButtonIfPresent(WebElement element) {
-        clickButtonIfPresent(element, false);
-    }
+    public void clickButtonIfPresent(WebElement element) { clickHelper.clickButtonIfPresent(element); }
 
     /**
      * If present, clicks the specified {@code element} on the {page name}.
@@ -135,19 +130,14 @@ public abstract class Utilities {
      * <p>
      * This method checks if the given {@code element} is present and displayed.
      * If the element is present and displayed, it is clicked using the provided {@code scroller} for scrolling.
-     * If the element is not present, a {@code WebDriverException} is caught, and a warning message is logged.
+     * If the element is not present, a {@code NoSuchElementException} or {@code StaleElementReferenceException}
+     * is caught, and a warning message is logged.
      * </p>
      *
      * @param element The target {@code WebElement} to be clicked if present.
      * @param scroll  scrolls if true
      */
-    public void clickButtonIfPresent(WebElement element, boolean scroll) {
-        try {
-            clickElement(element, scroll);
-        } catch (WebDriverException ignored) {
-            log.warning("The element was not present!");
-        }
-    }
+    public void clickButtonIfPresent(WebElement element, boolean scroll) { clickHelper.clickButtonIfPresent(element, scroll); }
 
     /**
      * Press {target key} key on {element name} element of the {}
@@ -167,15 +157,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickTowards(WebElement element) {
-        elementIs(element, ElementState.displayed);
-        Actions builder = new org.openqa.selenium.interactions.Actions(driver);
-        builder
-                .moveToElement(element, 0, 0)
-                .click()
-                .build()
-                .perform();
-    }
+    public void clickTowards(WebElement element) { clickHelper.clickTowards(element); }
 
     /**
      * Clicks an element if its present (in enabled state)
@@ -183,13 +165,7 @@ public abstract class Utilities {
      * @param element target element
      * @param scroll  If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
-    public void clickIfPresent(WebElement element, boolean scroll) {
-        try {
-            clickElement(element, scroll);
-        } catch (WebDriverException exception) {
-            log.warning(exception.getMessage());
-        }
-    }
+    public void clickIfPresent(WebElement element, boolean scroll) { clickHelper.clickIfPresent(element, scroll); }
 
     /**
      * Clicks an element if its present (in enabled state)
@@ -197,9 +173,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickIfPresent(WebElement element) {
-        clickIfPresent(element, false);
-    }
+    public void clickIfPresent(WebElement element) { clickHelper.clickIfPresent(element); }
 
     /**
      * Clears and fills a given input
@@ -533,14 +507,7 @@ public abstract class Utilities {
      * @param yOffset y offset from the center of the element
      */
     @SuppressWarnings("SameParameterValue")
-    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset) {
-        Actions builder = new org.openqa.selenium.interactions.Actions(driver);
-        builder
-                .moveToElement(element, xOffset, yOffset)
-                .click()
-                .build()
-                .perform();
-    }
+    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset) { clickHelper.clickAtAnOffset(element, xOffset, yOffset); }
 
     /**
      * Uploads a given file
