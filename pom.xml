@@ -214,6 +214,14 @@
       <version>20231013</version>
     </dependency>
 
+    <!-- Cucumber (for built-in step definitions) -->
+    <dependency>
+        <groupId>io.cucumber</groupId>
+        <artifactId>cucumber-java</artifactId>
+        <version>7.14.0</version>
+        <optional>true</optional>
+    </dependency>
+
     <!-- JUnit -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
