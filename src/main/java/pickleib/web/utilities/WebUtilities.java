@@ -643,7 +643,7 @@ public abstract class WebUtilities extends Utilities {
 
         ExpectedCondition<Boolean> pageLoadCondition = driverLoad ->
         {
-            assert driverLoad != null;
+            if (driverLoad == null) throw new PickleibException("Driver is null during page load check");
             return ((JavascriptExecutor) driverLoad).executeScript("return document.readyState").equals("complete");
         };
 
