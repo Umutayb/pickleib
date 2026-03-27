@@ -30,6 +30,13 @@ public class ElementStateHelper {
     private final long driverTimeout;
     private final Printer log = new Printer(ElementStateHelper.class);
 
+    /**
+     * Constructs an ElementStateHelper with the required WebDriver dependencies.
+     *
+     * @param driver         the RemoteWebDriver instance
+     * @param elementTimeout maximum time in milliseconds to poll for element state changes
+     * @param driverTimeout  the default implicit wait timeout in seconds used to restore after polling
+     */
     public ElementStateHelper(RemoteWebDriver driver, long elementTimeout, long driverTimeout) {
         this.driver = driver;
         this.elementTimeout = elementTimeout;
@@ -53,6 +60,14 @@ public class ElementStateHelper {
         );
     }
 
+    /**
+     * Evaluates whether the given element satisfies the specified state without any retry logic.
+     *
+     * @param element the element to inspect
+     * @param state   the state to check against
+     * @return true if the element matches the given state, false otherwise
+     * @throws EnumConstantNotPresentException if the state value is not handled
+     */
     private boolean checkElementState(WebElement element, ElementState state) {
         return switch (state) {
             case enabled -> element.isEnabled();

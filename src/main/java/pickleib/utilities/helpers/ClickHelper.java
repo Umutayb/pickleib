@@ -22,6 +22,14 @@ public class ClickHelper {
     private final long elementTimeout;
     private final Printer log = new Printer(ClickHelper.class);
 
+    /**
+     * Constructs a ClickHelper with the required WebDriver dependencies.
+     *
+     * @param driver         the RemoteWebDriver instance
+     * @param wait           the FluentWait instance used for element waits
+     * @param scroller       the scroll function used to scroll to elements
+     * @param elementTimeout maximum time in milliseconds to wait for element interactions
+     */
     public ClickHelper(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait, ScrollFunction scroller, long elementTimeout) {
         this.driver = driver;
         this.wait = wait;
@@ -29,10 +37,21 @@ public class ClickHelper {
         this.elementTimeout = elementTimeout;
     }
 
+    /**
+     * Clicks the given element without scrolling.
+     *
+     * @param element the element to click
+     */
     public void clickElement(WebElement element) {
         clickElement(element, false);
     }
 
+    /**
+     * Waits for the element to be clickable, then clicks it with optional scroll.
+     *
+     * @param element the element to click
+     * @param scroll  if true, scrolls to the element before clicking
+     */
     public void clickElement(WebElement element, boolean scroll) {
         RetryPolicy.execute(() -> {
             wait.until(ExpectedConditions.elementToBeClickable(element));
@@ -41,6 +60,11 @@ public class ClickHelper {
         }, elementTimeout);
     }
 
+    /**
+     * Clicks the element if present, suppressing absence-related exceptions. Does not scroll.
+     *
+     * @param element the element to click
+     */
     public void clickButtonIfPresent(WebElement element) {
         clickButtonIfPresent(element, false);
     }
@@ -61,6 +85,12 @@ public class ClickHelper {
         }
     }
 
+    /**
+     * Clicks the element if present, logging the cause message on absence. Non-absence exceptions propagate.
+     *
+     * @param element the element to click
+     * @param scroll  if true, scrolls to the element before clicking
+     */
     public void clickIfPresent(WebElement element, boolean scroll) {
         try {
             clickElement(element, scroll);
@@ -77,6 +107,11 @@ public class ClickHelper {
         return cause instanceof NoSuchElementException || cause instanceof StaleElementReferenceException;
     }
 
+    /**
+     * Clicks the element if present without scrolling.
+     *
+     * @param element the element to click
+     */
     public void clickIfPresent(WebElement element) {
         clickIfPresent(element, false);
     }
@@ -91,6 +126,13 @@ public class ClickHelper {
         builder.moveToElement(element, 0, 0).click().build().perform();
     }
 
+    /**
+     * Clicks the element at a specific pixel offset from its center.
+     *
+     * @param element  the element to click
+     * @param xOffset  horizontal offset in pixels from the element's center
+     * @param yOffset  vertical offset in pixels from the element's center
+     */
     public void clickAtAnOffset(WebElement element, int xOffset, int yOffset) {
         Actions builder = new Actions(driver);
         builder.moveToElement(element, xOffset, yOffset).click().build().perform();

@@ -31,6 +31,14 @@ public class InputHelper {
     private final long elementTimeout;
     private final Printer log = new Printer(InputHelper.class);
 
+    /**
+     * Constructs an InputHelper with the required WebDriver dependencies.
+     *
+     * @param driver         the RemoteWebDriver instance
+     * @param wait           the FluentWait instance used for element waits
+     * @param scroller       the scroll function used to scroll to elements
+     * @param elementTimeout maximum time in milliseconds to wait for element interactions
+     */
     public InputHelper(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait, ScrollFunction scroller, long elementTimeout) {
         this.driver = driver;
         this.wait = wait;
