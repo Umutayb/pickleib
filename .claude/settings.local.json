@@ -27,7 +27,8 @@
       "mcp__plugin_playwright_playwright__browser_evaluate",
       "Bash(mvn test-compile:*)",
       "Bash(gh auth:*)",
-      "Bash(mvn install:*)"
+      "Bash(mvn install:*)",
+      "mcp__plugin_playwright_playwright__browser_run_code"
     ]
   }
 }

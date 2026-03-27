@@ -42,12 +42,24 @@ import static utils.arrays.ArrayUtilities.getRandomItemFrom;
  */
 public class BuiltInSteps extends InteractionBase implements PageRepository {
 
+    private static ElementRepository elementRepository;
+
     public BuiltInSteps() {
         super(true, true);
     }
 
+    /**
+     * Sets the element repository used by all built-in steps.
+     * Call this from your project's Hooks or step class to use a custom repository
+     * instead of the PickleibRunner's auto-discovered registry.
+     */
+    public static void setElementRepository(ElementRepository repository) {
+        elementRepository = repository;
+    }
+
     @Override
     public ElementRepository getElementRepository() {
+        if (elementRepository != null) return elementRepository;
         return PickleibRunner.getRegistry();
     }
 
@@ -79,7 +91,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         webInteractions.getUrl(url);
     }
 
-    @Given("Navigate to the test page")
+    @Given("Navigate to test url")
     public void navigateToTestPage() {
         String url = ContextStore.get("test-url", "");
         webInteractions.navigate(url);
