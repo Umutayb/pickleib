@@ -24,11 +24,61 @@ Pickleib simplifies test design by offering ready-to-use driver management, powe
 * **❤️‍🩹 Self-Healing Utilities:** Built-in retry mechanisms for `StaleElementReferenceException` and intelligent `FluentWait` synchronization.
 * **🧳 Context Management:** A global `ContextStore` for sharing data between steps and configuring run-time environment variables.
 * **📝 Verbose Logging:** Automatically logs interactions (e.g., "Clicking 'loginButton' on 'LoginPage'") for easier debugging.
+* **🤖 Annotation-Driven Runner:** Use `@Pickleib`, `@PageObject`, `@ContextValue` annotations to eliminate boilerplate — no ObjectRepository class needed, no page object inheritance required.
+* **📋 Built-in Step Definitions:** 67 pre-built Cucumber steps covering click, fill, verify, scroll, wait, context, and more. Add `pickleib.steps` to your glue path and skip writing a CommonSteps class entirely.
+* **🔄 Centralized Retry Policy:** All element interactions use a unified `RetryPolicy` with consistent timeout handling, logging, and exception management.
+* **🧵 Thread-Safe Parallel Execution:** Driver singletons use `ThreadLocal` — run tests in parallel without driver interference.
 * **🛠️ Cross-Functional Testing:**
   * 🔌 API testing via **Wasapi** (Retrofit)
   * 🗄️ Database interactions using **JDBC**
   * 📧 **Built in email client:** sending, receiving emails & HTML verification
   * 📊 **Web Data Layer Validation:** Verify events, values, and structures directly.
+
+---
+
+## 🏛️ Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   Your Test Project                  │
+│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐ │
+│  │ Feature  │  │  Hooks   │  │  Page Objects     │ │
+│  │  Files   │  │          │  │  (@PageObject or  │ │
+│  │ (.feature)│ │(@Before/ │  │  @FindBy classes) │ │
+│  │          │  │ @After)  │  │                   │ │
+│  └────┬─────┘  └────┬─────┘  └────────┬──────────┘ │
+└───────┼──────────────┼─────────────────┼────────────┘
+        │              │                 │
+┌───────┼──────────────┼─────────────────┼────────────┐
+│       ▼              ▼                 ▼   Pickleib │
+│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐ │
+│  │BuiltIn  │  │PickleibW │  │ PageObjectRegistry│ │
+│  │Steps    │  │ebDriver  │  │ or PageObjectJson │ │
+│  │(67 steps)│  │(ThreadL) │  │ (ElementRepository)│ │
+│  └────┬─────┘  └──────────┘  └────────┬──────────┘ │
+│       │                               │            │
+│       ▼                               ▼            │
+│  ┌──────────────────────────────────────────────┐  │
+│  │           InteractionBase                     │  │
+│  │    ┌──────────────┐  ┌────────────────┐      │  │
+│  │    │WebInteractions│  │PlatformInteract│      │  │
+│  │    │  (Selenium)   │  │  (Appium)      │      │  │
+│  │    └──────┬───────┘  └───────┬────────┘      │  │
+│  └───────────┼──────────────────┼───────────────┘  │
+│              │                  │                   │
+│  ┌───────────▼──────────────────▼───────────────┐  │
+│  │              Utility Helpers                  │  │
+│  │  ┌─────────┐ ┌──────────┐ ┌───────────────┐ │  │
+│  │  │ ClickHlp │ │InputHelp │ │ElementStateHlp│ │  │
+│  │  └────┬────┘ └────┬─────┘ └───────┬───────┘ │  │
+│  └───────┼───────────┼───────────────┼──────────┘  │
+│          └───────────┼───────────────┘              │
+│                      ▼                              │
+│             ┌──────────────┐                        │
+│             │  RetryPolicy │                        │
+│             └──────────────┘                        │
+└─────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -87,9 +137,72 @@ public class Hooks {
 
 ## 📖 Usage: Defining Elements & Steps
 
-Pickleib allows you to structure your Object Repository in two ways. Choose the one that fits your team's workflow.
+Pickleib allows you to structure your Object Repository in multiple ways. Choose the one that fits your team's workflow.
 
-### Method 1: The "Low-Code" JSON Repository (Recommended)
+### Method 1: Annotation-Driven with Built-in Steps (Recommended)
+
+Use Pickleib annotations and built-in step definitions — zero boilerplate.
+
+**1. Annotate your Page Objects**
+
+```java
+@PageObject
+public class LoginPage {
+    @FindBy(id = "user-name")
+    public WebElement usernameInput;
+
+    @FindBy(css = "#login-button")
+    public WebElement loginButton;
+}
+```
+
+No inheritance needed. No ObjectRepository. Just annotate and go.
+
+**2. Wire in Hooks**
+
+```java
+public class Hooks {
+    @Before(order = 0)
+    public void setup() {
+        PickleibWebDriver.initialize();
+        ElementRepository repo = new PageObjectDesign<>(ObjectRepository.class).getElementRepository();
+        BuiltInSteps.setElementRepository(repo);
+    }
+
+    @After
+    public void teardown() {
+        PickleibWebDriver.terminate();
+    }
+}
+```
+
+**3. Add `pickleib.steps` to your glue path**
+
+```java
+@CucumberOptions(
+    features = "src/test/resources/features",
+    glue = {"steps", "pickleib.steps"}
+)
+public class TestRunner {}
+```
+
+**4. Write feature files — steps just work**
+
+```gherkin
+@Web-UI
+Scenario: Login flow
+  * Navigate to url: https://example.com
+  * Fill input usernameInput on the LoginPage with text: admin
+  * Fill input passwordInput on the LoginPage with text: secret
+  * Click the loginButton on the LoginPage
+  * Verify the text of welcomeMessage on the DashboardPage contains: Welcome
+```
+
+67 built-in steps are available immediately — no CommonSteps class needed.
+
+---
+
+### Method 2: The "Low-Code" JSON Repository
 
 Define your elements in a JSON file. Pickleib will parse this file at runtime to locate elements, reducing Java boilerplate.
 
@@ -132,10 +245,10 @@ public class CommonSteps extends PickleibSteps {
     @When("I click the {string} on the {string} page")
     public void clickTheButton(String buttonName, String pageName) {
         log.info("Clicking the " + buttonName + " on the " + pageName);
-        
+
         // Acquire element dynamically from the JSON definition
         WebElement button = getElementRepository().acquireElementFromPage(buttonName, pageName);
-        
+
         // Perform interaction
         getInteractions(button).clickElement(button);
     }
@@ -144,7 +257,7 @@ public class CommonSteps extends PickleibSteps {
 
 ---
 
-### Method 2: Classic Page Object Model
+### Method 3: Classic Page Object Model
 
 Use standard Java classes extending `PickleibPageObject` and register them in a central repository class.
 
@@ -158,7 +271,7 @@ import org.openqa.selenium.support.FindBy;
 import pickleib.web.PickleibPageObject;
 
 public class LoginPage extends PickleibPageObject {
-    
+
     @FindBy(id = "user-name")
     public WebElement usernameInput;
 
@@ -178,7 +291,7 @@ import pages.LoginPage;
 import pickleib.utilities.interfaces.repository.PageObjectRepository;
 
 public class ObjectRepository implements PageObjectRepository {
-    
+
     // The framework will detect these fields via reflection
     public LoginPage loginPage;
 }
@@ -201,10 +314,10 @@ public class CommonSteps extends PickleibSteps {
     @When("I click the {string} on the {string} page")
     public void clickTheButton(String buttonName, String pageName) {
         log.info("Clicking the " + buttonName + " on the " + pageName);
-        
+
         // Acquire element dynamically via reflection
         WebElement button = getElementRepository().acquireElementFromPage(buttonName, pageName);
-        
+
         getInteractions(button).clickElement(button);
     }
 }
@@ -225,6 +338,33 @@ public class HomePageSteps {
     }
 }
 ```
+
+---
+
+## 🏷️ Annotations
+
+Pickleib provides annotations to reduce boilerplate and wire up your test infrastructure declaratively.
+
+### `@PageObject`
+Mark any class as a page object — no inheritance required:
+```java
+@PageObject
+public class LoginPage {
+    @FindBy(id = "user-name")
+    public WebElement usernameInput;
+}
+```
+
+### `@ContextValue`
+Inject values from the `ContextStore` directly into fields:
+```java
+@ContextValue("test-url")
+private String testUrl;
+
+@ContextValue(value = "timeout", defaultValue = "15000")
+private int timeout;
+```
+
 ---
 
 ## 🏃 Execution
@@ -257,6 +397,40 @@ import org.junit.runner.RunWith;
 )
 public class TestRunner {}
 ```
+
+### CLI Execution
+
+Run tests via Maven, filtering by tags and browser.
+
+**Run Tests**
+```shell
+  mvn clean test -Dcucumber.filter.tags="@Web-UI" -Dbrowser=chrome
+```
+
+### 🧵 Parallel Execution
+
+Pickleib's driver singletons use `ThreadLocal`, making parallel test execution safe out of the box.
+
+**Maven Surefire (JUnit 5):**
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <configuration>
+        <parallel>methods</parallel>
+        <threadCount>4</threadCount>
+    </configuration>
+</plugin>
+```
+
+**Cucumber Parallel:**
+```shell
+mvn test -Dcucumber.execution.parallel.enabled=true -Dcucumber.execution.parallel.config.fixed.parallelism=4
+```
+
+Each thread gets its own driver instance — no shared state, no interference.
+
+---
 
 ## ⚙️ Session Configuration
 
@@ -385,14 +559,6 @@ Create a JSON file inside the folder specified by the `config` property. The fil
 
 When you initialize `PickleibAppiumDriver`, it will looks for `InventoryApp.json` in the configurations folder, parse these capabilities, and start the Appium service on port `4723`.
 
-### CLI Execution
-
-Run tests via Maven, filtering by tags and browser.
-
-**Run Tests**
-```shell
-  mvn clean test -Dcucumber.filter.tags="@Web-UI" -Dbrowser=chrome
-```
 ---
 
 ## 💻 Local Development
@@ -405,7 +571,7 @@ This repository includes a sample test website for you to practice against.
     ```
 
 2.  **Access the Site:**
-    👉 **[http://localhost:8080](http://localhost:8080)**
+    👉 **[http://localhost:7457](http://localhost:7457)**
 
 ---
 
