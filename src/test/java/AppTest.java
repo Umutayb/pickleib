@@ -544,6 +544,45 @@ public class AppTest {
         webInteractions.verifyUrlContains("forms");
     }
 
+    // ==================== Drag and Drop Tests ====================
+
+    @Test
+    public void dragDropToActionTest() {
+        log.info("webInteractions.dragDropToAction() test");
+        webInteractions.navigate(testWebsiteUrl + "droppable");
+        List<WebElement> sourceItems = objectRepository.acquireElementsFromPage("sourceItems", "droppablePage");
+        Assertions.assertFalse(sourceItems.isEmpty(), "No source items found!");
+        WebElement sourceItem = sourceItems.get(0);
+        WebElement redZone = objectRepository.acquireElementFromPage("redZone", "droppablePage");
+        webInteractions.dragDropToAction(sourceItem, redZone);
+        WebElement statusText = objectRepository.acquireElementFromPage("statusText", "droppablePage");
+        Assertions.assertTrue(statusText.getText().contains("Dropped"), "dragDropToAction() test failed - status should indicate drop!");
+    }
+
+    @Test
+    public void dragDropByActionTest() {
+        log.info("webInteractions.dragDropByAction() test");
+        webInteractions.navigate(testWebsiteUrl + "draggable");
+        WebElement blockA = objectRepository.acquireElementFromPage("blockA", "draggablePage");
+        WebElement statusText = objectRepository.acquireElementFromPage("statusText", "draggablePage");
+        Assertions.assertTrue(statusText.getText().contains("none"), "Initial status should contain 'none'!");
+        webInteractions.dragDropByAction(blockA, 100, 50);
+        List<WebElement> blocks = objectRepository.acquireElementsFromPage("blocks", "draggablePage");
+        Assertions.assertFalse(blocks.isEmpty(), "dragDropByAction() test failed - blocks should still be present!");
+    }
+
+    @Test
+    public void dragDropActionTest() {
+        log.info("webInteractions.dragDropAction() test");
+        webInteractions.navigate(testWebsiteUrl + "draggable");
+        WebElement blockB = objectRepository.acquireElementFromPage("blockB", "draggablePage");
+        WebElement statusText = objectRepository.acquireElementFromPage("statusText", "draggablePage");
+        Assertions.assertTrue(statusText.getText().contains("none"), "Initial status should contain 'none'!");
+        webInteractions.dragDropAction(blockB, 80, 60);
+        List<WebElement> blocks = objectRepository.acquireElementsFromPage("blocks", "draggablePage");
+        Assertions.assertFalse(blocks.isEmpty(), "dragDropAction() test failed - blocks should still be present!");
+    }
+
     // ==================== Element State: absent ====================
 
     @Test

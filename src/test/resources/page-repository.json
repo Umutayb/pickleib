@@ -253,24 +253,62 @@
       "platform": "web",
       "elements": [
         {
-          "elementName": "title",
+          "elementName": "pageTitle",
           "selectors": { "web": [{ "css": "main h1" }] }
-        },
-        {
-          "elementName": "sourceItems",
-          "selectors": { "web": [{ "css": ".drag-item" }] }
-        },
-        {
-          "elementName": "dropZones",
-          "selectors": { "web": [{ "css": ".drop-zone" }] }
         },
         {
           "elementName": "statusText",
           "selectors": { "web": [{ "css": ".status-text" }] }
         },
         {
+          "elementName": "sourceItems",
+          "selectors": { "web": [{ "css": ".drop-item" }] }
+        },
+        {
+          "elementName": "redZone",
+          "selectors": { "web": [{ "css": "[data-testid='droppable-zone-red']" }] }
+        },
+        {
+          "elementName": "blueZone",
+          "selectors": { "web": [{ "css": "[data-testid='droppable-zone-blue']" }] }
+        },
+        {
+          "elementName": "greenZone",
+          "selectors": { "web": [{ "css": "[data-testid='droppable-zone-green']" }] }
+        },
+        {
+          "elementName": "dropZones",
+          "selectors": { "web": [{ "css": ".drop-zone" }] }
+        },
+        {
           "elementName": "resetButton",
-          "selectors": { "web": [{ "css": "button" }] }
+          "selectors": { "web": [{ "css": "[data-testid='droppable-reset']" }] }
+        }
+      ]
+    },
+    {
+      "name": "DraggablePage",
+      "platform": "web",
+      "elements": [
+        {
+          "elementName": "pageTitle",
+          "selectors": { "web": [{ "css": "main h1" }] }
+        },
+        {
+          "elementName": "statusText",
+          "selectors": { "web": [{ "css": ".status-text" }] }
+        },
+        {
+          "elementName": "blocks",
+          "selectors": { "web": [{ "css": ".drag-item" }] }
+        },
+        {
+          "elementName": "blockA",
+          "selectors": { "web": [{ "css": "[data-testid='draggable-item-1']" }] }
+        },
+        {
+          "elementName": "blockB",
+          "selectors": { "web": [{ "css": "[data-testid='draggable-item-2']" }] }
         }
       ]
     }
