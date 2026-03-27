@@ -109,7 +109,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         webInteractions.refresh();
     }
 
-    @Given("^Navigate browser (BACKWARDS|FORWARDS)$")
+    @Given("^Navigate browser (backwards|forwards|BACKWARDS|FORWARDS)$")
     public void browserNavigate(Navigation direction) {
         webInteractions.navigateBrowser(direction);
     }
