@@ -55,7 +55,11 @@ public abstract class PlatformUtilities extends Utilities {
      *                            the method retries the centering operation.
      *                            If the retry timeout is exceeded, the WebDriverException is thrown.
      */
-    //TODO: Implement iterative scroll that will swipe or center depending on if the element can be found in view.
+    /**
+     * Centers the element by iteratively swiping toward it.
+     * First attempts a calculated scroll. If the element is still not in view,
+     * uses RetryPolicy to iteratively swipe until the element is within the viewport.
+     */
     public static WebElement centerElement(WebElement element, RemoteWebDriver driver) {
         Point center = new Point(
                 driver.manage().window().getSize().getWidth() / 2,
@@ -68,6 +72,7 @@ public abstract class PlatformUtilities extends Utilities {
         int horizontalScrollDist = element.getLocation().getX() - driver.manage().window().getSize().getWidth() / 2;
         int horizontalScrollStep = driver.manage().window().getSize().getWidth() / 3;
 
+        // Initial calculated scroll
         for (int i = 0; i <= verticalScrollDist / verticalScrollStep; i++) {
             if (i == verticalScrollDist / verticalScrollStep) {
                 swipeFromCenter(
@@ -87,6 +92,17 @@ public abstract class PlatformUtilities extends Utilities {
                 );
             }
         }
+
+        // Iterative correction: if element is still not centered, retry with smaller swipes
+        RetryPolicy.pollUntil(() -> {
+            int currentDist = element.getLocation().getY() - driver.manage().window().getSize().getHeight() / 2;
+            if (Math.abs(currentDist) < verticalScrollStep / 2) return true;
+            swipeFromCenter(
+                    new Point(center.getX(), center.getY() + currentDist / 2),
+                    driver
+            );
+            return false;
+        }, 5000);
 
         return element;
     }

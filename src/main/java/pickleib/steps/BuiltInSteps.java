@@ -298,8 +298,8 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
     // ─── Scroll / Center ────────────────────────────────────────────────
 
     @Given("^(?:Scroll|Swipe) (up|down|left|right) using (mobile|web) driver$")
-    public void scrollTo(Direction direction, DriverFactory.DriverType driverType) {
-        getInteractions(driverType).scrollInDirection(direction);
+    public void scrollTo(Direction direction, String driverType) {
+        getInteractions(getType(driverType)).scrollInDirection(direction);
     }
 
     @Given("^(?:Scroll|Swipe) until listed (.+?(?:\\s+.+?)*) element from (\\w+) list is found on the (\\w+)$")
@@ -309,8 +309,8 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
     }
 
     @Given("^(?:Scroll|Swipe) until element with exact text (.+?(?:\\s+.+?)*) is found using (web|mobile) driver$")
-    public void swipeUntilElementFound(String elementText, DriverFactory.DriverType driverType) {
-        getInteractions(driverType).scrollUntilFound(elementText);
+    public void swipeUntilElementFound(String elementText, String driverType) {
+        getInteractions(getType(driverType)).scrollUntilFound(elementText);
     }
 
     @Given("Center the {} on the {}")
