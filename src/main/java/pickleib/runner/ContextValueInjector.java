@@ -9,18 +9,26 @@ public class ContextValueInjector {
 
     private static final Printer log = new Printer(ContextValueInjector.class);
 
+    /**
+     * Injects @ContextValue-annotated fields on the given instance.
+     * Scans the instance's class hierarchy (including superclasses) for annotated fields.
+     */
     public static void injectFields(Object instance) {
-        for (Field field : instance.getClass().getDeclaredFields()) {
-            ContextValue annotation = field.getAnnotation(ContextValue.class);
-            if (annotation == null) continue;
+        Class<?> clazz = instance.getClass();
+        while (clazz != null && clazz != Object.class) {
+            for (Field field : clazz.getDeclaredFields()) {
+                ContextValue annotation = field.getAnnotation(ContextValue.class);
+                if (annotation == null) continue;
 
-            String value = ContextStore.get(annotation.value(), annotation.defaultValue());
-            try {
-                field.setAccessible(true);
-                field.set(instance, convertValue(value, field.getType()));
-            } catch (IllegalAccessException e) {
-                log.warning("Failed to inject @ContextValue for field: " + field.getName());
+                String value = ContextStore.get(annotation.value(), annotation.defaultValue());
+                try {
+                    field.setAccessible(true);
+                    field.set(instance, convertValue(value, field.getType()));
+                } catch (IllegalAccessException e) {
+                    log.warning("Failed to inject @ContextValue for field: " + field.getName());
+                }
             }
+            clazz = clazz.getSuperclass();
         }
     }
 

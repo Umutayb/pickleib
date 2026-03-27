@@ -15,6 +15,8 @@ import pickleib.utilities.helpers.ClickHelper;
 import pickleib.utilities.helpers.DragDropHelper;
 import pickleib.utilities.helpers.ElementStateHelper;
 import pickleib.utilities.helpers.InputHelper;
+import pickleib.annotations.ContextValue;
+import pickleib.runner.ContextValueInjector;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
 import utils.Printer;
 import utils.StringUtilities;
@@ -50,14 +52,19 @@ public abstract class Utilities {
     public FluentWait<RemoteWebDriver> wait;
     public ScrollFunction scroller;
 
-    public long elementTimeout = ContextStore.getInt("element-timeout", 15000);
-    public long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
+    @ContextValue(value = "element-timeout", defaultValue = "15000")
+    public long elementTimeout;
+
+    @ContextValue(value = "driver-timeout", defaultValue = "15000")
+    public long driverTimeout;
     protected ClickHelper clickHelper;
     protected InputHelper inputHelper;
     protected ElementStateHelper elementStateHelper;
     protected DragDropHelper dragDropHelper;
 
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
+        ContextValueInjector.injectFields(this);
+        this.driverTimeout = this.driverTimeout / 1000;
         this.driver = driver;
         this.wait = wait;
         this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
@@ -67,6 +74,8 @@ public abstract class Utilities {
     }
 
     public Utilities(RemoteWebDriver driver, ScrollFunction scroller) {
+        ContextValueInjector.injectFields(this);
+        this.driverTimeout = this.driverTimeout / 1000;
         this.driver = driver;
         this.scroller = scroller;
         if (driver != null)
