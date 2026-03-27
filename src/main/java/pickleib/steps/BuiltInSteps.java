@@ -109,7 +109,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         webInteractions.refresh();
     }
 
-    @Given("^Navigate browser (backwards|forwards|BACKWARDS|FORWARDS)$")
+    @Given("^Navigate browser (backwards|forwards)$")
     public void browserNavigate(Navigation direction) {
         webInteractions.navigateBrowser(direction);
     }
@@ -189,7 +189,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         getInteractions(element).clickElement(element, buttonName, pageName, !isPlatformElement(element));
     }
 
-    @Given("^(?:Click|Tap) button with (.+?(?:\\s+.+?)*) text(?: using (Mobile|Web) driver)?$")
+    @Given("^(?:Click|Tap) button with (.+?(?:\\s+.+?)*) text(?: using (mobile|web) driver)?$")
     public void clickWithText(String text, String driverType) {
         getInteractions(getType(driverType)).clickByText(text);
     }
@@ -264,7 +264,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         );
     }
 
-    @Given("^Fill form input on the (\\w+)(?: using (Mobile|Web) driver)?$")
+    @Given("^Fill form input on the (\\w+)(?: using (mobile|web) driver)?$")
     public void fillForm(String pageName, String driverType, DataTable table) {
         List<ElementBundle<String>> inputBundles = getElementRepository().acquireElementList(table.asMaps(), pageName);
         PolymorphicUtilities interactions = driverType != null ?
@@ -297,7 +297,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
 
     // ─── Scroll / Center ────────────────────────────────────────────────
 
-    @Given("^(?:Scroll|Swipe) (up|down|left|right) using (Mobile|Web) driver$")
+    @Given("^(?:Scroll|Swipe) (up|down|left|right) using (mobile|web) driver$")
     public void scrollTo(Direction direction, DriverFactory.DriverType driverType) {
         getInteractions(driverType).scrollInDirection(direction);
     }
@@ -308,7 +308,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         getInteractions(elements.get(0)).scrollInList(elementText, elements);
     }
 
-    @Given("^(?:Scroll|Swipe) until element with exact text (.+?(?:\\s+.+?)*) is found using (Web|Mobile) driver$")
+    @Given("^(?:Scroll|Swipe) until element with exact text (.+?(?:\\s+.+?)*) is found using (web|mobile) driver$")
     public void swipeUntilElementFound(String elementText, DriverFactory.DriverType driverType) {
         getInteractions(driverType).scrollUntilFound(elementText);
     }
@@ -345,7 +345,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         getInteractions(element).verifyElementContainsText(element, elementName, pageName, expectedText);
     }
 
-    @Given("^Verify absence of element (\\w+) on the (\\w+)(?: using (Mobile|Web) driver)?$")
+    @Given("^Verify absence of element (\\w+) on the (\\w+)(?: using (mobile|web) driver)?$")
     public void verifyAbsence(String elementName, String pageName, String driverType) {
         WebElement element = getElementRepository().acquireElementFromPage(elementName, pageName);
         PolymorphicUtilities interactions = driverType != null ?
@@ -491,7 +491,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         PolymorphicUtilities.waitFor(duration);
     }
 
-    @Given("^Wait for absence of element (\\w+) on the (\\w+)(?: using (Mobile|Web) driver)?$")
+    @Given("^Wait for absence of element (\\w+) on the (\\w+)(?: using (mobile|web) driver)?$")
     public void waitUntilAbsence(String elementName, String pageName, String driverType) {
         WebElement element = getElementRepository().acquireElementFromPage(elementName, pageName);
         PolymorphicUtilities interactions = driverType != null ?
@@ -599,7 +599,7 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
 
     // ─── Element Bundle Interaction ─────────────────────────────────────
 
-    @Given("^Interact with element on the (\\w+) of (Mobile|Web) driver?$")
+    @Given("^Interact with element on the (\\w+) of (mobile|web) driver?$")
     public void pageElementInteraction(String pageName, String driverType, DataTable specifications) {
         List<ElementBundle<Map<String, String>>> bundles = getElementRepository().acquireElementBundlesFromPage(
                 pageName,
