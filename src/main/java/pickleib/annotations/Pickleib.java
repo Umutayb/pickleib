@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Pickleib {
-    String[] scanPackages() default {};
+    String[] scan() default {};
     boolean builtInSteps() default true;
     String pageRepository() default "";
 }

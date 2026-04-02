@@ -504,10 +504,15 @@ docs/
   app-context.md                     # Living app knowledge base
 ```
 
-### `TestRunner.java` (JSON approach — no CommonSteps needed)
+### `TestRunner.java`
+
+`@Pickleib` auto-detects the element repository. No parameters needed if you follow conventions:
+- JSON approach: place `page-repository.json` at `src/test/resources/page-repository.json`
+- Page Object approach: put `@PageObject` classes in the `pages` package
+
 ```java
 @RunWith(Cucumber.class)
-@Pickleib(pageRepository = "src/test/resources/page-repository.json")
+@Pickleib  // auto-detects JSON repo or page objects
 @ExtendWith(PickleibRunner.class)
 @CucumberOptions(
     features = "src/test/resources/features",
@@ -516,16 +521,10 @@ docs/
 public class TestRunner {}
 ```
 
-### `TestRunner.java` (Page Object approach)
+Override when needed:
 ```java
-@RunWith(Cucumber.class)
-@Pickleib(scanPackages = {"pages"})
-@ExtendWith(PickleibRunner.class)
-@CucumberOptions(
-    features = "src/test/resources/features",
-    glue = {"steps", "pickleib.steps"}
-)
-public class TestRunner {}
+@Pickleib(pageRepository = "custom/path/repo.json")  // explicit JSON path
+@Pickleib(scan = {"com.myapp.pages", "com.myapp.screens"})  // explicit package scan
 ```
 
 ### `Hooks.java`

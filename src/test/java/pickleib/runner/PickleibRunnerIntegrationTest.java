@@ -9,7 +9,7 @@ import pickleib.annotations.Pickleib;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Pickleib(scanPackages = "pickleib.runner")
+@Pickleib(scan = "pickleib.runner")
 @ExtendWith(PickleibRunner.class)
 class PickleibRunnerIntegrationTest {
 

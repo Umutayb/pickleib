@@ -129,7 +129,7 @@ Scenario: Login flow
 
 #### Step 4: Configure the Test Runner
 
-Use `@Pickleib(pageRepository = ...)` to wire the JSON file automatically — no `CommonSteps` class needed:
+`@Pickleib` auto-detects `page-repository.json` at the default location — no `CommonSteps` class needed:
 
 ```java
 import io.cucumber.junit.Cucumber;
@@ -140,7 +140,7 @@ import pickleib.annotations.Pickleib;
 import pickleib.runner.PickleibRunner;
 
 @RunWith(Cucumber.class)
-@Pickleib(pageRepository = "src/test/resources/page-repository.json")
+@Pickleib
 @ExtendWith(PickleibRunner.class)
 @CucumberOptions(
     features = "src/test/resources/features",
@@ -359,23 +359,25 @@ Use `CONTEXT-{key}` in any step value to reference stored context values:
 ## 🏷️ Annotations
 
 ### `@Pickleib`
-Marks a test class for automatic page object scanning and registration. Used with `PickleibRunner`:
+Marks a test class for automatic element repository setup. When used without parameters, auto-detects the approach:
+1. Looks for `src/test/resources/page-repository.json` — if found, uses JSON repository
+2. Otherwise scans for `@PageObject`/`@ScreenObject` classes in the `pages` package
+3. If neither is found, logs a warning with setup instructions
+
 ```java
-// Page Object approach
-@Pickleib(scanPackages = {"pages", "screens"})
+@Pickleib  // auto-detect — just works
 @ExtendWith(PickleibRunner.class)
 public class MyTest { ... }
 
-// JSON Repository approach
-@Pickleib(pageRepository = "src/test/resources/page-repository.json")
-@ExtendWith(PickleibRunner.class)
-public class MyTest { ... }
+// Or explicit configuration:
+@Pickleib(scan = {"com.myapp.pages", "com.myapp.screens"})
+@Pickleib(pageRepository = "custom/path/repo.json")
 ```
 
 | Attribute | Description | Default |
 | :--- | :--- | :--- |
-| `scanPackages` | Packages to scan for `@PageObject` / `@ScreenObject` classes | `{}` (infers from test class package) |
-| `pageRepository` | Path to `page-repository.json` (JSON approach) | `""` (disabled) |
+| `scan` | Packages to scan for `@PageObject` / `@ScreenObject` classes | `{}` (auto: `pages`) |
+| `pageRepository` | Path to `page-repository.json` | `""` (auto: `src/test/resources/page-repository.json`) |
 | `builtInSteps` | Enable built-in Cucumber step definitions | `true` |
 
 ### `@PageObject`
