@@ -32,8 +32,8 @@ public class PickleibRunner implements BeforeAllCallback, TestInstancePostProces
 
     private static final Printer log = new Printer(PickleibRunner.class);
     private static final PageObjectRegistry registry = new PageObjectRegistry();
-    private static final String DEFAULT_PAGE_REPOSITORY = "src/test/resources/page-repository.json";
-    private static final String DEFAULT_SCAN_PACKAGE = "pages";
+    public static final String DEFAULT_PAGE_REPOSITORY = "src/test/resources/page-repository.json";
+    public static final String DEFAULT_SCAN_PACKAGE = "pages";
 
     public static PageObjectRegistry getRegistry() {
         return registry;
@@ -45,8 +45,9 @@ public class PickleibRunner implements BeforeAllCallback, TestInstancePostProces
         Pickleib annotation = testClass.getAnnotation(Pickleib.class);
         if (annotation == null) return;
 
-        // Wire JSON page repository — explicit or auto-detected
+        // Explicit configuration takes priority
         String pageRepository = annotation.pageRepository();
+        String[] packages = annotation.scan();
         boolean jsonLoaded = false;
 
         if (!pageRepository.isEmpty()) {
@@ -54,22 +55,17 @@ public class PickleibRunner implements BeforeAllCallback, TestInstancePostProces
             jsonLoaded = true;
         }
 
-        // Scan for @PageObject/@ScreenObject classes
-        String[] packages = annotation.scan();
-        boolean explicitScan = packages.length > 0;
-
-        if (!explicitScan && !jsonLoaded) {
-            // Auto-detect: try JSON first, then default package scan
-            if (new File(DEFAULT_PAGE_REPOSITORY).exists()) {
-                loadJsonRepository(DEFAULT_PAGE_REPOSITORY);
-                jsonLoaded = true;
-            } else {
-                packages = new String[]{DEFAULT_SCAN_PACKAGE};
-            }
+        if (packages.length > 0) {
+            scanAndRegister(packages);
         }
 
-        if (!jsonLoaded) {
-            scanAndRegister(packages);
+        // Auto-detect: scan page objects first, fall back to JSON
+        if (pageRepository.isEmpty() && packages.length == 0) {
+            scanAndRegister(new String[]{DEFAULT_SCAN_PACKAGE});
+            if (registry.size() == 0 && new File(DEFAULT_PAGE_REPOSITORY).exists()) {
+                loadJsonRepository(DEFAULT_PAGE_REPOSITORY);
+                jsonLoaded = true;
+            }
         }
 
         if (!jsonLoaded && registry.size() == 0) {

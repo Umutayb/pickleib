@@ -27,8 +27,8 @@ public class ContextValueInjector {
                 try {
                     field.setAccessible(true);
                     field.set(instance, convertValue(value, field.getType()));
-                } catch (IllegalAccessException e) {
-                    log.warning("Failed to inject @ContextValue for field: " + field.getName());
+                } catch (IllegalAccessException | IllegalArgumentException e) {
+                    log.warning("Failed to inject @ContextValue for field '" + field.getName() + "': " + e.getMessage());
                 }
             }
             clazz = clazz.getSuperclass();

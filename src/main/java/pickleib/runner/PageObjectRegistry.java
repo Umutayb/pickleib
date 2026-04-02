@@ -17,6 +17,7 @@ import utils.Printer;
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static utils.StringUtilities.firstLetterDeCapped;
 
@@ -25,7 +26,7 @@ public class PageObjectRegistry implements ElementRepository {
     private static final Printer log = new Printer(PageObjectRegistry.class);
 
     // Maps page name (lowercase) -> metadata
-    private final Map<String, PageObjectMetadata> registry = new HashMap<>();
+    private final Map<String, PageObjectMetadata> registry = new ConcurrentHashMap<>();
 
     // Thread-local cache of instantiated page objects
     private final ThreadLocal<Map<String, Object>> instances = ThreadLocal.withInitial(HashMap::new);
@@ -49,6 +50,11 @@ public class PageObjectRegistry implements ElementRepository {
 
     public int size() {
         return registry.size();
+    }
+
+    public String getPlatform(String pageName) {
+        PageObjectMetadata meta = registry.get(pageName.toLowerCase());
+        return meta != null ? meta.platform().name() : "web";
     }
 
     /**
@@ -173,7 +179,7 @@ public class PageObjectRegistry implements ElementRepository {
         List<ElementBundle<String>> bundles = new ArrayList<>();
         for (FormInput formInput : formInputs) {
             WebElement element = acquireElementFromPage(formInput.element(), pageName);
-            bundles.add(new ElementBundle<>(element, formInput.element(), "web", formInput.input()));
+            bundles.add(new ElementBundle<>(element, formInput.element(), getPlatform(pageName), formInput.input()));
         }
         return bundles;
     }
@@ -182,7 +188,7 @@ public class PageObjectRegistry implements ElementRepository {
     public ElementBundle<Map<String, String>> acquireElementBundleFromPage(
             String elementFieldName, String pageName, Map<String, String> specifications) {
         WebElement element = acquireElementFromPage(elementFieldName, pageName);
-        return new ElementBundle<>(element, elementFieldName, "web", specifications);
+        return new ElementBundle<>(element, elementFieldName, getPlatform(pageName), specifications);
     }
 
     @Override

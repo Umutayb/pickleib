@@ -51,9 +51,11 @@ import static utils.arrays.ArrayUtilities.getRandomItemFrom;
  */
 public class BuiltInSteps extends InteractionBase implements PageRepository {
 
-    private static final String DEFAULT_PAGE_REPOSITORY = "src/test/resources/page-repository.json";
-    private static ElementRepository elementRepository;
-    private static boolean autoDetected = false;
+    // Shared with PickleibRunner for consistent auto-detection
+    private static final String DEFAULT_PAGE_REPOSITORY = PickleibRunner.DEFAULT_PAGE_REPOSITORY;
+    private static final String DEFAULT_SCAN_PACKAGE = PickleibRunner.DEFAULT_SCAN_PACKAGE;
+    private static volatile ElementRepository elementRepository;
+    private static volatile boolean autoDetected = false;
 
     static {
         installSkill();
@@ -61,17 +63,14 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
 
     /** Extracts the Claude Code skill from the classpath to skills/pickleib/SKILL.md if not already present. */
     private static void installSkill() {
-        try {
-            Path target = Paths.get("skills", "pickleib", "SKILL.md");
-            if (Files.exists(target)) return;
+        Path target = Paths.get("skills", "pickleib", "SKILL.md");
+        if (Files.exists(target)) return;
 
-            InputStream resource = BuiltInSteps.class.getClassLoader()
-                    .getResourceAsStream("META-INF/claude/skills/pickleib/SKILL.md");
+        try (InputStream resource = BuiltInSteps.class.getClassLoader()
+                .getResourceAsStream("META-INF/claude/skills/pickleib/SKILL.md")) {
             if (resource == null) return;
-
             Files.createDirectories(target.getParent());
             Files.copy(resource, target, StandardCopyOption.REPLACE_EXISTING);
-            resource.close();
         } catch (IOException ignored) {}
     }
 
@@ -95,8 +94,12 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
         if (elementRepository != null) return elementRepository;
         if (PickleibRunner.getRegistry().size() > 0) return PickleibRunner.getRegistry();
         if (!autoDetected) {
-            autoDetected = true;
-            autoDetectRepository();
+            synchronized (BuiltInSteps.class) {
+                if (!autoDetected) {
+                    autoDetectRepository();
+                    autoDetected = true;
+                }
+            }
             if (elementRepository != null) return elementRepository;
         }
         return PickleibRunner.getRegistry();
