@@ -77,6 +77,8 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
 
     public BuiltInSteps() {
         super(true, true);
+        // Clear cached page object instances to avoid stale driver proxies between scenarios
+        PickleibRunner.getRegistry().clearInstances();
     }
 
     /**

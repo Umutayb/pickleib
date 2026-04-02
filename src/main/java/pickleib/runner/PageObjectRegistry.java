@@ -52,6 +52,14 @@ public class PageObjectRegistry implements ElementRepository {
     }
 
     /**
+     * Clears the cached page object instances for the current thread.
+     * Call this when the driver is re-initialized between scenarios to avoid stale element proxies.
+     */
+    public void clearInstances() {
+        instances.get().clear();
+    }
+
+    /**
      * Gets or creates a page object instance for the current thread.
      * Handles PageFactory initialization based on platform.
      */
