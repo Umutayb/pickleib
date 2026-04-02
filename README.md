@@ -40,43 +40,43 @@ Pickleib simplifies test design by offering ready-to-use driver management, powe
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   Your Test Project                  │
-│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐ │
-│  │ Feature  │  │  Hooks   │  │  Page Objects     │ │
-│  │  Files   │  │          │  │  (@PageObject or  │ │
-│  │ (.feature)│ │(@Before/ │  │  @FindBy classes) │ │
-│  │          │  │ @After)  │  │                   │ │
-│  └────┬─────┘  └────┬─────┘  └────────┬──────────┘ │
+│                  Your Test Project                  │
+│  ┌──────────┐   ┌──────────┐  ┌───────────────────┐ │
+│  │ Feature  │   │  Hooks   │  │  Page Objects     │ │
+│  │  Files   │   │          │  │  (@PageObject or  │ │
+│  │(.feature)│   │(@Before/ │  │  @FindBy classes) │ │
+│  │          │   │ @After)  │  │                   │ │
+│  └────┬─────┘   └────┬─────┘  └────────┬──────────┘ │
 └───────┼──────────────┼─────────────────┼────────────┘
         │              │                 │
 ┌───────┼──────────────┼─────────────────┼────────────┐
 │       ▼              ▼                 ▼   Pickleib │
-│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐ │
-│  │BuiltIn  │  │PickleibW │  │ PageObjectRegistry│ │
-│  │Steps    │  │ebDriver  │  │ or PageObjectJson │ │
-│  │(67 steps)│  │(ThreadL) │  │ (ElementRepository)│ │
-│  └────┬─────┘  └──────────┘  └────────┬──────────┘ │
-│       │                               │            │
-│       ▼                               ▼            │
-│  ┌──────────────────────────────────────────────┐  │
-│  │           InteractionBase                     │  │
-│  │    ┌──────────────┐  ┌────────────────┐      │  │
-│  │    │WebInteractions│  │PlatformInteract│      │  │
-│  │    │  (Selenium)   │  │  (Appium)      │      │  │
-│  │    └──────┬───────┘  └───────┬────────┘      │  │
-│  └───────────┼──────────────────┼───────────────┘  │
+│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐  │
+│  │BuiltIn   │  │Pickleib  │  │ PageObjectRegistry│  │
+│  │Steps     │  │WebDriver │  │ or PageObjectJson │  │
+│  │(67 steps)│  │(ThreadL) │  │(ElementRepository)│  │
+│  └────┬─────┘  └──────────┘  └────────┬──────────┘  │
+│       │                               │             │
+│       ▼                               ▼             │
+│  ┌──────────────────────────────────────────────┐   │
+│  │           InteractionBase                    │   │
+│  │    ┌───────────────┐  ┌────────────────┐     │   │
+│  │    │WebInteractions│  │PlatformInteract│     │   │
+│  │    │  (Selenium)   │  │    (Appium)    │     │   │
+│  │    └──────┬────────┘  └───────┬────────┘     │   │
+│  └───────────┼──────────────────┼───────────────┘   │
 │              │                  │                   │
-│  ┌───────────▼──────────────────▼───────────────┐  │
-│  │              Utility Helpers                  │  │
-│  │  ┌─────────┐ ┌──────────┐ ┌───────────────┐ │  │
-│  │  │ ClickHlp │ │InputHelp │ │ElementStateHlp│ │  │
-│  │  └────┬────┘ └────┬─────┘ └───────┬───────┘ │  │
-│  └───────┼───────────┼───────────────┼──────────┘  │
+│  ┌───────────▼──────────────────▼───────────────┐   │
+│  │              Utility Helpers                 │   │
+│  │  ┌─────────┐ ┌──────────┐ ┌───────────────┐  │   │
+│  │  │ClickHlp │ │InputHelp │ │ElementStateHlp│  │   │
+│  │  └────┬────┘ └────┬─────┘ └───────┬───────┘  │   │
+│  └───────┼───────────┼───────────────┼──────────┘   │
 │          └───────────┼───────────────┘              │
 │                      ▼                              │
-│             ┌──────────────┐                        │
-│             │  RetryPolicy │                        │
-│             └──────────────┘                        │
+│              ┌──────────────┐                       │
+│              │  RetryPolicy │                       │
+│              └──────────────┘                       │
 └─────────────────────────────────────────────────────┘
 ```
 
@@ -90,7 +90,7 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>io.github.umutayb</groupId>
     <artifactId>pickleib</artifactId>
-    <version>2.0.9</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
@@ -103,7 +103,7 @@ implementation 'io.github.umutayb:pickleib:2.0.9'
 
 ## 🏗️ Driver Setup (Hooks)
 
-Manage the driver lifecycle using hooks. Pickleib handles the singleton initialization for you.
+Manage the driver lifecycle using hooks. **Pickleib** handles the singleton initialization for you.
 
 ```java
 import org.junit.jupiter.api.AfterEach;
@@ -139,11 +139,11 @@ public class Hooks {
 
 Pickleib allows you to structure your Object Repository in multiple ways. Choose the one that fits your team's workflow.
 
-### Method 1: Annotation-Driven with Built-in Steps (Recommended)
+### Method 1: Annotation-Driven with `PickleibRunner` (Recommended)
 
-Use Pickleib annotations and built-in step definitions — zero boilerplate.
+Use **Pickleib** annotations and the JUnit 5 extension — zero boilerplate.
 
-**1. Annotate your Page Objects**
+**1. Annotate your Page/Screen Objects**
 
 ```java
 @PageObject
@@ -154,31 +154,22 @@ public class LoginPage {
     @FindBy(css = "#login-button")
     public WebElement loginButton;
 }
+
+@ScreenObject(platform = Platform.ios)
+public class HomeScreen {
+    @AndroidFindBy(accessibility = "home_title")
+    @iOSXCUITFindBy(accessibility = "home_title")
+    public MobileElement title;
+}
 ```
 
 No inheritance needed. No ObjectRepository. Just annotate and go.
 
-**2. Wire in Hooks**
+**2. Wire up with `@Pickleib` and `PickleibRunner`**
 
 ```java
-public class Hooks {
-    @Before(order = 0)
-    public void setup() {
-        PickleibWebDriver.initialize();
-        ElementRepository repo = new PageObjectDesign<>(ObjectRepository.class).getElementRepository();
-        BuiltInSteps.setElementRepository(repo);
-    }
-
-    @After
-    public void teardown() {
-        PickleibWebDriver.terminate();
-    }
-}
-```
-
-**3. Add `pickleib.steps` to your glue path**
-
-```java
+@Pickleib(scanPackages = {"pages", "screens"})
+@ExtendWith(PickleibRunner.class)
 @CucumberOptions(
     features = "src/test/resources/features",
     glue = {"steps", "pickleib.steps"}
@@ -186,7 +177,12 @@ public class Hooks {
 public class TestRunner {}
 ```
 
-**4. Write feature files — steps just work**
+`PickleibRunner` automatically:
+- Scans the specified packages for `@PageObject` and `@ScreenObject` classes
+- Registers them in the `PageObjectRegistry`
+- Injects `@ContextValue` fields on test instances
+
+**3. Write feature files — steps just work**
 
 ```gherkin
 @Web-UI
@@ -345,6 +341,19 @@ public class HomePageSteps {
 
 Pickleib provides annotations to reduce boilerplate and wire up your test infrastructure declaratively.
 
+### `@Pickleib`
+Marks a test class for automatic page object scanning and registration. Used with `PickleibRunner`:
+```java
+@Pickleib(scanPackages = {"pages", "screens"})
+@ExtendWith(PickleibRunner.class)
+public class MyTest { ... }
+```
+
+| Attribute | Description | Default |
+| :--- | :--- | :--- |
+| `scanPackages` | Packages to scan for `@PageObject` / `@ScreenObject` classes | `{}` (infers from test class package) |
+| `builtInSteps` | Enable built-in Cucumber step definitions | `true` |
+
 ### `@PageObject`
 Mark any class as a page object — no inheritance required:
 ```java
@@ -353,16 +362,48 @@ public class LoginPage {
     @FindBy(id = "user-name")
     public WebElement usernameInput;
 }
+
+@PageObject(platform = Platform.ios, name = "Login")
+public class LoginPageIOS { ... }
 ```
 
+| Attribute | Description | Default |
+| :--- | :--- | :--- |
+| `platform` | Target platform (`Platform` enum) | `Platform.web` |
+| `name` | Custom registry name (defaults to class name) | `""` |
+
+### `@ScreenObject`
+Mark a class as a mobile screen object:
+```java
+@ScreenObject
+public class HomeScreen {
+    @AndroidFindBy(accessibility = "home_title")
+    public MobileElement title;
+}
+```
+
+| Attribute | Description | Default |
+| :--- | :--- | :--- |
+| `platform` | Target platform (`Platform` enum) | `Platform.android` |
+| `name` | Custom registry name (defaults to class name) | `""` |
+
 ### `@ContextValue`
-Inject values from the `ContextStore` directly into fields:
+Inject values from the `ContextStore` directly into fields. Supports context-key-value replacement (e.g., `{{key}}` patterns, random values, localization):
 ```java
 @ContextValue("test-url")
 private String testUrl;
 
 @ContextValue(value = "timeout", defaultValue = "15000")
-private int timeout;
+private long timeout;
+```
+
+### `@StepDefinitions`
+Marks a class as containing Cucumber step definitions for auto-discovery by `PickleibRunner`.
+
+### `Platform` Enum
+Supported platform values used by `@PageObject` and `@ScreenObject`:
+```
+web | android | ios | macos | windows
 ```
 
 ---

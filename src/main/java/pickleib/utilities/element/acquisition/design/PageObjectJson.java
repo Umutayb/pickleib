@@ -18,6 +18,7 @@ import pickleib.enums.SelectorType;
 import pickleib.exceptions.PickleibException;
 import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.utilities.element.ElementBundle;
+import pickleib.utilities.element.FormInput;
 import pickleib.utilities.interfaces.repository.ElementRepository;
 import pickleib.web.driver.PickleibWebDriver;
 import java.time.Duration;
@@ -190,31 +191,25 @@ public class PageObjectJson implements ElementRepository {
     }
 
     /**
-     * Converts a Cucumber Data Table of inputs into a list of {@link ElementBundle}s.
-     * <p>
-     * This allows iterating over a form definition in a feature file and automatically
-     * mapping the "Input Element" column to actual WebElements found via JSON.
-     * </p>
+     * Converts a list of form input pairs into a list of {@link ElementBundle}s.
      *
-     * @param signForms A list of maps from a Cucumber DataTable (keys: "Input Element", "Input").
-     * @param pageName  The name of the page where these elements exist.
+     * @param formInputs list of element-input pairs
+     * @param pageName   The name of the page where these elements exist.
      * @return A list of bundles linking the element to the data to be entered.
      */
     public List<ElementBundle<String>> acquireElementList(
-            List<Map<String, String>> signForms, String pageName
+            List<FormInput> formInputs, String pageName
     ) {
         List<ElementBundle<String>> bundles = new ArrayList<>();
 
-        for (Map<String, String> form : signForms) {
-            String input = form.get("Input");
-            String elementName = form.get("Input Element");
+        for (FormInput formInput : formInputs) {
             String platformName = getPageJson(pageName, objectRepository)
                     .get("platform")
                     .getAsJsonPrimitive()
                     .getAsString();
-            WebElement element = acquireElementFromPage(elementName, pageName);
+            WebElement element = acquireElementFromPage(formInput.element(), pageName);
 
-            bundles.add(new ElementBundle<>(element, elementName, platformName, input));
+            bundles.add(new ElementBundle<>(element, formInput.element(), platformName, formInput.input()));
         }
         return bundles;
     }

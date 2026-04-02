@@ -6,6 +6,7 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.Select;
 import pickleib.driver.DriverFactory;
 import pickleib.enums.Direction;
 import pickleib.enums.ElementState;
@@ -14,6 +15,7 @@ import pickleib.exceptions.PickleibVerificationException;
 import pickleib.platform.driver.PickleibAppiumDriver;
 import pickleib.runner.PickleibRunner;
 import pickleib.utilities.element.ElementBundle;
+import pickleib.utilities.element.FormInput;
 import pickleib.utilities.element.interactions.InteractionBase;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.utilities.interfaces.repository.ElementRepository;
@@ -265,12 +267,21 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
     }
 
     @Given("^Fill form input on the (\\w+)(?: using (mobile|web) driver)?$")
-    public void fillForm(String pageName, String driverType, DataTable table) {
-        List<ElementBundle<String>> inputBundles = getElementRepository().acquireElementList(table.asMaps(), pageName);
+    public void fillForm(String pageName, String driverType, List<FormInput> formInputs) {
+        List<ElementBundle<String>> inputBundles = getElementRepository().acquireElementList(formInputs, pageName);
         PolymorphicUtilities interactions = driverType != null ?
                 getInteractions(DriverFactory.DriverType.getType(driverType)) :
                 getInteractions(getRandomItemFrom(inputBundles).element());
         interactions.fillForm(inputBundles, pageName);
+    }
+
+    @Given("^Select option (.+?(?:\\s+.+?)*) from (\\w+) on the (\\w+)$")
+    public void selectOption(String optionText, String elementName, String pageName) {
+        optionText = contextCheck(optionText);
+        WebElement selectElement = getElementRepository().acquireElementFromPage(elementName, pageName);
+        new Select(selectElement).selectByVisibleText(optionText);
+        log.info("Selected " + highlighted(BLUE, optionText) + highlighted(GRAY, " from ") +
+                highlighted(BLUE, elementName) + highlighted(GRAY, " on ") + highlighted(BLUE, pageName));
     }
 
     @Given("^Fill listed input (\\w+) from (\\w+) list on the (\\w+) with text: (.+?(?:\\s+.+?)*)$")

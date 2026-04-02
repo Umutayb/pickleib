@@ -2,6 +2,7 @@ package pickleib.utilities.interfaces.repository;
 
 import org.openqa.selenium.WebElement;
 import pickleib.utilities.element.ElementBundle;
+import pickleib.utilities.element.FormInput;
 import pickleib.utilities.element.acquisition.design.PageObjectJson;
 import utils.Printer;
 
@@ -76,12 +77,12 @@ public interface ElementRepository {
     /**
      * Acquire form input on the {page name}.
      *
-     * @param signForms table containing "Input" → value and "Input Element" → element field
+     * @param formInputs list of element-input pairs
      * @param pageName specified page instance name
      * @return list of element bundles
      */
     List<ElementBundle<String>> acquireElementList(
-            List<Map<String, String>> signForms,
+            List<FormInput> formInputs,
             String pageName
     );
 

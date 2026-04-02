@@ -61,7 +61,7 @@ public class ClasspathScanner {
                         results.add(clazz);
                     }
                 } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                    // Skip classes that can't be loaded
+                    log.warning("Could not load class: " + className + " — " + e.getMessage());
                 }
             }
         }

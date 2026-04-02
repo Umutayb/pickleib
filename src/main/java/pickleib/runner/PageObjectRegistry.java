@@ -5,7 +5,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.PageFactory;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
+import pickleib.enums.Platform;
 import pickleib.utilities.element.ElementBundle;
+import pickleib.utilities.element.FormInput;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.repository.ElementRepository;
 import pickleib.web.driver.PickleibWebDriver;
@@ -28,9 +30,9 @@ public class PageObjectRegistry implements ElementRepository {
     // Thread-local cache of instantiated page objects
     private final ThreadLocal<Map<String, Object>> instances = ThreadLocal.withInitial(HashMap::new);
 
-    record PageObjectMetadata(Class<?> pageClass, String name, String platform) {}
+    record PageObjectMetadata(Class<?> pageClass, String name, Platform platform) {}
 
-    public void register(Class<?> pageClass, String name, String platform) {
+    public void register(Class<?> pageClass, String name, Platform platform) {
         String key = (name.isEmpty() ? pageClass.getSimpleName() : name).toLowerCase();
         registry.put(key, new PageObjectMetadata(pageClass, name.isEmpty() ? pageClass.getSimpleName() : name, platform));
     }
@@ -69,8 +71,8 @@ public class PageObjectRegistry implements ElementRepository {
             Object instance = meta.pageClass().getDeclaredConstructor().newInstance();
 
             // Initialize @FindBy fields based on platform
-            String platform = meta.platform().toLowerCase();
-            if (platform.equals("web")) {
+            Platform platform = meta.platform();
+            if (platform == Platform.web) {
                 RemoteWebDriver driver = PickleibWebDriver.get();
                 if (driver != null) PageFactory.initElements(driver, instance);
             } else {
@@ -159,13 +161,11 @@ public class PageObjectRegistry implements ElementRepository {
     }
 
     @Override
-    public List<ElementBundle<String>> acquireElementList(List<Map<String, String>> signForms, String pageName) {
+    public List<ElementBundle<String>> acquireElementList(List<FormInput> formInputs, String pageName) {
         List<ElementBundle<String>> bundles = new ArrayList<>();
-        for (Map<String, String> map : signForms) {
-            String elementName = map.get("Input Element");
-            String inputText = map.get("Input");
-            WebElement element = acquireElementFromPage(elementName, pageName);
-            bundles.add(new ElementBundle<>(element, elementName, "web", inputText));
+        for (FormInput formInput : formInputs) {
+            WebElement element = acquireElementFromPage(formInput.element(), pageName);
+            bundles.add(new ElementBundle<>(element, formInput.element(), "web", formInput.input()));
         }
         return bundles;
     }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.extension.*;
 import pickleib.annotations.PageObject;
 import pickleib.annotations.Pickleib;
 import pickleib.annotations.ScreenObject;
+import pickleib.enums.Platform;
 import utils.Printer;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class PickleibRunner implements BeforeAllCallback, TestInstancePostProces
         List<Class<?>> screenObjects = ClasspathScanner.scanForAnnotatedClasses(ScreenObject.class, packages);
         for (Class<?> clazz : screenObjects) {
             ScreenObject so = clazz.getAnnotation(ScreenObject.class);
-            registry.register(clazz, so.name(), "mobile");
+            registry.register(clazz, so.name(), so.platform());
             log.info("Registered @ScreenObject: " + clazz.getSimpleName());
         }
 

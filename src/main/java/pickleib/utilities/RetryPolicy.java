@@ -32,25 +32,19 @@ public class RetryPolicy {
     public static <T> T execute(Supplier<T> action, long timeoutMs) {
         long startTime = System.currentTimeMillis();
         WebDriverException lastException = null;
-        String lastExceptionType = null;
         int counter = 0;
 
         do {
             try {
                 return action.get();
             } catch (WebDriverException e) {
-                String exType = e.getClass().getName();
-                if (lastExceptionType == null || !exType.equals(lastExceptionType)) {
-                    log.warning("Iterating... (" + exType + ")");
-                    lastExceptionType = exType;
-                }
+                if (counter == 0) log.warning("Retrying due to: " + e.getClass().getSimpleName());
                 lastException = e;
                 counter++;
             }
         } while (System.currentTimeMillis() - startTime < timeoutMs);
 
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        if (lastException != null) log.warning(lastException.getMessage());
+        log.warning("Failed after " + counter + " attempt(s): " + lastException.getClass().getSimpleName());
         throw new PickleibException(lastException);
     }
 
@@ -81,7 +75,7 @@ public class RetryPolicy {
             Predicate<WebDriverException> earlyExit) {
 
         long startTime = System.currentTimeMillis();
-        String lastExceptionType = null;
+        WebDriverException lastException = null;
         int counter = 0;
 
         do {
@@ -91,19 +85,15 @@ public class RetryPolicy {
                 if (result) return true;
             } catch (WebDriverException e) {
                 if (earlyExit != null && earlyExit.test(e)) return true;
-
-                String exType = e.getClass().getName();
-                if (lastExceptionType == null || !exType.equals(lastExceptionType)) {
-                    log.warning("Iterating... (" + exType + ")");
-                    lastExceptionType = exType;
-                }
+                if (counter == 0) log.warning("Retrying due to: " + e.getClass().getSimpleName());
+                lastException = e;
                 counter++;
             } finally {
                 if (afterEach != null) afterEach.run();
             }
         } while (System.currentTimeMillis() - startTime < timeoutMs);
 
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
+        if (counter > 0) log.warning("Failed after " + counter + " attempt(s): " + lastException.getClass().getSimpleName());
         return false;
     }
 }

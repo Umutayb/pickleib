@@ -20,6 +20,8 @@ import utils.Printer;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static utils.StringUtilities.Color.*;
 import static utils.StringUtilities.highlighted;
@@ -178,6 +180,9 @@ public class WebDriverFactory implements DriverFactory {
      * @throws RuntimeException If the driver cannot be initialized (e.g., Malformed URL for Grid, Connection refused).
      */
     public static RemoteWebDriver getDriver(BrowserType browserType){
+        // Suppress Selenium CDP version mismatch warnings
+        Logger.getLogger("org.openqa.selenium").setLevel(Level.SEVERE);
+
         RemoteWebDriver driver;
 
         try {

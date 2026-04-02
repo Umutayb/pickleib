@@ -1,13 +1,16 @@
 package pickleib.runner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import context.ContextStore;
 import pickleib.annotations.ContextValue;
 import utils.Printer;
 import java.lang.reflect.Field;
+import static utils.StringUtilities.contextCheck;
 
 public class ContextValueInjector {
 
     private static final Printer log = new Printer(ContextValueInjector.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Injects @ContextValue-annotated fields on the given instance.
@@ -20,7 +23,7 @@ public class ContextValueInjector {
                 ContextValue annotation = field.getAnnotation(ContextValue.class);
                 if (annotation == null) continue;
 
-                String value = ContextStore.get(annotation.value(), annotation.defaultValue());
+                String value = contextCheck(ContextStore.get(annotation.value(), annotation.defaultValue()));
                 try {
                     field.setAccessible(true);
                     field.set(instance, convertValue(value, field.getType()));
@@ -32,12 +35,7 @@ public class ContextValueInjector {
         }
     }
 
-    private static Object convertValue(String value, Class<?> targetType) {
-        if (targetType == String.class) return value;
-        if (targetType == int.class || targetType == Integer.class) return Integer.parseInt(value);
-        if (targetType == long.class || targetType == Long.class) return Long.parseLong(value);
-        if (targetType == boolean.class || targetType == Boolean.class) return Boolean.parseBoolean(value);
-        if (targetType == double.class || targetType == Double.class) return Double.parseDouble(value);
-        return value;
+    private static <T> T convertValue(String value, Class<T> targetType) {
+        return objectMapper.convertValue(value, targetType);
     }
 }
