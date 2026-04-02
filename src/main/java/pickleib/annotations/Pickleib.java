@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface Pickleib {
     String[] scanPackages() default {};
     boolean builtInSteps() default true;
+    String pageRepository() default "";
 }

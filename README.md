@@ -55,7 +55,7 @@ Pick the one that fits your workflow — or mix both in the same project.
 
 ### Quick Start: JSON Repository (Low-Code)
 
-Get tests running with **zero page classes**. Define elements in JSON, wire up two Java files, and write Gherkin.
+Get tests running with **zero page classes**. Define elements in JSON, add a Hooks file, and write Gherkin.
 
 #### Step 1: Create `page-repository.json`
 
@@ -90,21 +90,7 @@ Get tests running with **zero page classes**. Define elements in JSON, wire up t
 
 Each page has a `name`, `platform`, and a list of `elements`. Each element supports multiple selector types (`css`, `id`, `xpath`, `accessibilityId`) and platform-specific selectors (`web`, `android`, `ios`).
 
-#### Step 2: Create `CommonSteps.java`
-
-```java
-import pickleib.utilities.steps.PickleibSteps;
-
-public class CommonSteps extends PickleibSteps {
-    public CommonSteps() {
-        super("src/test/resources/page-repository.json");
-    }
-}
-```
-
-That's it. This single class wires the JSON repository to the built-in step library. All 68 steps become available immediately.
-
-#### Step 3: Create `Hooks.java`
+#### Step 2: Create `Hooks.java`
 
 ```java
 import io.cucumber.java.*;
@@ -123,7 +109,7 @@ public class Hooks {
 }
 ```
 
-#### Step 4: Write your feature file
+#### Step 3: Write your feature file
 
 ```gherkin
 @Web-UI
@@ -135,14 +121,21 @@ Scenario: Login flow
   * Verify the text of welcomeMessage on the LoginPage contains: Welcome
 ```
 
-#### Step 5: Configure the Test Runner
+#### Step 4: Configure the Test Runner
+
+Use `@Pickleib(pageRepository = ...)` to wire the JSON file automatically — no `CommonSteps` class needed:
 
 ```java
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import pickleib.annotations.Pickleib;
+import pickleib.runner.PickleibRunner;
 
 @RunWith(Cucumber.class)
+@Pickleib(pageRepository = "src/test/resources/page-repository.json")
+@ExtendWith(PickleibRunner.class)
 @CucumberOptions(
     features = "src/test/resources/features",
     glue = {"steps", "pickleib.steps"},
@@ -153,7 +146,7 @@ public class TestRunner {}
 
 **Important:** Add `"pickleib.steps"` to the glue path. This activates the built-in step definitions.
 
-#### Step 6: Run
+#### Step 5: Run
 
 ```shell
 mvn test -Dcucumber.filter.tags="@Web-UI" -Dbrowser=chrome
@@ -362,7 +355,13 @@ Use `CONTEXT-{key}` in any step value to reference stored context values:
 ### `@Pickleib`
 Marks a test class for automatic page object scanning and registration. Used with `PickleibRunner`:
 ```java
+// Page Object approach
 @Pickleib(scanPackages = {"pages", "screens"})
+@ExtendWith(PickleibRunner.class)
+public class MyTest { ... }
+
+// JSON Repository approach
+@Pickleib(pageRepository = "src/test/resources/page-repository.json")
 @ExtendWith(PickleibRunner.class)
 public class MyTest { ... }
 ```
@@ -370,6 +369,7 @@ public class MyTest { ... }
 | Attribute | Description | Default |
 | :--- | :--- | :--- |
 | `scanPackages` | Packages to scan for `@PageObject` / `@ScreenObject` classes | `{}` (infers from test class package) |
+| `pageRepository` | Path to `page-repository.json` (JSON approach) | `""` (disabled) |
 | `builtInSteps` | Enable built-in Cucumber step definitions | `true` |
 
 ### `@PageObject`

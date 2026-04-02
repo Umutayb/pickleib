@@ -5,6 +5,9 @@ import pickleib.annotations.PageObject;
 import pickleib.annotations.Pickleib;
 import pickleib.annotations.ScreenObject;
 import pickleib.enums.Platform;
+import pickleib.steps.BuiltInSteps;
+import pickleib.utilities.element.acquisition.design.PageObjectJson;
+import utils.FileUtilities;
 import utils.Printer;
 import java.util.List;
 
@@ -56,6 +59,14 @@ public class PickleibRunner implements BeforeAllCallback, TestInstancePostProces
             ScreenObject so = clazz.getAnnotation(ScreenObject.class);
             registry.register(clazz, so.name(), so.platform());
             log.info("Registered @ScreenObject: " + clazz.getSimpleName());
+        }
+
+        // Wire JSON page repository if configured
+        String pageRepository = annotation.pageRepository();
+        if (!pageRepository.isEmpty()) {
+            PageObjectJson jsonRepo = new PageObjectJson(FileUtilities.Json.parseJsonFile(pageRepository));
+            BuiltInSteps.setElementRepository(jsonRepo);
+            log.info("Loaded page repository from " + pageRepository);
         }
 
         log.info("Pickleib initialized with " + registry.size() + " page objects");
