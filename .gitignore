@@ -11,3 +11,4 @@ screenshots/
 src/test/resources/pickleib.properties
 /.vscode
 /.playwright-mcp
+/target
