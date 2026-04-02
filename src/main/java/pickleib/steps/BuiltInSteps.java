@@ -13,9 +13,14 @@ import pickleib.enums.ElementState;
 import pickleib.enums.Navigation;
 import pickleib.exceptions.PickleibVerificationException;
 import pickleib.platform.driver.PickleibAppiumDriver;
+import pickleib.annotations.PageObject;
+import pickleib.annotations.ScreenObject;
+import pickleib.runner.ClasspathScanner;
+import pickleib.runner.PageObjectRegistry;
 import pickleib.runner.PickleibRunner;
 import pickleib.utilities.element.ElementBundle;
 import pickleib.utilities.element.FormInput;
+import pickleib.utilities.element.acquisition.design.PageObjectJson;
 import pickleib.utilities.element.interactions.InteractionBase;
 import pickleib.utilities.interfaces.PolymorphicUtilities;
 import pickleib.utilities.interfaces.repository.ElementRepository;
@@ -46,7 +51,9 @@ import static utils.arrays.ArrayUtilities.getRandomItemFrom;
  */
 public class BuiltInSteps extends InteractionBase implements PageRepository {
 
+    private static final String DEFAULT_PAGE_REPOSITORY = "src/test/resources/page-repository.json";
     private static ElementRepository elementRepository;
+    private static boolean autoDetected = false;
 
     static {
         installSkill();
@@ -84,7 +91,47 @@ public class BuiltInSteps extends InteractionBase implements PageRepository {
     @Override
     public ElementRepository getElementRepository() {
         if (elementRepository != null) return elementRepository;
+        if (PickleibRunner.getRegistry().size() > 0) return PickleibRunner.getRegistry();
+        if (!autoDetected) {
+            autoDetected = true;
+            autoDetectRepository();
+            if (elementRepository != null) return elementRepository;
+        }
         return PickleibRunner.getRegistry();
+    }
+
+    /**
+     * Auto-detects the element repository if none was explicitly set.
+     * 1. Scans the 'pages' package for @PageObject/@ScreenObject classes
+     * 2. Falls back to page-repository.json at the default path
+     */
+    private void autoDetectRepository() {
+        // Try scanning for @PageObject/@ScreenObject classes first
+        PageObjectRegistry registry = PickleibRunner.getRegistry();
+        List<Class<?>> pageObjects = ClasspathScanner.scanForAnnotatedClasses(PageObject.class, "pages");
+        for (Class<?> clazz : pageObjects) {
+            PageObject po = clazz.getAnnotation(PageObject.class);
+            registry.register(clazz, po.name(), po.platform());
+            log.info("Auto-registered @PageObject: " + clazz.getSimpleName());
+        }
+        List<Class<?>> screenObjects = ClasspathScanner.scanForAnnotatedClasses(ScreenObject.class, "pages");
+        for (Class<?> clazz : screenObjects) {
+            ScreenObject so = clazz.getAnnotation(ScreenObject.class);
+            registry.register(clazz, so.name(), so.platform());
+            log.info("Auto-registered @ScreenObject: " + clazz.getSimpleName());
+        }
+        if (registry.size() > 0) return;
+
+        // Fall back to JSON repository
+        if (new java.io.File(DEFAULT_PAGE_REPOSITORY).exists()) {
+            try {
+                elementRepository = new PageObjectJson(
+                        utils.FileUtilities.Json.parseJsonFile(DEFAULT_PAGE_REPOSITORY));
+                log.info("Auto-detected page repository at " + DEFAULT_PAGE_REPOSITORY);
+            } catch (Exception e) {
+                log.warning("Failed to load " + DEFAULT_PAGE_REPOSITORY + ": " + e.getMessage());
+            }
+        }
     }
 
     // ─── Platform / Context ──────────────────────────────────────────────
