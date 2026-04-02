@@ -38,6 +38,44 @@ Add the following dependency to your `pom.xml`:
 </dependency>
 ```
 
+### Claude Code Skill (Auto-Install)
+
+Pickleib ships with a Claude Code agent skill for AI-assisted test generation. To auto-extract it during build, add to your `pom.xml` plugins:
+
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-antrun-plugin</artifactId>
+    <version>3.1.0</version>
+    <executions>
+        <execution>
+            <id>install-claude-skills</id>
+            <phase>initialize</phase>
+            <goals><goal>run</goal></goals>
+            <configuration>
+                <target>
+                    <mkdir dir="${project.basedir}/skills"/>
+                    <unjar src="${local.repo}/io/github/umutayb/pickleib/${pickleib.version}/pickleib-${pickleib.version}.jar"
+                           dest="${project.basedir}/.claude-extract">
+                        <patternset>
+                            <include name="META-INF/claude/skills/**"/>
+                        </patternset>
+                    </unjar>
+                    <copy todir="${project.basedir}/skills" overwrite="true" failonerror="false">
+                        <fileset dir="${project.basedir}/.claude-extract/META-INF/claude/skills"/>
+                    </copy>
+                    <delete dir="${project.basedir}/.claude-extract" quiet="true"/>
+                </target>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+Add `local.repo` to your properties: `<local.repo>${settings.localRepository}</local.repo>`
+
+After `mvn initialize`, the skill will be available at `skills/pickleib/SKILL.md`. Add `skills/` to `.gitignore`.
+
 ---
 
 ## 🏁 Getting Started
