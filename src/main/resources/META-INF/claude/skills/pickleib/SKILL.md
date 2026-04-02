@@ -370,11 +370,45 @@ All built-in steps available when `pickleib.steps` is in the Cucumber glue path.
   | passwordInput | secret   |
 ```
 
-Use `CONTEXT-{key}` for dynamic values:
+### Context Variable Substitution (`CONTEXT-` prefix)
+
+Any step value prefixed with `CONTEXT-` is replaced at runtime with the matching key from the ContextStore. This works in **all** steps that accept text values — fill, verify, navigate, assert, etc.
+
 ```gherkin
+# Store values
 * Update context testUser -> admin
+* Update context testEmail -> admin@example.com
+* Update context baseUrl -> https://staging.example.com
+
+# Use in fill steps
 * Fill input usernameInput on the LoginPage with text: CONTEXT-testUser
+* Fill input emailInput on the LoginPage with text: CONTEXT-testEmail
+
+# Use in navigation
+* Navigate to url: CONTEXT-baseUrl
+
+# Use in form fill tables
+* Fill form input on the LoginPage
+  | element       | input               |
+  | usernameInput | CONTEXT-testUser    |
+  | emailInput    | CONTEXT-testEmail   |
+
+# Capture values from the page and reuse them
+* Acquire the value attribute of confirmationCode on the ConfirmPage
+  # ^ saves to context key "confirmationCode"
+* Fill input codeInput on the VerifyPage with text: CONTEXT-confirmationCode
+
+# Assert stored values
+* Assert that value of testUser is equal to admin
+* Assert that value of testUser is not equal to guest
 ```
+
+**Key rules:**
+- `CONTEXT-{key}` is case-sensitive — `CONTEXT-testUser` looks up exactly `testUser`
+- `Update context {key} -> {value}` stores a key-value pair
+- `Acquire the {attr} attribute of {element} on the {Page}` stores the attribute value using the attribute name as the key
+- `Save context value from {key} context key to {newKey}` copies a value to a new key
+- Context persists within a scenario but resets between scenarios
 
 ### Verify
 

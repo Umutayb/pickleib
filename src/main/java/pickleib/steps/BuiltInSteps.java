@@ -22,6 +22,8 @@ import pickleib.utilities.interfaces.repository.ElementRepository;
 import pickleib.utilities.interfaces.repository.PageRepository;
 import pickleib.web.driver.PickleibWebDriver;
 
+import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 import static pickleib.driver.DriverFactory.DriverType.*;
@@ -45,6 +47,26 @@ import static utils.arrays.ArrayUtilities.getRandomItemFrom;
 public class BuiltInSteps extends InteractionBase implements PageRepository {
 
     private static ElementRepository elementRepository;
+
+    static {
+        installSkill();
+    }
+
+    /** Extracts the Claude Code skill from the classpath to skills/pickleib/SKILL.md if not already present. */
+    private static void installSkill() {
+        try {
+            Path target = Paths.get("skills", "pickleib", "SKILL.md");
+            if (Files.exists(target)) return;
+
+            InputStream resource = BuiltInSteps.class.getClassLoader()
+                    .getResourceAsStream("META-INF/claude/skills/pickleib/SKILL.md");
+            if (resource == null) return;
+
+            Files.createDirectories(target.getParent());
+            Files.copy(resource, target, StandardCopyOption.REPLACE_EXISTING);
+            resource.close();
+        } catch (IOException ignored) {}
+    }
 
     public BuiltInSteps() {
         super(true, true);
