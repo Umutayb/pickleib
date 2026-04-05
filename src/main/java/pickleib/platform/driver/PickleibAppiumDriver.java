@@ -3,6 +3,7 @@ package pickleib.platform.driver;
 import context.ContextStore;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.AppiumFluentWait;
+import io.appium.java_client.service.local.AppiumDriverLocalService;
 import org.json.simple.JSONObject;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import pickleib.utilities.screenshot.ScreenCaptureUtility;
@@ -24,17 +25,17 @@ import java.net.ServerSocket;
 @SuppressWarnings("unused")
 public abstract class PickleibAppiumDriver {
 
-    private static AppiumDriver driver;
-    private static AppiumFluentWait<RemoteWebDriver> wait;
+    private static final ThreadLocal<AppiumDriver> driver = new ThreadLocal<>();
+    private static final ThreadLocal<AppiumFluentWait<RemoteWebDriver>> wait = new ThreadLocal<>();
     private static final Printer log = new Printer(PickleibAppiumDriver.class);
 
     /**
-     * Retrieves the active instance of the {@link AppiumDriver}.
+     * Retrieves the active instance of the {@link AppiumDriver} for the current thread.
      *
      * @return The current {@link AppiumDriver} instance, or null if not initialized.
      */
     public static AppiumDriver get(){
-        return driver;
+        return driver.get();
     }
 
     /**
@@ -80,11 +81,11 @@ public abstract class PickleibAppiumDriver {
         String directory = ContextStore.get("config", "src/test/resources/configurations");
 
         JSONObject json = FileUtilities.Json.parseJSONFile(directory + "/" + device + ".json");
-        driver = AppiumDriverFactory.getDriver(
+        driver.set(AppiumDriverFactory.getDriver(
                 StringUtilities.firstLetterCapped(device),
                 json,
                 ContextStore.getBoolean("use-remote-mobile-driver", false)
-        );
+        ));
     }
 
     /**
@@ -97,13 +98,19 @@ public abstract class PickleibAppiumDriver {
     public static void terminate(){
         log.info("Finalizing driver...");
         try {
-            if (driver != null) driver.quit();
+            AppiumDriver current = driver.get();
+            if (current != null) current.quit();
         }
         catch (Exception exception){
             exception.printStackTrace();
         }
         finally {
-            if (ServiceFactory.service != null) ServiceFactory.service.stop();
+            driver.remove();
+            AppiumDriverLocalService svc = ServiceFactory.service.get();
+            if (svc != null) {
+                svc.stop();
+                ServiceFactory.service.remove();
+            }
         }
     }
 
@@ -120,14 +127,20 @@ public abstract class PickleibAppiumDriver {
     public static void captureAndTerminate(boolean success, String screenshotTag){
         log.info("Finalizing driver...");
         try {
-            ScreenCaptureUtility.captureScreen(screenshotTag, "png", driver);
-            if (driver != null) driver.quit();
+            AppiumDriver current = driver.get();
+            ScreenCaptureUtility.captureScreen(screenshotTag, "png", current);
+            if (current != null) current.quit();
         }
         catch (Exception exception){
             exception.printStackTrace();
         }
         finally {
-            if (ServiceFactory.service != null) ServiceFactory.service.stop();
+            driver.remove();
+            AppiumDriverLocalService svc = ServiceFactory.service.get();
+            if (svc != null) {
+                svc.stop();
+                ServiceFactory.service.remove();
+            }
         }
     }
 }

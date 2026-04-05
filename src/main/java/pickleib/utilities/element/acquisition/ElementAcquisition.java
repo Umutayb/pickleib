@@ -5,6 +5,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import pickleib.exceptions.PickleibException;
+import pickleib.utilities.RetryPolicy;
 import pickleib.utilities.interfaces.repository.PageObjectRepository;
 import utils.Printer;
 import utils.arrays.lambda.Collectors;
@@ -27,7 +28,6 @@ import static utils.StringUtilities.Color.*;
  *
  * @author  Umut Ay Bora
  */
-@SuppressWarnings("unused")
 public class ElementAcquisition {
 
     /**
@@ -53,29 +53,15 @@ public class ElementAcquisition {
      */
     public static WebElement acquireElementUsingAttributeAmongst(List<WebElement> items, String attributeName, String attributeValue){
         log.info("Acquiring element called " + markup(BLUE, attributeValue) + " using its " + markup(BLUE, attributeName) + " attribute");
-        boolean condition = true;
-        boolean timeout = false;
-        long initialTime = System.currentTimeMillis();
-        WebDriverException caughtException = null;
-        int counter = 0;
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout)){
-            try {
-                for (WebElement selection : items) {
-                    String attribute = selection.getAttribute(attributeName);
-                    if (attribute != null &&
-                            (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue))
-                    ) return selection;
-                }
+        return RetryPolicy.execute(() -> {
+            for (WebElement selection : items) {
+                String attribute = selection.getAttribute(attributeName);
+                if (attribute != null &&
+                    (attribute.equalsIgnoreCase(attributeValue) || attribute.contains(attributeValue)))
+                    return selection;
             }
-            catch (WebDriverException webDriverException){
-                if (counter != 0 && webDriverException.getClass().getName().equals(caughtException.getClass().getName()))
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-
-                caughtException = webDriverException;
-                counter++;
-            }
-        }
-        throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
+            throw new NoSuchElementException("No element with the attributes '" + attributeName + " : " + attributeValue + "' could be found!");
+        }, elementTimeout);
     }
 
     /**
@@ -91,31 +77,14 @@ public class ElementAcquisition {
      * @throws NoSuchElementException If no element with the specified text is found after the timeout.
      */
     public static WebElement acquireNamedElementAmongst(List<WebElement> items, String selectionName){
-        boolean timeout = false;
-        long initialTime = System.currentTimeMillis();
-        WebDriverException caughtException = null;
-        int counter = 0;
-        do {
-            try {
-                for (WebElement selection : items) {
-                    String text = selection.getText();
-                    if (text.equalsIgnoreCase(selectionName) || text.contains(selectionName)) return selection;
-                }
+        return RetryPolicy.execute(() -> {
+            for (WebElement selection : items) {
+                String text = selection.getText();
+                if (text.equalsIgnoreCase(selectionName) || text.contains(selectionName))
+                    return selection;
             }
-            catch (WebDriverException webDriverException){
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())){
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                counter++;
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
+            throw new NoSuchElementException("No element with text/name '" + selectionName + "' could be found!");
+        }, elementTimeout);
     }
 
     /**

@@ -11,13 +11,18 @@ import org.openqa.selenium.support.ui.FluentWait;
 import pickleib.enums.ElementState;
 import pickleib.exceptions.PickleibException;
 import pickleib.utilities.element.ElementBundle;
+import pickleib.utilities.helpers.ClickHelper;
+import pickleib.utilities.helpers.DragDropHelper;
+import pickleib.utilities.helpers.ElementStateHelper;
+import pickleib.utilities.helpers.InputHelper;
+import pickleib.annotations.ContextValue;
+import pickleib.runner.ContextValueInjector;
 import pickleib.utilities.interfaces.functions.ScrollFunction;
 import utils.Printer;
 import utils.StringUtilities;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
-import java.util.StringJoiner;
 
 import static pickleib.enums.ElementState.absent;
 import static pickleib.enums.ElementState.displayed;
@@ -47,14 +52,30 @@ public abstract class Utilities {
     public FluentWait<RemoteWebDriver> wait;
     public ScrollFunction scroller;
 
-    public long elementTimeout = ContextStore.getInt("element-timeout", 15000);
-    public long driverTimeout = Long.parseLong(ContextStore.get("driver-timeout", "15000"))/1000;
+    @ContextValue(value = "element-timeout", defaultValue = "15000")
+    public long elementTimeout;
+
+    @ContextValue(value = "driver-timeout", defaultValue = "15000")
+    public long driverTimeout;
+    protected ClickHelper clickHelper;
+    protected InputHelper inputHelper;
+    protected ElementStateHelper elementStateHelper;
+    protected DragDropHelper dragDropHelper;
+
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
+        ContextValueInjector.injectFields(this);
+        this.driverTimeout = this.driverTimeout / 1000;
         this.driver = driver;
         this.wait = wait;
+        this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
+        this.inputHelper = new InputHelper(driver, wait, scroller, elementTimeout);
+        this.elementStateHelper = new ElementStateHelper(driver, elementTimeout, driverTimeout);
+        this.dragDropHelper = new DragDropHelper(driver);
     }
 
     public Utilities(RemoteWebDriver driver, ScrollFunction scroller) {
+        ContextValueInjector.injectFields(this);
+        this.driverTimeout = this.driverTimeout / 1000;
         this.driver = driver;
         this.scroller = scroller;
         if (driver != null)
@@ -63,6 +84,10 @@ public abstract class Utilities {
                     .pollingEvery(Duration.ofMillis(500))
                     .withMessage("Waiting for element visibility...")
                     .ignoring(WebDriverException.class);
+        this.clickHelper = new ClickHelper(driver, wait, scroller, elementTimeout);
+        this.inputHelper = new InputHelper(driver, wait, scroller, elementTimeout);
+        this.elementStateHelper = new ElementStateHelper(driver, elementTimeout, driverTimeout);
+        this.dragDropHelper = new DragDropHelper(driver);
     }
 
     /**
@@ -81,9 +106,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickElement(WebElement element) {
-        clickElement(element, false);
-    }
+    public void clickElement(WebElement element) { clickHelper.clickElement(element); }
 
     /**
      * Clicks on the specified WebElement.
@@ -92,33 +115,7 @@ public abstract class Utilities {
      * @param scroll  If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      * @throws TimeoutException if the element is not clickable within the specified timeout.
      */
-    public void clickElement(WebElement element, boolean scroll) {
-        WebDriverException caughtException = null;
-        int counter = 0;
-        long initialTime = System.currentTimeMillis();
-        do {
-            try {
-                wait.until(ExpectedConditions.elementToBeClickable(element));
-                if (scroll) this.scroller.scroll(element).click();
-                else element.click();
-                return;
-            }
-            catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                } else if (!webDriverException.getClass().getName().equals(caughtException.getClass().getName())) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException;
-                }
-                counter++;
-            }
-        }
-        while (System.currentTimeMillis() - initialTime < elementTimeout);
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning(caughtException.getMessage());
-        throw new PickleibException(caughtException);
-    }
+    public void clickElement(WebElement element, boolean scroll) { clickHelper.clickElement(element, scroll); }
 
     public boolean isElementInViewPort(WebElement element) {
         int windowHeight = driver.manage().window().getSize().getHeight();
@@ -143,9 +140,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickButtonIfPresent(WebElement element) {
-        clickButtonIfPresent(element, false);
-    }
+    public void clickButtonIfPresent(WebElement element) { clickHelper.clickButtonIfPresent(element); }
 
     /**
      * If present, clicks the specified {@code element} on the {page name}.
@@ -154,19 +149,14 @@ public abstract class Utilities {
      * <p>
      * This method checks if the given {@code element} is present and displayed.
      * If the element is present and displayed, it is clicked using the provided {@code scroller} for scrolling.
-     * If the element is not present, a {@code WebDriverException} is caught, and a warning message is logged.
+     * If the element is not present, a {@code NoSuchElementException} or {@code StaleElementReferenceException}
+     * is caught, and a warning message is logged.
      * </p>
      *
      * @param element The target {@code WebElement} to be clicked if present.
      * @param scroll  scrolls if true
      */
-    public void clickButtonIfPresent(WebElement element, boolean scroll) {
-        try {
-            clickElement(element, scroll);
-        } catch (WebDriverException ignored) {
-            log.warning("The element was not present!");
-        }
-    }
+    public void clickButtonIfPresent(WebElement element, boolean scroll) { clickHelper.clickButtonIfPresent(element, scroll); }
 
     /**
      * Press {target key} key on {element name} element of the {}
@@ -186,15 +176,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickTowards(WebElement element) {
-        elementIs(element, ElementState.displayed);
-        Actions builder = new org.openqa.selenium.interactions.Actions(driver);
-        builder
-                .moveToElement(element, 0, 0)
-                .click()
-                .build()
-                .perform();
-    }
+    public void clickTowards(WebElement element) { clickHelper.clickTowards(element); }
 
     /**
      * Clicks an element if its present (in enabled state)
@@ -202,13 +184,7 @@ public abstract class Utilities {
      * @param element target element
      * @param scroll  If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
-    public void clickIfPresent(WebElement element, boolean scroll) {
-        try {
-            clickElement(element, scroll);
-        } catch (WebDriverException exception) {
-            log.warning(exception.getMessage());
-        }
-    }
+    public void clickIfPresent(WebElement element, boolean scroll) { clickHelper.clickIfPresent(element, scroll); }
 
     /**
      * Clicks an element if its present (in enabled state)
@@ -216,9 +192,7 @@ public abstract class Utilities {
      *
      * @param element target element
      */
-    public void clickIfPresent(WebElement element) {
-        clickIfPresent(element, false);
-    }
+    public void clickIfPresent(WebElement element) { clickHelper.clickIfPresent(element); }
 
     /**
      * Clears and fills a given input
@@ -227,8 +201,7 @@ public abstract class Utilities {
      * @param inputText    input text
      */
     public void fillInput(WebElement inputElement, String inputText) {
-        // This method clears the input field before filling it
-        clearFillInput(inputElement, inputText, false);
+        inputHelper.fillInput(inputElement, inputText);
     }
 
     /**
@@ -238,8 +211,7 @@ public abstract class Utilities {
      * @param inputText    input text
      */
     public void fillAndVerifyInput(WebElement inputElement, String inputText) {
-        // This method clears the input field before filling it
-        clearFillInput(inputElement, inputText, true);
+        inputHelper.fillAndVerifyInput(inputElement, inputText);
     }
 
     /**
@@ -249,8 +221,7 @@ public abstract class Utilities {
      * @param inputText    input text
      */
     public void fillAndVerifyInput(WebElement inputElement, String inputText, boolean scroll) {
-        // This method clears the input field before filling it
-        clearFillInput(inputElement, inputText, scroll);
+        inputHelper.fillAndVerifyInput(inputElement, inputText, scroll);
     }
 
     /**
@@ -260,7 +231,7 @@ public abstract class Utilities {
      * @param inputText    input text
      */
     public void clearFillInput(WebElement inputElement, String inputText) {
-        fillAndVerify(inputElement, inputText, false, true, false);
+        inputHelper.clearFillInput(inputElement, inputText);
     }
 
     /**
@@ -271,7 +242,7 @@ public abstract class Utilities {
      * @param scroll       If true, scrolls to the WebElement before clicking. If false, clicks directly without scrolling.
      */
     public void clearFillInput(WebElement inputElement, String inputText, boolean scroll) {
-        fillAndVerify(inputElement, inputText, scroll, true, false);
+        inputHelper.clearFillInput(inputElement, inputText, scroll);
     }
 
     /**
@@ -283,7 +254,7 @@ public abstract class Utilities {
      * @param verify       verifies the input text value equals to an expected text if true
      */
     public void clearFillInput(WebElement inputElement, String inputText, boolean scroll, boolean verify) {
-        fillAndVerify(inputElement, inputText, scroll, true, verify);
+        inputHelper.clearFillInput(inputElement, inputText, scroll, verify);
     }
 
     /**
@@ -294,7 +265,7 @@ public abstract class Utilities {
      * @param clear        If true, clears the input field before entering text. If false, does not clear.
      */
     public void fillInputElement(WebElement inputElement, String inputText, boolean clear) {
-        fillAndVerify(inputElement, inputText, false, clear, false);
+        inputHelper.fillInputElement(inputElement, inputText, clear);
     }
 
     /**
@@ -306,7 +277,7 @@ public abstract class Utilities {
      * @param verify       verifies the input text value equals to an expected text if true
      */
     public void fillInputElement(WebElement inputElement, String inputText, boolean scroll, boolean clear, boolean verify) {
-        fillAndVerify(inputElement, inputText, scroll, clear, verify);
+        inputHelper.fillInputElement(inputElement, inputText, scroll, clear, verify);
     }
 
     /**
@@ -318,7 +289,7 @@ public abstract class Utilities {
      * @param verify       verifies the input text value equals to an expected text if true
      */
     public void fillInputElement(WebElement inputElement, String inputText, boolean clear, boolean verify) {
-        fillAndVerify(inputElement, inputText, false, clear, verify);
+        inputHelper.fillInputElement(inputElement, inputText, clear, verify);
     }
 
     /**
@@ -331,16 +302,10 @@ public abstract class Utilities {
      * @param verify If true, verifies that the entered text matches the value attribute of the inputElement. If false, skips verification.
      *
      * @throws TimeoutException if the inputElement is not visible within the specified timeout.
-     * @throws AssertionError if verification fails (inputText does not match the value attribute of inputElement).
+     * @throws PickleibException if verification fails (inputText does not match the value attribute of inputElement).
      */
     public void fillAndVerify(WebElement element, String inputText, boolean scroll, boolean clear, boolean verify) {
-        wait.until(ExpectedConditions.visibilityOf(element));
-        inputText = contextCheck(inputText);
-        if (scroll) scroller.scroll(element);
-        if (clear) clearInputField(element);
-        element.sendKeys(inputText);
-        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverPlatform(element)));
-        assert !verify || inputText.equals(inputValue);
+        inputHelper.fillAndVerify(element, inputText, scroll, clear, verify);
     }
 
     /**
@@ -351,9 +316,7 @@ public abstract class Utilities {
      * @return returns the element if its in expected state
      */
     public WebElement verifyElementState(WebElement element, ElementState state) {
-        if (!elementIs(element, state)) throw new PickleibException("Element is not in " + state.name() + " state!");
-        log.success("Element state is verified to be: " + state.name());
-        return element;
+        return elementStateHelper.verifyElementState(element, state);
     }
 
     /**
@@ -362,62 +325,9 @@ public abstract class Utilities {
      * @param element target element
      * @param state   expected state
      * @return returns true if an element is in the expected state
-     */ //TODO: elementIs should use iterativeConditionalInvocation() instead of iterating in itself. (same for other similar methods).
+     */
     public Boolean elementIs(WebElement element, @NotNull ElementState state) {
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        boolean timeout;
-        boolean condition = false;
-        boolean negativeCheck = false;
-        int counter = 0;
-        do { //TODO: Replace this with iterativeConditionalInvocation
-            if (condition || (counter > 1 && negativeCheck)) return true;
-            try {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-                switch (state) {
-                    case enabled -> {
-                        negativeCheck = false;
-                        condition = element.isEnabled();
-                    }
-                    case displayed -> {
-                        negativeCheck = false;
-                        condition = element.isDisplayed();
-                    }
-                    case selected -> {
-                        negativeCheck = false;
-                        condition = element.isSelected();
-                    }
-                    case disabled -> {
-                        negativeCheck = true;
-                        condition = !element.isEnabled();
-                    }
-                    case unselected -> {
-                        negativeCheck = true;
-                        condition = !element.isSelected();
-                    }
-                    case absent -> {
-                        negativeCheck = true;
-                        condition = !element.isDisplayed();
-                    }
-                    default -> throw new EnumConstantNotPresentException(ElementState.class, state.name());
-                }
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (state.equals(absent) && webDriverException.getClass().getName().equals("StaleElementReferenceException"))
-                    return true;
-                counter++;
-            } finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(driverTimeout));
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        return false;
+        return elementStateHelper.elementIs(element, state);
     }
 
     /**
@@ -455,13 +365,7 @@ public abstract class Utilities {
      * @param element target element
      */
     public WebElement clearInputField(@NotNull WebElement element) {
-        StringJoiner deletion = new StringJoiner(Keys.BACK_SPACE);
-        String inputValue =  element.getAttribute(getInputContentAttributeNameFor(getElementDriverPlatform(element)));
-        if (inputValue != null)
-            for (int i = 0; i <= inputValue.length(); i++)
-                deletion.add("");
-        element.sendKeys(deletion.toString());
-        return element;
+        return inputHelper.clearInputField(element);
     }
 
     /**
@@ -525,14 +429,7 @@ public abstract class Utilities {
      * @param destinationElement target element
      */
     public void dragDropToAction(WebElement element, WebElement destinationElement) {
-        Actions action = new Actions(driver);
-        action.moveToElement(element)
-                .clickAndHold(element)
-                .moveToElement(destinationElement)
-                .release()
-                .build()
-                .perform();
-        waitFor(0.5);
+        dragDropHelper.dragDropToAction(element, destinationElement);
     }
 
     /**
@@ -544,13 +441,7 @@ public abstract class Utilities {
      */
     //This method performs click, hold, dragAndDropBy action on at a certain offset
     public void dragDropByAction(WebElement element, int xOffset, int yOffset) {
-        Actions action = new Actions(driver);
-        action.moveToElement(element)
-                .clickAndHold(element)
-                .dragAndDropBy(element, xOffset, yOffset)
-                .build()
-                .perform();
-        waitFor(0.5);
+        dragDropHelper.dragDropByAction(element, xOffset, yOffset);
     }
 
     /**
@@ -562,14 +453,7 @@ public abstract class Utilities {
      * @param yOffset y offset from the center of the element
      */
     public void dragDropAction(WebElement element, int xOffset, int yOffset) {
-        Actions action = new Actions(driver);
-        action.moveToElement(element)
-                .clickAndHold(element)
-                .moveToElement(element, xOffset, yOffset)
-                .release()
-                .build()
-                .perform();
-        waitFor(0.5);
+        dragDropHelper.dragDropAction(element, xOffset, yOffset);
     }
 
     /**
@@ -587,14 +471,7 @@ public abstract class Utilities {
      * @param yOffset y offset from the center of the element
      */
     @SuppressWarnings("SameParameterValue")
-    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset) {
-        Actions builder = new org.openqa.selenium.interactions.Actions(driver);
-        builder
-                .moveToElement(element, xOffset, yOffset)
-                .click()
-                .build()
-                .perform();
-    }
+    public void clickAtAnOffset(WebElement element, int xOffset, int yOffset) { clickHelper.clickAtAnOffset(element, xOffset, yOffset); }
 
     /**
      * Uploads a given file
@@ -744,9 +621,7 @@ public abstract class Utilities {
      * @param expectedText expected text
      */
     public void verifyElementText(WebElement element, String expectedText) {
-        expectedText = contextCheck(expectedText);
-        if (!expectedText.equals(element.getText()))
-            throw new PickleibException("Element text is not \"" + highlighted(BLUE, expectedText) + "\"!");
+        elementStateHelper.verifyElementText(element, expectedText);
     }
 
     /**
@@ -756,18 +631,7 @@ public abstract class Utilities {
      * @param expectedText expected text
      */
     public void verifyElementContainsText(WebElement element, String elementName, String pageName, String expectedText) {
-        expectedText = contextCheck(expectedText);
-        log.info("Verifying that text of element " +
-                highlighted(BLUE, elementName) +
-                highlighted(GRAY, " contains ") +
-                highlighted(BLUE, expectedText) +
-                highlighted(GRAY, " on ") +
-                highlighted(BLUE, pageName)
-        );
-        elementIs(element, displayed);
-        if (!element.getText().contains(expectedText))
-            throw new PickleibException("Element text does not contain \"" + highlighted(BLUE, expectedText) + "\"!");
-        log.success("The element text does contain \"" + expectedText + "\" text!");
+        elementStateHelper.verifyElementContainsText(element, elementName, pageName, expectedText);
     }
 
     /**
@@ -778,20 +642,7 @@ public abstract class Utilities {
     public void verifyListedElementText(
             List<ElementBundle<String>> bundles,
             String pageName) {
-        for (ElementBundle<String> bundle : bundles) {
-            String elementName = bundle.elementName();
-            String expectedText = contextCheck(bundle.data());
-            log.info("Performing text verification for " +
-                    highlighted(BLUE, elementName) +
-                    highlighted(GRAY, " on the ") +
-                    highlighted(BLUE, pageName) +
-                    highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, expectedText)
-            );
-            if (!expectedText.equals(bundle.element().getText()))
-                throw new PickleibException("The " + bundle.elementName() + " does not contain text '");
-            log.success("Text of the element" + bundle.elementName() + " was verified!");
-        }
+        elementStateHelper.verifyListedElementText(bundles, pageName);
     }
 
     /**
@@ -804,12 +655,7 @@ public abstract class Utilities {
             String expectedText,
             String listName,
             String pageName) {
-        if (elements.stream().anyMatch(element -> element.getText().contains(expectedText)))
-            log.success("The " + listName + " list contains an element with " + expectedText + " text!");
-        else
-            throw new PickleibException(
-                    "The " + listName + " list does not contains an element with " + expectedText + " text!"
-            );
+        elementStateHelper.verifyListContainsElementByText(elements, expectedText, listName, pageName);
     }
 
     /**
@@ -819,25 +665,7 @@ public abstract class Utilities {
      * @param pageName specified page instance name
      */
     public void fillInputForm(List<ElementBundle<String>> bundles, String pageName) {
-        String inputName;
-        String input;
-        String inputText;
-        for (ElementBundle<String> bundle : bundles) {
-            inputText = contextCheck(bundle.data());
-            log.info("Filling " +
-                    highlighted(BLUE, bundle.elementName()) +
-                    highlighted(GRAY, " on the ") +
-                    highlighted(BLUE, pageName) +
-                    highlighted(GRAY, " with the text: ") +
-                    highlighted(BLUE, inputText)
-            );
-            pageName = firstLetterDeCapped(pageName);
-            clearFillInput(
-                    bundle.element(),
-                    inputText,
-                    !isPlatformElement(bundle.element())
-            );
-        }
+        inputHelper.fillInputForm(bundles, pageName);
     }
 
     /**
@@ -851,37 +679,7 @@ public abstract class Utilities {
             WebElement element,
             String attributeName,
             String attributeValue) {
-
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        int counter = 0;
-        attributeValue = contextCheck(attributeValue);
-        do {
-            try {
-                if (Objects.equals(element.getAttribute(attributeName), attributeValue))
-                    return element.getAttribute(attributeName).contains(attributeValue);
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                waitFor(0.5);
-                counter++;
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning("Element does not contain " +
-                highlighted(BLUE, attributeName) +
-                highlighted(GRAY, " -> ") +
-                highlighted(BLUE, attributeValue) +
-                highlighted(GRAY, " attribute pair.")
-        );
-        log.warning(caughtException);
-        return false;
+        return elementStateHelper.elementContainsAttribute(element, attributeName, attributeValue);
     }
 
     /**
@@ -895,39 +693,6 @@ public abstract class Utilities {
             WebElement elementName,
             String attributeName,
             String value) {
-
-        long initialTime = System.currentTimeMillis();
-        String caughtException = null;
-        int counter = 0;
-        value = contextCheck(value);
-        //TODO replace do-while with iterativeConditionalInvocation() method
-        do {
-            try {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
-                return elementName.getAttribute(attributeName).contains(value);
-            } catch (WebDriverException webDriverException) {
-                if (counter == 0) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                } else if (!webDriverException.getClass().getName().equals(caughtException)) {
-                    log.warning("Iterating... (" + webDriverException.getClass().getName() + ")");
-                    caughtException = webDriverException.getClass().getName();
-                }
-                waitFor(0.5);
-                counter++;
-            } finally {
-                driver.manage().timeouts().implicitlyWait(Duration.ofMillis(elementTimeout));
-            }
-        }
-        while (!(System.currentTimeMillis() - initialTime > elementTimeout));
-        if (counter > 0) log.warning("Iterated " + counter + " time(s)!");
-        log.warning("Element attribute does not contain " +
-                highlighted(BLUE, attributeName) +
-                highlighted(GRAY, " -> ") +
-                highlighted(BLUE, value) +
-                highlighted(GRAY, " value.")
-        );
-        log.warning(caughtException);
-        return false;
+        return elementStateHelper.elementAttributeContainsValue(elementName, attributeName, value);
     }
 }

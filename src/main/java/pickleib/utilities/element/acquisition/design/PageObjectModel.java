@@ -2,6 +2,7 @@ package pickleib.utilities.element.acquisition.design;
 
 import org.openqa.selenium.WebElement;
 import pickleib.utilities.element.ElementBundle;
+import pickleib.utilities.element.FormInput;
 import pickleib.utilities.element.acquisition.ElementAcquisition;
 import pickleib.utilities.interfaces.repository.ElementRepository;
 import pickleib.utilities.interfaces.repository.PageObjectRepository;
@@ -150,27 +151,22 @@ public class PageObjectModel <ObjectRepository extends PageObjectRepository> imp
     }
 
     /**
-     * Converts a list of form input specifications (usually from a Cucumber DataTable) into a list of ElementBundles.
-     * <p>
-     * This iterates over the provided map, looks up the "Input Element" field in the Page Object,
-     * and bundles it with the "Input" data for processing by {@code bundleInteraction}.
-     * </p>
+     * Converts a list of form input pairs into a list of ElementBundles.
      *
-     * @param signForms A List of Maps (DataTable) containing keys "Input Element" and "Input".
-     * @param pageName  The name of the Page Object class.
+     * @param formInputs list of element-input pairs
+     * @param pageName   The name of the Page Object class.
      * @return A list of {@link ElementBundle}s ready for interaction.
      */
-    public List<ElementBundle<String>> acquireElementList(List<Map<String, String>> signForms, String pageName) {
+    public List<ElementBundle<String>> acquireElementList(List<FormInput> formInputs, String pageName) {
         log.info("Acquiring element list from " + highlighted(BLUE, pageName));
         pageName = firstLetterDeCapped(pageName);
         List<ElementBundle<String>> bundles = new ArrayList<>();
-        for (Map<String, String> form : signForms) {
-            String inputName = form.get("Input Element");
-            String input = contextCheck(form.get("Input"));
-            WebElement element = reflections.getElementFromPage(inputName, pageName);
+        for (FormInput formInput : formInputs) {
+            String input = contextCheck(formInput.input());
+            WebElement element = reflections.getElementFromPage(formInput.element(), pageName);
             ElementBundle<String> bundle = new ElementBundle<>(
                     element,
-                    inputName,
+                    formInput.element(),
                     getElementDriverType(element).name(),
                     input
             );

@@ -5,7 +5,7 @@ services:
     image: umutayb/vue-test-site:latest
     restart: always
     ports:
-      - "8080:8080"
+      - "7457:8080"
     networks:
       - vue-network
 networks:

@@ -6,12 +6,12 @@ import pickleib.utilities.interfaces.repository.PageObjectRepository;
 public class ObjectRepository implements PageObjectRepository {
 
     HomePage homePage;
-    ElementsPage elementsPage;
     FormsPage formsPage;
-    InteractionsPage interactionsPage;
-    DropDownPage dropDownPage;
+    AlertsPage alertsPage;
+    DropdownPage dropdownPage;
+    ButtonsPage buttonsPage;
     TallPage tallPage;
-    AlertAndWindowsPage alertAndWindowsPage;
-    LongListPage longListPage;
+    DraggablePage draggablePage;
+    DroppablePage droppablePage;
 
 }

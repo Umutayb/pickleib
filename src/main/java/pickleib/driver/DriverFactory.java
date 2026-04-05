@@ -1,5 +1,7 @@
 package pickleib.driver;
 
+import pickleib.exceptions.PickleibException;
+
 /**
  * Defines the factory interface and enum for specifying supported WebDriver types.
  * The {@link DriverType} enum enumerates the available automation frameworks,
@@ -49,10 +51,10 @@ public interface DriverFactory {
          *
          * @param text the input string to evaluate
          * @return the corresponding {@link DriverType} enum
-         * @throws AssertionError if {@code text} is {@code null} (implementation assertion)
+         * @throws PickleibException if {@code text} is {@code null}
          */
         public static DriverType getType(String text) {
-            assert text != null;
+            if (text == null) throw new PickleibException("Driver type text cannot be null");
             if (text.equalsIgnoreCase("web")) return selenium;
             if (text.equalsIgnoreCase("mobile")) return appium;
             return fromString(text);

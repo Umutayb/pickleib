@@ -14,21 +14,15 @@ To see **Pickleib** in action, and to use it as a no code solution, check out th
 
 ## 🚀 Key Features
 
-Pickleib simplifies test design by offering ready-to-use driver management, powerful utilities, and flexible design patterns.
-
-* **🌐 Polymorphic Interactions:** Write tests that run on web, mobile & desktop platforms using a unified interface (`PolymorphicUtilities`).
-* **🏗️ Hybrid Page Object Model:**
-  * **Classic POM:** Use standard Java classes with `@FindBy` annotations.
-  * **Low-Code POM:** Define your pages and selectors in a single `page-repository.json` file—no page classes required!
-* **🚗 Smart Driver Management:** Automated handling of `WebDriver` and `AppiumDriver` lifecycles.
-* **❤️‍🩹 Self-Healing Utilities:** Built-in retry mechanisms for `StaleElementReferenceException` and intelligent `FluentWait` synchronization.
-* **🧳 Context Management:** A global `ContextStore` for sharing data between steps and configuring run-time environment variables.
-* **📝 Verbose Logging:** Automatically logs interactions (e.g., "Clicking 'loginButton' on 'LoginPage'") for easier debugging.
-* **🛠️ Cross-Functional Testing:**
-  * 🔌 API testing via **Wasapi** (Retrofit)
-  * 🗄️ Database interactions using **JDBC**
-  * 📧 **Built in email client:** sending, receiving emails & HTML verification
-  * 📊 **Web Data Layer Validation:** Verify events, values, and structures directly.
+* **🌐 Polymorphic Interactions:** Write tests that run on web, mobile & desktop platforms using a unified interface.
+* **🏗️ Hybrid Page Object Model:** Classic Java POM with `@FindBy`, or Low-Code JSON-based selectors — your choice.
+* **📋 Built-in Step Definitions:** 68 pre-built Cucumber steps covering click, fill, verify, scroll, wait, select, context, and more.
+* **🤖 Annotation-Driven Runner:** `@Pickleib`, `@PageObject`, `@ContextValue` annotations eliminate boilerplate.
+* **🚗 Smart Driver Management:** Automated `WebDriver` and `AppiumDriver` lifecycle handling.
+* **❤️‍🩹 Self-Healing Utilities:** Retry mechanisms for `StaleElementReferenceException` and `FluentWait` synchronization.
+* **🧳 Context Management:** Global `ContextStore` for sharing data between steps and configuring runtime variables.
+* **🧵 Thread-Safe Parallel Execution:** `ThreadLocal` driver singletons — run tests in parallel without interference.
+* **🛠️ Cross-Functional Testing:** API testing (Wasapi), Database (JDBC), Email client, Web Data Layer validation.
 
 ---
 
@@ -40,60 +34,36 @@ Add the following dependency to your `pom.xml`:
 <dependency>
     <groupId>io.github.umutayb</groupId>
     <artifactId>pickleib</artifactId>
-    <version>2.0.9</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
-or if you are using gradle:
-```groovy
-implementation 'io.github.umutayb:pickleib:2.0.9'
-```
+### Claude Code Skill (Auto-Install)
+
+Pickleib ships with a Claude Code agent skill for AI-assisted test generation. The skill is **automatically extracted** to `skills/pickleib/SKILL.md` in your project the first time `PickleibRunner` loads — no additional configuration needed. Just add Pickleib as a dependency and the skill becomes available.
+
+Add `skills/` to your `.gitignore` — the skill is extracted from the JAR at runtime.
 
 ---
 
-## 🏗️ Driver Setup (Hooks)
+## 🏁 Getting Started
 
-Manage the driver lifecycle using hooks. Pickleib handles the singleton initialization for you.
+There are two main approaches to defining your elements. Both give you access to the same built-in step library.
 
-```java
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import pickleib.web.driver.PickleibWebDriver;
-// import pickleib.mobile.driver.PickleibAppiumDriver;
+| Approach | Best For | Element Definition | Java Code Needed |
+| :--- | :--- | :--- | :--- |
+| **JSON Repository** (Low-Code) | Quick start, small teams, simple pages | `page-repository.json` | Minimal (just `CommonSteps` + `Hooks`) |
+| **Page Objects** (Classic POM) | Large projects, complex interactions, IDE support | Java classes with `@FindBy` | Page classes + `ObjectRepository` |
 
-public class Hooks {
-
-    @BeforeEach
-    public void start() {
-        // Initialize Web Driver
-        PickleibWebDriver.initialize();
-
-        // OR Initialize Mobile/Desktop Driver
-        // PickleibAppiumDriver.initialize();
-    }
-
-    @AfterEach
-    public void kill() {
-        // Terminate Web Driver
-        PickleibWebDriver.terminate();
-
-        // OR Terminate Mobile/Desktop Driver
-        // PickleibAppiumDriver.terminate();
-    }
-}
-```
+Pick the one that fits your workflow — or mix both in the same project.
 
 ---
 
-## 📖 Usage: Defining Elements & Steps
+### Quick Start: JSON Repository (Low-Code)
 
-Pickleib allows you to structure your Object Repository in two ways. Choose the one that fits your team's workflow.
+Get tests running with **zero page classes**. Define elements in JSON, add a Hooks file, and write Gherkin.
 
-### Method 1: The "Low-Code" JSON Repository (Recommended)
-
-Define your elements in a JSON file. Pickleib will parse this file at runtime to locate elements, reducing Java boilerplate.
-
-**1. Create `src/test/resources/page-repository.json`**
+#### Step 1: Create `page-repository.json`
 
 ```json
 {
@@ -107,8 +77,16 @@ Define your elements in a JSON file. Pickleib will parse this file at runtime to
           "selectors": { "web": [{ "css": "#user-name" }] }
         },
         {
+          "elementName": "passwordInput",
+          "selectors": { "web": [{ "css": "#password" }] }
+        },
+        {
           "elementName": "loginButton",
           "selectors": { "web": [{ "id": "login-button" }] }
+        },
+        {
+          "elementName": "welcomeMessage",
+          "selectors": { "web": [{ "css": ".welcome" }] }
         }
       ]
     }
@@ -116,39 +94,77 @@ Define your elements in a JSON file. Pickleib will parse this file at runtime to
 }
 ```
 
-**2. Initialize `PickleibSteps` with the JSON path**
+Each page has a `name`, `platform`, and a list of `elements`. Each element supports multiple selector types (`css`, `id`, `xpath`, `accessibilityId`) and platform-specific selectors (`web`, `android`, `ios`).
+
+#### Step 2: Create `Hooks.java`
 
 ```java
-import pickleib.utilities.steps.PickleibSteps;
-import org.openqa.selenium.WebElement;
+import io.cucumber.java.*;
+import pickleib.web.driver.PickleibWebDriver;
 
-public class CommonSteps extends PickleibSteps {
-
-    public CommonSteps() {
-        // Point to your JSON file
-        super("src/test/resources/page-repository.json");
+public class Hooks {
+    @Before
+    public void setup() {
+        PickleibWebDriver.initialize();
     }
 
-    @When("I click the {string} on the {string} page")
-    public void clickTheButton(String buttonName, String pageName) {
-        log.info("Clicking the " + buttonName + " on the " + pageName);
-        
-        // Acquire element dynamically from the JSON definition
-        WebElement button = getElementRepository().acquireElementFromPage(buttonName, pageName);
-        
-        // Perform interaction
-        getInteractions(button).clickElement(button);
+    @After
+    public void teardown() {
+        PickleibWebDriver.terminate();
     }
 }
 ```
 
+#### Step 3: Write your feature file
+
+```gherkin
+@Web-UI
+Scenario: Login flow
+  * Navigate to url: https://example.com
+  * Fill input usernameInput on the LoginPage with text: admin
+  * Fill input passwordInput on the LoginPage with text: secret
+  * Click the loginButton on the LoginPage
+  * Verify the text of welcomeMessage on the LoginPage contains: Welcome
+```
+
+#### Step 4: Configure the Test Runner
+
+`@Pickleib` auto-detects `page-repository.json` at the default location — no `CommonSteps` class needed:
+
+```java
+import io.cucumber.junit.Cucumber;
+import io.cucumber.junit.CucumberOptions;
+import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
+import pickleib.annotations.Pickleib;
+import pickleib.runner.PickleibRunner;
+
+@RunWith(Cucumber.class)
+@Pickleib
+@ExtendWith(PickleibRunner.class)
+@CucumberOptions(
+    features = "src/test/resources/features",
+    glue = {"steps", "pickleib.steps"},
+    plugin = {"json:target/reports/Cucumber.json"}
+)
+public class TestRunner {}
+```
+
+**Important:** Add `"pickleib.steps"` to the glue path. This activates the built-in step definitions.
+
+#### Step 5: Run
+
+```shell
+mvn test -Dcucumber.filter.tags="@Web-UI" -Dbrowser=chrome
+```
+
 ---
 
-### Method 2: Classic Page Object Model
+### Quick Start: Page Objects (Classic POM)
 
-Use standard Java classes extending `PickleibPageObject` and register them in a central repository class.
+Use standard Java classes with `@FindBy` annotations for IDE autocomplete, compile-time safety, and custom page methods.
 
-**1. Create a Page Class**
+#### Step 1: Create Page Classes
 
 ```java
 package pages;
@@ -158,275 +174,370 @@ import org.openqa.selenium.support.FindBy;
 import pickleib.web.PickleibPageObject;
 
 public class LoginPage extends PickleibPageObject {
-    
     @FindBy(id = "user-name")
     public WebElement usernameInput;
 
-    @FindBy(css = "#login-button")
+    @FindBy(css = "#password")
+    public WebElement passwordInput;
+
+    @FindBy(id = "login-button")
     public WebElement loginButton;
+
+    @FindBy(css = ".welcome")
+    public WebElement welcomeMessage;
 }
 ```
 
-**2. Register in an Object Repository**
+#### Step 2: Create an Object Repository
 
-Create a class that implements `PageObjectRepository`. Declare your page classes as fields here. Pickleib uses reflection to scan this class.
+Register your page classes in a single class. Pickleib uses reflection to scan this.
 
 ```java
 package common;
 
-import pages.LoginPage;
+import pages.*;
 import pickleib.utilities.interfaces.repository.PageObjectRepository;
 
 public class ObjectRepository implements PageObjectRepository {
-    
-    // The framework will detect these fields via reflection
     public LoginPage loginPage;
+    public DashboardPage dashboardPage;
+    // Add all page objects as fields
 }
 ```
 
-**3. Initialize `PickleibSteps` with the Class Repository**
+#### Step 3: Create `CommonSteps.java`
 
 ```java
 import common.ObjectRepository;
 import pickleib.utilities.steps.PickleibSteps;
-import org.openqa.selenium.WebElement;
 
 public class CommonSteps extends PickleibSteps {
-
     public CommonSteps() {
-        // Point to your ObjectRepository class
         super(ObjectRepository.class);
     }
-
-    @When("I click the {string} on the {string} page")
-    public void clickTheButton(String buttonName, String pageName) {
-        log.info("Clicking the " + buttonName + " on the " + pageName);
-        
-        // Acquire element dynamically via reflection
-        WebElement button = getElementRepository().acquireElementFromPage(buttonName, pageName);
-        
-        getInteractions(button).clickElement(button);
-    }
 }
 ```
 
-**Alternatively, you can instantiate page objects and call their methods directly.**
+Same as the JSON approach — one class gives you all 68 built-in steps.
+
+#### Step 4: Create `Hooks.java`
 
 ```java
-import pages.HomePage;
+import io.cucumber.java.*;
+import pickleib.web.driver.PickleibWebDriver;
 
-public class HomePageSteps {
+public class Hooks {
+    @Before
+    public void setup() {
+        PickleibWebDriver.initialize();
+    }
 
-    HomePage homePage = new HomePage();
-
-    @Given("I select the {string} category")
-    public void selectCategory(String categoryName) {
-        homePage.selectCategory(categoryName);
+    @After
+    public void teardown() {
+        PickleibWebDriver.terminate();
     }
 }
 ```
----
 
-## 🏃 Execution
+#### Step 5: Write feature files and run
 
-### Cucumber Feature File
-Regardless of the method chosen above, your Gherkin remains the same:
+The Gherkin syntax is identical regardless of which approach you use:
 
 ```gherkin
-Background: Context user
-  * Navigate to the test page
-
-@Web-UI @Scenario-1
-Scenario: Click interactions
-  * I click the "loginButton" on the "LoginPage" page
+@Web-UI
+Scenario: Login flow
+  * Navigate to url: https://example.com
+  * Fill input usernameInput on the LoginPage with text: admin
+  * Fill input passwordInput on the LoginPage with text: secret
+  * Click the loginButton on the LoginPage
+  * Verify the text of welcomeMessage on the LoginPage contains: Welcome
 ```
 
-### Test Runner Configuration
+---
+
+## 📋 Built-in Step Library
+
+All steps work with both JSON and Page Object approaches. Add `pickleib.steps` to your Cucumber glue path to activate them.
+
+### Navigation
+
+| Step | Description |
+| :--- | :--- |
+| `Navigate to url: {url}` | Open a URL |
+| `Navigate to test url` | Open the URL from `test-url` context key |
+| `Go to the {pagePath} page` | Navigate to a relative path |
+| `Refresh the page` | Reload the current page |
+| `Navigate browser backwards/forwards` | Browser back/forward |
+| `Switch to the next tab` | Switch to the next browser tab |
+| `Switch back to the parent tab` | Return to the original tab |
+| `Save current url to context` | Store current URL in ContextStore |
+
+### Click / Tap
+
+| Step | Description |
+| :--- | :--- |
+| `Click the {element} on the {Page}` | Click an element on a page |
+| `Click button with {text} text` | Click by visible text |
+| `Click listed element {name} from {list} list on the {Page}` | Click element from a list |
+| `If present, click the {element} on the {Page}` | Click only if element exists |
+| `If enabled, click the {element} on the {Page}` | Click only if element is enabled |
+| `Click towards the {element} on the {Page}` | Scroll-to-click |
+
+### Input / Form
+
+| Step | Description |
+| :--- | :--- |
+| `Fill input {element} on the {Page} with text: {value}` | Fill a text input |
+| `Fill input {element} on the {Page} with verified text: {value}` | Fill and verify the value was set |
+| `Fill form input on the {Page}` | Fill multiple inputs from a table (see below) |
+| `Select option {text} from {element} on the {Page}` | Select from a dropdown |
+
+**Form fill table format:**
+
+```gherkin
+* Fill form input on the LoginPage
+  | element       | input    |
+  | usernameInput | admin    |
+  | passwordInput | secret   |
+```
+
+### Verify
+
+| Step | Description |
+| :--- | :--- |
+| `Verify the text of {element} on the {Page} to be: {text}` | Exact text match |
+| `Verify the text of {element} on the {Page} contains: {text}` | Partial text match |
+| `Verify presence of element {element} on the {Page}` | Element exists in DOM |
+| `Verify absence of element {element} on the {Page}` | Element not in DOM |
+| `Verify that element {element} on the {Page} is in {state} state` | Check enabled/displayed/selected/disabled/absent |
+| `Verify that element {element} on the {Page} has {value} value for its {attribute} attribute` | Check attribute value |
+| `Verify the url contains with the text {text}` | URL assertion |
+
+### Wait
+
+| Step | Description |
+| :--- | :--- |
+| `Wait {n} seconds` | Hard wait |
+| `Wait for element {element} on the {Page} to be visible` | Wait until visible |
+| `Wait for absence of element {element} on the {Page}` | Wait until gone |
+| `Wait until element {element} on the {Page} has {value} value for its {attribute} attribute` | Wait for attribute |
+
+### Scroll / Swipe
+
+| Step | Description |
+| :--- | :--- |
+| `Scroll up/down/left/right using web/mobile driver` | Directional scroll |
+| `Scroll until listed {element} from {list} is found on the {Page}` | Scroll to find element |
+| `Center the {element} on the {Page}` | Scroll element into center view |
+
+### Context Store
+
+| Step | Description |
+| :--- | :--- |
+| `Update context {key} -> {value}` | Store a key-value pair |
+| `Save context value from {key} context key to {newKey}` | Copy a context value |
+| `Acquire the {attribute} attribute of {element} on the {Page}` | Save attribute to context |
+
+Use `CONTEXT-{key}` in any step value to reference stored context values:
+```gherkin
+* Update context testUser -> admin
+* Fill input usernameInput on the LoginPage with text: CONTEXT-testUser
+```
+
+### Other
+
+| Step | Description |
+| :--- | :--- |
+| `Upload file on input {element} on the {Page} with file: {path}` | File upload |
+| `Execute JS command: {script}` | Run JavaScript |
+| `Set window width & height as {w} & {h}` | Resize browser |
+| `Add the following cookies:` | Add cookies from table |
+| `Delete cookies` | Clear all cookies |
+
+---
+
+## 🏷️ Annotations
+
+### `@Pickleib`
+Marks a test class for automatic element repository setup. When used without parameters, auto-detects the approach:
+1. Looks for `src/test/resources/page-repository.json` — if found, uses JSON repository
+2. Otherwise scans for `@PageObject`/`@ScreenObject` classes in the `pages` package
+3. If neither is found, logs a warning with setup instructions
 
 ```java
-import io.cucumber.junit.Cucumber;
-import io.cucumber.junit.CucumberOptions;
-import org.junit.runner.RunWith;
+@Pickleib  // auto-detect — just works
+@ExtendWith(PickleibRunner.class)
+public class MyTest { ... }
 
-@RunWith(Cucumber.class)
-@CucumberOptions(
-        features = {"src/test/resources/features"},
-        glue = {"steps", "hooks"},
-        plugin = {"json:target/reports/Cucumber.json"},
-        publish = true
-)
-public class TestRunner {}
+// Or explicit configuration:
+@Pickleib(scan = {"com.myapp.pages", "com.myapp.screens"})
+@Pickleib(pageRepository = "custom/path/repo.json")
 ```
 
-## ⚙️ Session Configuration
+| Attribute | Description | Default |
+| :--- | :--- | :--- |
+| `scan` | Packages to scan for `@PageObject` / `@ScreenObject` classes | `{}` (auto: `pages`) |
+| `pageRepository` | Path to `page-repository.json` | `""` (auto: `src/test/resources/page-repository.json`) |
+| `builtInSteps` | Enable built-in Cucumber step definitions | `true` |
 
-Pickleib allows extensive customization via a `pickleib.properties` file located in your resources directory (e.g., `src/test/resources/pickleib.properties`). These properties are loaded into the global `ContextStore` and determine how your drivers (Web, Mobile & Desktop) are initialized.
+### `@PageObject`
+Mark any class as a page object — no inheritance required:
+```java
+@PageObject
+public class LoginPage { ... }
 
-### 🌐 Web Driver Customization
+@PageObject(platform = Platform.ios, name = "Login")
+public class LoginPageIOS { ... }
+```
 
-You can control browser type, window size, timeouts, and execution modes (Headless/Grid) using the following properties:
+| Attribute | Description | Default |
+| :--- | :--- | :--- |
+| `platform` | Target platform (`Platform` enum) | `Platform.web` |
+| `name` | Custom registry name (defaults to class name) | `""` |
 
-**`pickleib.properties` Example:**
+### `@ScreenObject`
+Mark a class as a mobile screen object:
+```java
+@ScreenObject
+public class HomeScreen { ... }
+```
+
+| Attribute | Description | Default |
+| :--- | :--- | :--- |
+| `platform` | Target platform (`Platform` enum) | `Platform.android` |
+| `name` | Custom registry name (defaults to class name) | `""` |
+
+### `@ContextValue`
+Inject values from the `ContextStore` directly into fields. Supports `{{key}}` replacement patterns:
+```java
+@ContextValue("test-url")
+private String testUrl;
+
+@ContextValue(value = "timeout", defaultValue = "15000")
+private long timeout;
+```
+
+### `Platform` Enum
+Supported platform values: `web` | `android` | `ios` | `macos` | `windows`
+
+---
+
+## 🏛️ Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  Your Test Project                   │
+│  ┌──────────┐   ┌──────────┐  ┌───────────────────┐ │
+│  │ Feature  │   │  Hooks   │  │  Page Objects     │ │
+│  │  Files   │   │          │  │  (Java or JSON)   │ │
+│  │(.feature)│   │(@Before/ │  │                   │ │
+│  │          │   │ @After)  │  │                   │ │
+│  └────┬─────┘   └────┬─────┘  └────────┬──────────┘ │
+└───────┼──────────────┼─────────────────┼────────────┘
+        │              │                 │
+┌───────┼──────────────┼─────────────────┼────────────┐
+│       ▼              ▼                 ▼   Pickleib │
+│  ┌──────────┐  ┌──────────┐  ┌───────────────────┐  │
+│  │BuiltIn   │  │Pickleib  │  │ PageObjectRegistry│  │
+│  │Steps     │  │WebDriver │  │ or PageObjectJson │  │
+│  │(68 steps)│  │(ThreadL) │  │(ElementRepository)│  │
+│  └────┬─────┘  └──────────┘  └────────┬──────────┘  │
+│       │                               │             │
+│       ▼                               ▼             │
+│  ┌──────────────────────────────────────────────┐   │
+│  │           InteractionBase                    │   │
+│  │    ┌───────────────┐  ┌────────────────┐     │   │
+│  │    │WebInteractions│  │PlatformInteract│     │   │
+│  │    │  (Selenium)   │  │    (Appium)    │     │   │
+│  │    └──────┬────────┘  └───────┬────────┘     │   │
+│  └───────────┼──────────────────┼───────────────┘   │
+│              │                  │                    │
+│  ┌───────────▼──────────────────▼───────────────┐   │
+│  │              Utility Helpers                  │   │
+│  │  ┌─────────┐ ┌──────────┐ ┌───────────────┐  │   │
+│  │  │ClickHlp │ │InputHelp │ │ElementStateHlp│  │   │
+│  │  └────┬────┘ └────┬─────┘ └───────┬───────┘  │   │
+│  └───────┼───────────┼───────────────┼──────────┘   │
+│          └───────────┼───────────────┘              │
+│                      ▼                              │
+│              ┌──────────────┐                       │
+│              │  RetryPolicy │                       │
+│              └──────────────┘                       │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+## ⚙️ Configuration
+
+Pickleib is configured via `pickleib.properties` in your resources directory. These are loaded into the global `ContextStore`.
+
+### Web Driver
 
 ```properties
-# --- General Driver Settings ---
 browser=chrome
 headless=true
 driver-timeout=15000
-driver-maximize=false
+element-timeout=15000
 frame-width=1920
 frame-height=1080
 delete-cookies=true
-
-# --- Advanced Options ---
-load-strategy=normal
-web-driver-manager=false
-selenium-log-level=off
 ```
 
----
+| Property | Description | Default |
+| :--- | :--- | :--- |
+| `browser` | `chrome`, `firefox`, `safari`, `edge` | `chrome` |
+| `headless` | Run without a UI | `false` |
+| `driver-timeout` | Implicit wait in ms | `15000` |
+| `element-timeout` | Element interaction timeout in ms | `15000` |
+| `frame-width` / `frame-height` | Browser window size | `1920` / `1080` |
+| `driver-maximize` | Maximize window on startup | `false` |
+| `delete-cookies` | Clear cookies before each test | `false` |
+| `selenium-grid` | Use a remote Grid | `false` |
+| `hub-url` | Grid hub URL | `""` |
+| `mobile-mode` | Chrome mobile emulation | `false` |
+| `emulated-device` | Device profile for emulation | `iPhone12Pro` |
 
-### 📱 Mobile & Desktop Driver Customization (Appium)
-
-For Mobile (Android/iOS) or Desktop (Windows/MacOS) automation, Pickleib separates the **Server Configuration** from the **Device Capabilities**.
-
-#### 1. Define Server Properties
-Set these in your `pickleib.properties` file:
+### Mobile / Desktop (Appium)
 
 ```properties
-# --- Appium Server Config ---
+device=MyApp
+config=src/test/resources/configurations
 use-appium2=true
-start-service=true
 address=0.0.0.0
 port=4723
-
-# --- Device Selection ---
-# Directory containing your capability JSON files
-config=src/test/resources/configurations
-# The name of the JSON file to load (without .json extension)
-device=InventoryApp
 ```
 
-### 🌐 Web Driver Configuration
-
-These properties control the `WebDriverFactory`. They cover everything from basic browser selection to advanced proxy and grid configurations.
-
-| Property | Description | Default |
-| :--- | :--- | :--- |
-| **Basic Setup** | | |
-| `browser` | Target browser (`chrome`, `firefox`, `safari`, `edge`, `opera`) | `chrome` |
-| `headless` | Run without a UI | `false` |
-| `driver-timeout` | Implicit wait time in **milliseconds** | `15000` |
-| `delete-cookies` | Delete all cookies before starting the test | `false` |
-| `frame-width` | Browser window width (if not maximized) | `1920` |
-| `frame-height` | Browser window height (if not maximized) | `1080` |
-| `driver-maximize` | Maximize window on startup | `false` |
-| **Advanced** | | |
-| `load-strategy` | Page load strategy (`normal`, `eager`, `none`) | `normal` |
-| `web-driver-manager` | Use WDM to download driver binaries automatically | `false` |
-| `driver-no-sandbox` | Add `--no-sandbox` flag (useful for Docker/CI) | `false` |
-| `disable-notifications`| Disable browser notification popups | `true` |
-| `insecure-localhost` | Accept insecure/self-signed SSL certificates | `false` |
-| `allow-remote-origin` | Allow remote origins (Fixes connection issues in newer Chrome) | `true` |
-| `selenium-log-level` | Logging level for the internal Selenium driver | `off` |
-| **Network / Grid** | | |
-| `selenium-grid` | Connect to a remote Selenium Grid hub | `false` |
-| `hub-url` | The URL of the Grid Hub (Required if `selenium-grid` is true) | `""` |
-| `proxy-address` | Address of the proxy server | `null` |
-| `proxy-port` | Port of the proxy server | `0` |
-| **Emulation** | | |
-| `mobile-mode` | Enable Chrome's mobile emulation mode | `false` |
-| `emulated-device` | Device profile for emulation (e.g., `iPhone12Pro`) | `iPhone12Pro` |
-
----
-
-### 📱 Mobile & Desktop Configuration (Appium)
-
-Mobile driver initialization is split into two parts: **Appium Service Connection** (defined in properties) and **Device Capabilities** (defined in JSON).
-
-#### 1. Connection Properties (`pickleib.properties`)
-
-These settings tell Pickleib how to connect to the Appium service (Local or Remote/Cloud).
-
-| Property | Description | Default |
-| :--- | :--- | :--- |
-| **General** | | |
-| `device` | **Required.** The filename of the JSON config (without `.json`) | `null` |
-| `config` | Directory containing the capability JSON files | `src/test/resources/configurations` |
-| `use-remote-mobile-driver`| Switch between Local Appium (`false`) and Cloud Providers (`true`) | `false` |
-| **Local Service** | | |
-| `address` | IP address for the local Appium server | `0.0.0.0` |
-| `port` | Port for the local Appium server | `4723` |
-| `appium-service-uri` | Extension for the service URL (e.g., `/wd/hub`) | `""` |
-| **Remote / Cloud** | | |
-| `remote-mobile-server` | The cloud provider URL (e.g., `hub-cloud.browserstack.com`) | `null` |
-| `remote-mobile-username`| Username for the cloud provider | `null` |
-| `remote-mobile-access-key`| Access key/Token for the cloud provider | `null` |
-
-#### 2. Define Device Capabilities (JSON)
-Create a JSON file inside the folder specified by the `config` property. The filename should match the `device` property (e.g., `InventoryApp.json`).
-
-**Example: Conventional iOS Setup (`src/test/resources/configurations/InventoryApp.json`)**
-**Note:** If the `app` path in the JSON is a valid local file path, Pickleib will automatically resolve its absolute path before sending it to the server.
+Create a JSON capability file at `{config}/{device}.json`:
 
 ```json
 {
   "platformName": "iOS",
   "automationName": "XCUITest",
   "deviceName": "iPhone 14",
-  "udid": "00008101-001E30590A00002E",
-  "bundleId": "com.company.inventoryapp",
-  "app": "src/test/resources/apps/InventoryApp.app",
-  "platformVersion": "16.2",
-  "noReset": true,
-  "autoAcceptAlerts": true
+  "bundleId": "com.company.app",
+  "app": "src/test/resources/apps/MyApp.app"
 }
 ```
 
-When you initialize `PickleibAppiumDriver`, it will looks for `InventoryApp.json` in the configurations folder, parse these capabilities, and start the Appium service on port `4723`.
+---
 
-### CLI Execution
+## 🧵 Parallel Execution
 
-Run tests via Maven, filtering by tags and browser.
+Driver singletons use `ThreadLocal` — parallel execution is safe out of the box.
 
-**Run Tests**
 ```shell
-  mvn clean test -Dcucumber.filter.tags="@Web-UI" -Dbrowser=chrome
+mvn test -Dcucumber.execution.parallel.enabled=true -Dcucumber.execution.parallel.config.fixed.parallelism=4
 ```
+
 ---
 
 ## 💻 Local Development
 
-This repository includes a sample test website for you to practice against.
-
-1.  **Start the Local Server:**
-    ```shell
-    docker-compose up --build -d
-    ```
-
-2.  **Access the Site:**
-    👉 **[http://localhost:8080](http://localhost:8080)**
-
----
-
-### Start a New Project
-
-To create a compatible Cucumber project from scratch:
+This repository includes a sample test website:
 
 ```shell
-mvn archetype:generate                      \
-"-DarchetypeGroupId=io.cucumber"            \
-"-DarchetypeArtifactId=cucumber-archetype"  \
-"-DarchetypeVersion=6.10.4"                 \
-"-DgroupId=example"                         \
-"-DartifactId=my-project"                  \
-"-Dpackage=example"                        \
-"-Dversion=1.0.0-SNAPSHOT"                 \
-"-DinteractiveMode=false"
+docker-compose up --build -d
 ```
 
-### ⚠️ Important: ArtifactId Change
-
-As of version **2.0.1**, the Artifact ID has changed to lowercase.
-* Old: `Pickleib`
-* New: **`pickleib`**
+Access at 👉 **[http://localhost:7457](http://localhost:7457)**

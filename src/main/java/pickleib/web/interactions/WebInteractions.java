@@ -38,7 +38,6 @@ import static utils.StringUtilities.highlighted;
  *
  * @author Umut Ay Bora
  */
-@SuppressWarnings("unused")
 public class WebInteractions extends WebUtilities implements PolymorphicUtilities {
 
     public WebInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
