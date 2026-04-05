@@ -73,6 +73,9 @@ public class ClickHelper {
      * Clicks element if present. Only catches NoSuchElementException and StaleElementReferenceException
      * (directly or wrapped in PickleibException by RetryPolicy).
      * Other WebDriverExceptions (session-not-created, etc.) propagate.
+     *
+     * @param element the element to click
+     * @param scroll  if true, scrolls to the element before clicking
      */
     public void clickButtonIfPresent(WebElement element, boolean scroll) {
         try {
@@ -119,6 +122,8 @@ public class ClickHelper {
     /**
      * Waits for the element to be visible, then clicks at its center coordinates.
      * Preserves the visibility check from the original Utilities.clickTowards.
+     *
+     * @param element the element to click towards
      */
     public void clickTowards(WebElement element) {
         wait.until(ExpectedConditions.visibilityOf(element));

@@ -40,11 +40,20 @@ import static utils.StringUtilities.highlighted;
  */
 public class WebInteractions extends WebUtilities implements PolymorphicUtilities {
 
+    /**
+     * Constructs a WebInteractions instance with a custom driver and wait.
+     *
+     * @param driver the WebDriver instance
+     * @param wait   the FluentWait instance
+     */
     public WebInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         super(driver);
         this.wait = wait;
     }
 
+    /**
+     * Constructs a WebInteractions instance using the singleton {@link PickleibWebDriver}.
+     */
     public WebInteractions() {
         super(PickleibWebDriver.get());
     }
@@ -803,7 +812,7 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      * Executes interactions on a list of element bundles, based on the specified interaction type.
      * <p>
      * The interaction type is specified in the "Interaction Type" key of the map contained in each element bundle.
-     * <p>
+     * </p>
      *
      * @param bundles  A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
      * @param pageName The name of the page object.
@@ -1037,7 +1046,9 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
     }
 
     /**
-     * Waits actively for the page to load up to 10 seconds
+     * Waits actively for the page to load up to the specified time.
+     *
+     * @param waitingTime maximum wait time in seconds
      */
     public void waitUntilPageLoads(int waitingTime) {
         log.info("Waiting for the page to load up " +
@@ -1141,8 +1152,9 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      * Listen to {event name} event and print {specified script} object
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
-     * @param eventName    target event name
-     * @param objectScript object script
+     * @param listenerScript the JS listener script
+     * @param eventName      target event name
+     * @param objectScript   object script
      */
     //@Given("Listen to {} event & print {} object")
     public void listenGetAndPrintObject(String listenerScript, String eventName, String objectScript) {
@@ -1157,9 +1169,10 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      * Listen to {event name} event and verify value of {node source} node is {expected value}
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
-     * @param eventName     evet name
-     * @param nodeSource    node source
-     * @param expectedValue expected value
+     * @param listenerScript the JS listener script
+     * @param eventName      event name
+     * @param nodeSource     node source
+     * @param expectedValue  expected value
      */
     public void listenGetAndVerifyObject(String listenerScript, String eventName, String nodeSource, String expectedValue) {
         log.info("Verifying value of '" + nodeSource + "' node");
@@ -1181,8 +1194,9 @@ public class WebInteractions extends WebUtilities implements PolymorphicUtilitie
      * Listen to {event name} event and verify the values of the following nodes
      * example -> listenerScript = "_ddm.listen(" + eventName + ");";
      *
-     * @param eventName event name
-     * @param nodeList  target node list
+     * @param listenerScript the JS listener script
+     * @param eventName      event name
+     * @param nodeList       target node list
      */
     public void listenGetAndVerifyObject(String listenerScript, String eventName, List<Map<String, String>> nodeList) {
         if (isEventFired(eventName, listenerScript)) {

@@ -32,9 +32,12 @@ public class PickleibRunner implements BeforeAllCallback, TestInstancePostProces
 
     private static final Printer log = new Printer(PickleibRunner.class);
     private static final PageObjectRegistry registry = new PageObjectRegistry();
+    /** Default path for the JSON page repository file. */
     public static final String DEFAULT_PAGE_REPOSITORY = "src/test/resources/page-repository.json";
+    /** Default package to scan for {@code @PageObject} / {@code @ScreenObject} classes. */
     public static final String DEFAULT_SCAN_PACKAGE = "pages";
 
+    /** @return the shared page object registry */
     public static PageObjectRegistry getRegistry() {
         return registry;
     }

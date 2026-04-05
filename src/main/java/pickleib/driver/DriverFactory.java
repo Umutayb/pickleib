@@ -20,7 +20,9 @@ public interface DriverFactory {
      * </ul>
      */
     enum DriverType {
+        /** Selenium WebDriver for web browser automation. */
         selenium,
+        /** Appium driver for mobile/desktop automation. */
         appium;
 
         /**

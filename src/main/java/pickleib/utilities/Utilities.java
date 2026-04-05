@@ -46,22 +46,39 @@ import static utils.StringUtilities.*;
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public abstract class Utilities {
 
+    /** JSON object mapper instance. */
     public ObjectMapper objectMapper = new ObjectMapper();
+    /** Logger instance. */
     public Printer log = new Printer(this.getClass());
+    /** The WebDriver instance used for browser interactions. */
     public RemoteWebDriver driver;
+    /** Fluent wait instance configured for element polling. */
     public FluentWait<RemoteWebDriver> wait;
+    /** Scroll function used to bring elements into view. */
     public ScrollFunction scroller;
 
+    /** Timeout in milliseconds for element-level waits. */
     @ContextValue(value = "element-timeout", defaultValue = "15000")
     public long elementTimeout;
 
+    /** Timeout in milliseconds for driver-level waits. */
     @ContextValue(value = "driver-timeout", defaultValue = "15000")
     public long driverTimeout;
+    /** Helper for click interactions. */
     protected ClickHelper clickHelper;
+    /** Helper for input interactions. */
     protected InputHelper inputHelper;
+    /** Helper for element state checks and verifications. */
     protected ElementStateHelper elementStateHelper;
+    /** Helper for drag-and-drop interactions. */
     protected DragDropHelper dragDropHelper;
 
+    /**
+     * Constructs a Utilities instance with an explicit FluentWait.
+     *
+     * @param driver the RemoteWebDriver instance
+     * @param wait   the pre-configured FluentWait instance
+     */
     public Utilities(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         ContextValueInjector.injectFields(this);
         this.driverTimeout = this.driverTimeout / 1000;
@@ -73,6 +90,12 @@ public abstract class Utilities {
         this.dragDropHelper = new DragDropHelper(driver);
     }
 
+    /**
+     * Constructs a Utilities instance with a scroll function, creating a default FluentWait.
+     *
+     * @param driver   the RemoteWebDriver instance
+     * @param scroller the scroll function for bringing elements into view
+     */
     public Utilities(RemoteWebDriver driver, ScrollFunction scroller) {
         ContextValueInjector.injectFields(this);
         this.driverTimeout = this.driverTimeout / 1000;
@@ -117,6 +140,12 @@ public abstract class Utilities {
      */
     public void clickElement(WebElement element, boolean scroll) { clickHelper.clickElement(element, scroll); }
 
+    /**
+     * Checks whether the given element is within the browser viewport.
+     *
+     * @param element the element to check
+     * @return {@code true} if the element is fully within the viewport
+     */
     public boolean isElementInViewPort(WebElement element) {
         int windowHeight = driver.manage().window().getSize().getHeight();
         int windowWidth = driver.manage().window().getSize().getWidth();
@@ -161,6 +190,7 @@ public abstract class Utilities {
     /**
      * Press {target key} key on {element name} element of the {}
      *
+     * @param element     the target web element
      * @param keys        target keys
      * @param elementName target element name
      * @param pageName    specified page instance name
@@ -219,6 +249,7 @@ public abstract class Utilities {
      *
      * @param inputElement target input element
      * @param inputText    input text
+     * @param scroll       whether to scroll to the element before filling
      */
     public void fillAndVerifyInput(WebElement inputElement, String inputText, boolean scroll) {
         inputHelper.fillAndVerifyInput(inputElement, inputText, scroll);
@@ -273,6 +304,7 @@ public abstract class Utilities {
      *
      * @param inputElement target input element
      * @param inputText    input text
+     * @param scroll       whether to scroll to the element before filling
      * @param clear        If true, clears the input field before entering text. If false, does not clear.
      * @param verify       verifies the input text value equals to an expected text if true
      */
@@ -363,6 +395,7 @@ public abstract class Utilities {
      * Clears an input element
      *
      * @param element target element
+     * @return the cleared element
      */
     public WebElement clearInputField(@NotNull WebElement element) {
         return inputHelper.clearInputField(element);
@@ -372,6 +405,7 @@ public abstract class Utilities {
      * Acquires an element by its text
      *
      * @param elementText target element text
+     * @return the located WebElement
      */
     public WebElement waitAndGetElementByText(String elementText) {
         try {
@@ -388,6 +422,7 @@ public abstract class Utilities {
      * Acquires an element by its text
      *
      * @param elementText target element text
+     * @return the located WebElement, or {@code null} if not found
      */
     public WebElement getElementByText(String elementText) {
         String queryAttribute = getTextAttributeNameFor(getDriverPlatform(driver));
@@ -410,6 +445,7 @@ public abstract class Utilities {
      * Acquires an element that contains a certain text
      *
      * @param elementText target element text
+     * @return the located WebElement
      */
     public WebElement getElementContainingText(String elementText) {
         try {
@@ -488,6 +524,7 @@ public abstract class Utilities {
      * Combines the given keys
      *
      * @param keys key inputs
+     * @return the combined key chord string
      */
     public String combineKeys(Keys... keys) {
         return Keys.chord(keys);
@@ -628,6 +665,8 @@ public abstract class Utilities {
      * Verify the text of {element name} on the {page name} to be: {expected text}
      *
      * @param element      target element
+     * @param elementName  the name of the target element
+     * @param pageName     specified page instance name
      * @param expectedText expected text
      */
     public void verifyElementContainsText(WebElement element, String elementName, String pageName, String expectedText) {
@@ -637,6 +676,7 @@ public abstract class Utilities {
     /**
      * Verify the text of an element from the list on the {page name}
      *
+     * @param bundles  list of element bundles containing elements and their expected texts
      * @param pageName specified page instance name
      */
     public void verifyListedElementText(
@@ -648,7 +688,10 @@ public abstract class Utilities {
     /**
      * Verify the text of an element from the list on the {page name}
      *
-     * @param pageName specified page instance name
+     * @param elements     the list of elements to search
+     * @param expectedText the expected text to find in the list
+     * @param listName     the name of the element list
+     * @param pageName     specified page instance name
      */
     public void verifyListContainsElementByText(
             List<WebElement> elements,
@@ -674,6 +717,7 @@ public abstract class Utilities {
      * @param element        target element
      * @param attributeValue expected attribute value
      * @param attributeName  target attribute name
+     * @return {@code true} if the element contains the specified attribute value
      */
     public boolean elementContainsAttribute(
             WebElement element,
@@ -688,6 +732,7 @@ public abstract class Utilities {
      * @param elementName   the name of the element to be verified
      * @param attributeName the name of the attribute to be verified
      * @param value         the expected part of value of the attribute
+     * @return {@code true} if the attribute contains the specified value
      */
     public boolean elementAttributeContainsValue(
             WebElement elementName,

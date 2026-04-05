@@ -28,13 +28,19 @@ import static utils.StringUtilities.Color.GRAY;
 import static utils.StringUtilities.contextCheck;
 import static utils.StringUtilities.*;
 
+/** Implements polymorphic interaction utilities for Appium-based platform testing. */
 public class PlatformInteractions extends PlatformUtilities implements PolymorphicUtilities {
 
+    /**
+     * @param driver the RemoteWebDriver instance
+     * @param wait   the FluentWait instance
+     */
     public PlatformInteractions(RemoteWebDriver driver, FluentWait<RemoteWebDriver> wait) {
         super(driver);
         this.wait = wait;
     }
 
+    /** Creates an instance using the default Pickleib Appium driver. */
     public PlatformInteractions() {
         super(PickleibAppiumDriver.get());
     }
@@ -820,7 +826,6 @@ public class PlatformInteractions extends PlatformUtilities implements Polymorph
      * Executes interactions on a list of element bundles, based on the specified interaction type.
      * <p>
      * The interaction type is specified in the "Interaction Type" key of the map contained in each element bundle.
-     * <p>
      *
      * @param bundles  A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
      * @param pageName The name of the page object.

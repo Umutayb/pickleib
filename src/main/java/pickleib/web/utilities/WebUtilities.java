@@ -4,21 +4,18 @@ import collections.Bundle;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.failsafe.internal.util.Assert;
-import io.appium.java_client.functions.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.*;
-import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.remote.RemoteExecuteMethod;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.html5.RemoteWebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -74,6 +71,11 @@ public abstract class WebUtilities extends Utilities {
         super(driver, (element) -> centerElement(element, driver));
     }
 
+    /**
+     * Returns the active {@link RemoteWebDriver} instance.
+     *
+     * @return the driver instance
+     */
     public RemoteWebDriver driver() {
         return this.driver;
     }
@@ -564,6 +566,7 @@ public abstract class WebUtilities extends Utilities {
      * Executes a JS script and returns the responding object
      *
      * @param script script that is to be executed
+     * @param args   arguments to pass to the script
      *
      * @return object if the scripts yield one
      */
@@ -578,11 +581,10 @@ public abstract class WebUtilities extends Utilities {
      * @param form Map(String, String)
      */
     public void addValuesToLocalStorage(Map<String, String> form) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         for (String valueKey : form.keySet()) {
-            RemoteExecuteMethod executeMethod = new RemoteExecuteMethod(driver);
-            RemoteWebStorage webStorage = new RemoteWebStorage(executeMethod);
-            LocalStorage storage = webStorage.getLocalStorage();
-            storage.setItem(valueKey, contextCheck(form.get(valueKey)));
+            js.executeScript("window.localStorage.setItem(arguments[0], arguments[1]);",
+                    valueKey, contextCheck(form.get(valueKey)));
         }
     }
 
@@ -635,6 +637,8 @@ public abstract class WebUtilities extends Utilities {
 
     /**
      * Waits actively for the page to load up to 10 seconds
+     *
+     * @param waitingTime maximum wait time in seconds
      */
     protected void waitUntilLoads(int waitingTime) {
         long startTime = System.currentTimeMillis();

@@ -32,6 +32,8 @@ public class PageObjectDesign<ObjectRepository extends PageObjectRepository>
      *
      * @param objectRepositoryClass The class of the object repository which will be used to initialize
      *                              the page object model, element interactions, and reflections.
+     * @param mobileDriverActive    whether the mobile/Appium driver is active
+     * @param webDriverActive       whether the web/Selenium driver is active
      */
     public PageObjectDesign(
             Class<ObjectRepository> objectRepositoryClass,

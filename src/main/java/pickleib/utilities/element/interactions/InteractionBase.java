@@ -29,6 +29,7 @@ public class InteractionBase {
      */
     public DriverFactory.DriverType defaultPlatform = DriverFactory.DriverType.selenium;
 
+    /** Logger instance for this class. */
     public Printer log = new Printer(this.getClass());
 
     /**

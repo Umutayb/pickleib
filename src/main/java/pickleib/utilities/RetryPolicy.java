@@ -20,6 +20,9 @@ public class RetryPolicy {
     /**
      * Retries a void action until it succeeds or the timeout is reached.
      * Throws PickleibException wrapping the last caught exception on timeout.
+     *
+     * @param action    the action to retry
+     * @param timeoutMs maximum time in milliseconds
      */
     public static void execute(Runnable action, long timeoutMs) {
         execute(() -> { action.run(); return null; }, timeoutMs);
@@ -28,6 +31,11 @@ public class RetryPolicy {
     /**
      * Retries a supplier action until it returns a value or the timeout is reached.
      * Throws PickleibException wrapping the last caught exception on timeout.
+     *
+     * @param <T>       the return type
+     * @param action    the supplier action to retry
+     * @param timeoutMs maximum time in milliseconds
+     * @return the result of the supplier
      */
     public static <T> T execute(Supplier<T> action, long timeoutMs) {
         long startTime = System.currentTimeMillis();
@@ -51,6 +59,10 @@ public class RetryPolicy {
     /**
      * Polls until a condition returns true or the timeout is reached.
      * Returns false on timeout (does not throw).
+     *
+     * @param condition the condition to poll
+     * @param timeoutMs maximum time in milliseconds
+     * @return true if the condition was met, false on timeout
      */
     public static boolean pollUntil(BooleanSupplier condition, long timeoutMs) {
         return pollUntil(condition, timeoutMs, null, null, null);

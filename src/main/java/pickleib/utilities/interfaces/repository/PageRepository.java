@@ -17,5 +17,6 @@ package pickleib.utilities.interfaces.repository;
  */
 public interface PageRepository {
 
+    /** @return the element repository for acquiring page-level elements */
     ElementRepository getElementRepository();
 }
