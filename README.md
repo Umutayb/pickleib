@@ -426,7 +426,7 @@ Supported platform values: `web` | `android` | `ios` | `macos` | `windows`
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                  Your Test Project                   │
+│                  Your Test Project                  │
 │  ┌──────────┐   ┌──────────┐  ┌───────────────────┐ │
 │  │ Feature  │   │  Hooks   │  │  Page Objects     │ │
 │  │  Files   │   │          │  │  (Java or JSON)   │ │
@@ -450,10 +450,10 @@ Supported platform values: `web` | `android` | `ios` | `macos` | `windows`
 │  │    │WebInteractions│  │PlatformInteract│     │   │
 │  │    │  (Selenium)   │  │    (Appium)    │     │   │
 │  │    └──────┬────────┘  └───────┬────────┘     │   │
-│  └───────────┼──────────────────┼───────────────┘   │
-│              │                  │                    │
-│  ┌───────────▼──────────────────▼───────────────┐   │
-│  │              Utility Helpers                  │   │
+│  └───────────┼───────────────────┼──────────────┘   │
+│              │                   │                  │
+│  ┌───────────▼───────────────────▼──────────────┐   │
+│  │              Utility Helpers                 │   │
 │  │  ┌─────────┐ ┌──────────┐ ┌───────────────┐  │   │
 │  │  │ClickHlp │ │InputHelp │ │ElementStateHlp│  │   │
 │  │  └────┬────┘ └────┬─────┘ └───────┬───────┘  │   │
