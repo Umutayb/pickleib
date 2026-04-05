@@ -34,6 +34,7 @@ public class PickleibWebDriver {
      */
     private static final ThreadLocal<FluentWait<RemoteWebDriver>> wait = new ThreadLocal<>();
 
+    /** Logger instance for web driver operations. */
     public static Printer log = new Printer(PickleibWebDriver.class);
 
     /**

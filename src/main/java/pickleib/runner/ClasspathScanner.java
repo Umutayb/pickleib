@@ -8,10 +8,16 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+/** Scans the classpath for classes annotated with a given annotation. */
 public class ClasspathScanner {
 
     private static final Printer log = new Printer(ClasspathScanner.class);
 
+    /**
+     * @param annotation the annotation to scan for
+     * @param packages   the packages to scan
+     * @return list of classes annotated with the given annotation
+     */
     public static List<Class<?>> scanForAnnotatedClasses(
             Class<? extends Annotation> annotation, String... packages) {
         List<Class<?>> results = new ArrayList<>();

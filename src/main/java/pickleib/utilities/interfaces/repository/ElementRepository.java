@@ -22,6 +22,7 @@ import java.util.Map;
  */
 public interface ElementRepository {
 
+    /** Shared logger instance for element repository implementations. */
     Printer log = new Printer(ElementRepository.class);
 
     /**

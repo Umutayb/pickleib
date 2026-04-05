@@ -21,6 +21,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static utils.StringUtilities.firstLetterDeCapped;
 
+/**
+ * Registry that maps page object classes to their metadata and provides
+ * element acquisition via reflection-based field lookup.
+ */
 public class PageObjectRegistry implements ElementRepository {
 
     private static final Printer log = new Printer(PageObjectRegistry.class);
@@ -33,25 +37,37 @@ public class PageObjectRegistry implements ElementRepository {
 
     record PageObjectMetadata(Class<?> pageClass, String name, Platform platform) {}
 
+    /**
+     * @param pageClass the page object class to register
+     * @param name      custom name (empty string uses class simple name)
+     * @param platform  the target platform
+     */
     public void register(Class<?> pageClass, String name, Platform platform) {
         String key = (name.isEmpty() ? pageClass.getSimpleName() : name).toLowerCase();
         registry.put(key, new PageObjectMetadata(pageClass, name.isEmpty() ? pageClass.getSimpleName() : name, platform));
     }
 
+    /** @param pageName the page name to check
+     *  @return true if the page is registered */
     public boolean isRegistered(String pageName) {
         return registry.containsKey(pageName.toLowerCase());
     }
 
+    /** @param pageName the page name to look up
+     *  @return the registered page class */
     public Class<?> getPageClass(String pageName) {
         PageObjectMetadata meta = registry.get(pageName.toLowerCase());
         if (meta == null) throw new NoSuchElementException("Page '" + pageName + "' not found in registry");
         return meta.pageClass();
     }
 
+    /** @return the number of registered page objects */
     public int size() {
         return registry.size();
     }
 
+    /** @param pageName the page name to look up
+     *  @return the platform name for the page */
     public String getPlatform(String pageName) {
         PageObjectMetadata meta = registry.get(pageName.toLowerCase());
         return meta != null ? meta.platform().name() : "web";

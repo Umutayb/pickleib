@@ -486,6 +486,9 @@ public class PageObjectJson implements ElementRepository {
      * <br>
      * Example output: {@code [type='submit'][class='btn']}
      * </p>
+     *
+     * @param attributePairs pairs of attribute name and value
+     * @return the generated CSS selector string
      */
     @SafeVarargs
     public final String generateCssByAttributes(Pair<String, String>... attributePairs){
@@ -508,6 +511,9 @@ public class PageObjectJson implements ElementRepository {
      * <br>
      * Example output: {@code //*[@type='submit']}
      * </p>
+     *
+     * @param attributePairs pairs of attribute name and value
+     * @return the generated XPath selector string
      */
     @SafeVarargs
     public final String generateXPathByAttributes(Pair<String, String>... attributePairs){
@@ -585,6 +591,9 @@ public class PageObjectJson implements ElementRepository {
 
     /**
      * Helper method to get the correct driver instance (Web vs Appium) based on the "platform" key in the page JSON.
+     *
+     * @param pageJson the page JSON object containing a "platform" key
+     * @return the active driver instance for the page's platform
      */
     public RemoteWebDriver getDriverForPage(JsonObject pageJson) {
         DriverFactory.DriverType driverType = DriverFactory.DriverType.getType(
@@ -598,6 +607,9 @@ public class PageObjectJson implements ElementRepository {
 
     /**
      * Helper method to return the active driver instance for a specific driver type.
+     *
+     * @param driverType the driver type to get the instance for
+     * @return the active driver instance
      */
     public RemoteWebDriver getDriverForType(DriverFactory.DriverType driverType){
         switch (driverType){
@@ -613,6 +625,9 @@ public class PageObjectJson implements ElementRepository {
 
     /**
      * Helper method to get the correct FluentWait instance based on the "platform" key in the page JSON.
+     *
+     * @param pageJson the page JSON object containing a "platform" key
+     * @return the FluentWait instance for the page's platform
      */
     public FluentWait<RemoteWebDriver> getWaitForPage(JsonObject pageJson) {
         DriverFactory.DriverType driverType = DriverFactory.DriverType.getType(
@@ -626,6 +641,9 @@ public class PageObjectJson implements ElementRepository {
 
     /**
      * Helper method to return the active FluentWait instance for a specific driver type.
+     *
+     * @param driverType the driver type to get the wait instance for
+     * @return the active FluentWait instance
      */
     public FluentWait<RemoteWebDriver> getWaitForType(DriverFactory.DriverType driverType){
         switch (driverType){

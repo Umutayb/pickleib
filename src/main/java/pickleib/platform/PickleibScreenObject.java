@@ -11,10 +11,10 @@ import pickleib.web.driver.PickleibWebDriver;
 
 import java.time.Duration;
 
+/** Base class for mobile/desktop screen page objects with automatic Appium field decoration. */
 public abstract class PickleibScreenObject extends PlatformUtilities {
     /**
      * PickleibScreenObject for frameworks that use the Pickleib driver
-     *
      */
     protected PickleibScreenObject(){
         super(PickleibAppiumDriver.get());
@@ -32,6 +32,7 @@ public abstract class PickleibScreenObject extends PlatformUtilities {
     /**
      * PickleibScreenObject for frameworks that do not use the Pickleib driver
      *
+     * @param driver the RemoteWebDriver instance
      */
     protected PickleibScreenObject(RemoteWebDriver driver){
         super(driver);
@@ -49,6 +50,8 @@ public abstract class PickleibScreenObject extends PlatformUtilities {
     /**
      * PickleibScreenObject for frameworks with custom field decorator that use the Pickleib driver
      *
+     * @param <CustomFieldDecorator> the field decorator type
+     * @param fieldDecorator the custom field decorator
      */
     protected <CustomFieldDecorator extends DefaultFieldDecorator> PickleibScreenObject(CustomFieldDecorator fieldDecorator){
         super(PickleibWebDriver.get());
@@ -58,6 +61,9 @@ public abstract class PickleibScreenObject extends PlatformUtilities {
     /**
      * PickleibScreenObject for frameworks with custom field decorator that do not use the Pickleib driver
      *
+     * @param <CustomFieldDecorator> the field decorator type
+     * @param fieldDecorator the custom field decorator
+     * @param driver the RemoteWebDriver instance
      */
     protected <CustomFieldDecorator extends DefaultFieldDecorator> PickleibScreenObject(
             CustomFieldDecorator fieldDecorator,

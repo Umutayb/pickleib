@@ -23,6 +23,7 @@ import static java.util.Collections.singletonList;
 import static utils.StringUtilities.highlighted;
 import static utils.StringUtilities.Color.*;
 
+/** Base class for platform-specific (mobile/desktop) interaction utilities. */
 public abstract class PlatformUtilities extends Utilities {
 
     /**
@@ -34,11 +35,14 @@ public abstract class PlatformUtilities extends Utilities {
 
     /**
      * MobileUtilities for frameworks that do not use the Pickleib driver
+     *
+     * @param driver the RemoteWebDriver instance to use
      */
     public PlatformUtilities(RemoteWebDriver driver) {
         super(driver, (element) -> centerElement(element, driver));
     }
 
+    /** @return the active RemoteWebDriver instance */
     public RemoteWebDriver driver() {
         return this.driver;
     }
@@ -59,6 +63,10 @@ public abstract class PlatformUtilities extends Utilities {
      * Centers the element by iteratively swiping toward it.
      * First attempts a calculated scroll. If the element is still not in view,
      * uses RetryPolicy to iteratively swipe until the element is within the viewport.
+     *
+     * @param element the element to center
+     * @param driver  the driver instance to use
+     * @return the centered element
      */
     public static WebElement centerElement(WebElement element, RemoteWebDriver driver) {
         Point center = new Point(
@@ -341,7 +349,8 @@ public abstract class PlatformUtilities extends Utilities {
     /**
      * Swipes from the center to the point
      *
-     * @param point target point
+     * @param point  target point
+     * @param driver the driver instance
      */
     public static void swipeFromCenter(Point point, RemoteWebDriver driver) {
         Point center = new Point(
@@ -351,6 +360,7 @@ public abstract class PlatformUtilities extends Utilities {
         swipe(center, point, driver);
     }
 
+    /** @param point target point to swipe to from center */
     public void swipeFromCenter(Point point) {
         swipeFromCenter(point, driver);
     }
@@ -372,8 +382,8 @@ public abstract class PlatformUtilities extends Utilities {
      * Swipes element to the point with coordinates ({xOffset}; {yOffset}).
      *
      * @param element target element
-     * @param xOffset x coordinate of target point
-     * @param xOffset y coordinate of target point
+     * @param xOffset x coordinate offset from element center
+     * @param yOffset y coordinate offset from element center
      * @return returns the swiped element
      */
     public WebElement swipeWithOffset(WebElement element, Integer xOffset, Integer yOffset) {

@@ -7,14 +7,19 @@ import utils.Printer;
 import java.lang.reflect.Field;
 import static utils.StringUtilities.contextCheck;
 
+/**
+ * Processes {@link ContextValue} annotations by injecting values from the {@link ContextStore}.
+ */
 public class ContextValueInjector {
 
     private static final Printer log = new Printer(ContextValueInjector.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * Injects @ContextValue-annotated fields on the given instance.
+     * Injects {@link ContextValue}-annotated fields on the given instance.
      * Scans the instance's class hierarchy (including superclasses) for annotated fields.
+     *
+     * @param instance the object whose annotated fields will be injected
      */
     public static void injectFields(Object instance) {
         Class<?> clazz = instance.getClass();

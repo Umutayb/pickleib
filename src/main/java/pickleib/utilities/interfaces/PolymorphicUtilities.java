@@ -250,6 +250,7 @@ public interface PolymorphicUtilities {
      * Clears an input element
      *
      * @param element target element
+     * @return returns the cleared element
      */
     WebElement clearInputField(@NotNull WebElement element);
 
@@ -259,6 +260,7 @@ public interface PolymorphicUtilities {
      * @param element     target element
      * @param elementName target element name
      * @param pageName    specified page instance name
+     * @return returns the cleared element
      */
     WebElement clearInputField(@NotNull WebElement element, String elementName, String pageName);
 
@@ -266,6 +268,7 @@ public interface PolymorphicUtilities {
      * Acquires an element by its text
      *
      * @param elementText target element text
+     * @return returns the element matching the text
      */
     WebElement getElementByText(String elementText);
 
@@ -274,6 +277,7 @@ public interface PolymorphicUtilities {
      *
      * @param elementText target element text
      * @param pageName    specified page instance name
+     * @return returns the element matching the text
      */
     WebElement getElementByText(String elementText, String pageName);
 
@@ -281,6 +285,7 @@ public interface PolymorphicUtilities {
      * Acquires an element that contains a certain text
      *
      * @param elementText target element text
+     * @return returns the element containing the text
      */
     WebElement getElementContainingText(String elementText);
 
@@ -289,6 +294,7 @@ public interface PolymorphicUtilities {
      *
      * @param elementText target element text
      * @param pageName    specified page instance name
+     * @return returns the element containing the text
      */
     WebElement getElementContainingText(String elementText, String pageName);
 
@@ -401,6 +407,7 @@ public interface PolymorphicUtilities {
      * Combines the given keys
      *
      * @param keys key inputs
+     * @return returns the combined key string
      */
     String combineKeys(Keys... keys);
 
@@ -529,8 +536,10 @@ public interface PolymorphicUtilities {
     /**
      * Verifies the text of an element from a list on the {page name}.
      *
-     * @param elements  list of elements
-     * @param pageName specified page instance name
+     * @param elements     list of elements
+     * @param expectedText expected element text
+     * @param listName     target list name
+     * @param pageName     specified page instance name
      */
     void verifyListContainsElementByText(
             List<WebElement> elements,
@@ -591,6 +600,7 @@ public interface PolymorphicUtilities {
     /**
      * Verifies that an attribute {attribute name} of element {element name} on the {page name} contains a specific {value}.
      *
+     * @param element       target element
      * @param attributeName the name of the attribute to be verified
      * @param elementName   the name of the element to be verified
      * @param pageName      the name of the page containing the element
@@ -613,6 +623,8 @@ public interface PolymorphicUtilities {
      * Verifies the presence of listed element from a list on the {page name}
      *
      * @param bundles   list that contains element, elementName, elementText
+     * @param element   target element
+     * @param elements  list of target elements
      * @param pageName  specified page instance name
      * @param signForms table that has key as "Input" and value as "Input Element" (dataTable.asMaps())
      */
@@ -629,6 +641,7 @@ public interface PolymorphicUtilities {
     /**
      * Presses {target key} key on {element name} element of the {}
      *
+     * @param element     target element
      * @param keys        target key
      * @param elementName target element name
      * @param pageName    specified page instance name
@@ -655,7 +668,6 @@ public interface PolymorphicUtilities {
      * Executes interactions on a list of element bundles, based on the specified interaction type.
      * <p>
      * The interaction type is specified in the "Interaction Type" key of the map contained in each element bundle.
-     * <p>
      *
      * @param bundles  A list of element bundles containing the element name, the matching element, and a map of the element's attributes.
      * @param pageName The name of the page object.

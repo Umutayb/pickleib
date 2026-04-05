@@ -8,6 +8,7 @@ import utils.NumericUtilities;
 import utils.Printer;
 import java.io.File;
 
+/** Utility for capturing screenshots from WebDriver sessions. */
 @SuppressWarnings("unused")
 public class ScreenCaptureUtility {
     static Printer log = new Printer(ScreenCaptureUtility.class);
@@ -15,6 +16,7 @@ public class ScreenCaptureUtility {
     /**
      * Captures screen
      * @param name screenshot name
+     * @param extension file extension (e.g. ".png")
      * @param driver session driver
      * @return returns the screenshot file
      */
@@ -38,8 +40,9 @@ public class ScreenCaptureUtility {
     }
 
     /**
-     * Captures screen
+     * Captures screen silently (no logging)
      * @param name screenshot name
+     * @param extension file extension (e.g. ".png")
      * @param driver session driver
      * @return returns the screenshot file
      */

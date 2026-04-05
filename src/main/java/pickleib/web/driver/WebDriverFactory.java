@@ -300,10 +300,15 @@ public class WebDriverFactory implements DriverFactory {
      * Enumeration of supported browser types.
      */
     public enum BrowserType {
+        /** Google Chrome browser. */
         CHROME("Chrome"),
+        /** Mozilla Firefox browser. */
         FIREFOX("Firefox"),
+        /** Apple Safari browser. */
         SAFARI("Safari"),
+        /** Microsoft Edge browser. */
         EDGE("Edge"),
+        /** Opera browser. */
         OPERA("Opera");
 
         final String driverName;
@@ -312,6 +317,11 @@ public class WebDriverFactory implements DriverFactory {
             this.driverName = driverName;
         }
 
+        /**
+         * Returns the driver key in lowercase (used for capability matching).
+         *
+         * @return the lowercase driver key
+         */
         public String getDriverKey() {
             return driverName.toLowerCase();
         }
@@ -330,6 +340,11 @@ public class WebDriverFactory implements DriverFactory {
             return null;
         }
 
+        /**
+         * Returns the display name of the browser.
+         *
+         * @return the browser display name
+         */
         public String getDriverName() {
             return driverName;
         }
@@ -341,6 +356,8 @@ public class WebDriverFactory implements DriverFactory {
      * Sets the browser window width in pixels.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param frameWidth the width in pixels
      */
     public static void setFrameWidth(int frameWidth) {
         WebDriverFactory.frameWidth = frameWidth;
@@ -350,6 +367,8 @@ public class WebDriverFactory implements DriverFactory {
      * Sets the browser window height in pixels.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param frameHeight the height in pixels
      */
     public static void setFrameHeight(int frameHeight) {
         WebDriverFactory.frameHeight = frameHeight;
@@ -359,6 +378,8 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables headless mode.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param headless true to enable headless mode
      */
     public static void setHeadless(boolean headless) {
         WebDriverFactory.headless = headless;
@@ -368,6 +389,8 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables window maximization on driver startup.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param maximise true to maximize the window on startup
      */
     public static void setMaximise(boolean maximise) {
         WebDriverFactory.maximise = maximise;
@@ -377,6 +400,8 @@ public class WebDriverFactory implements DriverFactory {
      * Sets the implicit wait timeout (in seconds) for the driver.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param driverTimeout the timeout in seconds
      */
     public static void setDriverTimeout(long driverTimeout) {
         WebDriverFactory.driverTimeout = driverTimeout;
@@ -386,6 +411,8 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables cookie deletion on driver initialization.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param deleteCookies true to delete cookies on initialization
      */
     public static void setDeleteCookies(boolean deleteCookies) {
         WebDriverFactory.deleteCookies = deleteCookies;
@@ -395,6 +422,8 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables Selenium Grid usage.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param useSeleniumGrid true to use Selenium Grid
      */
     public static void setUseSeleniumGrid(boolean useSeleniumGrid) {
         WebDriverFactory.useSeleniumGrid = useSeleniumGrid;
@@ -404,6 +433,8 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables acceptance of insecure SSL certificates.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param insecureLocalHost true to accept insecure certificates
      */
     public static void setInsecureLocalHost(boolean insecureLocalHost) {
         WebDriverFactory.insecureLocalHost = insecureLocalHost;
@@ -413,6 +444,8 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables browser notifications.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param disableNotifications true to disable browser notifications
      */
     public static void setDisableNotifications(boolean disableNotifications) {
         WebDriverFactory.disableNotifications = disableNotifications;
@@ -422,6 +455,8 @@ public class WebDriverFactory implements DriverFactory {
      * Sets the page load strategy for the driver.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param loadStrategy the page load strategy
      */
     public static void setLoadStrategy(PageLoadStrategy loadStrategy) {
         WebDriverFactory.loadStrategy = loadStrategy;
@@ -431,6 +466,8 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables WebDriverManager for automatic driver binary management.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param useWDM true to enable WebDriverManager
      */
     public static void setUseWDM(Boolean useWDM) {
         WebDriverFactory.useWDM = useWDM;
@@ -440,6 +477,8 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables allowing remote origins (fixes connection issues in newer Chrome).
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param allowRemoteOrigin true to allow remote origins
      */
     public static void setAllowRemoteOrigin(Boolean allowRemoteOrigin) {
         WebDriverFactory.allowRemoteOrigin = allowRemoteOrigin;
@@ -449,6 +488,8 @@ public class WebDriverFactory implements DriverFactory {
      * Sets the Selenium log level (e.g., "off", "info", "debug").
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param logLevel the log level string
      */
     public static void setLogLevel(String logLevel) {
         WebDriverFactory.logLevel = logLevel;
@@ -458,6 +499,8 @@ public class WebDriverFactory implements DriverFactory {
      * Sets the Selenium Grid hub URL.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param hubUrl the Selenium Grid hub URL
      */
     public static void setHubUrl(String hubUrl) {
         WebDriverFactory.hubUrl = hubUrl;
@@ -467,6 +510,8 @@ public class WebDriverFactory implements DriverFactory {
      * Sets the default browser type (e.g., "chrome", "firefox").
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param browser the browser name
      */
     public static void setBrowser(String browser) {
         WebDriverFactory.browser = browser;
@@ -476,70 +521,88 @@ public class WebDriverFactory implements DriverFactory {
      * Enables or disables the --no-sandbox browser argument.
      * <p><b>Thread Safety:</b> This setter modifies shared static state.
      * It must be called before parallel driver initialization, not during.</p>
+     *
+     * @param noSandbox true to add --no-sandbox argument
      */
     public static void setNoSandbox(boolean noSandbox) {WebDriverFactory.noSandbox = noSandbox;}
 
     // Getters for configuration values
 
+    /** @return the browser window width in pixels */
     public static int getFrameWidth() {
         return frameWidth;
     }
 
+    /** @return the browser window height in pixels */
     public static int getFrameHeight() {
         return frameHeight;
     }
 
+    /** @return true if headless mode is enabled */
     public static boolean isHeadless() {
         return headless;
     }
 
+    /** @return true if window maximization is enabled */
     public static boolean isMaximise() {
         return maximise;
     }
 
+    /** @return the driver timeout in seconds */
     public static long getDriverTimeout() {
         return driverTimeout;
     }
 
+    /** @return true if cookies are deleted on initialization */
     public static boolean isDeleteCookies() {
         return deleteCookies;
     }
 
+    /** @return true if Selenium Grid is enabled */
     public static boolean isUseSeleniumGrid() {
         return useSeleniumGrid;
     }
 
+    /** @return true if insecure certificates are accepted */
     public static boolean isInsecureLocalHost() {
         return insecureLocalHost;
     }
 
+    /** @return true if browser notifications are disabled */
     public static boolean isDisableNotifications() {
         return disableNotifications;
     }
 
+    /** @return the page load strategy */
     public static PageLoadStrategy getLoadStrategy() {
         return loadStrategy;
     }
 
+    /** @return true if WebDriverManager is enabled */
     public static Boolean getUseWDM() {
         return useWDM;
     }
 
+    /** @return true if remote origins are allowed */
     public static Boolean getAllowRemoteOrigin() {
         return allowRemoteOrigin;
     }
 
+    /** @return the Selenium log level */
     public static String getLogLevel() {
         return logLevel;
     }
 
+    /** @return the Selenium Grid hub URL */
     public static String getHubUrl() {
         return hubUrl;
     }
 
+    /** @return the default browser name */
     public static String getBrowser() {
         return browser;
     }
 
+    /** @return true if --no-sandbox is enabled */
     public static boolean isNoSandbox() {return noSandbox;}
 }
